@@ -1,0 +1,33 @@
+name: Build and Link
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - '.github/**'
+
+  workflow_dispatch:
+
+env:
+  AWS_REGION: "eu-west-1"
+
+jobs:
+  build_test:
+    runs-on: ubuntu-latest
+    environment: production
+    outputs:
+      imageTag: ${{ steps.image_tag.outputs.version }}
+    steps:
+      - uses: actions/checkout@main
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@main
+        with:
+          node-version: 18.x
+      - name: install, build and lint
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{secrets.NPM_AUTH_TOKEN}}" >> .npmrc
+          yarn install
+          yarn build
+          yarn eslint
+        env:
+          NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}   

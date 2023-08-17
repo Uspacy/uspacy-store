@@ -1,0 +1,25 @@
+name: Check version
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-version:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@main
+      - name: Get package info
+        id: package
+        uses: codex-team/action-nodejs-package-info@v1
+
+      - name: Get package versions
+        run: |
+          echo ::set-output name=value::$(npm show ${{steps.package.outputs.name}} versions)
+        id: versions
+
+      - name: Check version
+        if: contains(steps.versions.outputs.value, steps.package.outputs.version)
+        run: |
+          echo "Need to change package version"
+          exit 1
