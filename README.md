@@ -1,17 +1,27 @@
 ## Install
 
 ```sh
-npm install @uspacy/package_name
+npm install @uspacy/store
 ```
 
 or
 
 ```sh
-yarn add @uspacy/package_name
+yarn add @uspacy/store
 ```
 
 ## Example
 
 ```javascript
-import package_name from '@uspacy/package_name';
+import { StorePovider } from '@uspacy/store';
+
+const App: React.FC = () => {
+	return (
+		<StorePovider>
+			app
+		</StorePovider>
+	);
+};
+
+export default App;
 ```

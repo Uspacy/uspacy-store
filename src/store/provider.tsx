@@ -5,8 +5,6 @@ import { setupStore } from '.';
 
 const store = setupStore();
 
-const StorePovider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const StorePovider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	return <Provider store={store}>{children}</Provider>;
 };
-
-export default StorePovider;
