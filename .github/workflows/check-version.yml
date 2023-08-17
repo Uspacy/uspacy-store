@@ -3,6 +3,8 @@ name: Check version
 on:
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - '.github/**'
 
 jobs:
   check-version:

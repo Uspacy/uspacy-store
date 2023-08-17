@@ -1,10 +1,3 @@
-export * from './utils';
-
-/**
- * some title
- * @returns void
- */
-export const index = () => {
-	// eslint-disable-next-line no-console
-	console.log('index');
-};
+export * from './hooks/redux';
+export * from './store';
+export { default as StorePovider } from './store/provider';

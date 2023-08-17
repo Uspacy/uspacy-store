@@ -2,14 +2,14 @@ name: Build and Link
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths-ignore:
       - '.github/**'
 
   workflow_dispatch:
 
 env:
-  AWS_REGION: "eu-west-1"
+  AWS_REGION: 'eu-west-1'
 
 jobs:
   build_test:
@@ -25,9 +25,8 @@ jobs:
           node-version: 18.x
       - name: install, build and lint
         run: |
-          echo "//npm.pkg.github.com/:_authToken=${{secrets.NPM_AUTH_TOKEN}}" >> .npmrc
           yarn install
           yarn build
           yarn eslint
         env:
-          NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}   
+          NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
