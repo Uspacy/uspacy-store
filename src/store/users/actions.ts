@@ -1,13 +1,17 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { IUser } from '@uspacy/sdk/lib/models/user';
+import { uspacySdk } from '@uspacy/sdk';
+import { IUser, MainRoles } from '@uspacy/sdk/lib/models/user';
 
-import { uspacySdk } from '../../utls/sdk';
 import { IInvite, IUploadAvatar } from './types';
 
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async (_, thunkAPI) => {
 	try {
-		// const roles = (await uspacySdk.tokensService.getUserRoles().catch(() => undefined)) || [];
-		const res = await uspacySdk.usersService.getUsers(undefined, 'all');
+		const roles = (await uspacySdk.tokensService.getUserRoles().catch(() => undefined)) || [];
+		if (uspacySdk.usersService.hasRole(roles, [MainRoles.ADMIN, MainRoles.OWNER])) {
+			const res = await uspacySdk.usersService.getUsers(undefined, 'all');
+			return res.data;
+		}
+		const res = await uspacySdk.usersService.getUsers(undefined, 999);
 		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure load users');

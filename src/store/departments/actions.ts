@@ -1,10 +1,15 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-
-import { uspacySdk } from '../../utls/sdk';
+import { uspacySdk } from '@uspacy/sdk';
+import { MainRoles } from '@uspacy/sdk/lib/models/user';
 
 export const fetchDepartments = createAsyncThunk('departments/fetchDepartments', async (_, thunkAPI) => {
 	try {
-		const res = await uspacySdk.departmentsService.getDepartments(undefined, 'all');
+		const roles = (await uspacySdk.tokensService.getUserRoles().catch(() => undefined)) || [];
+		if (uspacySdk.usersService.hasRole(roles, [MainRoles.ADMIN, MainRoles.OWNER])) {
+			const res = await uspacySdk.departmentsService.getDepartments(undefined, 'all');
+			return res.data;
+		}
+		const res = await uspacySdk.departmentsService.getDepartments(undefined, 999);
 		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');

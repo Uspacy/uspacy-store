@@ -1,6 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-
-import { uspacySdk } from '../../utls/sdk';
+import { uspacySdk } from '@uspacy/sdk';
 
 export const fetchProfile = createAsyncThunk('profile/fetchProfile', async (_, thunkAPI) => {
 	try {
