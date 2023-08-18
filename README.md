@@ -13,13 +13,13 @@ yarn add @uspacy/store
 ## Example
 
 ```javascript
-import { StorePovider } from '@uspacy/store';
+import { StoreProvider } from '@uspacy/store';
 
 const App: React.FC = () => {
 	return (
-		<StorePovider>
+		<StoreProvider>
 			app
-		</StorePovider>
+		</StoreProvider>
 	);
 };
 

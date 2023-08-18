@@ -2,11 +2,22 @@ const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+const glob = require('glob');
+
+const getEntryPoints = () => {
+	const entryPoints = {};
+	const files = glob.sync(path.resolve(__dirname, './src/**/*.{ts,tsx}'));
+	files.forEach((file) => {
+		const entryName = path.relative('./src', file).replace(/\.tsx?/, '');
+		entryPoints[entryName] = file;
+	});
+	return entryPoints;
+};
 
 module.exports = (_, argv) => {
 	const isDev = argv.mode === 'development';
 	return {
-		entry: path.resolve(__dirname, './src/index.ts'),
+		entry: getEntryPoints(),
 		output: {
 			filename: '[name].js',
 			path: path.resolve(__dirname, 'lib'),

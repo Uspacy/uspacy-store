@@ -1,9 +1,13 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
-import options from './reducers/options';
+import departments from './departments';
+import profile from './profile';
+import users from './users';
 
 const rootReducer = combineReducers({
-	options,
+	departments,
+	profile,
+	users,
 });
 
 export const setupStore = () => {
