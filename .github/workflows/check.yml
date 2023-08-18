@@ -1,4 +1,4 @@
-name: Build and Link
+name: Build and Lint
 
 on:
   pull_request:
@@ -14,7 +14,6 @@ env:
 jobs:
   build_test:
     runs-on: ubuntu-latest
-    environment: production
     outputs:
       imageTag: ${{ steps.image_tag.outputs.version }}
     steps:
