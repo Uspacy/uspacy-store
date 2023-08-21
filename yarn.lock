@@ -499,8 +499,8 @@
 
 "@uspacy/sdk@^0.0.1":
   version "0.0.1"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.1/dbc298731622a1b9908c7c00a2903bb21f1beda0#dbc298731622a1b9908c7c00a2903bb21f1beda0"
-  integrity sha512-6b7X6xfJf3fMwxo/3t16Bh2vtEqkwEQEexKO/JAvvAWgHo6rRI5i119Dho0g2KmWpoWbNkGKnl6lWHQAKosfQw==
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.1/551e7ca78637ccaa21280abbde49923b5b0e1138#551e7ca78637ccaa21280abbde49923b5b0e1138"
+  integrity sha512-ZcJQBgSgJYOcGi3IQq5q6qleu//FlxLyRqg+RDwHKgSYn90pgaQeE5S2mOzXpLmfSVz3fPsy7tueila2aAiFwQ==
   dependencies:
     axios "^1.4.0"
     js-cookie "^3.0.5"
