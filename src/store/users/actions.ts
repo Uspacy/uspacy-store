@@ -7,11 +7,8 @@ import { IInvite, IUploadAvatar } from './types';
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async (_, thunkAPI) => {
 	try {
 		const roles = (await uspacySdk.tokensService.getUserRoles().catch(() => undefined)) || [];
-		if (uspacySdk.usersService.hasRole(roles, [MainRoles.ADMIN, MainRoles.OWNER])) {
-			const res = await uspacySdk.usersService.getUsers(undefined, 'all');
-			return res.data;
-		}
-		const res = await uspacySdk.usersService.getUsers(undefined, 999);
+		const show = uspacySdk.usersService.hasRole(roles, [MainRoles.ADMIN, MainRoles.OWNER]) ? 'all' : undefined;
+		const res = await uspacySdk.usersService.getUsers(undefined, 'all', show);
 		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure load users');

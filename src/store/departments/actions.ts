@@ -5,11 +5,8 @@ import { MainRoles } from '@uspacy/sdk/lib/models/user';
 export const fetchDepartments = createAsyncThunk('departments/fetchDepartments', async (_, thunkAPI) => {
 	try {
 		const roles = (await uspacySdk.tokensService.getUserRoles().catch(() => undefined)) || [];
-		if (uspacySdk.usersService.hasRole(roles, [MainRoles.ADMIN, MainRoles.OWNER])) {
-			const res = await uspacySdk.departmentsService.getDepartments(undefined, 'all');
-			return res.data;
-		}
-		const res = await uspacySdk.departmentsService.getDepartments(undefined, 999);
+		const show = uspacySdk.usersService.hasRole(roles, [MainRoles.ADMIN, MainRoles.OWNER]) ? 'all' : undefined;
+		const res = await uspacySdk.departmentsService.getDepartments(undefined, 'all', show);
 		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
