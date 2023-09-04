@@ -1,10 +1,12 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
+import apps from './apps';
 import departments from './departments';
 import profile from './profile';
 import users from './users';
 
 const rootReducer = combineReducers({
+	apps,
 	departments,
 	profile,
 	users,
