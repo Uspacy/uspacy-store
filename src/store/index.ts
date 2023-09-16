@@ -3,12 +3,16 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import departments from './departments';
 import profile from './profile';
 import tasks from './tasks';
+import tasksStages from './tasksStages';
+import tasksTimer from './tasksTimer';
 import users from './users';
 
 const rootReducer = combineReducers({
 	departments,
 	profile,
 	tasks,
+	tasksStages,
+	tasksTimer,
 	users,
 });
 
