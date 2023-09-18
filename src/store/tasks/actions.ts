@@ -4,8 +4,6 @@ import { ITaskValues } from '@uspacy/sdk/lib/services/TasksService/dto/create-up
 import { IMassDeletion } from '@uspacy/sdk/lib/services/TasksService/dto/mass-deletion.dto';
 import isArray from 'lodash/isArray';
 
-import { makeURIParams } from '../../helpers/makeURIParams';
-
 export const fetchTasksWithFilters = createAsyncThunk(
 	'tasks/fetchTasksTest',
 	async (
@@ -34,7 +32,7 @@ export const fetchTasksWithFilters = createAsyncThunk(
 		const withoutResponsible = responsibleIdsArray.includes(-1);
 		// @ts-ignore
 		const responsibleIds = responsibleIdsArray.filter((el) => el !== -1);
-		const params = makeURIParams({
+		const params = {
 			stages: data.params.columnId,
 			list: data.params.list,
 			page: data.params.page,
@@ -47,7 +45,8 @@ export const fetchTasksWithFilters = createAsyncThunk(
 			deadline: data.params.deadline,
 			q: data.params.search,
 			group_id: data.params.groupId,
-		});
+		};
+
 		try {
 			const res = await uspacySdk.tasksService.getTasksWithFilters(params, withoutResponsible, data.signal);
 			return res.data;
@@ -91,7 +90,7 @@ export const fetchRegularTasksWithFilters = createAsyncThunk(
 		const withoutResponsible = responsibleIdsArray.includes(-1);
 		// @ts-ignore
 		const responsibleIds = responsibleIdsArray.filter((el) => el !== -1);
-		const params = makeURIParams({
+		const params = {
 			stages: data.params.columnId,
 			list: data.params.list,
 			page: data.params.page,
@@ -105,7 +104,7 @@ export const fetchRegularTasksWithFilters = createAsyncThunk(
 			q: data.params.search,
 			group_id: data.params.groupId,
 			template: 1,
-		});
+		};
 		try {
 			const res = await uspacySdk.tasksService.getRegularTasksWithFilters(params, withoutResponsible, data.signal);
 			return res.data;
@@ -214,7 +213,7 @@ export const startTask = createAsyncThunk('tasks/startTask', async (id: string, 
 		const res = await uspacySdk.tasksService.startTask(id);
 		return res.data;
 	} catch (e) {
-		return rejectWithValue('Failure');
+		return rejectWithValue(e);
 	}
 });
 
@@ -223,7 +222,7 @@ export const pauseTask = createAsyncThunk('tasks/pauseTask', async (id: string, 
 		const res = await uspacySdk.tasksService.pauseTask(id);
 		return res.data;
 	} catch (e) {
-		return rejectWithValue('Failure');
+		return rejectWithValue(e);
 	}
 });
 
@@ -232,7 +231,7 @@ export const watchTask = createAsyncThunk('tasks/watchTask', async (id: string, 
 		const res = await uspacySdk.tasksService.watchTask(id);
 		return res.data;
 	} catch (e) {
-		return rejectWithValue('Failure');
+		return rejectWithValue(e);
 	}
 });
 
@@ -241,7 +240,7 @@ export const unwatchTask = createAsyncThunk('tasks/unwatchTask', async (id: stri
 		const res = await uspacySdk.tasksService.unwatchTask(id);
 		return res.data;
 	} catch (e) {
-		return rejectWithValue('Failure');
+		return rejectWithValue(e);
 	}
 });
 
@@ -250,7 +249,7 @@ export const completeTask = createAsyncThunk('tasks/completeTask', async (id: st
 		const res = await uspacySdk.tasksService.completeTask(id);
 		return res.data;
 	} catch (e) {
-		return rejectWithValue('Failure');
+		return rejectWithValue(e);
 	}
 });
 

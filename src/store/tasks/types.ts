@@ -1,8 +1,8 @@
+import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFilterRegularTasks, IFilterTasks, IMeta, ITask, ITasks } from '@uspacy/sdk/lib/models/tasks';
 
-export interface IErrors {
-	status: number;
-	error: string;
+export interface ITaskCardActions {
+	mode: 'view' | 'add' | 'edit';
 }
 
 export interface IState {
@@ -20,6 +20,8 @@ export interface IState {
 	deleteAllFromKanban: boolean;
 	filters: IFilterTasks;
 	regularFilter: IFilterRegularTasks;
+	tasksCardPermissions: ITaskCardActions;
+	isEditMode: boolean;
 	loadingTasks: boolean;
 	loadingRegularTasks: boolean;
 	loadingSubtasks: boolean;
@@ -30,20 +32,16 @@ export interface IState {
 	loadingEditingTask: boolean;
 	loadingDeletingTask: boolean;
 	loadingStatusesTask: boolean;
-	loadingComments: boolean;
-	loadingFiles: boolean;
-	errorLoadingTasks: IErrors;
-	errorLoadingSchedulerTasks: IErrors;
-	errorLoadingSubtasks: IErrors;
-	errorLoadingTask: IErrors;
-	errorLoadingParentTask: IErrors;
-	errorLoadingTemplate: IErrors;
-	errorLoadingAddingTask: IErrors;
-	errorLoadingEditingTask: IErrors;
-	errorLoadingDeletingTask: IErrors;
-	errorLoadingStatusesTask: IErrors;
-	errorLoadingComments: IErrors;
-	errorLoadingFiles: IErrors;
+	errorLoadingTasks: IErrorsAxiosResponse;
+	errorLoadingSchedulerTasks: IErrorsAxiosResponse;
+	errorLoadingSubtasks: IErrorsAxiosResponse;
+	errorLoadingTask: IErrorsAxiosResponse;
+	errorLoadingParentTask: IErrorsAxiosResponse;
+	errorLoadingTemplate: IErrorsAxiosResponse;
+	errorLoadingAddingTask: IErrorsAxiosResponse;
+	errorLoadingEditingTask: IErrorsAxiosResponse;
+	errorLoadingDeletingTask: IErrorsAxiosResponse;
+	errorLoadingStatusesTask: IErrorsAxiosResponse;
 	meta: IMeta;
 	regularTasksMeta: IMeta;
 	popupLinks: ITask[];

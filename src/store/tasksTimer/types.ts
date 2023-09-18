@@ -1,9 +1,5 @@
+import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IElapsedTime, ITaskTimerList, ITimerRealTime } from '@uspacy/sdk/lib/models/timer';
-
-export interface IErrors {
-	status: number;
-	error: string;
-}
 
 export interface IState {
 	isTaskTimerActive: boolean;
@@ -19,11 +15,11 @@ export interface IState {
 	loadingEditTimer: boolean;
 	loadingDeleteTimer: boolean;
 	loadingTaskTimerList: boolean;
-	errorLoadingTimerRealTimer: IErrors;
-	errorLoadingStartTimer: IErrors;
-	errorLoadingStopTimer: IErrors;
-	errorLoadingCreateTimer: IErrors;
-	errorLoadingEditTimer: IErrors;
-	errorLoadingDeleteTimer: IErrors;
-	errorLoadingTaskTimerList: IErrors;
+	errorLoadingTimerRealTimer: IErrorsAxiosResponse;
+	errorLoadingStartTimer: IErrorsAxiosResponse;
+	errorLoadingStopTimer: IErrorsAxiosResponse;
+	errorLoadingCreateTimer: IErrorsAxiosResponse;
+	errorLoadingEditTimer: IErrorsAxiosResponse;
+	errorLoadingDeleteTimer: IErrorsAxiosResponse;
+	errorLoadingTaskTimerList: IErrorsAxiosResponse;
 }

@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFilterRegularTasks, IFilterTasks, ITask, ITasks } from '@uspacy/sdk/lib/models/tasks';
 import { IMassDeletion } from '@uspacy/sdk/lib/services/TasksService/dto/mass-deletion.dto';
 
@@ -19,7 +20,7 @@ import {
 	restartTask,
 	startTask,
 } from './actions';
-import { IErrors, IState } from './types';
+import { IState, ITaskCardActions } from './types';
 
 const initialState = {
 	tasks: {
@@ -77,8 +78,6 @@ const initialState = {
 	loadingEditingTask: false,
 	loadingDeletingTask: false,
 	loadingStatusesTask: false,
-	loadingComments: false,
-	loadingFiles: false,
 	errorLoadingTasks: null,
 	errorLoadingSchedulerTasks: null,
 	errorLoadingSubtasks: null,
@@ -88,8 +87,6 @@ const initialState = {
 	errorLoadingEditingTask: null,
 	errorLoadingDeletingTask: null,
 	errorLoadingStatusesTask: null,
-	errorLoadingComments: null,
-	errorLoadingFiles: null,
 	meta: {
 		currentPage: 0,
 		perPage: 20,
@@ -105,8 +102,12 @@ const initialState = {
 	isCopyingTask: false,
 	isKanban: false,
 	isTable: false,
+	isEditMode: false,
 	taskStatus: '',
 	isRegularSection: false,
+	tasksCardPermissions: {
+		mode: 'view',
+	},
 } as IState;
 
 const tasksReducer = createSlice({
@@ -262,6 +263,12 @@ const tasksReducer = createSlice({
 		setDeleteAllFromKanban: (state, action: PayloadAction<boolean>) => {
 			state.deleteAllFromKanban = action.payload;
 		},
+		changeTasksCardViewMode: (state, action: PayloadAction<ITaskCardActions>) => {
+			state.tasksCardPermissions = action.payload;
+		},
+		setAnEditMode: (state, action: PayloadAction<boolean>) => {
+			state.isEditMode = action.payload;
+		},
 	},
 	extraReducers: {
 		[fetchTasksWithFilters.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
@@ -274,7 +281,7 @@ const tasksReducer = createSlice({
 			state.loadingTasks = true;
 			state.errorLoadingTasks = null;
 		},
-		[fetchTasksWithFilters.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[fetchTasksWithFilters.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingTasks = false;
 			state.errorLoadingTasks = action.payload;
 		},
@@ -288,7 +295,7 @@ const tasksReducer = createSlice({
 			state.loadingRegularTasks = true;
 			state.errorLoadingSchedulerTasks = null;
 		},
-		[fetchRegularTasksWithFilters.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[fetchRegularTasksWithFilters.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingRegularTasks = false;
 			state.errorLoadingSchedulerTasks = action.payload;
 		},
@@ -302,7 +309,7 @@ const tasksReducer = createSlice({
 			state.loadingSubtasks = true;
 			state.errorLoadingSubtasks = null;
 		},
-		[fetchSubtasks.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[fetchSubtasks.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingSubtasks = false;
 			state.errorLoadingSubtasks = action.payload;
 		},
@@ -316,7 +323,7 @@ const tasksReducer = createSlice({
 			state.loadingTask = true;
 			state.errorLoadingTask = null;
 		},
-		[fetchTask.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[fetchTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingTask = false;
 			state.errorLoadingTask = action.payload;
 		},
@@ -330,7 +337,7 @@ const tasksReducer = createSlice({
 			state.loadingParentTask = true;
 			state.errorLoadingParentTask = null;
 		},
-		[fetchParentTask.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[fetchParentTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingParentTask = false;
 			state.errorLoadingParentTask = action.payload;
 		},
@@ -344,7 +351,7 @@ const tasksReducer = createSlice({
 			state.loadingTemplate = true;
 			state.errorLoadingTemplate = null;
 		},
-		[fetchTemplate.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[fetchTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingTemplate = false;
 			state.errorLoadingTemplate = action.payload;
 		},
@@ -366,7 +373,7 @@ const tasksReducer = createSlice({
 			state.loadingAddingTask = true;
 			state.errorLoadingAddingTask = null;
 		},
-		[addTask.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[addTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingAddingTask = false;
 			state.errorLoadingAddingTask = action.payload;
 		},
@@ -391,7 +398,7 @@ const tasksReducer = createSlice({
 			state.loadingEditingTask = true;
 			state.errorLoadingEditingTask = null;
 		},
-		[editTask.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[editTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingEditingTask = false;
 			state.errorLoadingEditingTask = action.payload;
 		},
@@ -403,7 +410,7 @@ const tasksReducer = createSlice({
 			state.loadingEditingTask = true;
 			state.errorLoadingEditingTask = null;
 		},
-		[editSubTask.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[editSubTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingEditingTask = false;
 			state.errorLoadingEditingTask = action.payload;
 		},
@@ -426,7 +433,7 @@ const tasksReducer = createSlice({
 			state.loadingDeletingTask = true;
 			state.errorLoadingDeletingTask = null;
 		},
-		[deleteTask.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[deleteTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingDeletingTask = false;
 			state.errorLoadingDeletingTask = action.payload;
 		},
@@ -473,7 +480,7 @@ const tasksReducer = createSlice({
 			state.loadingDeletingTask = true;
 			state.errorLoadingDeletingTask = null;
 		},
-		[massDeletion.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[massDeletion.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingDeletingTask = false;
 			state.errorLoadingDeletingTask = action.payload;
 		},
@@ -500,7 +507,7 @@ const tasksReducer = createSlice({
 			state.loadingStatusesTask = true;
 			state.errorLoadingStatusesTask = null;
 		},
-		[startTask.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[startTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingStatusesTask = false;
 			state.errorLoadingStatusesTask = action.payload;
 		},
@@ -526,7 +533,7 @@ const tasksReducer = createSlice({
 			state.loadingStatusesTask = true;
 			state.errorLoadingStatusesTask = null;
 		},
-		[pauseTask.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[pauseTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingStatusesTask = false;
 			state.errorLoadingStatusesTask = action.payload;
 		},
@@ -552,7 +559,7 @@ const tasksReducer = createSlice({
 			state.loadingStatusesTask = true;
 			state.errorLoadingStatusesTask = null;
 		},
-		[completeTask.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[completeTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingStatusesTask = false;
 			state.errorLoadingStatusesTask = action.payload;
 		},
@@ -578,7 +585,7 @@ const tasksReducer = createSlice({
 			state.loadingStatusesTask = true;
 			state.errorLoadingStatusesTask = null;
 		},
-		[restartTask.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[restartTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingStatusesTask = false;
 			state.errorLoadingStatusesTask = action.payload;
 		},
@@ -620,5 +627,7 @@ export const {
 	setIsRegularSection,
 	setTotalTasks,
 	setDeleteAllFromKanban,
+	changeTasksCardViewMode,
+	setAnEditMode,
 } = tasksReducer.actions;
 export default tasksReducer.reducer;

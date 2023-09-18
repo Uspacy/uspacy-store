@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IElapsedTime, ITaskTimerList, ITimerRealTime } from '@uspacy/sdk/lib/models/timer';
 
 import { createTimer, deleteTimer, editTimer, fetchTaskTimerList, fetchTimerRealTime, startTimer, stopTimer } from './actions';
-import { IErrors, IState } from './types';
+import { IState } from './types';
 
 const initialState = {
 	isTaskTimerActive: false,
@@ -77,7 +78,7 @@ const timerReducer = createSlice({
 			state.loadingTimerRealTimer = true;
 			state.errorLoadingTimerRealTimer = null;
 		},
-		[fetchTimerRealTime.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[fetchTimerRealTime.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingTimerRealTimer = false;
 			state.errorLoadingTimerRealTimer = action.payload;
 		},
@@ -93,7 +94,7 @@ const timerReducer = createSlice({
 			state.loadingStartTimer = true;
 			state.errorLoadingStartTimer = null;
 		},
-		[startTimer.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[startTimer.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingStartTimer = false;
 			state.errorLoadingStartTimer = action.payload;
 		},
@@ -110,7 +111,7 @@ const timerReducer = createSlice({
 			state.loadingStopTimer = true;
 			state.errorLoadingStopTimer = null;
 		},
-		[stopTimer.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[stopTimer.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingStopTimer = false;
 			state.errorLoadingStopTimer = action.payload;
 		},
@@ -124,7 +125,7 @@ const timerReducer = createSlice({
 			state.loadingTaskTimerList = true;
 			state.errorLoadingTaskTimerList = null;
 		},
-		[fetchTaskTimerList.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[fetchTaskTimerList.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingTaskTimerList = false;
 			state.errorLoadingTaskTimerList = action.payload;
 		},
@@ -140,7 +141,7 @@ const timerReducer = createSlice({
 			state.loadingCreateTimer = true;
 			state.errorLoadingCreateTimer = null;
 		},
-		[createTimer.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[createTimer.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingCreateTimer = false;
 			state.errorLoadingCreateTimer = action.payload;
 		},
@@ -153,7 +154,7 @@ const timerReducer = createSlice({
 			state.loadingEditTimer = true;
 			state.errorLoadingEditTimer = null;
 		},
-		[editTimer.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[editTimer.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingEditTimer = false;
 			state.errorLoadingEditTimer = action.payload;
 		},
@@ -166,7 +167,7 @@ const timerReducer = createSlice({
 			state.loadingDeleteTimer = true;
 			state.errorLoadingDeleteTimer = null;
 		},
-		[deleteTimer.rejected.type]: (state, action: PayloadAction<IErrors>) => {
+		[deleteTimer.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingDeleteTimer = false;
 			state.errorLoadingDeleteTimer = action.payload;
 		},
