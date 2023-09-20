@@ -19,6 +19,7 @@ export interface IState {
 	loadingPaymentIntent: boolean;
 	loadingSubscriptionRenewal: boolean;
 	loadingActivateDemo: boolean;
+	loadingDowngrade: boolean;
 	errorLoadingInvoices: IErrorsAxiosResponse;
 	errorLoadingPdfLink: IErrorsAxiosResponse;
 	errorLoadingRatesList: IErrorsAxiosResponse;
@@ -28,4 +29,5 @@ export interface IState {
 	errorLoadingPaymentIntent: IErrorsAxiosResponse;
 	errorLoadingSubscriptionRenewal: IErrorsAxiosResponse;
 	errorActivateDemo: IErrorsAxiosResponse;
+	errorLoadingDowngrade: IErrorsAxiosResponse;
 }

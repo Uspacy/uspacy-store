@@ -35,6 +35,7 @@ export interface IState {
 	discountSeason: IDiscounts;
 	typeOfPayer: 'individual' | 'legalEntityIndividualEntrepreneur';
 	paymentMethod: 'card' | 'bank_transfer';
+	tariffActionType: 'extendTheTariff' | 'changeTheTariff';
 	cardToken: string;
 	vatTaxStatus: string;
 	automaticSubscriptionRenewal: boolean;

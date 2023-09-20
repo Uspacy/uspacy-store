@@ -51,6 +51,7 @@ const initialState = {
 	},
 	typeOfPayer: 'individual',
 	paymentMethod: 'card',
+	tariffActionType: 'changeTheTariff',
 	cardToken: '',
 	vatTaxStatus: '',
 	automaticSubscriptionRenewal: false,
@@ -156,6 +157,9 @@ const paymentsReducer = createSlice({
 		},
 		setPaymentMethod: (state, action: PayloadAction<'card' | 'bank_transfer'>) => {
 			state.paymentMethod = action.payload;
+		},
+		setTariffActionType: (state, action: PayloadAction<'extendTheTariff' | 'changeTheTariff'>) => {
+			state.tariffActionType = action.payload;
 		},
 		setCardToken: (state, action: PayloadAction<string>) => {
 			state.cardToken = action.payload;

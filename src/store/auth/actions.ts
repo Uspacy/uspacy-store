@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
+import { IDowngradePayload } from '@uspacy/sdk/lib/services/AuthService/dto/downgrade.dto';
 import { IIntentPayload, ISubscriptionsIndividual, ISubscriptionsLegal } from '@uspacy/sdk/lib/services/AuthService/dto/subscription.dto';
 
 export const fetchInvoices = createAsyncThunk('auth/fetchInvoices', async ({ limit }: { limit: number }, { rejectWithValue }) => {
@@ -41,7 +42,7 @@ export const fetchSubscription = createAsyncThunk('auth/fetchSubscription', asyn
 
 export const fetchCoupon = createAsyncThunk('auth/fetchCoupon', async (couponCode: string, { rejectWithValue }) => {
 	try {
-		const res = await uspacySdk.authService.getCoupon(couponCode);
+		const res = await uspacySdk.authService.getCoupon(encodeURIComponent(couponCode));
 		return res.data;
 	} catch (e) {
 		return rejectWithValue(e);
@@ -92,6 +93,15 @@ export const disableSubscriptionsRenewal = createAsyncThunk('auth/disableSubscri
 		await uspacySdk.authService.disableSubscriptionsRenewal(auto_debit);
 
 		return auto_debit;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const downgrade = createAsyncThunk('auth/downgrade', async (data: IDowngradePayload, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.authService.downgrade(data);
+		return res.data;
 	} catch (e) {
 		return rejectWithValue(e);
 	}

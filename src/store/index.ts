@@ -9,10 +9,12 @@ import groups from './groups';
 import notifications from './notifications';
 import payments from './payments';
 import profile from './profile';
+import roles from './roles';
 import tasks from './tasks';
 import tasksStages from './tasksStages';
 import tasksTimer from './tasksTimer';
 import users from './users';
+import webhooks from './webhooks';
 
 const rootReducer = combineReducers({
 	auth,
@@ -24,10 +26,12 @@ const rootReducer = combineReducers({
 	notifications,
 	payments,
 	profile,
+	roles,
 	tasks,
 	tasksStages,
 	tasksTimer,
 	users,
+	webhooks,
 });
 
 export const setupStore = () => {

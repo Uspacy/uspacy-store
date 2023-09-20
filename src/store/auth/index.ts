@@ -6,6 +6,7 @@ import {
 	activateDemo,
 	createPaymentIntent,
 	disableSubscriptionsRenewal,
+	downgrade,
 	fetchCoupon,
 	fetchInvoices,
 	fetchInvoicesPdf,
@@ -33,6 +34,7 @@ const initialState = {
 	loadingPaymentIntent: false,
 	loadingSubscriptionRenewal: false,
 	loadingActivateDemo: false,
+	loadingDowngrade: false,
 	errorLoadingInvoices: null,
 	errorLoadingPdfLink: null,
 	errorLoadingRatesList: null,
@@ -42,9 +44,9 @@ const initialState = {
 	errorLoadingPaymentIntent: null,
 	errorLoadingSubscriptionRenewal: null,
 	errorActivateDemo: null,
+	errorLoadingDowngrade: null,
 } as IState;
 
-// TODO: WHEN I WILL BE FINISH THIS WORK, I'LL TRANSFER THIS REDUCERS TO CORE
 const authReducer = createSlice({
 	name: 'authReducer',
 	initialState,
@@ -218,6 +220,18 @@ const authReducer = createSlice({
 		[disableSubscriptionsRenewal.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingSubscriptionRenewal = false;
 			state.errorLoadingSubscriptionRenewal = action.payload;
+		},
+		[downgrade.fulfilled.type]: (state) => {
+			state.loadingDowngrade = false;
+			state.errorLoadingDowngrade = null;
+		},
+		[downgrade.pending.type]: (state) => {
+			state.loadingDowngrade = true;
+			state.errorLoadingDowngrade = null;
+		},
+		[downgrade.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDowngrade = false;
+			state.errorLoadingDowngrade = action.payload;
 		},
 	},
 });
