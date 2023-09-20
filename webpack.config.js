@@ -39,7 +39,7 @@ module.exports = (_, argv) => {
 		devServer: {
 			static: path.join(__dirname, 'lib'),
 			compress: true,
-			port: 4000,
+			port: 4001,
 			devMiddleware: {
 				writeToDisk: true,
 			},

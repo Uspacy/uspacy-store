@@ -497,10 +497,10 @@
     "@typescript-eslint/types" "6.3.0"
     eslint-visitor-keys "^3.4.1"
 
-"@uspacy/sdk@^0.0.1":
-  version "0.0.1"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.1/551e7ca78637ccaa21280abbde49923b5b0e1138#551e7ca78637ccaa21280abbde49923b5b0e1138"
-  integrity sha512-ZcJQBgSgJYOcGi3IQq5q6qleu//FlxLyRqg+RDwHKgSYn90pgaQeE5S2mOzXpLmfSVz3fPsy7tueila2aAiFwQ==
+"@uspacy/sdk@^0.0.3":
+  version "0.0.3"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.3/bb0a1373045f8c17fc9f167db8f0bfb6815d6326#bb0a1373045f8c17fc9f167db8f0bfb6815d6326"
+  integrity sha512-XSRrZl7Jca1v4fVEiiv2z7u7Sf3jekJ2g9WUoCNgMAB0conHhg53xqeD4prmm6ieDa525TEbHffjAj7iTypRwA==
   dependencies:
     axios "^1.4.0"
     js-cookie "^3.0.5"
@@ -868,9 +868,9 @@ available-typed-arrays@^1.0.5:
   integrity sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==
 
 axios@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.4.0.tgz#38a7bf1224cd308de271146038b551d725f0be1f"
-  integrity sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.5.0.tgz#f02e4af823e2e46a9768cfc74691fdd0517ea267"
+  integrity sha512-D4DdjDo5CY50Qms0qGQTTw6Q44jl7zRwY7bthds06pUGfChBCTcQs+N743eFWGEd6pRTMd6A+I87aWyFV5wiZQ==
   dependencies:
     follow-redirects "^1.15.0"
     form-data "^4.0.0"
@@ -2649,6 +2649,11 @@ lodash.merge@^4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
+
+lodash@^4.17.21:
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 log-update@^4.0.0:
   version "4.0.0"
