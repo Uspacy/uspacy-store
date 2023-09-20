@@ -2,56 +2,16 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { ITaskValues } from '@uspacy/sdk/lib/services/TasksService/dto/create-update-task.dto';
 import { IMassDeletion } from '@uspacy/sdk/lib/services/TasksService/dto/mass-deletion.dto';
-import isArray from 'lodash/isArray';
 
 export const fetchTasksWithFilters = createAsyncThunk(
 	'tasks/fetchTasksTest',
-	async (
-		data: {
-			params: {
-				status: string[];
-				priority: string[];
-				setter_id: number[];
-				responsible_id: number[];
-				accomplices: number[];
-				auditors: number[];
-				deadline: number[][];
-				search: string;
-				groupId?: number;
-				list?: number;
-				page: number;
-				columnId?: number;
-			};
-			signal: AbortSignal;
-		},
-		thunkAPI,
-	) => {
-		const setterIdArray = isArray(data.params.setter_id) ? data.params.setter_id : [data.params.setter_id];
-		const responsibleIdsArray = isArray(data.params.responsible_id) ? data.params.responsible_id : [data.params.responsible_id];
-		// @ts-ignore
-		const withoutResponsible = responsibleIdsArray.includes(-1);
-		// @ts-ignore
-		const responsibleIds = responsibleIdsArray.filter((el) => el !== -1);
-		const params = {
-			stages: data.params.columnId,
-			list: data.params.list,
-			page: data.params.page,
-			status: data.params.status,
-			priority: data.params.priority,
-			accomplices: data.params.accomplices,
-			auditors: data.params.auditors,
-			setter_id: setterIdArray,
-			responsible_id: responsibleIds,
-			deadline: data.params.deadline,
-			q: data.params.search,
-			group_id: data.params.groupId,
-		};
-
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	async ({ params, withoutResponsible, signal }: { params: any; withoutResponsible: boolean; signal: AbortSignal }, thunkAPI) => {
 		try {
-			const res = await uspacySdk.tasksService.getTasksWithFilters(params, withoutResponsible, data.signal);
+			const res = await uspacySdk.tasksService.getTasksWithFilters(params, withoutResponsible, signal);
 			return res.data;
 		} catch (e) {
-			if (data.signal.aborted) {
+			if (signal.aborted) {
 				return {
 					aborted: true,
 				};
@@ -64,52 +24,13 @@ export const fetchTasksWithFilters = createAsyncThunk(
 
 export const fetchRegularTasksWithFilters = createAsyncThunk(
 	'tasks/fetchRegularTasksWithFilters',
-	async (
-		data: {
-			params: {
-				status: string[];
-				priority: string[];
-				setter_id: number[];
-				responsible_id: number[];
-				accomplices: number[];
-				auditors: number[];
-				deadline: number[][];
-				search: string;
-				groupId?: number;
-				list?: number;
-				page: number;
-				columnId?: number;
-			};
-			signal: AbortSignal;
-		},
-		thunkAPI,
-	) => {
-		const setterIdArray = isArray(data.params.setter_id) ? data.params.setter_id : [data.params.setter_id];
-		const responsibleIdsArray = isArray(data.params.responsible_id) ? data.params.responsible_id : [data.params.responsible_id];
-		// @ts-ignore
-		const withoutResponsible = responsibleIdsArray.includes(-1);
-		// @ts-ignore
-		const responsibleIds = responsibleIdsArray.filter((el) => el !== -1);
-		const params = {
-			stages: data.params.columnId,
-			list: data.params.list,
-			page: data.params.page,
-			status: data.params.status,
-			priority: data.params.priority,
-			accomplices: data.params.accomplices,
-			auditors: data.params.auditors,
-			setter_id: setterIdArray,
-			responsible_id: responsibleIds,
-			deadline: data.params.deadline,
-			q: data.params.search,
-			group_id: data.params.groupId,
-			template: 1,
-		};
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	async ({ params, withoutResponsible, signal }: { params: any; withoutResponsible: boolean; signal: AbortSignal }, thunkAPI) => {
 		try {
-			const res = await uspacySdk.tasksService.getRegularTasksWithFilters(params, withoutResponsible, data.signal);
+			const res = await uspacySdk.tasksService.getRegularTasksWithFilters(params, withoutResponsible, signal);
 			return res.data;
 		} catch (e) {
-			if (data.signal.aborted) {
+			if (signal.aborted) {
 				return {
 					aborted: true,
 				};
