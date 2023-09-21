@@ -210,6 +210,7 @@ export const {
 	setDiscounts,
 	setTypeOfPayer,
 	setPaymentMethod,
+	setTariffActionType,
 	setCardToken,
 	setVatTaxStatus,
 	setAutomaticSubscriptionRenewal,
