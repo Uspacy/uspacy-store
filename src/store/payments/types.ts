@@ -10,20 +10,21 @@ import {
 	IPrice,
 } from '@uspacy/sdk/lib/models/payments';
 
+export interface ICheckCardFill {
+	error: boolean;
+	complete: boolean;
+}
+
+export interface ICardToken {
+	gwToken: string;
+	cardToken: string;
+}
+
 export interface IState {
 	cardCheck: ICardCheck;
-	checkFillCardNumber: {
-		error: boolean;
-		complete: boolean;
-	};
-	checkFillCardExpiry: {
-		error: boolean;
-		complete: boolean;
-	};
-	checkFillCardCvv: {
-		error: boolean;
-		complete: boolean;
-	};
+	checkFillCardNumber: ICheckCardFill;
+	checkFillCardExpiry: ICheckCardFill;
+	checkFillCardCvv: ICheckCardFill;
 	isPaymentButtonPress: boolean;
 	isPaymentProcess: boolean;
 	price: IPrice;
@@ -36,7 +37,7 @@ export interface IState {
 	typeOfPayer: 'individual' | 'legalEntityIndividualEntrepreneur';
 	paymentMethod: 'card' | 'bank_transfer';
 	tariffActionType: 'extendTheTariff' | 'changeTheTariff';
-	cardToken: string;
+	cardTokens: ICardToken;
 	vatTaxStatus: string;
 	automaticSubscriptionRenewal: boolean;
 	individualPersonForm: IIndividualPersonForm;

@@ -2,7 +2,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IDowngradePayload } from '@uspacy/sdk/lib/services/AuthService/dto/downgrade.dto';
-import { IIntentPayload, ISubscriptionsIndividual, ISubscriptionsLegal } from '@uspacy/sdk/lib/services/AuthService/dto/subscription.dto';
+import {
+	ICreateUsingPaymentIntent,
+	IIntentPayload,
+	ISubscriptionsIndividual,
+	ISubscriptionsLegal,
+} from '@uspacy/sdk/lib/services/AuthService/dto/subscription.dto';
 
 export const fetchInvoices = createAsyncThunk('auth/fetchInvoices', async ({ limit }: { limit: number }, { rejectWithValue }) => {
 	try {
@@ -87,6 +92,18 @@ export const createPaymentIntent = createAsyncThunk('auth/createPaymentIntent', 
 		return rejectWithValue(e);
 	}
 });
+
+export const createUsingPaymentIntent = createAsyncThunk(
+	'auth/createUsingPaymentIntent',
+	async (data: ICreateUsingPaymentIntent, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.authService.createUsingPaymentIntent(data);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
 
 export const disableSubscriptionsRenewal = createAsyncThunk('auth/disableSubscriptionsRenewal', async (auto_debit: boolean, { rejectWithValue }) => {
 	try {
