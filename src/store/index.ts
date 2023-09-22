@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
 import auth from './auth';
 import comments from './comments';
+import crmEntities from './crmEntities';
 import dealsFunnel from './dealsFunnel';
 import departments from './departments';
 import files from './files';
@@ -19,6 +20,7 @@ import webhooks from './webhooks';
 const rootReducer = combineReducers({
 	auth,
 	comments,
+	crmEntities,
 	dealsFunnel,
 	departments,
 	files,
