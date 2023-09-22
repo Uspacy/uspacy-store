@@ -11,7 +11,7 @@ import {
 	IPrice,
 } from '@uspacy/sdk/lib/models/payments';
 
-import { IState } from './types';
+import { ICardToken, ICheckCardFill, IState } from './types';
 
 const initialState = {
 	cardCheck: {
@@ -117,13 +117,13 @@ const paymentsReducer = createSlice({
 		setCardCheck: (state, action: PayloadAction<ICardCheck>) => {
 			state.cardCheck = action.payload;
 		},
-		setCheckFillCardNumber: (state, action: PayloadAction<{ error: boolean; complete: boolean }>) => {
+		setCheckFillCardNumber: (state, action: PayloadAction<ICheckCardFill>) => {
 			state.checkFillCardNumber = action.payload;
 		},
-		setCheckFillCardExpiry: (state, action: PayloadAction<{ error: boolean; complete: boolean }>) => {
+		setCheckFillCardExpiry: (state, action: PayloadAction<ICheckCardFill>) => {
 			state.checkFillCardExpiry = action.payload;
 		},
-		setCheckFillCardCvv: (state, action: PayloadAction<{ error: boolean; complete: boolean }>) => {
+		setCheckFillCardCvv: (state, action: PayloadAction<ICheckCardFill>) => {
 			state.checkFillCardCvv = action.payload;
 		},
 		setIsPaymentButtonPress: (state, action: PayloadAction<boolean>) => {
@@ -164,7 +164,7 @@ const paymentsReducer = createSlice({
 		setTariffActionType: (state, action: PayloadAction<'extendTheTariff' | 'changeTheTariff'>) => {
 			state.tariffActionType = action.payload;
 		},
-		setCardToken: (state, action: PayloadAction<{ gwToken: string; cardToken: string }>) => {
+		setCardToken: (state, action: PayloadAction<ICardToken>) => {
 			state.cardTokens = action.payload;
 		},
 		setVatTaxStatus: (state, action: PayloadAction<string>) => {
