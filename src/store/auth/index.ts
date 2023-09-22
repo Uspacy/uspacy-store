@@ -5,6 +5,7 @@ import { ICoupon, IIntent, IInvoiceData, IInvoices, IRatesList, ISubscription } 
 import {
 	activateDemo,
 	createPaymentIntent,
+	createUsingPaymentIntent,
 	disableSubscriptionsRenewal,
 	downgrade,
 	fetchCoupon,
@@ -207,6 +208,18 @@ const authReducer = createSlice({
 		[createPaymentIntent.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingPaymentIntent = false;
 			state.errorLoadingPaymentIntent = action.payload;
+		},
+		[createUsingPaymentIntent.fulfilled.type]: (state) => {
+			state.loadingUsingPaymentIntent = false;
+			state.errorLoadingUsingPaymentIntent = null;
+		},
+		[createUsingPaymentIntent.pending.type]: (state) => {
+			state.loadingUsingPaymentIntent = true;
+			state.errorLoadingUsingPaymentIntent = null;
+		},
+		[createUsingPaymentIntent.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUsingPaymentIntent = false;
+			state.errorLoadingUsingPaymentIntent = action.payload;
 		},
 		[disableSubscriptionsRenewal.fulfilled.type]: (state, action: PayloadAction<boolean>) => {
 			state.loadingSubscriptionRenewal = false;

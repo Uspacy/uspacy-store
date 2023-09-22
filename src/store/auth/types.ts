@@ -17,6 +17,7 @@ export interface IState {
 	loadingSubscriptionItem: boolean;
 	loadingCoupon: boolean;
 	loadingPaymentIntent: boolean;
+	loadingUsingPaymentIntent: boolean;
 	loadingSubscriptionRenewal: boolean;
 	loadingActivateDemo: boolean;
 	loadingDowngrade: boolean;
@@ -30,4 +31,5 @@ export interface IState {
 	errorLoadingSubscriptionRenewal: IErrorsAxiosResponse;
 	errorActivateDemo: IErrorsAxiosResponse;
 	errorLoadingDowngrade: IErrorsAxiosResponse;
+	errorLoadingUsingPaymentIntent: IErrorsAxiosResponse;
 }
