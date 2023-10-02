@@ -1,12 +1,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
+import { ITasksParams } from '@uspacy/sdk/lib/models/tasks';
 import { ITaskValues } from '@uspacy/sdk/lib/services/TasksService/dto/create-update-task.dto';
-import { IMassDeletion } from '@uspacy/sdk/lib/services/TasksService/dto/mass-deletion.dto';
+import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 
 export const fetchTasksWithFilters = createAsyncThunk(
 	'tasks/fetchTasksTest',
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	async ({ params, withoutResponsible, signal }: { params: any; withoutResponsible: boolean; signal: AbortSignal }, thunkAPI) => {
+	async ({ params, withoutResponsible, signal }: { params: ITasksParams; withoutResponsible: boolean; signal: AbortSignal }, thunkAPI) => {
 		try {
 			const res = await uspacySdk.tasksService.getTasksWithFilters(params, withoutResponsible, signal);
 			return res.data;
@@ -24,8 +24,7 @@ export const fetchTasksWithFilters = createAsyncThunk(
 
 export const fetchRegularTasksWithFilters = createAsyncThunk(
 	'tasks/fetchRegularTasksWithFilters',
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	async ({ params, withoutResponsible, signal }: { params: any; withoutResponsible: boolean; signal: AbortSignal }, thunkAPI) => {
+	async ({ params, withoutResponsible, signal }: { params: ITasksParams; withoutResponsible: boolean; signal: AbortSignal }, thunkAPI) => {
 		try {
 			const res = await uspacySdk.tasksService.getRegularTasksWithFilters(params, withoutResponsible, signal);
 			return res.data;
@@ -118,7 +117,7 @@ export const deleteTask = createAsyncThunk('tasks/deleteTask', async (id: string
 
 export const massDeletion = createAsyncThunk(
 	'tasks/massDeletion',
-	async ({ taskIds, exceptIds, all, params, withoutResponsible }: IMassDeletion, { rejectWithValue }) => {
+	async ({ taskIds, exceptIds, all, params, withoutResponsible }: IMassActions, { rejectWithValue }) => {
 		try {
 			await uspacySdk.tasksService.massDeletionTasks(taskIds, exceptIds, all, params, withoutResponsible);
 
@@ -173,6 +172,19 @@ export const completeTask = createAsyncThunk('tasks/completeTask', async (id: st
 		return rejectWithValue(e);
 	}
 });
+
+export const massCompletion = createAsyncThunk(
+	'tasks/massCompletion',
+	async ({ taskIds, exceptIds, all, params, withoutResponsible, profile }: IMassActions, { rejectWithValue }) => {
+		try {
+			await uspacySdk.tasksService.massCompletionTasks(taskIds, exceptIds, all, params, withoutResponsible);
+
+			return { taskIds, exceptIds, all, profile };
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
 
 export const restartTask = createAsyncThunk('tasks/restartTask', async (id: string, { rejectWithValue }) => {
 	try {
