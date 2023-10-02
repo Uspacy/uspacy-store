@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFilterRegularTasks, IFilterTasks, ITask, ITasks } from '@uspacy/sdk/lib/models/tasks';
-import { IMassDeletion } from '@uspacy/sdk/lib/services/TasksService/dto/mass-deletion.dto';
+import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 
 import {
 	addTask,
@@ -15,6 +15,7 @@ import {
 	fetchTask,
 	fetchTasksWithFilters,
 	fetchTemplate,
+	massCompletion,
 	massDeletion,
 	pauseTask,
 	restartTask,
@@ -39,6 +40,7 @@ const initialState = {
 	parentTask: {},
 	addedTask: {},
 	changeTask: {},
+	changeTasks: [],
 	deleteTaskId: 0,
 	deleteTaskIds: [],
 	deleteAllFromKanban: false,
@@ -437,7 +439,7 @@ const tasksReducer = createSlice({
 			state.loadingDeletingTask = false;
 			state.errorLoadingDeletingTask = action.payload;
 		},
-		[massDeletion.fulfilled.type]: (state, action: PayloadAction<IMassDeletion>) => {
+		[massDeletion.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
 			state.loadingDeletingTask = false;
 			state.errorLoadingDeletingTask = null;
 			if (state.isKanban && !state.isRegularSection) {
@@ -562,6 +564,37 @@ const tasksReducer = createSlice({
 		[completeTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingStatusesTask = false;
 			state.errorLoadingStatusesTask = action.payload;
+		},
+		[massCompletion.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
+			state.loadingEditingTask = false;
+			state.errorLoadingEditingTask = null;
+			state.tasks.data = state.tasks.data.map((task) => {
+				const responsibleUser = task?.responsibleId === String(action.payload.profile?.id);
+				const setterTaskUser = task?.setterId === String(action.payload.profile.id);
+				const accompliceUser = task?.accomplicesIds?.includes(String(action.payload.profile?.id));
+
+				const checkPermissionsForFinishTask = responsibleUser || setterTaskUser || accompliceUser;
+
+				if (action.payload.taskIds.includes(task?.id) && checkPermissionsForFinishTask) {
+					task.status = task?.acceptResult && !setterTaskUser ? 'inControl' : 'ready';
+
+					if (state.isKanban) {
+						state.changeTasks.push(task);
+					}
+
+					return task;
+				}
+
+				return task;
+			});
+		},
+		[massCompletion.pending.type]: (state) => {
+			state.loadingEditingTask = true;
+			state.errorLoadingEditingTask = null;
+		},
+		[massCompletion.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingEditingTask = false;
+			state.errorLoadingEditingTask = action.payload;
 		},
 		[restartTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingStatusesTask = false;

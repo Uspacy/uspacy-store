@@ -15,6 +15,7 @@ export interface IState {
 	template: ITask;
 	addedTask: ITask;
 	changeTask: ITask;
+	changeTasks: ITask[];
 	deleteTaskId: number;
 	deleteTaskIds: string[];
 	deleteAllFromKanban: boolean;
