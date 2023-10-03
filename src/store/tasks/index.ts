@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
+import { IFields } from '@uspacy/sdk/lib/models/field';
 import { IFilterRegularTasks, IFilterTasks, ITask, ITasks } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 
@@ -14,6 +15,7 @@ import {
 	fetchRegularTasksWithFilters,
 	fetchSubtasks,
 	fetchTask,
+	fetchTaskFields,
 	fetchTasksWithFilters,
 	fetchTemplate,
 	massCompletion,
@@ -73,6 +75,7 @@ const initialState = {
 		openCalendar: false,
 		search: '',
 	},
+	taskFields: {},
 	loadingTasks: true,
 	loadingRegularTasks: true,
 	loadingSubtasks: true,
@@ -82,6 +85,7 @@ const initialState = {
 	loadingEditingTask: false,
 	loadingDeletingTask: false,
 	loadingStatusesTask: false,
+	loadingTaskFields: false,
 	errorLoadingTasks: null,
 	errorLoadingSchedulerTasks: null,
 	errorLoadingSubtasks: null,
@@ -91,6 +95,7 @@ const initialState = {
 	errorLoadingEditingTask: null,
 	errorLoadingDeletingTask: null,
 	errorLoadingStatusesTask: null,
+	errorLoadingTaskFields: null,
 	meta: {
 		currentPage: 0,
 		perPage: 20,
@@ -677,6 +682,19 @@ const tasksReducer = createSlice({
 		[restartTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingStatusesTask = false;
 			state.errorLoadingStatusesTask = action.payload;
+		},
+		[fetchTaskFields.fulfilled.type]: (state, action: PayloadAction<IFields>) => {
+			state.loadingTaskFields = false;
+			state.errorLoadingTaskFields = null;
+			state.taskFields = action.payload;
+		},
+		[fetchTaskFields.pending.type]: (state) => {
+			state.loadingTaskFields = true;
+			state.errorLoadingTaskFields = null;
+		},
+		[fetchTaskFields.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingTaskFields = false;
+			state.errorLoadingTaskFields = action.payload;
 		},
 	},
 });

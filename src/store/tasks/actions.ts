@@ -207,3 +207,12 @@ export const restartTask = createAsyncThunk('tasks/restartTask', async (id: stri
 		return rejectWithValue(e);
 	}
 });
+
+export const fetchTaskFields = createAsyncThunk('tasks/fetchTaskFields', async (_, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.tasksService.getTasksField();
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});

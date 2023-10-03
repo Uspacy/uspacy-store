@@ -1,4 +1,5 @@
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
+import { IFields } from '@uspacy/sdk/lib/models/field';
 import { IFilterRegularTasks, IFilterTasks, IMeta, ITask, ITasks } from '@uspacy/sdk/lib/models/tasks';
 
 export interface ITaskCardActions {
@@ -21,6 +22,7 @@ export interface IState {
 	deleteAllFromKanban: boolean;
 	filters: IFilterTasks;
 	regularFilter: IFilterRegularTasks;
+	taskFields: IFields;
 	tasksCardPermissions: ITaskCardActions;
 	isEditMode: boolean;
 	loadingTasks: boolean;
@@ -33,6 +35,7 @@ export interface IState {
 	loadingEditingTask: boolean;
 	loadingDeletingTask: boolean;
 	loadingStatusesTask: boolean;
+	loadingTaskFields: boolean;
 	errorLoadingTasks: IErrorsAxiosResponse;
 	errorLoadingSchedulerTasks: IErrorsAxiosResponse;
 	errorLoadingSubtasks: IErrorsAxiosResponse;
@@ -43,6 +46,7 @@ export interface IState {
 	errorLoadingEditingTask: IErrorsAxiosResponse;
 	errorLoadingDeletingTask: IErrorsAxiosResponse;
 	errorLoadingStatusesTask: IErrorsAxiosResponse;
+	errorLoadingTaskFields: IErrorsAxiosResponse;
 	meta: IMeta;
 	regularTasksMeta: IMeta;
 	popupLinks: ITask[];
