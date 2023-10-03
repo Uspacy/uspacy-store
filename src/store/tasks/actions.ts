@@ -106,6 +106,19 @@ export const editSubTask = createAsyncThunk('tasks/editSubTask', async ({ id, da
 	}
 });
 
+export const massEditing = createAsyncThunk(
+	'tasks/massEditing',
+	async ({ taskIds, exceptIds, all, params, withoutResponsible, payload, settings }: IMassActions, { rejectWithValue }) => {
+		try {
+			await uspacySdk.tasksService.massEditingTasks(taskIds, exceptIds, all, params, withoutResponsible, payload, settings);
+
+			return { taskIds, exceptIds, all, payload, settings };
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
 export const deleteTask = createAsyncThunk('tasks/deleteTask', async (id: string, { rejectWithValue }) => {
 	try {
 		await uspacySdk.tasksService.deleteTask(id);
