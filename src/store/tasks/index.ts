@@ -3,6 +3,7 @@ import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFilterRegularTasks, IFilterTasks, ITask, ITasks } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 
+import { fillTheString } from '../../helpers/stringsHelper';
 import {
 	addTask,
 	completeTask,
@@ -17,6 +18,7 @@ import {
 	fetchTemplate,
 	massCompletion,
 	massDeletion,
+	massEditing,
 	pauseTask,
 	restartTask,
 	startTask,
@@ -413,6 +415,60 @@ const tasksReducer = createSlice({
 			state.errorLoadingEditingTask = null;
 		},
 		[editSubTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingEditingTask = false;
+			state.errorLoadingEditingTask = action.payload;
+		},
+		[massEditing.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
+			state.loadingEditingTask = false;
+			state.errorLoadingEditingTask = null;
+			if (!state.isRegularSection) {
+				state.tasks.data = state.tasks.data.map((task) => {
+					if (action.payload.taskIds.includes(task?.id)) {
+						const copiedTask = { ...task };
+
+						for (const key in action.payload.payload) {
+							if (action.payload.payload.hasOwnProperty(key) && action.payload.settings[key]) {
+								copiedTask[key] = fillTheString(copiedTask[key], action.payload.payload[key], action.payload.settings[key].position);
+							} else {
+								copiedTask[key] = action.payload.payload[key];
+							}
+						}
+
+						if (state.isKanban) {
+							state.changeTasks.push(copiedTask);
+						}
+
+						return copiedTask;
+					}
+
+					return task;
+				});
+			}
+			if (state.isRegularSection) {
+				state.regularTasks.data = state.regularTasks.data.map((task) => {
+					if (action.payload.taskIds.includes(task?.id)) {
+						const copiedTask = { ...task };
+
+						for (const key in action.payload.payload) {
+							if (action.payload.payload.hasOwnProperty(key) && action.payload.settings[key]) {
+								copiedTask[key] = fillTheString(copiedTask[key], action.payload.payload[key], action.payload.settings[key].position);
+							} else {
+								copiedTask[key] = action.payload.payload[key];
+							}
+						}
+
+						return copiedTask;
+					}
+
+					return task;
+				});
+			}
+		},
+		[massEditing.pending.type]: (state) => {
+			state.loadingEditingTask = true;
+			state.errorLoadingEditingTask = null;
+		},
+		[massEditing.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingEditingTask = false;
 			state.errorLoadingEditingTask = action.payload;
 		},
