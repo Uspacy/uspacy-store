@@ -426,9 +426,16 @@ const tasksReducer = createSlice({
 		[massEditing.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
 			state.loadingEditingTask = false;
 			state.errorLoadingEditingTask = null;
+
+			const admin = action.payload.admin;
+
 			if (!state.isRegularSection) {
 				state.tasks.data = state.tasks.data.map((task) => {
-					if (action.payload.taskIds.includes(task?.id)) {
+					const setterTaskUser = task?.setterId === String(action.payload.profile.id);
+
+					const checkPermissionsForEdit = admin || setterTaskUser;
+
+					if (action.payload.taskIds.includes(task?.id) && checkPermissionsForEdit) {
 						const copiedTask = { ...task };
 
 						for (const key in action.payload.payload) {
@@ -451,7 +458,11 @@ const tasksReducer = createSlice({
 			}
 			if (state.isRegularSection) {
 				state.regularTasks.data = state.regularTasks.data.map((task) => {
-					if (action.payload.taskIds.includes(task?.id)) {
+					const setterTaskUser = task?.setterId === String(action.payload.profile.id);
+
+					const checkPermissionsForEdit = admin || setterTaskUser;
+
+					if (action.payload.taskIds.includes(task?.id) && checkPermissionsForEdit) {
 						const copiedTask = { ...task };
 
 						for (const key in action.payload.payload) {
@@ -503,40 +514,51 @@ const tasksReducer = createSlice({
 		[massDeletion.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
 			state.loadingDeletingTask = false;
 			state.errorLoadingDeletingTask = null;
-			if (state.isKanban && !state.isRegularSection) {
-				state.deleteTaskIds = action?.payload.taskIds.map((id) => id);
 
-				if (action.payload.all) {
-					state.deleteAllFromKanban = true;
-				}
-			}
+			const admin = action.payload.admin;
 
 			if (state.isTable && !state.isRegularSection) {
 				state.tasks.data = state.tasks.data.filter((task) => {
-					return !action.payload.taskIds.includes(task?.id);
-				});
+					const setterTaskUser = task?.setterId === String(action.payload.profile.id);
 
-				if (action.payload.all) {
-					state.meta.total = 0;
-				} else if (action.payload.all && action.payload.exceptIds.length) {
-					state.meta.total = action.payload.exceptIds.length;
-				} else {
-					state.meta.total = state.meta.total - action.payload.taskIds.length;
-				}
+					const checkPermissionsForEdit = admin || setterTaskUser;
+
+					if (state.isKanban && checkPermissionsForEdit) {
+						state.deleteTaskIds = action?.payload.taskIds.map((id) => id);
+
+						if (action.payload.all) {
+							state.deleteAllFromKanban = true;
+						}
+					}
+
+					if (action.payload.all && checkPermissionsForEdit) {
+						state.meta.total = 0;
+					} else if (action.payload.all && checkPermissionsForEdit && action.payload.exceptIds.length) {
+						state.meta.total = action.payload.exceptIds.length;
+					} else {
+						state.meta.total = state.meta.total - action.payload.taskIds.length;
+					}
+
+					return checkPermissionsForEdit && !action.payload.taskIds.includes(task?.id);
+				});
 			}
 
 			if (state.isRegularSection) {
 				state.regularTasks.data = state.regularTasks.data.filter((task) => {
-					return !action.payload.taskIds.includes(task?.id);
-				});
+					const setterTaskUser = task?.setterId === String(action.payload.profile.id);
 
-				if (action.payload.all) {
-					state.regularTasksMeta.total = 0;
-				} else if (action.payload.all && action.payload.exceptIds.length) {
-					state.regularTasksMeta.total = action.payload.exceptIds.length;
-				} else {
-					state.regularTasksMeta.total = state.regularTasksMeta.total - action.payload.taskIds.length;
-				}
+					const checkPermissionsForEdit = admin || setterTaskUser;
+
+					if (action.payload.all && checkPermissionsForEdit) {
+						state.regularTasksMeta.total = 0;
+					} else if (action.payload.all && checkPermissionsForEdit && action.payload.exceptIds.length) {
+						state.regularTasksMeta.total = action.payload.exceptIds.length;
+					} else {
+						state.regularTasksMeta.total = state.regularTasksMeta.total - action.payload.taskIds.length;
+					}
+
+					return checkPermissionsForEdit && !action.payload.taskIds.includes(task?.id);
+				});
 			}
 		},
 		[massDeletion.pending.type]: (state) => {
