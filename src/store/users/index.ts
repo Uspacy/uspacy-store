@@ -50,7 +50,7 @@ export const usersSlice = createSlice({
 	extraReducers: {
 		[fetchUsers.fulfilled.type]: (state, action: PayloadAction<IUser[]>) => {
 			state.loading = false;
-			state.data = action.payload;
+			state.data = action.payload.filter((user) => !!user.authUserId);
 		},
 		[fetchUsers.pending.type]: (state) => {
 			state.loading = true;
