@@ -8,12 +8,6 @@ import { IState } from './types';
 const initialState = {
 	entities: {
 		data: [],
-		meta: {
-			total: 0,
-			per_page: 0,
-			from: 0,
-			list: 0,
-		},
 	},
 	errorMessage: null,
 	loading: false,
@@ -28,6 +22,7 @@ const entitiesReducer = createSlice({
 			state.loading = false;
 			state.errorMessage = null;
 			state.entities = action.payload;
+			localStorage.setItem('entitiesRoute', JSON.stringify(action.payload));
 		},
 		[fetchEntities.pending.type]: (state) => {
 			state.loading = true;
