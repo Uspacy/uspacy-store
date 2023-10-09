@@ -9,12 +9,22 @@ const initialState = {
 	roles: [],
 	loadingRoles: false,
 	errorLoadingRoles: null,
+	roleData: {},
+	activeRole: null,
 } as IState;
 
 const rolesReducer = createSlice({
 	name: 'rolesReducer',
 	initialState,
-	reducers: {},
+	reducers: {
+		selectedRole(state, action) {
+			state.roleData = action.payload;
+			if (state.activeRole === '') {
+				state.roleData.name = '';
+				state.roleData.userList = [];
+			}
+		},
+	},
 	extraReducers: {
 		[fetchRoles.fulfilled.type]: (state, action: PayloadAction<IRole[]>) => {
 			state.loadingRoles = false;
