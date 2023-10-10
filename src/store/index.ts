@@ -12,6 +12,7 @@ import payments from './payments';
 import profile from './profile';
 import roles from './roles';
 import tasks from './tasks';
+import tasksFilters from './tasksFilters';
 import tasksStages from './tasksStages';
 import tasksTimer from './tasksTimer';
 import users from './users';
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
 	profile,
 	roles,
 	tasks,
+	tasksFilters,
 	tasksStages,
 	tasksTimer,
 	users,
