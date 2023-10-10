@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IGroup } from '@uspacy/sdk/lib/models/groups';
-import { IResponseWithPagination } from '@uspacy/sdk/lib/models/response';
+import { IGroup, IGroups } from '@uspacy/sdk/lib/models/groups';
 
 import {
 	acceptUserInviteRequest,
@@ -96,7 +95,7 @@ const groupsReducer = createSlice({
 		},
 	},
 	extraReducers: {
-		[fetchGroups.fulfilled.type]: (state, action: PayloadAction<IResponseWithPagination<IGroup[]>>) => {
+		[fetchGroups.fulfilled.type]: (state, action: PayloadAction<IGroups>) => {
 			state.loadingGroups = false;
 			state.errorLoadingGroups = null;
 			state.groups = action.payload;

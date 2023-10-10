@@ -14,12 +14,7 @@ export const fetchGroups = createAsyncThunk(
 	'groups/fetchGroups',
 	async ({ page, list, userId, search }: { page?: number; list?: number; userId?: number; search?: string }, thunkAPI) => {
 		try {
-			const pageQ = page ? `&page=${page}` : '';
-			const listQ = `&list=${list || '12'}`;
-			const userIdQ = userId ? `my_groups=${userId}` : '';
-			const searchQ = search ? `&q=${search}` : '';
-
-			return await uspacySdk.groupsService.getGroups(pageQ, listQ, userIdQ, searchQ).then((res) => res.data);
+			return await uspacySdk.groupsService.getGroups(page, list || 12, userId, search).then((res) => res.data);
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
 		}
