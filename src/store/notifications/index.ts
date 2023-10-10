@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { INotification } from '@uspacy/sdk/lib/models/notifications';
 
-import { IState } from './types';
+import { fetchNotifications } from './actions';
+import { INotification, IState } from './types';
 
 const initialState: IState = {
 	notifications: [],
+	loading: true,
 };
 
 const notificationsReducer = createSlice({
@@ -32,6 +33,18 @@ const notificationsReducer = createSlice({
 				...it,
 				read: true,
 			}));
+		},
+	},
+	extraReducers: {
+		[fetchNotifications.fulfilled.type]: (state, action: PayloadAction<INotification[]>) => {
+			state.loading = false;
+			state.notifications = action.payload;
+		},
+		[fetchNotifications.pending.type]: (state) => {
+			state.loading = true;
+		},
+		[fetchNotifications.rejected.type]: (state) => {
+			state.loading = false;
 		},
 	},
 });
