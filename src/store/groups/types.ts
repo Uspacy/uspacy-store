@@ -1,8 +1,9 @@
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IGroup, IGroups } from '@uspacy/sdk/lib/models/groups';
+import { IGroup } from '@uspacy/sdk/lib/models/groups';
+import { IResponseWithPagination } from '@uspacy/sdk/lib/models/response';
 
 export interface IState {
-	groups: IGroups;
+	groups: IResponseWithPagination<IGroup[]>;
 	group: IGroup;
 	loadingGroup: boolean;
 	errorLoadingGroup: IErrorsAxiosResponse;
