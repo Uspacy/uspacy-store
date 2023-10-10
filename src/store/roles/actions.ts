@@ -24,7 +24,7 @@ export const fetchPermissions = createAsyncThunk('roles/fetchPermissions', async
 export const fetchRole = createAsyncThunk('roles/fetchRole', async (id: string, thunkAPI) => {
 	try {
 		const res = await uspacySdk.rolesService.getRole(id);
-		return res;
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
@@ -43,7 +43,8 @@ export const updateRole = createAsyncThunk(
 		thunkAPI,
 	) => {
 		try {
-			return await uspacySdk.rolesService.updateRole({ id, title, usersIds, departmentList, permissions });
+			const res = await uspacySdk.rolesService.updateRole({ id, title, usersIds, departmentList, permissions });
+			return res.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
 		}
@@ -52,7 +53,8 @@ export const updateRole = createAsyncThunk(
 
 export const createRole = createAsyncThunk('roles/createRole', async ({ title, permissions }: { title: string; permissions: string[] }, thunkAPI) => {
 	try {
-		return await uspacySdk.rolesService.createRole({ title, permissions });
+		const res = await uspacySdk.rolesService.createRole({ title, permissions });
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}

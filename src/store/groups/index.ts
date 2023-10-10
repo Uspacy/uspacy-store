@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IGroup, IGroups } from '@uspacy/sdk/lib/models/groups';
+import { IGroup } from '@uspacy/sdk/lib/models/groups';
+import { IResponseWithPagination } from '@uspacy/sdk/lib/models/response';
 
 import {
 	acceptUserInviteRequest,
@@ -95,7 +96,7 @@ const groupsReducer = createSlice({
 		},
 	},
 	extraReducers: {
-		[fetchGroups.fulfilled.type]: (state, action: PayloadAction<IGroups>) => {
+		[fetchGroups.fulfilled.type]: (state, action: PayloadAction<IResponseWithPagination<IGroup[]>>) => {
 			state.loadingGroups = false;
 			state.errorLoadingGroups = null;
 			state.groups = action.payload;
@@ -112,10 +113,12 @@ const groupsReducer = createSlice({
 			state.loadingGroup = false;
 			state.errorLoadingGroup = null;
 			state.group = action.payload;
+			state.isLoaded = true;
 		},
 		[fetchGroup.pending.type]: (state) => {
 			state.loadingGroup = true;
 			state.errorLoadingGroup = null;
+			state.isLoaded = false;
 		},
 		[fetchGroup.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingGroup = false;
@@ -125,6 +128,7 @@ const groupsReducer = createSlice({
 			state.loadingGroups = false;
 			state.errorLoadingGroups = null;
 			state.allGroups = state.allGroups.concat(action.payload);
+			state.isLoaded = false;
 		},
 		[createGroup.pending.type]: (state) => {
 			state.loadingGroups = true;

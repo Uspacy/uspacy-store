@@ -14,7 +14,12 @@ export const fetchGroups = createAsyncThunk(
 	'groups/fetchGroups',
 	async ({ page, list, userId, search }: { page?: number; list?: number; userId?: number; search?: string }, thunkAPI) => {
 		try {
-			return await uspacySdk.groupsService.getGroups(page, list, userId, search).then((res) => res);
+			const pageQ = page ? `&page=${page}` : '';
+			const listQ = `&list=${list || '12'}`;
+			const userIdQ = userId ? `my_groups=${userId}` : '';
+			const searchQ = search ? `&q=${search}` : '';
+
+			return await uspacySdk.groupsService.getGroups(pageQ, listQ, userIdQ, searchQ).then((res) => res.data);
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
 		}
@@ -48,7 +53,7 @@ export const createGroup = createAsyncThunk(
 		try {
 			return await uspacySdk.groupsService
 				.createGroup({ name, groupType, description, groupTheme, ownerId, logo, moderatorsIds, usersIds })
-				.then((res) => res);
+				.then((res) => res.data);
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
 		}
@@ -94,7 +99,7 @@ export const editGroup = createAsyncThunk(
 					usersIds,
 					archived,
 				})
-				.then((res) => res);
+				.then((res) => res.data);
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
 		}
@@ -141,7 +146,8 @@ export const joinGroup = createAsyncThunk('groups/joinGroup', async (groupId: st
 
 export const getUsersRequestedForJoing = createAsyncThunk('groups/getUsersRequestedForJoing', async (groupId: string, thunkAPI) => {
 	try {
-		return await uspacySdk.groupsService.getUsersRequestedForJoing(groupId);
+		const res = await uspacySdk.groupsService.getUsersRequestedForJoing(groupId);
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
@@ -182,7 +188,8 @@ export const uploadLogo = createAsyncThunk(
 		thunkAPI,
 	) => {
 		try {
-			return uspacySdk.groupsService.uploadLogo(groupId, logo);
+			const res = await uspacySdk.groupsService.uploadLogo(groupId, logo);
+			return res.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
 		}
@@ -201,7 +208,8 @@ export const checkIfUserSendJoinRequest = createAsyncThunk(
 	'groups/checkIfUserSendJoinRequest',
 	async ({ groupId, userId }: { groupId: string; userId: number }, thunkAPI) => {
 		try {
-			return await uspacySdk.groupsService.checkIfUserSendJoinRequest(groupId, userId);
+			const res = await uspacySdk.groupsService.checkIfUserSendJoinRequest(groupId, userId);
+			return res.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
 		}
