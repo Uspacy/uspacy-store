@@ -96,7 +96,7 @@ const groupsReducer = createSlice({
 		},
 	},
 	extraReducers: {
-		[fetchGroups.fulfilled.type]: (state, action: PayloadAction<IResponseWithPagination<IGroup[]>>) => {
+		[fetchGroups.fulfilled.type]: (state, action: PayloadAction<IResponseWithPagination<IGroup>>) => {
 			state.loadingGroups = false;
 			state.errorLoadingGroups = null;
 			state.groups = action.payload;
