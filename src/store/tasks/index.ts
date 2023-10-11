@@ -440,9 +440,25 @@ const tasksReducer = createSlice({
 
 						for (const key in action.payload.payload) {
 							if (action.payload.payload.hasOwnProperty(key) && action.payload.settings[key]) {
-								copiedTask[key] = fillTheString(copiedTask[key], action.payload.payload[key], action.payload.settings[key].position);
+								if (Array.isArray(action.payload.payload[key])) {
+									copiedTask[key] = Array.from(new Set([...copiedTask[key], ...action.payload.payload[key]]));
+								} else {
+									copiedTask[key] = fillTheString(
+										copiedTask[key],
+										action.payload.payload[key],
+										action.payload.settings[key].position,
+									);
+								}
 							} else {
-								copiedTask[key] = action.payload.payload[key];
+								if (key === 'deadline' && copiedTask['status'] === 'scheduled' && !action.payload.payload[key]) {
+									copiedTask['status'] = 'notScheduled';
+									copiedTask[key] = action.payload.payload[key];
+								} else if (key === 'deadline' && copiedTask['status'] === 'notScheduled' && action.payload.payload[key] > 0) {
+									copiedTask['status'] = 'scheduled';
+									copiedTask[key] = action.payload.payload[key];
+								} else {
+									copiedTask[key] = action.payload.payload[key];
+								}
 							}
 						}
 
@@ -467,7 +483,15 @@ const tasksReducer = createSlice({
 
 						for (const key in action.payload.payload) {
 							if (action.payload.payload.hasOwnProperty(key) && action.payload.settings[key]) {
-								copiedTask[key] = fillTheString(copiedTask[key], action.payload.payload[key], action.payload.settings[key].position);
+								if (Array.isArray(action.payload.payload[key])) {
+									copiedTask[key] = Array.from(new Set([...copiedTask[key], ...action.payload.payload[key]]));
+								} else {
+									copiedTask[key] = fillTheString(
+										copiedTask[key],
+										action.payload.payload[key],
+										action.payload.settings[key].position,
+									);
+								}
 							} else {
 								copiedTask[key] = action.payload.payload[key];
 							}
