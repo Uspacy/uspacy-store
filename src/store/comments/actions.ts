@@ -23,3 +23,79 @@ export const fetchComments = createAsyncThunk(
 		}
 	},
 );
+
+export const fetchCommentsByArray = createAsyncThunk(
+	'newsfeed/fetchCommentsByArray',
+	async (
+		data: { entityIds: number[]; entity_type: 'post' | 'comment'; list?: number; childList?: number; nextId?: number; lastId?: number },
+		thunkAPI,
+	) => {
+		try {
+			const res = await uspacySdk.commentsService.getCommentsByArray(
+				data.entityIds,
+				data.entity_type,
+				data.list,
+				data.childList,
+				data.nextId,
+				data.lastId,
+			);
+			return res.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue('Failure');
+		}
+	},
+);
+
+export const fetchCommentById = createAsyncThunk(
+	'newsfeed/fetchCommentById',
+	async (
+		data: { entityId: number; entity_type: 'post' | 'comment'; list?: number; childList?: number; nextId?: number; lastId?: number },
+		thunkAPI,
+	) => {
+		try {
+			const res = await uspacySdk.commentsService.getCommentWithParams(
+				data.entityId,
+				data.entity_type,
+				data.list,
+				data.childList,
+				data.nextId,
+				data.lastId,
+			);
+			return res.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue('Failure');
+		}
+	},
+);
+
+export const createComment = createAsyncThunk(
+	'newsfeed/createComment',
+	async (data: { entityType: string; entityId: number; message?: string }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.commentsService.createComment(data.entityType, data.entityId, data.message);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue('Failure');
+		}
+	},
+);
+
+export const editComment = createAsyncThunk(
+	'newsfeed/editeComment',
+	async ({ data, commentId }: { data: { message: string; entityType?: string; entityId?: number }; commentId: number }, thunkAPI) => {
+		try {
+			const res = await uspacySdk.commentsService.updateComment(commentId, data.message, data.entityType, data.entityId);
+			return res.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue('Failure');
+		}
+	},
+);
+
+export const deleteComment = createAsyncThunk('newsfeed/deleteComment', async (id: number, thunkAPI) => {
+	try {
+		return uspacySdk.commentsService.deleteComment(id);
+	} catch (e) {
+		return thunkAPI.rejectWithValue('Failure');
+	}
+});
