@@ -3,7 +3,7 @@ import { IGroup } from '@uspacy/sdk/lib/models/groups';
 import { IResponseWithPagination } from '@uspacy/sdk/lib/models/response';
 
 export interface IState {
-	groups: IResponseWithPagination<IGroup[]>;
+	groups: IResponseWithPagination<IGroup>;
 	group: IGroup;
 	loadingGroup: boolean;
 	errorLoadingGroup: IErrorsAxiosResponse;
