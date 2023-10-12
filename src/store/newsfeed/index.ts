@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFile } from '@uspacy/sdk/lib/models/files';
-import { EmotionType } from '@uspacy/sdk/lib/models/newsfeed';
+import { EmotionType, IPost } from '@uspacy/sdk/lib/models/newsfeed';
 import { IResponseWithPagination } from '@uspacy/sdk/lib/models/response';
 
 import { createPost, deletePost, editPost, fetchPostById, fetchPosts } from './actions';
-import { IPost, IState } from './types';
+import { IState } from './types';
 
 const initialState = {
 	loadPosts: {
