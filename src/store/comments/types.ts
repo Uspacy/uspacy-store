@@ -11,4 +11,12 @@ export interface IState {
 	comments: IComments;
 	loadingComments: boolean;
 	errorLoadingComments: IErrorsAxiosResponse;
+	comment: IComment;
+	allComments: IComments;
+	loadingCreatedComment: boolean;
+	loadingEditComment: boolean;
+	loadingDeleteComment: boolean;
+	errorCreatingComment: IErrorsAxiosResponse;
+	errorEditingComment: IErrorsAxiosResponse;
+	errorDeletingComment: IErrorsAxiosResponse;
 }
