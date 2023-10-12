@@ -10,6 +10,7 @@ import { IState } from './types';
 const initialState = {
 	loadPosts: {
 		data: [],
+		meta: null,
 	},
 	allPosts: [],
 	post: {},
@@ -76,7 +77,7 @@ const initialState = {
 	errorLoadingCreatedPost: null,
 	errorEditingPost: null,
 	errorDeletingPost: null,
-} as unknown as IState;
+} as IState;
 
 export const postsReducer = createSlice({
 	name: 'postsReducer',
