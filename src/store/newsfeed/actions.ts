@@ -1,7 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
-import { IEditPost, ISendPost } from '@uspacy/sdk/lib/models/newsfeed';
 import { INotify } from '@uspacy/sdk/lib/models/notify';
+
+import { IEditPost, ISendPost } from './types';
 
 export const fetchPosts = createAsyncThunk('postsReducer/fetchPosts', async (data: { page: number; groupId: number }, thunkAPI) => {
 	try {

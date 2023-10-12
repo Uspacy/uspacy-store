@@ -31,7 +31,7 @@ export const fetchCommentsByArray = createAsyncThunk(
 		thunkAPI,
 	) => {
 		try {
-			const res = await uspacySdk.commentsService.getCommentsByArray(
+			const res = await uspacySdk.commentsService.getCommentsByEntityIds(
 				data.entityIds,
 				data.entity_type,
 				data.list,
@@ -53,7 +53,7 @@ export const fetchCommentById = createAsyncThunk(
 		thunkAPI,
 	) => {
 		try {
-			const res = await uspacySdk.commentsService.getCommentWithParams(
+			const res = await uspacySdk.commentsService.getCommentByEntityId(
 				data.entityId,
 				data.entity_type,
 				data.list,

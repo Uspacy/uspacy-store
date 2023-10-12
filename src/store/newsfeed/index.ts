@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IFile } from '@uspacy/sdk/lib/models/files';
 import { EmotionType, IPost } from '@uspacy/sdk/lib/models/newsfeed';
 import { IResponseWithPagination } from '@uspacy/sdk/lib/models/response';
+import { FileInfoDto } from '@uspacy/sdk/lib/services/NewsFeedService/dto/cteate-update-posts.dto';
 
 import { createPost, deletePost, editPost, fetchPostById, fetchPosts } from './actions';
 import { IState } from './types';
@@ -76,7 +76,7 @@ const initialState = {
 	errorLoadingCreatedPost: null,
 	errorEditingPost: null,
 	errorDeletingPost: null,
-} as IState;
+} as unknown as IState;
 
 export const postsReducer = createSlice({
 	name: 'postsReducer',
@@ -195,7 +195,7 @@ export const postsReducer = createSlice({
 			);
 			state.editPostItem = { ...state.editPostItem, files: state.editPostItem.files.filter((file) => file.id !== action.payload.deleteFileId) };
 		},
-		addFileToPost: (state, action: PayloadAction<{ postId: string; file: IFile[] }>) => {
+		addFileToPost: (state, action: PayloadAction<{ postId: string; file: FileInfoDto[] }>) => {
 			state.allPosts = state.allPosts.map((post) =>
 				post.id === action.payload.postId
 					? { ...post, files: post?.files?.length > 0 ? [...post.files, ...action.payload.file] : [...action.payload.file] }
