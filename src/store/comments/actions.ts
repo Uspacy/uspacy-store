@@ -24,8 +24,8 @@ export const fetchComments = createAsyncThunk(
 	},
 );
 
-export const fetchCommentsByArray = createAsyncThunk(
-	'newsfeed/fetchCommentsByArray',
+export const fetchCommentsByEntityIds = createAsyncThunk(
+	'newsfeed/fetchCommentsByEntityIds',
 	async (
 		data: { entityIds: number[]; entity_type: 'post' | 'comment'; list?: number; childList?: number; nextId?: number; lastId?: number },
 		thunkAPI,
@@ -46,8 +46,8 @@ export const fetchCommentsByArray = createAsyncThunk(
 	},
 );
 
-export const fetchCommentById = createAsyncThunk(
-	'newsfeed/fetchCommentById',
+export const fetchCommentByEntityId = createAsyncThunk(
+	'newsfeed/fetchCommentByEntityId',
 	async (
 		data: { entityId: number; entity_type: 'post' | 'comment'; list?: number; childList?: number; nextId?: number; lastId?: number },
 		thunkAPI,
