@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IComment } from '@uspacy/sdk/lib/models/comment';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
-import { createComment, deleteComment, editComment, fetchCommentById, fetchComments, fetchCommentsByArray } from './actions';
+import { createComment, deleteComment, editComment, fetchCommentByEntityId, fetchComments, fetchCommentsByEntityIds } from './actions';
 import { IComments, IState } from './types';
 
 const initialState = {
@@ -49,27 +49,27 @@ const commentsReducer = createSlice({
 			state.loadingComments = false;
 			state.errorLoadingComments = action.payload;
 		},
-		[fetchCommentById.fulfilled.type]: (state, action: PayloadAction<IComment>) => {
+		[fetchCommentByEntityId.fulfilled.type]: (state, action: PayloadAction<IComment>) => {
 			state.loadingComments = false;
 			state.errorLoadingComments = null;
 			state.comment = action?.payload;
 		},
-		[fetchCommentById.pending.type]: (state) => {
+		[fetchCommentByEntityId.pending.type]: (state) => {
 			state.loadingComments = true;
 		},
-		[fetchCommentById.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[fetchCommentByEntityId.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingComments = false;
 			state.errorLoadingComments = action?.payload;
 		},
-		[fetchCommentsByArray.fulfilled.type]: (state, action: PayloadAction<IComments>) => {
+		[fetchCommentsByEntityIds.fulfilled.type]: (state, action: PayloadAction<IComments>) => {
 			state.loadingComments = false;
 			state.errorLoadingComments = null;
 			state.comments = action?.payload;
 		},
-		[fetchCommentsByArray.pending.type]: (state) => {
+		[fetchCommentsByEntityIds.pending.type]: (state) => {
 			state.loadingComments = true;
 		},
-		[fetchCommentsByArray.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[fetchCommentsByEntityIds.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingComments = false;
 			state.errorLoadingComments = action?.payload;
 		},
