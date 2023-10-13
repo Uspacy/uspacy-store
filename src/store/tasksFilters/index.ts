@@ -1,12 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IFilterPreset } from '@uspacy/sdk/lib/models/filters-presets';
-import { ITasksParams } from '@uspacy/sdk/lib/models/tasks';
 
 import { IState } from './types';
 
 const initialState = {
-	currentFilter: {},
-	currentFilterRegular: {},
+	currentPreset: {},
+	currentPresetRegular: {},
+	standardPreset: {},
+	standardPresetRegular: {},
+	addedFilterPreset: {},
+	addedFilterPresetRegular: {},
 	filterPresets: [],
 	filterPresetsRegular: [],
 } as IState;
@@ -15,11 +18,23 @@ const stagesReducer = createSlice({
 	name: 'tasksFilters',
 	initialState,
 	reducers: {
-		setCurrentFilter: (state, action: PayloadAction<ITasksParams>) => {
-			state.currentFilter = action.payload;
+		setCurrentPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.currentPreset = action.payload;
 		},
-		setCurrentFilterRegular: (state, action: PayloadAction<ITasksParams>) => {
-			state.currentFilterRegular = action.payload;
+		setCurrentPresetRegular: (state, action: PayloadAction<IFilterPreset>) => {
+			state.currentPresetRegular = action.payload;
+		},
+		setStandardPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.standardPreset = action.payload;
+		},
+		setStandardPresetRegular: (state, action: PayloadAction<IFilterPreset>) => {
+			state.standardPresetRegular = action.payload;
+		},
+		setAddedFilterPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.addedFilterPreset = action.payload;
+		},
+		setAddedFilterPresetRegular: (state, action: PayloadAction<IFilterPreset>) => {
+			state.addedFilterPresetRegular = action.payload;
 		},
 		setFilterPresets: (state, action: PayloadAction<IFilterPreset[]>) => {
 			state.filterPresets = action.payload;
@@ -55,8 +70,12 @@ const stagesReducer = createSlice({
 });
 
 export const {
-	setCurrentFilter,
-	setCurrentFilterRegular,
+	setCurrentPreset,
+	setCurrentPresetRegular,
+	setStandardPreset,
+	setStandardPresetRegular,
+	setAddedFilterPreset,
+	setAddedFilterPresetRegular,
 	setFilterPresets,
 	setFilterPresetsRegular,
 	createFilterPreset,

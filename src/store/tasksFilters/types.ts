@@ -1,9 +1,12 @@
 import { IFilterPreset } from '@uspacy/sdk/lib/models/filters-presets';
-import { ITasksParams } from '@uspacy/sdk/lib/models/tasks';
 
 export interface IState {
-	currentFilter: ITasksParams;
-	currentFilterRegular: ITasksParams;
+	currentPreset: IFilterPreset;
+	currentPresetRegular: IFilterPreset;
+	standardPreset: IFilterPreset;
+	standardPresetRegular: IFilterPreset;
+	addedFilterPreset: IFilterPreset;
+	addedFilterPresetRegular: IFilterPreset;
 	filterPresets: IFilterPreset[];
 	filterPresetsRegular: IFilterPreset[];
 }
