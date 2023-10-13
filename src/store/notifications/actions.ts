@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 
-import { transformNotificationMessage } from '../../helpers/notifications';
+import { getRead, transformNotificationMessage } from '../../helpers/notifications';
 
 export const fetchNotifications = createAsyncThunk('notifications/fetchNotifications', async (_, { rejectWithValue, getState }) => {
 	try {
@@ -9,7 +9,14 @@ export const fetchNotifications = createAsyncThunk('notifications/fetchNotificat
 		const state: any = getState();
 		const users = state.users.data;
 		const { data: items } = await uspacySdk.notificationsService.getNotifications();
-		return items.map((it) => transformNotificationMessage(it, users));
+		const read = await getRead();
+		return items.map((it) => {
+			const notification = transformNotificationMessage(it, users);
+			return {
+				...notification,
+				read: read.includes(notification.id),
+			};
+		});
 	} catch (e) {
 		return rejectWithValue(e);
 	}
