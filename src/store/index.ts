@@ -7,6 +7,7 @@ import dealsFunnel from './dealsFunnel';
 import departments from './departments';
 import files from './files';
 import groups from './groups';
+import newsfeed from './newsfeed';
 import notifications from './notifications';
 import payments from './payments';
 import profile from './profile';
@@ -36,6 +37,7 @@ const rootReducer = combineReducers({
 	tasksTimer,
 	users,
 	webhooks,
+	newsfeed,
 });
 
 export const setupStore = () => {
