@@ -4,7 +4,6 @@ import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
 import { createComment, deleteComment, editComment, fetchCommentByEntityId, fetchComments, fetchCommentsByEntityIds } from './actions';
 import { IComments, IState } from './types';
-//
 
 const initialState = {
 	commentsList: [],
