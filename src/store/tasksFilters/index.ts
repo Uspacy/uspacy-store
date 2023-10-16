@@ -4,6 +4,7 @@ import { IFilterPreset } from '@uspacy/sdk/lib/models/filters-presets';
 import { IState } from './types';
 
 const initialState = {
+	isNewPreset: false,
 	currentPreset: {},
 	currentPresetRegular: {},
 	standardPreset: {},
@@ -18,6 +19,9 @@ const stagesReducer = createSlice({
 	name: 'tasksFilters',
 	initialState,
 	reducers: {
+		setIsNewPreset: (state, action: PayloadAction<boolean>) => {
+			state.isNewPreset = action.payload;
+		},
 		setCurrentPreset: (state, action: PayloadAction<IFilterPreset>) => {
 			state.currentPreset = action.payload;
 		},
@@ -70,6 +74,7 @@ const stagesReducer = createSlice({
 });
 
 export const {
+	setIsNewPreset,
 	setCurrentPreset,
 	setCurrentPresetRegular,
 	setStandardPreset,
