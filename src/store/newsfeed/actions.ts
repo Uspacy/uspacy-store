@@ -6,7 +6,7 @@ import { IEditPost, ISendPost } from './types';
 
 export const fetchPosts = createAsyncThunk('postsReducer/fetchPosts', async (data: { page: number; list: number; groupId: number }, thunkAPI) => {
 	try {
-		const res = await uspacySdk.newsFeedService.getPosts(data.page, data.groupId, data.groupId);
+		const res = await uspacySdk.newsFeedService.getPosts(data.page, data.list, data.groupId);
 		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
