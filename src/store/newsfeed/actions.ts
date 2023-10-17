@@ -24,16 +24,7 @@ export const fetchPostById = createAsyncThunk('postsReducer/fetchPostById', asyn
 
 export const createPost = createAsyncThunk('postsReducer/createPost', async (data: ISendPost, { rejectWithValue }) => {
 	try {
-		const res = await uspacySdk.newsFeedService.createPost(
-			data.title,
-			data.message,
-			[],
-			data.recipients,
-			data.file_ids,
-			data.author_mood,
-			data.group_id,
-			data.notify,
-		);
+		const res = await uspacySdk.newsFeedService.createPost(data);
 		return res.data;
 	} catch (e) {
 		return rejectWithValue(e);
@@ -42,18 +33,8 @@ export const createPost = createAsyncThunk('postsReducer/createPost', async (dat
 
 export const editPost = createAsyncThunk('postsReducer/editedPost', async ({ data, id }: IEditPost, thunkAPI) => {
 	try {
-		const res = await uspacySdk.newsFeedService.updatePost(
-			id,
-			data.title,
-			data.message,
-			[],
-			data.recipients,
-			data.file_ids,
-			data.author_mood,
-			data.group_id,
-			data.notify,
-		);
-		return res;
+		const res = await uspacySdk.newsFeedService.updatePost(id, data);
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
