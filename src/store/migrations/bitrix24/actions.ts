@@ -4,7 +4,8 @@ import { IImportData } from '@uspacy/sdk/lib/services/MigrationsService/dto/get-
 
 export const fetchBitrix24 = createAsyncThunk('bitrix24/fetchEntities', async (webhook: string, { rejectWithValue }) => {
 	try {
-		return await uspacySdk.migrationsService.getBitrix24Entities(webhook);
+		const res = await uspacySdk.migrationsService.getBitrix24Entities(webhook);
+		return res.data;
 	} catch (err) {
 		return rejectWithValue('Failure');
 	}
@@ -14,7 +15,8 @@ export const importBitrix24Entities = createAsyncThunk(
 	'bitrix24/importBitrix24Entities',
 	async ({ webhook, data }: IImportData, { rejectWithValue }) => {
 		try {
-			return await uspacySdk.migrationsService.importBitrix24Entities(webhook, data);
+			const res = await uspacySdk.migrationsService.importBitrix24Entities(webhook, data);
+			return res.data;
 		} catch (e) {
 			return rejectWithValue(e);
 		}
