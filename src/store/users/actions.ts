@@ -48,7 +48,8 @@ export const updateUserRoles = createAsyncThunk('users/updateUserRoles', async (
 
 export const deactivateUser = createAsyncThunk('users/deactivateUser', async (id: number, thunkAPI) => {
 	try {
-		return uspacySdk.usersService.deactivateUser(id);
+		const res = await uspacySdk.usersService.deactivateUser(id);
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
@@ -56,7 +57,8 @@ export const deactivateUser = createAsyncThunk('users/deactivateUser', async (id
 
 export const activateUser = createAsyncThunk('users/activateUser', async (id: number, thunkAPI) => {
 	try {
-		return uspacySdk.usersService.activateUser(id);
+		const res = await uspacySdk.usersService.activateUser(id);
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
