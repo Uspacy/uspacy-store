@@ -3,7 +3,8 @@ import { uspacySdk } from '@uspacy/sdk';
 
 export const getDataPresence = createAsyncThunk('zoho/getDataPresence', async (_, { rejectWithValue }) => {
 	try {
-		return await uspacySdk.migrationsService.getDataPresence();
+		const res = await uspacySdk.migrationsService.getDataPresence();
+		return res.data;
 	} catch (err) {
 		return rejectWithValue('Failure');
 	}

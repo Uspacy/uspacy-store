@@ -4,7 +4,8 @@ import { IImportData } from '@uspacy/sdk/lib/services/MigrationsService/dto/get-
 
 export const fetchAmo = createAsyncThunk('amoCRM/fetchEntities', async (systemId: string, { rejectWithValue }) => {
 	try {
-		return await uspacySdk.migrationsService.getAmoEntites(systemId);
+		const res = await uspacySdk.migrationsService.getAmoEntites(systemId);
+		return res.data;
 	} catch (err) {
 		return rejectWithValue('Failure');
 	}
@@ -12,7 +13,8 @@ export const fetchAmo = createAsyncThunk('amoCRM/fetchEntities', async (systemId
 
 export const importAmoEntities = createAsyncThunk('amoCRM/importEntities', async ({ systemId, data }: IImportData, { rejectWithValue }) => {
 	try {
-		return await uspacySdk.migrationsService.importAmoEntities(systemId, data);
+		const res = await uspacySdk.migrationsService.importAmoEntities(systemId, data);
+		return res.data;
 	} catch (e) {
 		return rejectWithValue('Failure');
 	}

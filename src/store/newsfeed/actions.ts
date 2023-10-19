@@ -4,14 +4,17 @@ import { INotify } from '@uspacy/sdk/lib/models/notify';
 
 import { IEditPost, ISendPost } from './types';
 
-export const fetchPosts = createAsyncThunk('postsReducer/fetchPosts', async (data: { page: number; groupId: number }, thunkAPI) => {
-	try {
-		const res = await uspacySdk.newsFeedService.getPosts(data.page, data.groupId);
-		return res.data;
-	} catch (e) {
-		return thunkAPI.rejectWithValue(e);
-	}
-});
+export const fetchPosts = createAsyncThunk(
+	'postsReducer/fetchPosts',
+	async (data: { page: number; list: number; group_id: number | string }, thunkAPI) => {
+		try {
+			const res = await uspacySdk.newsFeedService.getPosts(data.page, data.list, data.group_id);
+			return res.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
 
 export const fetchPostById = createAsyncThunk('postsReducer/fetchPostById', async (data: { id: number }, thunkAPI) => {
 	try {
@@ -24,16 +27,7 @@ export const fetchPostById = createAsyncThunk('postsReducer/fetchPostById', asyn
 
 export const createPost = createAsyncThunk('postsReducer/createPost', async (data: ISendPost, { rejectWithValue }) => {
 	try {
-		const res = await uspacySdk.newsFeedService.createPost(
-			data.title,
-			data.message,
-			[],
-			data.recipients,
-			data.file_ids,
-			data.author_mood,
-			data.group_id,
-			data.notify,
-		);
+		const res = await uspacySdk.newsFeedService.createPost(data);
 		return res.data;
 	} catch (e) {
 		return rejectWithValue(e);
@@ -42,18 +36,8 @@ export const createPost = createAsyncThunk('postsReducer/createPost', async (dat
 
 export const editPost = createAsyncThunk('postsReducer/editedPost', async ({ data, id }: IEditPost, thunkAPI) => {
 	try {
-		const res = await uspacySdk.newsFeedService.updatePost(
-			id,
-			data.title,
-			data.message,
-			[],
-			data.recipients,
-			data.file_ids,
-			data.author_mood,
-			data.group_id,
-			data.notify,
-		);
-		return res;
+		const res = await uspacySdk.newsFeedService.updatePost(id, data);
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}

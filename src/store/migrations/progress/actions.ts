@@ -3,7 +3,8 @@ import { uspacySdk } from '@uspacy/sdk';
 
 export const getSystemStatus = createAsyncThunk('import/systemStatus', async (system: string, { rejectWithValue }) => {
 	try {
-		return await uspacySdk.migrationsService.getSystemProgress(system);
+		const res = await uspacySdk.migrationsService.getSystemProgress(system);
+		return res.data;
 	} catch (e) {
 		return rejectWithValue('Failure');
 	}

@@ -6,7 +6,8 @@ export const fetchMigrationEntity = createAsyncThunk(
 	'systemsWithKey/fetchMigrationEntities',
 	async (data: { apiKey: string; systemName: string }, { rejectWithValue }) => {
 		try {
-			return await uspacySdk.migrationsService.getMigrationEntities(data.apiKey, data.systemName);
+			const res = await uspacySdk.migrationsService.getMigrationEntities(data.apiKey, data.systemName);
+			return res.data;
 		} catch (err) {
 			return rejectWithValue('Failure');
 		}
@@ -17,7 +18,8 @@ export const importMigrationEntities = createAsyncThunk(
 	'systemsWithKey/importMigrationEntities',
 	async ({ apiKey, data, systemName }: IImportData, { rejectWithValue }) => {
 		try {
-			return await uspacySdk.migrationsService.importMigrationEntities(apiKey, data, systemName);
+			const res = await uspacySdk.migrationsService.importMigrationEntities(apiKey, data, systemName);
+			return res.data;
 		} catch (e) {
 			return rejectWithValue(e);
 		}
