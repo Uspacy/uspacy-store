@@ -7,6 +7,7 @@ import dealsFunnel from './dealsFunnel';
 import departments from './departments';
 import files from './files';
 import groups from './groups';
+import migrationsReducer from './migrations';
 import newsfeed from './newsfeed';
 import notifications from './notifications';
 import payments from './payments';
@@ -38,6 +39,7 @@ const rootReducer = combineReducers({
 	users,
 	webhooks,
 	newsfeed,
+	migrationsReducer,
 });
 
 export const setupStore = () => {
