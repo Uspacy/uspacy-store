@@ -6,8 +6,8 @@ export const fetchAmo = createAsyncThunk('amoCRM/fetchEntities', async (systemId
 	try {
 		const res = await uspacySdk.migrationsService.getAmoEntites(systemId);
 		return res.data;
-	} catch (err) {
-		return rejectWithValue('Failure');
+	} catch (e) {
+		return rejectWithValue(err);
 	}
 });
 
@@ -15,7 +15,7 @@ export const importAmoEntities = createAsyncThunk('amoCRM/importEntities', async
 	try {
 		const res = await uspacySdk.migrationsService.importAmoEntities(systemId, data);
 		return res.data;
-	} catch (e) {
-		return rejectWithValue('Failure');
+	} catch (err) {
+		return rejectWithValue(e);
 	}
 });

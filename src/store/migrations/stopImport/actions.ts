@@ -5,6 +5,6 @@ export const stopImport = createAsyncThunk('import/systemStop', async (system: s
 	try {
 		return await uspacySdk.migrationsService.stopImport(system);
 	} catch (e) {
-		return rejectWithValue('Failure');
+		return rejectWithValue(e);
 	}
 });

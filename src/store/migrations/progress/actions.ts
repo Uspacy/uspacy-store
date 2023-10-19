@@ -6,6 +6,6 @@ export const getSystemStatus = createAsyncThunk('import/systemStatus', async (sy
 		const res = await uspacySdk.migrationsService.getSystemProgress(system);
 		return res.data;
 	} catch (e) {
-		return rejectWithValue('Failure');
+		return rejectWithValue(e);
 	}
 });

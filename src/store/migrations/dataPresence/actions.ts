@@ -5,7 +5,7 @@ export const getDataPresence = createAsyncThunk('zoho/getDataPresence', async (_
 	try {
 		const res = await uspacySdk.migrationsService.getDataPresence();
 		return res.data;
-	} catch (err) {
-		return rejectWithValue('Failure');
+	} catch (e) {
+		return rejectWithValue(e);
 	}
 });

@@ -6,8 +6,8 @@ export const fetchBitrix24 = createAsyncThunk('bitrix24/fetchEntities', async (w
 	try {
 		const res = await uspacySdk.migrationsService.getBitrix24Entities(webhook);
 		return res.data;
-	} catch (err) {
-		return rejectWithValue('Failure');
+	} catch (e) {
+		return rejectWithValue(e);
 	}
 });
 

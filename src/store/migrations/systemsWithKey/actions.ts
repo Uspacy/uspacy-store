@@ -8,8 +8,8 @@ export const fetchMigrationEntity = createAsyncThunk(
 		try {
 			const res = await uspacySdk.migrationsService.getMigrationEntities(data.apiKey, data.systemName);
 			return res.data;
-		} catch (err) {
-			return rejectWithValue('Failure');
+		} catch (e) {
+			return rejectWithValue(e);
 		}
 	},
 );
