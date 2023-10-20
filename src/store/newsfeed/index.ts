@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { EmotionType, IPost } from '@uspacy/sdk/lib/models/newsfeed';
-import { IResponseWithPagination } from '@uspacy/sdk/lib/models/response';
+import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 import { FileInfoDto } from '@uspacy/sdk/lib/services/NewsFeedService/dto/cteate-update-posts.dto';
 
 import { createPost, deletePost, editPost, fetchPostById, fetchPosts } from './actions';
@@ -213,7 +213,7 @@ export const postsReducer = createSlice({
 		},
 	},
 	extraReducers: {
-		[fetchPosts.fulfilled.type]: (state, action: PayloadAction<IResponseWithPagination<IPost>>) => {
+		[fetchPosts.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<IPost>>) => {
 			state.loadingPosts = false;
 			state.errorLoadingPosts = null;
 			state.loadPosts = action?.payload;
