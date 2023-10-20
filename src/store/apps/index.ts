@@ -20,7 +20,7 @@ const appsReducer = createSlice({
 	initialState,
 	reducers: {
 		clearApps: (state) => {
-			state.data = initialState.data;
+			state.allApps = initialState.allApps;
 		},
 		clearApp: (state) => {
 			state.app = initialState.app;
@@ -31,7 +31,7 @@ const appsReducer = createSlice({
 			state.loading = false;
 		},
 		handlerInstallAppForList: (state, action: PayloadAction<{ id: number; status: boolean }>) => {
-			state.data = state.data.map((it) => (it.id === action.payload.id ? { ...it, installed: action.payload.status } : it));
+			state.allApps = state.allApps.map((it) => (it.id === action.payload.id ? { ...it, installed: action.payload.status } : it));
 		},
 		handlerInstallApp: (state, action: PayloadAction<{ id: number; status: boolean }>) => {
 			state.app = state.app.id === action.payload.id ? { ...state.app, installed: action.payload.status } : state.app;
@@ -43,6 +43,7 @@ const appsReducer = createSlice({
 			state.error = null;
 			state.data = action.payload.data;
 			state.meta = action.payload.meta;
+			state.allApps = state.allApps.concat(action.payload.data);
 		},
 		[fetchApps.pending.type]: (state) => {
 			state.loading = true;
