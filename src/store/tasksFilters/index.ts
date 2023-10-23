@@ -9,8 +9,6 @@ const initialState = {
 	currentPresetRegular: {},
 	standardPreset: {},
 	standardPresetRegular: {},
-	addedFilterPreset: {},
-	addedFilterPresetRegular: {},
 	filterPresets: [],
 	filterPresetsRegular: [],
 } as IState;
@@ -33,12 +31,6 @@ const stagesReducer = createSlice({
 		},
 		setStandardPresetRegular: (state, action: PayloadAction<IFilterPreset>) => {
 			state.standardPresetRegular = action.payload;
-		},
-		setAddedFilterPreset: (state, action: PayloadAction<IFilterPreset>) => {
-			state.addedFilterPreset = action.payload;
-		},
-		setAddedFilterPresetRegular: (state, action: PayloadAction<IFilterPreset>) => {
-			state.addedFilterPresetRegular = action.payload;
 		},
 		setFilterPresets: (state, action: PayloadAction<IFilterPreset[]>) => {
 			state.filterPresets = action.payload;
@@ -79,8 +71,6 @@ export const {
 	setCurrentPresetRegular,
 	setStandardPreset,
 	setStandardPresetRegular,
-	setAddedFilterPreset,
-	setAddedFilterPresetRegular,
 	setFilterPresets,
 	setFilterPresetsRegular,
 	createFilterPreset,

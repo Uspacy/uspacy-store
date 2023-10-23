@@ -56,10 +56,12 @@ const initialState = {
 		certainDateOrPeriod: [],
 		priority: [],
 		createdBy: [],
+		closed_by: [],
 		responsible: [],
 		deadline: [],
 		accomplices: [],
 		auditors: [],
+		accept_request: [],
 		openCalendar: false,
 		search: '',
 	},
@@ -69,9 +71,11 @@ const initialState = {
 		status: [],
 		priority: [],
 		createdBy: [],
+		closed_by: [],
 		responsible: [],
 		accomplices: [],
 		auditors: [],
+		accept_request: [],
 		openCalendar: false,
 		search: '',
 	},
@@ -185,17 +189,7 @@ const tasksReducer = createSlice({
 			state.changeTask = {} as ITask;
 		},
 		clearFilter: (state) => {
-			state.filters.time_label = [];
-			state.filters.certainDateOrPeriod = [];
-			state.filters.status = [];
-			state.filters.priority = [];
-			state.filters.createdBy = [];
-			state.filters.responsible = [];
-			state.filters.accomplices = [];
-			state.filters.auditors = [];
-			state.filters.deadline = [];
-			state.filters.openCalendar = false;
-			state.filters.search = '';
+			state.filters = { ...initialState.filters };
 			state.filters.page = 1;
 			state.filters.perPage = 20;
 		},

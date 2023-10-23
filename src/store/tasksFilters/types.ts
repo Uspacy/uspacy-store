@@ -6,8 +6,6 @@ export interface IState {
 	currentPresetRegular: IFilterPreset;
 	standardPreset: IFilterPreset;
 	standardPresetRegular: IFilterPreset;
-	addedFilterPreset: IFilterPreset;
-	addedFilterPresetRegular: IFilterPreset;
 	filterPresets: IFilterPreset[];
 	filterPresetsRegular: IFilterPreset[];
 }
