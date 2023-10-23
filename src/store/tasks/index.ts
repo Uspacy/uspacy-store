@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFields } from '@uspacy/sdk/lib/models/field';
-import { IFilterRegularTasks, IFilterTasks, ITask, ITasks } from '@uspacy/sdk/lib/models/tasks';
+import { IFilterTasks, ITask, ITasks } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 
 import { fillTheString } from '../../helpers/stringsHelper';
@@ -163,7 +163,7 @@ const tasksReducer = createSlice({
 		changeItemsFilterTasks: (state, action: PayloadAction<IFilterTasks>) => {
 			state.filters = action.payload;
 		},
-		changeItemsFilterRegularTasks: (state, action: PayloadAction<IFilterRegularTasks>) => {
+		changeItemsFilterRegularTasks: (state, action: PayloadAction<IFilterTasks>) => {
 			state.regularFilter = action.payload;
 		},
 		fillSubtasksReducer: (state, action: PayloadAction<ITask[]>) => {
