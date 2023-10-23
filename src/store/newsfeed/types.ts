@@ -1,13 +1,13 @@
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { EmotionType, IPost } from '@uspacy/sdk/lib/models/newsfeed';
 import { INotify } from '@uspacy/sdk/lib/models/notify';
-import { IResponseWithPagination } from '@uspacy/sdk/lib/models/response';
+import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 import { FileInfoDto, RecipientsPost } from '@uspacy/sdk/lib/services/NewsFeedService/dto/cteate-update-posts.dto';
 
 export interface IState {
 	allPosts: IPost[];
 	post: IPost;
-	loadPosts: IResponseWithPagination<IPost>;
+	loadPosts: IResponseWithMeta<IPost>;
 	newPost: INewPost;
 	editPostItem: IEditPostItem;
 	isNewPostCreate: boolean;
