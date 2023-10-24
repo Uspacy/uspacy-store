@@ -1,6 +1,6 @@
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFields } from '@uspacy/sdk/lib/models/field';
-import { IFilterRegularTasks, IFilterTasks, IMeta, ITask, ITasks } from '@uspacy/sdk/lib/models/tasks';
+import { IFilterTasks, IMeta, ITask, ITasks } from '@uspacy/sdk/lib/models/tasks';
 
 export interface ITaskCardActions {
 	mode: 'view' | 'add' | 'edit';
@@ -21,7 +21,7 @@ export interface IState {
 	deleteTaskIds: string[];
 	deleteAllFromKanban: boolean;
 	filters: IFilterTasks;
-	regularFilter: IFilterRegularTasks;
+	regularFilter: IFilterTasks;
 	taskFields: IFields;
 	tasksCardPermissions: ITaskCardActions;
 	isEditMode: boolean;

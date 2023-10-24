@@ -1,5 +1,6 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
+import apps from './apps';
 import auth from './auth';
 import comments from './comments';
 import crmEntities from './crmEntities';
@@ -14,12 +15,14 @@ import payments from './payments';
 import profile from './profile';
 import roles from './roles';
 import tasks from './tasks';
+import tasksFilters from './tasksFilters';
 import tasksStages from './tasksStages';
 import tasksTimer from './tasksTimer';
 import users from './users';
 import webhooks from './webhooks';
 
 const rootReducer = combineReducers({
+	apps,
 	auth,
 	comments,
 	crmEntities,
@@ -32,6 +35,7 @@ const rootReducer = combineReducers({
 	profile,
 	roles,
 	tasks,
+	tasksFilters,
 	tasksStages,
 	tasksTimer,
 	users,
