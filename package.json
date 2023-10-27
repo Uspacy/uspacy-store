@@ -1,6 +1,6 @@
 {
   "name": "@uspacy/store",
-  "version": "0.0.34",
+  "version": "0.0.35",
   "repository": "git@github.com:Uspacy/uspacy-store.git",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
