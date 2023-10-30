@@ -35,6 +35,7 @@ const webhooksReducer = createSlice({
 			state.loadingWebhooks = false;
 			state.errorLoadingErrors = null;
 			state.webhooks.data = action.payload.data;
+			state.webhooks.meta = action.payload.meta;
 		},
 		[fetchWebhooks.pending.type]: (state) => {
 			state.loadingWebhooks = true;
