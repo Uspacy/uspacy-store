@@ -2,9 +2,9 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IWebhookRequest } from '@uspacy/sdk/lib/services/WebhooksService/dto/create-webhook.dto';
 
-export const fetchWebhooks = createAsyncThunk('webhooks/fetchWebhooks', async (data: { page: number; list: number }, thunkAPI) => {
+export const fetchWebhooks = createAsyncThunk('webhooks/fetchWebhooks', async ({ page, list }: { page: number; list: number }, thunkAPI) => {
 	try {
-		const res = await uspacySdk.webhooksService.getWebhooks(data.page, data.list);
+		const res = await uspacySdk.webhooksService.getWebhooks(page, list);
 		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
