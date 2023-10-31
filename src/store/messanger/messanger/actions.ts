@@ -11,9 +11,9 @@ export const fetchChats = createAsyncThunk(
 		try {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const state: any = getState();
-			const users = state.users.data;
+			const users = state.users.data.filter((u) => u.authUserId);
 			const profile = state.profile.data;
-			const { data: items } = await uspacySdk.messangerService.getChats();
+			const { data: items } = await uspacySdk.messangerService.getChats({});
 			return formatChats(items, users, profile, getFormattedUserName);
 		} catch (e) {
 			return rejectWithValue(e);
