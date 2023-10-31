@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, IMessage } from '@uspacy/sdk/lib/models/messanger';
+import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { differenceInMinutes } from 'date-fns';
 
-import { getUniqueItems, onlyUnique, readLastMessageInChat, readLastMessagesInChat, sortChats } from '../../../helpers/messanger';
+import { getUniqueItems, onlyUnique, readLastMessageInChat, readLastMessagesInChat, sortChats } from '../../../helpers/messenger';
 import { fetchChats, fetchMessages, fetchPinedMessages, goToMessage } from './actions';
 import { IState } from './types';
 
@@ -38,7 +38,7 @@ const prepereMessages = (items: IMessage[]) => {
 };
 
 export const chatSlice = createSlice({
-	name: 'messanger',
+	name: 'messenger',
 	initialState,
 	reducers: {
 		appendChats(state, action: PayloadAction<{ items: IChat[] }>) {

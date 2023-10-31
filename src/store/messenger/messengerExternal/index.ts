@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IChat, IMessage } from '@uspacy/sdk/lib/models/messanger';
+import { IChat, IMessage } from '@uspacy/sdk/lib/models/messenger';
 
 import {
 	onlyUnique,
@@ -8,7 +8,7 @@ import {
 	separateExternalChats,
 	updateExternalChat,
 	updateLastMessageInExternalChat,
-} from '../../../helpers/messanger';
+} from '../../../helpers/messenger';
 import { fetchExternalChats } from './actions';
 import { IState } from './types';
 
@@ -25,7 +25,7 @@ const initialState: IState = {
 };
 
 export const externalChatSlice = createSlice({
-	name: 'messangerExternal',
+	name: 'messengerExternal',
 	initialState,
 	reducers: {
 		setCurrentChat(state, action: PayloadAction<string>) {

@@ -1,4 +1,4 @@
-import { EMessengerType, IChat, IMessage, IMessagesGroup } from '@uspacy/sdk/lib/models/messanger';
+import { EMessengerType, IChat, IMessage, IMessagesGroup } from '@uspacy/sdk/lib/models/messenger';
 
 export interface IState {
 	chats: {

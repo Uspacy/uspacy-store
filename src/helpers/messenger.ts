@@ -1,4 +1,4 @@
-import { ChatType, EActiveEntity, IChat, IExternalChatsItems, IMessage } from '@uspacy/sdk/lib/models/messanger';
+import { ChatType, EActiveEntity, IChat, IExternalChatsItems, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 export const getChatName = (chat: IChat, users: IUser[], profile: IUser, formattedUserName: (u: IUser) => string) => {
