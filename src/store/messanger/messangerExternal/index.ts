@@ -8,7 +8,7 @@ import {
 	separateExternalChats,
 	updateExternalChat,
 	updateLastMessageInExternalChat,
-} from '../../helpers/messanger';
+} from '../../../helpers/messanger';
 import { fetchExternalChats } from './actions';
 import { IState } from './types';
 

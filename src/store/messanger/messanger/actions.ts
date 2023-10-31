@@ -3,23 +3,16 @@ import { uspacySdk } from '@uspacy/sdk';
 import { FetchMessagesRequest, GoToMessageRequest, IChat } from '@uspacy/sdk/lib/models/messanger';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
-import { formatChats } from '../../helpers/messanger';
+import { formatChats } from '../../../helpers/messanger';
 
 export const fetchChats = createAsyncThunk(
 	'messenger/fetchChats',
-	async (
-		{
-			users,
-			profile,
-			getFormattedUserName,
-		}: {
-			users: IUser[];
-			profile: IUser;
-			getFormattedUserName: (u: Partial<IUser>) => string;
-		},
-		{ rejectWithValue },
-	) => {
+	async ({ getFormattedUserName }: { getFormattedUserName: (u: Partial<IUser>) => string }, { rejectWithValue, getState }) => {
 		try {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const state: any = getState();
+			const users = state.users.data;
+			const profile = state.profile.data;
 			const { data: items } = await uspacySdk.messangerService.getChats();
 			return formatChats(items, users, profile, getFormattedUserName);
 		} catch (e) {

@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
-import { formatChats } from '../../helpers/messanger';
+import { formatChats } from '../../../helpers/messanger';
 
 export const fetchExternalChats = createAsyncThunk(
 	'messenger/fetchExternalChats',
