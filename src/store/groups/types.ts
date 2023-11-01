@@ -5,6 +5,7 @@ import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 export interface IState {
 	groups: IResponseWithMeta<IGroup>;
 	group: IGroup;
+	groupForTask: IGroup;
 	loadingGroup: boolean;
 	errorLoadingGroup: IErrorsAxiosResponse;
 	loadingGroups: boolean;

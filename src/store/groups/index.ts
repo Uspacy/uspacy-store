@@ -10,6 +10,7 @@ import {
 	deleteGroup,
 	editGroup,
 	fetchGroup,
+	fetchGroupForTask,
 	fetchGroups,
 	getUsersRequestedForJoing,
 	leaveGroup,
@@ -22,6 +23,7 @@ const initialState = {
 		data: [],
 	},
 	group: {},
+	groupForTask: {},
 	loadingGroup: false,
 	errorLoadingGroup: null,
 	isLoaded: false,
@@ -46,6 +48,9 @@ const groupsReducer = createSlice({
 	reducers: {
 		setGroup: (state, action: PayloadAction<IGroup>) => {
 			state.group = action.payload;
+		},
+		setGroupForTask: (state, action: PayloadAction<IGroup>) => {
+			state.groupForTask = action.payload;
 		},
 		clearGroupReducer: (state) => {
 			state.group = {} as IGroup;
@@ -121,6 +126,21 @@ const groupsReducer = createSlice({
 			state.isLoaded = false;
 		},
 		[fetchGroup.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingGroup = false;
+			state.errorLoadingGroup = action.payload;
+		},
+		[fetchGroupForTask.fulfilled.type]: (state, action: PayloadAction<IGroup>) => {
+			state.loadingGroup = false;
+			state.errorLoadingGroup = null;
+			state.groupForTask = action.payload;
+			state.isLoaded = true;
+		},
+		[fetchGroupForTask.pending.type]: (state) => {
+			state.loadingGroup = true;
+			state.errorLoadingGroup = null;
+			state.isLoaded = false;
+		},
+		[fetchGroupForTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingGroup = false;
 			state.errorLoadingGroup = action.payload;
 		},
@@ -234,6 +254,7 @@ const groupsReducer = createSlice({
 
 export const {
 	setGroup,
+	setGroupForTask,
 	clearGroupReducer,
 	chatOpened,
 	addToAllGroups,
