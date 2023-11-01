@@ -10,6 +10,15 @@ export const fetchGroup = createAsyncThunk('groups/fetchGroup', async (id: strin
 	}
 });
 
+export const fetchGroupForTask = createAsyncThunk('groups/fetchGroupForTask', async (id: string, thunkAPI) => {
+	try {
+		const res = await uspacySdk.groupsService.getGroupForTask(id);
+		return res.data;
+	} catch (e) {
+		return thunkAPI.rejectWithValue('Failure');
+	}
+});
+
 export const fetchGroups = createAsyncThunk(
 	'groups/fetchGroups',
 	async ({ page, list, userId, search }: { page?: number; list?: number; userId?: number; search?: string }, thunkAPI) => {

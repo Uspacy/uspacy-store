@@ -5,8 +5,11 @@ import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 export interface IState {
 	groups: IResponseWithMeta<IGroup>;
 	group: IGroup;
+	groupForTask: IGroup;
 	loadingGroup: boolean;
+	loadingGroupForTask: boolean;
 	errorLoadingGroup: IErrorsAxiosResponse;
+	errorLoadingGroupForTask: IErrorsAxiosResponse;
 	loadingGroups: boolean;
 	isLoaded: boolean;
 	isChatOpened: boolean;

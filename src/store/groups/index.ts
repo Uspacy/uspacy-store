@@ -10,6 +10,7 @@ import {
 	deleteGroup,
 	editGroup,
 	fetchGroup,
+	fetchGroupForTask,
 	fetchGroups,
 	getUsersRequestedForJoing,
 	leaveGroup,
@@ -22,8 +23,11 @@ const initialState = {
 		data: [],
 	},
 	group: {},
+	groupForTask: {},
 	loadingGroup: false,
+	loadingGroupForTask: false,
 	errorLoadingGroup: null,
+	errorLoadingGroupForTask: null,
 	isLoaded: false,
 	isChatOpened: false,
 	loadingGroups: true,
@@ -46,6 +50,9 @@ const groupsReducer = createSlice({
 	reducers: {
 		setGroup: (state, action: PayloadAction<IGroup>) => {
 			state.group = action.payload;
+		},
+		setGroupForTask: (state, action: PayloadAction<IGroup>) => {
+			state.groupForTask = action.payload;
 		},
 		clearGroupReducer: (state) => {
 			state.group = {} as IGroup;
@@ -123,6 +130,19 @@ const groupsReducer = createSlice({
 		[fetchGroup.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingGroup = false;
 			state.errorLoadingGroup = action.payload;
+		},
+		[fetchGroupForTask.fulfilled.type]: (state, action: PayloadAction<IGroup>) => {
+			state.loadingGroupForTask = false;
+			state.errorLoadingGroupForTask = null;
+			state.groupForTask = action.payload;
+		},
+		[fetchGroupForTask.pending.type]: (state) => {
+			state.loadingGroupForTask = true;
+			state.errorLoadingGroupForTask = null;
+		},
+		[fetchGroupForTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingGroupForTask = false;
+			state.errorLoadingGroupForTask = action.payload;
 		},
 		[createGroup.fulfilled.type]: (state, action: PayloadAction<IGroup>) => {
 			state.loadingGroups = false;
@@ -234,6 +254,7 @@ const groupsReducer = createSlice({
 
 export const {
 	setGroup,
+	setGroupForTask,
 	clearGroupReducer,
 	chatOpened,
 	addToAllGroups,

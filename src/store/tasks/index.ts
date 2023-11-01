@@ -72,6 +72,10 @@ const initialState = {
 		openCalendar: false,
 		search: '',
 		boolean_operator: 'OR',
+		// ! its temporary, i'll be removed it
+		time_label: [],
+		accomplices: [],
+		auditors: [],
 	},
 	regularFilter: {
 		page: 0,
@@ -92,6 +96,9 @@ const initialState = {
 		openCalendar: false,
 		search: '',
 		boolean_operator: 'OR',
+		// ! its temporary, i'll be removed it
+		accomplices: [],
+		auditors: [],
 	},
 	taskFields: {},
 	loadingTasks: true,
