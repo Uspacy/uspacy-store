@@ -7,7 +7,9 @@ export interface IState {
 	group: IGroup;
 	groupForTask: IGroup;
 	loadingGroup: boolean;
+	loadingGroupForTask: boolean;
 	errorLoadingGroup: IErrorsAxiosResponse;
+	errorLoadingGroupForTask: IErrorsAxiosResponse;
 	loadingGroups: boolean;
 	isLoaded: boolean;
 	isChatOpened: boolean;

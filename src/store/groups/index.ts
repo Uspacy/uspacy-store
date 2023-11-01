@@ -25,7 +25,9 @@ const initialState = {
 	group: {},
 	groupForTask: {},
 	loadingGroup: false,
+	loadingGroupForTask: false,
 	errorLoadingGroup: null,
+	errorLoadingGroupForTask: null,
 	isLoaded: false,
 	isChatOpened: false,
 	loadingGroups: true,
@@ -130,19 +132,17 @@ const groupsReducer = createSlice({
 			state.errorLoadingGroup = action.payload;
 		},
 		[fetchGroupForTask.fulfilled.type]: (state, action: PayloadAction<IGroup>) => {
-			state.loadingGroup = false;
-			state.errorLoadingGroup = null;
+			state.loadingGroupForTask = false;
+			state.errorLoadingGroupForTask = null;
 			state.groupForTask = action.payload;
-			state.isLoaded = true;
 		},
 		[fetchGroupForTask.pending.type]: (state) => {
-			state.loadingGroup = true;
-			state.errorLoadingGroup = null;
-			state.isLoaded = false;
+			state.loadingGroupForTask = true;
+			state.errorLoadingGroupForTask = null;
 		},
 		[fetchGroupForTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingGroup = false;
-			state.errorLoadingGroup = action.payload;
+			state.loadingGroupForTask = false;
+			state.errorLoadingGroupForTask = action.payload;
 		},
 		[createGroup.fulfilled.type]: (state, action: PayloadAction<IGroup>) => {
 			state.loadingGroups = false;
