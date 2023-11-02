@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { ChatType, EActiveEntity, IChat, IExternalChatsItems, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
@@ -155,3 +156,14 @@ export const updateLastMessageInExternalChat = (chats: IExternalChatsItems, chat
 	undistributed: chats.undistributed.map((chat) => changeLastMessageByChatId(chat, chatId, message)).sort((a, b) => b.timestamp - a.timestamp),
 	inactive: chats.inactive.map((chat) => changeLastMessageByChatId(chat, chatId, message)).sort((a, b) => b.timestamp - a.timestamp),
 });
+
+export const setFirstUnreadMessage = (items: IMessage[]): IMessage[] =>
+	items.map((it, index) => {
+		const isFirstUnread = !it.readBy.length && !!items[index + 1] && !!items[index + 1].readBy.length;
+		if (isFirstUnread)
+			return {
+				...it,
+				isFirstUnread: true,
+			};
+		return it;
+	});

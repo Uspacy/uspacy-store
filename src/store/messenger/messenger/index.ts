@@ -2,7 +2,14 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { differenceInMinutes } from 'date-fns';
 
-import { getUniqueItems, onlyUnique, readLastMessageInChat, readLastMessagesInChat, sortChats } from '../../../helpers/messenger';
+import {
+	getUniqueItems,
+	onlyUnique,
+	readLastMessageInChat,
+	readLastMessagesInChat,
+	setFirstUnreadMessage,
+	sortChats,
+} from '../../../helpers/messenger';
 import { fetchChats, fetchMessages, fetchPinedMessages, goToMessage } from './actions';
 import { IState } from './types';
 
@@ -21,6 +28,7 @@ const initialState: IState = {
 
 const prepereMessages = (items: IMessage[]) => {
 	let comparedMessage: IMessage;
+	// eslint-disable-next-line no-console
 	return items.map((message) => {
 		if (
 			!comparedMessage ||
@@ -384,7 +392,7 @@ export const chatSlice = createSlice({
 						dir === 'prev' ? [...group.items, ...action.payload] : dir === 'next' ? [...action.payload, ...group.items] : action.payload;
 					return {
 						...group,
-						items: prepereMessages(getUniqueItems(items)),
+						items: setFirstUnreadMessage(prepereMessages(getUniqueItems(items))),
 						loading: false,
 						lastTimestamp,
 						firstTimestamp,
