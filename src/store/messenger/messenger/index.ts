@@ -75,6 +75,7 @@ export const chatSlice = createSlice({
 						...chat,
 						lastMessage: action.payload.item,
 						timestamp: action.payload.item.timestamp,
+						unreadCount: chat.unreadCount + 1,
 					};
 				}
 				return chat;

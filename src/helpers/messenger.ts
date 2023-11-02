@@ -144,6 +144,7 @@ const changeLastMessageByChatId = (chat, chatId, message) => {
 			...chat,
 			lastMessage: message,
 			timestamp: message.timestamp,
+			unreadCount: chat.unreadCount + 1,
 		};
 	}
 	return chat;
