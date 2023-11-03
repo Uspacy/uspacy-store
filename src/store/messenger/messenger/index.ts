@@ -66,7 +66,7 @@ export const chatSlice = createSlice({
 			state.chats.items = state.chats.items.filter(({ id }) => id !== action.payload);
 			state.messages = state.messages.filter(({ chatId }) => chatId !== action.payload);
 		},
-		unshiftMessage(state, action: PayloadAction<{ chatId: string; item: IMessage }>) {
+		unshiftMessage(state, action: PayloadAction<{ chatId: string; item: IMessage; isNotMy?: boolean }>) {
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === action.payload.chatId) {
 					const items = prepereMessages([action.payload.item, ...group.items]);
@@ -83,7 +83,7 @@ export const chatSlice = createSlice({
 						...chat,
 						lastMessage: action.payload.item,
 						timestamp: action.payload.item.timestamp,
-						unreadCount: chat.unreadCount + 1,
+						unreadCount: action.payload.isNotMy ? chat.unreadCount + 1 : chat.unreadCount,
 					};
 				}
 				return chat;
@@ -365,6 +365,18 @@ export const chatSlice = createSlice({
 				return chat;
 			});
 		},
+		updateLastUnreadMessage(state, action: PayloadAction<IChat['id']>) {
+			state.messages = state.messages.map((it) => {
+				if (it.chatId === action.payload) {
+					return {
+						...it,
+						items: setFirstUnreadMessage(it.items),
+					};
+				}
+
+				return it;
+			});
+		},
 	},
 	extraReducers: {
 		[fetchChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
@@ -513,6 +525,7 @@ export const {
 	removeMessageFromPined,
 	updatePinedMessagesByChatId,
 	updateMuteTimestampInChat,
+	updateLastUnreadMessage,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { ChatType, EActiveEntity, IChat, IExternalChatsItems, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
@@ -139,22 +138,29 @@ export const updateExternalChat = (chats: IExternalChatsItems, chat: IChat) => (
 	inactive: chat.externalChatStatus === EActiveEntity.INACTIVE_EXTERNAL ? updateChatById(chats.inactive, chat) : chats.inactive,
 });
 
-const changeLastMessageByChatId = (chat, chatId, message) => {
+const changeLastMessageByChatId = (chat, chatId, message, isNotMy) => {
 	if (chat.id === chatId) {
 		return {
 			...chat,
 			lastMessage: message,
 			timestamp: message.timestamp,
-			unreadCount: chat.unreadCount + 1,
+			unreadCount: isNotMy ? chat.unreadCount + 1 : chat.unreadCount,
 		};
 	}
 	return chat;
 };
 
-export const updateLastMessageInExternalChat = (chats: IExternalChatsItems, chatId: string, message: IMessage): IExternalChatsItems => ({
-	active: chats.active.map((chat) => changeLastMessageByChatId(chat, chatId, message)).sort((a, b) => b.timestamp - a.timestamp),
-	undistributed: chats.undistributed.map((chat) => changeLastMessageByChatId(chat, chatId, message)).sort((a, b) => b.timestamp - a.timestamp),
-	inactive: chats.inactive.map((chat) => changeLastMessageByChatId(chat, chatId, message)).sort((a, b) => b.timestamp - a.timestamp),
+export const updateLastMessageInExternalChat = (
+	chats: IExternalChatsItems,
+	chatId: string,
+	message: IMessage,
+	isNotMy?: boolean,
+): IExternalChatsItems => ({
+	active: chats.active.map((chat) => changeLastMessageByChatId(chat, chatId, message, isNotMy)).sort((a, b) => b.timestamp - a.timestamp),
+	undistributed: chats.undistributed
+		.map((chat) => changeLastMessageByChatId(chat, chatId, message, isNotMy))
+		.sort((a, b) => b.timestamp - a.timestamp),
+	inactive: chats.inactive.map((chat) => changeLastMessageByChatId(chat, chatId, message, isNotMy)).sort((a, b) => b.timestamp - a.timestamp),
 });
 
 export const setFirstUnreadMessage = (items: IMessage[]): IMessage[] =>
@@ -165,5 +171,8 @@ export const setFirstUnreadMessage = (items: IMessage[]): IMessage[] =>
 				...it,
 				isFirstUnread: true,
 			};
-		return it;
+		return {
+			...it,
+			isFirstUnread: undefined,
+		};
 	});

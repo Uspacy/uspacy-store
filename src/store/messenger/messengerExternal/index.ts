@@ -58,9 +58,9 @@ export const externalChatSlice = createSlice({
 			}
 			state.externalChats.items.active = state.externalChats.items.active.filter((chat) => chat.id !== action.payload);
 		},
-		unshiftLastMessage(state, action: PayloadAction<{ chatId: string; item: IMessage }>) {
-			const { chatId, item } = action.payload;
-			state.externalChats.items = updateLastMessageInExternalChat(state.externalChats.items, chatId, item);
+		unshiftLastMessage(state, action: PayloadAction<{ chatId: string; item: IMessage; isNotMy?: boolean }>) {
+			const { chatId, item, isNotMy } = action.payload;
+			state.externalChats.items = updateLastMessageInExternalChat(state.externalChats.items, chatId, item, isNotMy);
 		},
 		appendChatsToUndistributed(state, action: PayloadAction<IChat>) {
 			state.externalChats.items.undistributed = [action.payload, ...state.externalChats.items.undistributed];
