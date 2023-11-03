@@ -1,8 +1,10 @@
+/* eslint-disable no-console */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { differenceInMinutes } from 'date-fns';
 
 import {
+	decUnreadCountByChatId,
 	getUniqueItems,
 	onlyUnique,
 	readLastMessageInChat,
@@ -227,7 +229,7 @@ export const chatSlice = createSlice({
 				return group;
 			});
 
-			state.chats.items = readLastMessageInChat(state.chats.items, messageAction, userId);
+			state.chats.items = decUnreadCountByChatId(readLastMessageInChat(state.chats.items, messageAction, userId), messageAction.chatId);
 		},
 		readMessages(state, action: PayloadAction<{ items: { id: string; readBy: number[] }[]; chatId: string }>) {
 			const { items: itemsAction, chatId } = action.payload;
@@ -377,6 +379,20 @@ export const chatSlice = createSlice({
 				return it;
 			});
 		},
+		clearUnreadCounter(state, action: PayloadAction<IChat['id']>) {
+			state.chats.items = state.chats.items.map((it) => {
+				console.log(it.id);
+				console.log(action.payload);
+				if (it.id === action.payload) {
+					return {
+						...it,
+						unreadCount: 0,
+					};
+				}
+
+				return it;
+			});
+		},
 	},
 	extraReducers: {
 		[fetchChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
@@ -399,7 +415,7 @@ export const chatSlice = createSlice({
 				if (group.chatId === action.meta.arg.chatId) {
 					const { dir } = action.meta.arg;
 					const lastTimestamp = dir === 'prev' || !dir ? action.payload[action.payload.length - 1]?.timestamp : group.lastTimestamp;
-					const firstTimestamp = !dir ? undefined : dir === 'next' ? action.payload[0]?.timestamp : group.firstTimestamp;
+					const firstTimestamp = dir === 'next' || !dir ? action.payload[0]?.timestamp : group.firstTimestamp;
 					const items =
 						dir === 'prev' ? [...group.items, ...action.payload] : dir === 'next' ? [...action.payload, ...group.items] : action.payload;
 					return {
@@ -526,6 +542,7 @@ export const {
 	updatePinedMessagesByChatId,
 	updateMuteTimestampInChat,
 	updateLastUnreadMessage,
+	clearUnreadCounter,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

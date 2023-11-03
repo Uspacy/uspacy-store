@@ -176,3 +176,15 @@ export const setFirstUnreadMessage = (items: IMessage[]): IMessage[] =>
 			isFirstUnread: undefined,
 		};
 	});
+
+export const decUnreadCountByChatId = (chats: IChat[], chatId: IChat['id']) =>
+	chats.map((chat) => {
+		if (chat.id === chatId) {
+			return {
+				...chat,
+				unreadCount: chat.unreadCount - 1,
+			};
+		}
+
+		return chat;
+	});
