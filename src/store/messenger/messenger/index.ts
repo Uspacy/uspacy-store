@@ -466,10 +466,26 @@ export const chatSlice = createSlice({
 		},
 
 		[goToMessage.fulfilled.type]: (state, action: PayloadAction<IMessage[], string, { arg: GoToMessageRequest }>) => {
+			const isFirstOpenedChat = !state.messages.find((it) => it.chatId === action.payload[0]?.chatId);
+			const lastTimestamp = action.payload[action.payload.length - 1]?.timestamp;
+			const firstTimestamp = action.payload[0]?.timestamp;
+
+			// fix when we go to message in first opened chat
+			if (isFirstOpenedChat) {
+				state.messages.push({
+					message: '',
+					chatId: action.payload[0]?.chatId,
+					items: prepereMessages(action.payload),
+					loading: false,
+					lastTimestamp,
+					firstTimestamp,
+				});
+
+				return;
+			}
+
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === action.meta.arg.chatId) {
-					const lastTimestamp = action.payload[action.payload.length - 1]?.timestamp;
-					const firstTimestamp = action.payload[0]?.timestamp;
 					return {
 						...group,
 						items: prepereMessages(action.payload),
