@@ -166,15 +166,10 @@ export const updateLastMessageInExternalChat = (
 export const setFirstUnreadMessage = (items: IMessage[]): IMessage[] =>
 	items.map((it, index) => {
 		const isFirstUnread = !it.readBy.length && !!items[index + 1] && !!items[index + 1].readBy.length;
-		if (isFirstUnread)
 			return {
 				...it,
-				isFirstUnread: true,
+				isFirstUnread: isFirstUnread ? true : undefined,
 			};
-		return {
-			...it,
-			isFirstUnread: undefined,
-		};
 	});
 
 export const decUnreadCountByChatId = (chats: IChat[], chatId: IChat['id']) =>
