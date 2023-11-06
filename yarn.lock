@@ -506,6 +506,14 @@
     "@typescript-eslint/types" "6.3.0"
     eslint-visitor-keys "^3.4.1"
 
+"@uspacy/sdk@../uspacy-js-sdk":
+  version "0.0.34"
+  dependencies:
+    axios "1.4.0"
+    js-cookie "3.0.5"
+    jwt-decode "3.1.2"
+    localforage "1.10.0"
+
 "@uspacy/sdk@^0.0.33":
   version "0.0.33"
   resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.33/68861b540ff4d76f680bab471bd24e9f5c592bd7#68861b540ff4d76f680bab471bd24e9f5c592bd7"

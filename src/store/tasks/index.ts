@@ -246,9 +246,11 @@ const tasksReducer = createSlice({
 		removeTaskFromNPositionTable: (state, action: PayloadAction<string>) => {
 			if (state.isTable && !state.isRegularSection) {
 				state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload));
+				state.meta.total = state.meta.total - 1;
 			}
 			if (state.isRegularSection) {
 				state.regularTasks.data = state.regularTasks.data.filter((task) => task?.id !== String(action?.payload));
+				state.regularTasksMeta.total = state.regularTasksMeta.total - 1;
 			}
 		},
 		addPopupLink: (state, action: PayloadAction<ITask>) => {
