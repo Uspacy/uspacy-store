@@ -506,10 +506,10 @@
     "@typescript-eslint/types" "6.3.0"
     eslint-visitor-keys "^3.4.1"
 
-"@uspacy/sdk@0.0.35":
-  version "0.0.35"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.35/c89efcc4d20d7ee75372afd3ee87b9c67b78da82#c89efcc4d20d7ee75372afd3ee87b9c67b78da82"
-  integrity sha512-s9NMJKtl3jWUIJz7zalukJMocSj4/t/054I29CpRuUo/epmjcqLEt3Vi0incg1RZYGEQkgjKpncSYe0zi27OqA==
+"@uspacy/sdk@0.0.36":
+  version "0.0.36"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.36/728b2d71668fb6646471c269b9a0868184b93628#728b2d71668fb6646471c269b9a0868184b93628"
+  integrity sha512-8MAve3JIG5tPDfKNtESvvztCNLDbFP7RN5quLjNW3+YdVJAl5WUDOh8yppzDlIv0aBoUdmF9zFlTDr4/XDByrA==
   dependencies:
     axios "1.4.0"
     js-cookie "3.0.5"
