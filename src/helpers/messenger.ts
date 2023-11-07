@@ -138,19 +138,48 @@ export const updateExternalChat = (chats: IExternalChatsItems, chat: IChat) => (
 	inactive: chat.externalChatStatus === EActiveEntity.INACTIVE_EXTERNAL ? updateChatById(chats.inactive, chat) : chats.inactive,
 });
 
-const changeLastMessageByChatId = (chat, chatId, message) => {
+const changeLastMessageByChatId = (chat, chatId, message, isNotMy) => {
 	if (chat.id === chatId) {
 		return {
 			...chat,
 			lastMessage: message,
 			timestamp: message.timestamp,
+			unreadCount: isNotMy ? chat.unreadCount + 1 : chat.unreadCount,
 		};
 	}
 	return chat;
 };
 
-export const updateLastMessageInExternalChat = (chats: IExternalChatsItems, chatId: string, message: IMessage): IExternalChatsItems => ({
-	active: chats.active.map((chat) => changeLastMessageByChatId(chat, chatId, message)).sort((a, b) => b.timestamp - a.timestamp),
-	undistributed: chats.undistributed.map((chat) => changeLastMessageByChatId(chat, chatId, message)).sort((a, b) => b.timestamp - a.timestamp),
-	inactive: chats.inactive.map((chat) => changeLastMessageByChatId(chat, chatId, message)).sort((a, b) => b.timestamp - a.timestamp),
+export const updateLastMessageInExternalChat = (
+	chats: IExternalChatsItems,
+	chatId: string,
+	message: IMessage,
+	isNotMy?: boolean,
+): IExternalChatsItems => ({
+	active: chats.active.map((chat) => changeLastMessageByChatId(chat, chatId, message, isNotMy)).sort((a, b) => b.timestamp - a.timestamp),
+	undistributed: chats.undistributed
+		.map((chat) => changeLastMessageByChatId(chat, chatId, message, isNotMy))
+		.sort((a, b) => b.timestamp - a.timestamp),
+	inactive: chats.inactive.map((chat) => changeLastMessageByChatId(chat, chatId, message, isNotMy)).sort((a, b) => b.timestamp - a.timestamp),
 });
+
+export const setFirstUnreadMessage = (items: IMessage[]): IMessage[] =>
+	items.map((it, index) => {
+		const isFirstUnread = !it.readBy.length && !!items[index + 1] && !!items[index + 1].readBy.length;
+		return {
+			...it,
+			isFirstUnread: isFirstUnread ? true : undefined,
+		};
+	});
+
+export const decUnreadCountByChatId = (chats: IChat[], chatId: IChat['id']) =>
+	chats.map((chat) => {
+		if (chat.id === chatId) {
+			return {
+				...chat,
+				unreadCount: chat.unreadCount - 1,
+			};
+		}
+
+		return chat;
+	});
