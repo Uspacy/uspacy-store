@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { ICountryTemplates, IRequisite, IRequisitesResponse, ITemplate, ITemplateResponse } from '@uspacy/sdk/lib/models/requisites';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
@@ -17,7 +18,7 @@ import { IState } from './types';
 
 const initialState: IState = {
 	loading: true,
-	errorLoading: '',
+	errorLoading: null,
 };
 
 export const profileSlice = createSlice({
@@ -39,10 +40,10 @@ export const profileSlice = createSlice({
 		},
 		[fetchProfile.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
 			state.loading = true;
-			state.errorLoading = '';
+			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
-		[fetchProfile.rejected.type]: (state: IState, action: PayloadAction<string>) => {
+		[fetchProfile.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loading = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
@@ -54,10 +55,10 @@ export const profileSlice = createSlice({
 		},
 		[fetchRequisites.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
 			state.loading = true;
-			state.errorLoading = '';
+			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
-		[fetchRequisites.rejected.type]: (state: IState, action: PayloadAction<string>) => {
+		[fetchRequisites.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loading = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
@@ -73,10 +74,10 @@ export const profileSlice = createSlice({
 		},
 		[updateRequisite.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
 			state.loading = true;
-			state.errorLoading = '';
+			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
-		[updateRequisite.rejected.type]: (state: IState, action: PayloadAction<string>) => {
+		[updateRequisite.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loading = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
@@ -89,10 +90,10 @@ export const profileSlice = createSlice({
 		},
 		[removeRequisite.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
 			state.loading = true;
-			state.errorLoading = '';
+			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
-		[removeRequisite.rejected.type]: (state: IState, action: PayloadAction<string>) => {
+		[removeRequisite.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loading = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
@@ -104,10 +105,10 @@ export const profileSlice = createSlice({
 		},
 		[fetchTemplates.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
 			state.loading = true;
-			state.errorLoading = '';
+			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
-		[fetchTemplates.rejected.type]: (state: IState, action: PayloadAction<string>) => {
+		[fetchTemplates.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loading = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
@@ -119,10 +120,10 @@ export const profileSlice = createSlice({
 		},
 		[fetchBasicTemplates.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
 			state.loading = true;
-			state.errorLoading = '';
+			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
-		[fetchBasicTemplates.rejected.type]: (state: IState, action: PayloadAction<string>) => {
+		[fetchBasicTemplates.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loading = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
@@ -134,10 +135,10 @@ export const profileSlice = createSlice({
 		},
 		[createTemplate.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
 			state.loading = true;
-			state.errorLoading = '';
+			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
-		[createTemplate.rejected.type]: (state: IState, action: PayloadAction<string>) => {
+		[createTemplate.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loading = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
@@ -153,10 +154,10 @@ export const profileSlice = createSlice({
 		},
 		[updateTemplate.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
 			state.loading = true;
-			state.errorLoading = '';
+			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
-		[updateTemplate.rejected.type]: (state: IState, action: PayloadAction<string>) => {
+		[updateTemplate.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loading = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
@@ -169,10 +170,10 @@ export const profileSlice = createSlice({
 		},
 		[removeTemplate.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
 			state.loading = true;
-			state.errorLoading = '';
+			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
-		[removeTemplate.rejected.type]: (state: IState, action: PayloadAction<string>) => {
+		[removeTemplate.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loading = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
