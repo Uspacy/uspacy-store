@@ -23,11 +23,11 @@ export const fetchChats = createAsyncThunk(
 
 export const fetchMessages = createAsyncThunk(
 	'messenger/fetchMessages',
-	async ({ chatId, limit, lastTimestamp, firstTimestamp }: FetchMessagesRequest, { rejectWithValue }) => {
+	async ({ chatId, limit, lastTimestamp, firstTimestamp, unreadFirst }: FetchMessagesRequest, { rejectWithValue }) => {
 		try {
-			return (await uspacySdk.messengerService.getMessages({ chatId, limit, lastTimestamp, firstTimestamp })).data;
+			return (await uspacySdk.messengerService.getMessages({ chatId, limit, lastTimestamp, firstTimestamp, unreadFirst })).data;
 		} catch (e) {
-			return rejectWithValue(undefined);
+			return rejectWithValue(e);
 		}
 	},
 );
@@ -36,7 +36,7 @@ export const goToMessage = createAsyncThunk('messenger/goToMessage', async ({ id
 	try {
 		return (await uspacySdk.messengerService.goToMessage({ id })).data;
 	} catch (e) {
-		return rejectWithValue(undefined);
+		return rejectWithValue(e);
 	}
 });
 
@@ -45,6 +45,6 @@ export const fetchPinedMessages = createAsyncThunk('messenger/fetchPinedMessages
 		const items = (await uspacySdk.messengerService.getPinnedMessages(chatId)).data;
 		return { chatId, items };
 	} catch (e) {
-		return rejectWithValue(undefined);
+		return rejectWithValue(e);
 	}
 });
