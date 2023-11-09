@@ -1,3 +1,4 @@
+import { ICountryTemplates, IRequisite, ITemplate } from '@uspacy/sdk/lib/models/requisites';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 export interface IState {
@@ -5,4 +6,7 @@ export interface IState {
 	loading: boolean;
 	errorLoading: string;
 	currentRequestId?: string;
+	requisites?: IRequisite[];
+	templates?: ITemplate[];
+	basicTemplates?: ICountryTemplates[];
 }
