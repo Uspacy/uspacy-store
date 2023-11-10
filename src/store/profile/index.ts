@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { ICountryTemplates, IRequisite, IRequisitesResponse, ITemplate, ITemplateResponse } from '@uspacy/sdk/lib/models/requisites';
@@ -17,7 +18,9 @@ import {
 import { IState } from './types';
 
 const initialState: IState = {
-	loading: true,
+	loading: false,
+	loadingRequisites: false,
+	loadingTemplates: false,
 	errorLoading: null,
 };
 
@@ -49,23 +52,23 @@ export const profileSlice = createSlice({
 			state.currentRequestId = undefined;
 		},
 		[fetchRequisites.fulfilled.type]: (state: IState, action: PayloadAction<IRequisitesResponse>) => {
-			state.loading = false;
+			state.loadingRequisites = false;
 			state.requisites = action.payload.data;
 			state.currentRequestId = undefined;
 		},
 		[fetchRequisites.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
-			state.loading = true;
+			state.loadingRequisites = true;
 			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
 		[fetchRequisites.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loading = false;
+			state.loadingRequisites = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
 		},
 		[updateRequisite.fulfilled.type]: (state: IState, action: PayloadAction<IRequisite>) => {
 			const reqId = action.payload;
-			state.loading = false;
+			state.loadingRequisites = false;
 			state.requisites = state.requisites.map((req) => {
 				if (req.id === reqId.id) return { ...req, is_basic: true };
 				return { ...req, is_basic: false };
@@ -73,79 +76,79 @@ export const profileSlice = createSlice({
 			state.currentRequestId = undefined;
 		},
 		[updateRequisite.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
-			state.loading = true;
+			state.loadingRequisites = true;
 			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
 		[updateRequisite.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loading = false;
+			state.loadingRequisites = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
 		},
 		[removeRequisite.fulfilled.type]: (state: IState, action: PayloadAction<number>) => {
 			const removedReqId = action.payload;
-			state.loading = false;
+			state.loadingRequisites = false;
 			state.requisites = state.requisites.filter((req) => req.id !== removedReqId);
 			state.currentRequestId = undefined;
 		},
 		[removeRequisite.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
-			state.loading = true;
+			state.loadingRequisites = true;
 			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
 		[removeRequisite.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loading = false;
+			state.loadingRequisites = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
 		},
 		[fetchTemplates.fulfilled.type]: (state: IState, action: PayloadAction<ITemplateResponse>) => {
-			state.loading = false;
+			state.loadingTemplates = false;
 			state.templates = action.payload.data;
 			state.currentRequestId = undefined;
 		},
 		[fetchTemplates.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
-			state.loading = true;
+			state.loadingTemplates = true;
 			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
 		[fetchTemplates.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loading = false;
+			state.loadingTemplates = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
 		},
 		[fetchBasicTemplates.fulfilled.type]: (state: IState, action: PayloadAction<ICountryTemplates[]>) => {
-			state.loading = false;
+			state.loadingTemplates = false;
 			state.basicTemplates = action.payload;
 			state.currentRequestId = undefined;
 		},
 		[fetchBasicTemplates.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
-			state.loading = true;
+			state.loadingTemplates = true;
 			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
 		[fetchBasicTemplates.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loading = false;
+			state.loadingTemplates = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
 		},
 		[createTemplate.fulfilled.type]: (state: IState, action: PayloadAction<ITemplate>) => {
-			state.loading = false;
+			state.loadingTemplates = false;
 			state.templates = [action.payload, ...state.templates];
 			state.currentRequestId = undefined;
 		},
 		[createTemplate.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
-			state.loading = true;
+			state.loadingTemplates = true;
 			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
 		[createTemplate.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loading = false;
+			state.loadingTemplates = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
 		},
 		[updateTemplate.fulfilled.type]: (state: IState, action: PayloadAction<ITemplate>) => {
 			const tempId = action.payload;
-			state.loading = false;
+			state.loadingTemplates = false;
 			state.templates = state.templates.map((temp) => {
 				if (temp.id === tempId.id) return { ...action.payload };
 				return temp;
@@ -153,28 +156,28 @@ export const profileSlice = createSlice({
 			state.currentRequestId = undefined;
 		},
 		[updateTemplate.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
-			state.loading = true;
+			state.loadingTemplates = true;
 			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
 		[updateTemplate.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loading = false;
+			state.loadingTemplates = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
 		},
 		[removeTemplate.fulfilled.type]: (state: IState, action: PayloadAction<number>) => {
 			const removedTemplateId = action.payload;
-			state.loading = false;
+			state.loadingTemplates = false;
 			state.templates = state.templates.filter((template) => template.id !== removedTemplateId);
 			state.currentRequestId = undefined;
 		},
 		[removeTemplate.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
-			state.loading = true;
+			state.loadingTemplates = true;
 			state.errorLoading = null;
 			state.currentRequestId = action.meta.requestId;
 		},
 		[removeTemplate.rejected.type]: (state: IState, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loading = false;
+			state.loadingTemplates = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
 		},
