@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { IUser } from '@uspacy/sdk/lib/models/user';
@@ -277,7 +276,6 @@ export const chatSlice = createSlice({
 		},
 		readMessages(state, action: PayloadAction<{ items: { id: string; readBy: number[] }[]; chatId: string }>) {
 			const { items: itemsAction, chatId } = action.payload;
-
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === chatId) {
 					const items = group.items.map((message) => {
