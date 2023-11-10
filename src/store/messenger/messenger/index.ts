@@ -423,18 +423,26 @@ export const chatSlice = createSlice({
 				return it;
 			});
 		},
-		clearUnreadCounter(state, action: PayloadAction<IChat['id']>) {
+		readAllMessages(state, action: PayloadAction<{ chatId: IChat['id']; profile: IUser }>) {
 			state.chats.items = state.chats.items.map((it) => {
-				console.log(it.id);
-				console.log(action.payload);
-				if (it.id === action.payload) {
+				if (it.id === action.payload.chatId) {
 					return {
 						...it,
 						unreadCount: 0,
 					};
 				}
-
 				return it;
+			});
+			state.messages = state.messages.map((group) => {
+				if (group.chatId === action.payload.chatId) {
+					return {
+						...group,
+						items: group.items
+							.filter((it) => !it.isFirstUnread)
+							.map((it) => ({ ...it, readBy: [...it.readBy, action.payload.profile.authUserId] })),
+					};
+				}
+				return group;
 			});
 		},
 	},
@@ -610,7 +618,7 @@ export const {
 	updatePinedMessagesByChatId,
 	updateMuteTimestampInChat,
 	updateLastUnreadMessage,
-	clearUnreadCounter,
+	readAllMessages,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
