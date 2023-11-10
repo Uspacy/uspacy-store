@@ -18,9 +18,9 @@ import {
 import { IState } from './types';
 
 const initialState: IState = {
-	loading: true,
-	loadingRequisites: true,
-	loadingTemplates: true,
+	loading: false,
+	loadingRequisites: false,
+	loadingTemplates: false,
 	errorLoading: null,
 };
 
