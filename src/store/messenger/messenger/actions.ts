@@ -23,18 +23,24 @@ export const fetchChats = createAsyncThunk(
 
 export const fetchMessages = createAsyncThunk(
 	'messenger/fetchMessages',
-	async ({ chatId, limit, lastTimestamp, firstTimestamp, unreadFirst }: FetchMessagesRequest, { rejectWithValue }) => {
+	async ({ chatId, limit, lastTimestamp, firstTimestamp, unreadFirst }: FetchMessagesRequest, { rejectWithValue, getState }) => {
 		try {
-			return (await uspacySdk.messengerService.getMessages({ chatId, limit, lastTimestamp, firstTimestamp, unreadFirst })).data;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const state: any = getState();
+			const items = (await uspacySdk.messengerService.getMessages({ chatId, limit, lastTimestamp, firstTimestamp, unreadFirst })).data;
+			return { items, profile: state.profile.data };
 		} catch (e) {
 			return rejectWithValue(e);
 		}
 	},
 );
 
-export const goToMessage = createAsyncThunk('messenger/goToMessage', async ({ id }: GoToMessageRequest, { rejectWithValue }) => {
+export const goToMessage = createAsyncThunk('messenger/goToMessage', async ({ id }: GoToMessageRequest, { rejectWithValue, getState }) => {
 	try {
-		return (await uspacySdk.messengerService.goToMessage({ id })).data;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const state: any = getState();
+		const items = (await uspacySdk.messengerService.goToMessage({ id })).data;
+		return { items, profile: state.profile.data };
 	} catch (e) {
 		return rejectWithValue(e);
 	}
