@@ -6,6 +6,7 @@ export interface IState {
 	data?: IUser;
 	loading: boolean;
 	loadingRequisites: boolean;
+	loadingTemplates: boolean;
 	errorLoading: IErrorsAxiosResponse;
 	currentRequestId?: string;
 	requisites?: IRequisite[];
