@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { ITasksParams } from '@uspacy/sdk/lib/models/tasks';
@@ -52,14 +53,17 @@ export const fetchSubtasks = createAsyncThunk(
 	},
 );
 
-export const fetchTask = createAsyncThunk('tasks/fetchTask', async (id: string, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.getTask(id);
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
+export const fetchTask = createAsyncThunk(
+	'tasks/fetchTask',
+	async ({ id, crm_entity_list }: { id: string; crm_entity_list?: boolean }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.tasksService.getTask(id, crm_entity_list);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
 
 export const fetchTemplate = createAsyncThunk('tasks/fetchTemplate', async (id: string, { rejectWithValue }) => {
 	try {
