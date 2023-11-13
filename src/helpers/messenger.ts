@@ -73,13 +73,17 @@ export const readLastMessagesInChat = (chats: IChat[], items: { id: string; read
 			if (info) {
 				return {
 					...chat,
+					unreadCount: Math.max(chat.unreadCount - items.length, 0),
 					lastMessage: {
 						...chat.lastMessage,
 						readBy: info.readBy,
 					},
 				};
 			}
-			return chat;
+			return {
+				...chat,
+				unreadCount: Math.max(chat.unreadCount - items.length, 0),
+			};
 		}
 		return chat;
 	});
@@ -154,23 +158,17 @@ export const updateLastMessageInExternalChat = (
 	chats: IExternalChatsItems,
 	chatId: string,
 	message: IMessage,
-	isNotMy?: boolean,
-): IExternalChatsItems => ({
-	active: chats.active.map((chat) => changeLastMessageByChatId(chat, chatId, message, isNotMy)).sort((a, b) => b.timestamp - a.timestamp),
-	undistributed: chats.undistributed
-		.map((chat) => changeLastMessageByChatId(chat, chatId, message, isNotMy))
-		.sort((a, b) => b.timestamp - a.timestamp),
-	inactive: chats.inactive.map((chat) => changeLastMessageByChatId(chat, chatId, message, isNotMy)).sort((a, b) => b.timestamp - a.timestamp),
-});
-
-export const setFirstUnreadMessage = (items: IMessage[]): IMessage[] =>
-	items.map((it, index) => {
-		const isFirstUnread = !it.readBy.length && !!items[index + 1] && !!items[index + 1].readBy.length;
-		return {
-			...it,
-			isFirstUnread: isFirstUnread ? true : undefined,
-		};
-	});
+	profile?: IUser,
+): IExternalChatsItems => {
+	const isNotMy = message.authorId !== profile?.authUserId;
+	return {
+		active: chats.active.map((chat) => changeLastMessageByChatId(chat, chatId, message, isNotMy)).sort((a, b) => b.timestamp - a.timestamp),
+		undistributed: chats.undistributed
+			.map((chat) => changeLastMessageByChatId(chat, chatId, message, isNotMy))
+			.sort((a, b) => b.timestamp - a.timestamp),
+		inactive: chats.inactive.map((chat) => changeLastMessageByChatId(chat, chatId, message, isNotMy)).sort((a, b) => b.timestamp - a.timestamp),
+	};
+};
 
 export const decUnreadCountByChatId = (chats: IChat[], chatId: IChat['id']) =>
 	chats.map((chat) => {

@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IChat, IMessage } from '@uspacy/sdk/lib/models/messenger';
+import { IUser } from '@uspacy/sdk/lib/models/user';
 
 import {
 	onlyUnique,
@@ -58,9 +59,9 @@ export const externalChatSlice = createSlice({
 			}
 			state.externalChats.items.active = state.externalChats.items.active.filter((chat) => chat.id !== action.payload);
 		},
-		unshiftLastMessage(state, action: PayloadAction<{ chatId: string; item: IMessage; isNotMy?: boolean }>) {
-			const { chatId, item, isNotMy } = action.payload;
-			state.externalChats.items = updateLastMessageInExternalChat(state.externalChats.items, chatId, item, isNotMy);
+		unshiftLastMessage(state, action: PayloadAction<{ chatId: string; item: IMessage; profile: IUser }>) {
+			const { chatId, item, profile } = action.payload;
+			state.externalChats.items = updateLastMessageInExternalChat(state.externalChats.items, chatId, item, profile);
 		},
 		appendChatsToUndistributed(state, action: PayloadAction<IChat>) {
 			state.externalChats.items.undistributed = [action.payload, ...state.externalChats.items.undistributed];
