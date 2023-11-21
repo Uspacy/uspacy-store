@@ -6,6 +6,7 @@ import comments from './comments';
 import crmEntities from './crmEntities';
 import dealsFunnel from './dealsFunnel';
 import departments from './departments';
+import email from './email';
 import files from './files';
 import groups from './groups';
 import messengerReducer from './messenger';
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
 	crmEntities,
 	dealsFunnel,
 	departments,
+	email,
 	files,
 	groups,
 	notifications,
