@@ -73,13 +73,17 @@ export const readLastMessagesInChat = (chats: IChat[], items: { id: string; read
 			if (info) {
 				return {
 					...chat,
+					unreadCount: Math.max(chat.unreadCount - items.length, 0),
 					lastMessage: {
 						...chat.lastMessage,
 						readBy: info.readBy,
 					},
 				};
 			}
-			return chat;
+			return {
+				...chat,
+				unreadCount: Math.max(chat.unreadCount - items.length, 0),
+			};
 		}
 		return chat;
 	});
