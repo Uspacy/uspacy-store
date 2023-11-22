@@ -1,6 +1,6 @@
-/* eslint-disable no-console */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, IMessage } from '@uspacy/sdk/lib/models/messenger';
+import { IUser } from '@uspacy/sdk/lib/models/user';
 import { differenceInMinutes } from 'date-fns';
 
 import {
@@ -9,7 +9,6 @@ import {
 	onlyUnique,
 	readLastMessageInChat,
 	readLastMessagesInChat,
-	setFirstUnreadMessage,
 	sortChats,
 } from '../../../helpers/messenger';
 import { fetchChats, fetchMessages, fetchPinedMessages, goToMessage } from './actions';
@@ -28,10 +27,13 @@ const initialState: IState = {
 	pinedMessages: [],
 };
 
-const prepereMessages = (items: IMessage[]) => {
-	let comparedMessage: IMessage;
-	// eslint-disable-next-line no-console
-	return items.map((message) => {
+interface IPreperedMessage extends IMessage {
+	readByTemp?: number[];
+}
+
+const prepereMessages = (items: IPreperedMessage[], profile: IUser) => {
+	let comparedMessage: IPreperedMessage;
+	return items.flatMap((message, index, origin) => {
 		if (
 			!comparedMessage ||
 			differenceInMinutes(comparedMessage.timestamp, message.timestamp) > 1 ||
@@ -40,6 +42,25 @@ const prepereMessages = (items: IMessage[]) => {
 			comparedMessage = message;
 		}
 		const showTime = comparedMessage.id === message.id || differenceInMinutes(comparedMessage.timestamp, message.timestamp) > 1;
+
+		const nextMessage = items[index + 1];
+		const isFirstUnread =
+			Array.isArray(message.readBy) &&
+			message.authorId !== profile.authUserId &&
+			!message.readBy.includes(profile.authUserId) &&
+			nextMessage?.readBy?.includes(profile.authUserId);
+
+		if (isFirstUnread && !origin.find((it) => it.isFirstUnread)) {
+			return [
+				message,
+				{
+					...message,
+					id: `${message.id}-unreadMessage`,
+					message: 'unreadMessages',
+					isFirstUnread,
+				},
+			];
+		}
 		return {
 			...message,
 			showTime,
@@ -55,10 +76,29 @@ export const chatSlice = createSlice({
 			const items = getUniqueItems([...action.payload.items, ...state.chats.items]).sort(sortChats);
 			state.chats.items = items;
 		},
-		setCurrentChat(state, action: PayloadAction<string>) {
-			state.chats.currentChatId = action.payload;
+		setCurrentChat(state, action: PayloadAction<{ id: string; profile: IUser }>) {
+			state.chats.currentChatId = action.payload.id;
+			state.messages = state.messages.map((group) => {
+				if (group.chatId === action.payload.id) {
+					const items = prepereMessages(group.items, action.payload.profile);
+					return {
+						...group,
+						items,
+					};
+				}
+				return group;
+			});
 		},
 		unsetCurrentChat(state) {
+			state.messages = state.messages.map((group) => {
+				if (group.chatId === state.chats.currentChatId) {
+					return {
+						...group,
+						items: group.items.filter((message) => !message.isFirstUnread),
+					};
+				}
+				return group;
+			});
 			state.chats.currentChatId = undefined;
 		},
 		removeChat(state, action: PayloadAction<string>) {
@@ -68,10 +108,10 @@ export const chatSlice = createSlice({
 			state.chats.items = state.chats.items.filter(({ id }) => id !== action.payload);
 			state.messages = state.messages.filter(({ chatId }) => chatId !== action.payload);
 		},
-		unshiftMessage(state, action: PayloadAction<{ chatId: string; item: IMessage; isNotMy?: boolean }>) {
+		unshiftMessage(state, action: PayloadAction<{ chatId: string; item: IMessage; profile: IUser }>) {
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === action.payload.chatId) {
-					const items = prepereMessages([action.payload.item, ...group.items]);
+					const items = prepereMessages([action.payload.item, ...group.items], action.payload.profile);
 					return {
 						...group,
 						items,
@@ -85,7 +125,10 @@ export const chatSlice = createSlice({
 						...chat,
 						lastMessage: action.payload.item,
 						timestamp: action.payload.item.timestamp,
-						unreadCount: action.payload.isNotMy ? chat.unreadCount + 1 : chat.unreadCount,
+						unreadCount:
+							action.payload.item.authorId !== action.payload.profile.authUserId && state.chats.currentChatId !== chat.id
+								? chat.unreadCount + 1
+								: chat.unreadCount,
 					};
 				}
 				return chat;
@@ -233,7 +276,6 @@ export const chatSlice = createSlice({
 		},
 		readMessages(state, action: PayloadAction<{ items: { id: string; readBy: number[] }[]; chatId: string }>) {
 			const { items: itemsAction, chatId } = action.payload;
-
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === chatId) {
 					const items = group.items.map((message) => {
@@ -372,25 +414,33 @@ export const chatSlice = createSlice({
 				if (it.chatId === action.payload) {
 					return {
 						...it,
-						items: setFirstUnreadMessage(it.items),
+						// items: setFirstUnreadMessage(it.items),
 					};
 				}
 
 				return it;
 			});
 		},
-		clearUnreadCounter(state, action: PayloadAction<IChat['id']>) {
+		readAllMessages(state, action: PayloadAction<{ chatId: IChat['id']; profile: IUser }>) {
 			state.chats.items = state.chats.items.map((it) => {
-				console.log(it.id);
-				console.log(action.payload);
-				if (it.id === action.payload) {
+				if (it.id === action.payload.chatId) {
 					return {
 						...it,
 						unreadCount: 0,
 					};
 				}
-
 				return it;
+			});
+			state.messages = state.messages.map((group) => {
+				if (group.chatId === action.payload.chatId) {
+					return {
+						...group,
+						items: group.items
+							.filter((it) => !it.isFirstUnread)
+							.map((it) => ({ ...it, readBy: [...it.readBy, action.payload.profile.authUserId] })),
+					};
+				}
+				return group;
 			});
 		},
 	},
@@ -410,17 +460,25 @@ export const chatSlice = createSlice({
 			state.chats.loading = false;
 		},
 
-		[fetchMessages.fulfilled.type]: (state, action: PayloadAction<IMessage[], string, { arg: FetchMessagesRequest }>) => {
+		[fetchMessages.fulfilled.type]: (
+			state,
+			action: PayloadAction<{ items: IMessage[]; profile: IUser }, string, { arg: FetchMessagesRequest }>,
+		) => {
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === action.meta.arg.chatId) {
 					const { dir } = action.meta.arg;
-					const lastTimestamp = dir === 'prev' || !dir ? action.payload[action.payload.length - 1]?.timestamp : group.lastTimestamp;
-					const firstTimestamp = dir === 'next' || !dir ? action.payload[0]?.timestamp : group.firstTimestamp;
+					const lastTimestamp =
+						dir === 'prev' || !dir ? action.payload.items[action.payload.items.length - 1]?.timestamp : group.lastTimestamp;
+					const firstTimestamp = dir === 'next' || !dir ? action.payload.items[0]?.timestamp : group.firstTimestamp;
 					const items =
-						dir === 'prev' ? [...group.items, ...action.payload] : dir === 'next' ? [...action.payload, ...group.items] : action.payload;
+						dir === 'prev'
+							? [...group.items, ...action.payload.items]
+							: dir === 'next'
+							? [...action.payload.items, ...group.items]
+							: action.payload.items;
 					return {
 						...group,
-						items: setFirstUnreadMessage(prepereMessages(getUniqueItems(items))),
+						items: prepereMessages(getUniqueItems(items), action.payload.profile),
 						loading: false,
 						lastTimestamp,
 						firstTimestamp,
@@ -465,17 +523,17 @@ export const chatSlice = createSlice({
 			});
 		},
 
-		[goToMessage.fulfilled.type]: (state, action: PayloadAction<IMessage[], string, { arg: GoToMessageRequest }>) => {
+		[goToMessage.fulfilled.type]: (state, action: PayloadAction<{ items: IMessage[]; profile: IUser }, string, { arg: GoToMessageRequest }>) => {
 			const isFirstOpenedChat = !state.messages.find((it) => it.chatId === action.payload[0]?.chatId);
-			const lastTimestamp = action.payload[action.payload.length - 1]?.timestamp;
-			const firstTimestamp = action.payload[0]?.timestamp;
+			const lastTimestamp = action.payload.items[action.payload.items.length - 1]?.timestamp;
+			const firstTimestamp = action.payload.items[0]?.timestamp;
 
 			// fix when we go to message in first opened chat
 			if (isFirstOpenedChat) {
 				state.messages.push({
 					message: '',
 					chatId: action.payload[0]?.chatId,
-					items: prepereMessages(action.payload),
+					items: prepereMessages(action.payload.items, action.payload.profile),
 					loading: false,
 					lastTimestamp,
 					firstTimestamp,
@@ -488,7 +546,7 @@ export const chatSlice = createSlice({
 				if (group.chatId === action.meta.arg.chatId) {
 					return {
 						...group,
-						items: prepereMessages(action.payload),
+						items: prepereMessages(action.payload.items, action.payload.profile),
 						loading: false,
 						lastTimestamp,
 						firstTimestamp,
@@ -558,7 +616,7 @@ export const {
 	updatePinedMessagesByChatId,
 	updateMuteTimestampInChat,
 	updateLastUnreadMessage,
-	clearUnreadCounter,
+	readAllMessages,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
