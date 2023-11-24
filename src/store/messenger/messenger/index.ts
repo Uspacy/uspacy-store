@@ -524,7 +524,7 @@ export const chatSlice = createSlice({
 		},
 
 		[goToMessage.fulfilled.type]: (state, action: PayloadAction<{ items: IMessage[]; profile: IUser }, string, { arg: GoToMessageRequest }>) => {
-			const isFirstOpenedChat = !state.messages.find((it) => it.chatId === action.payload[0]?.chatId);
+			const isFirstOpenedChat = !state.messages.find((it) => it.chatId === action.payload.items[0]?.chatId);
 			const lastTimestamp = action.payload.items[action.payload.items.length - 1]?.timestamp;
 			const firstTimestamp = action.payload.items[0]?.timestamp;
 
@@ -541,7 +541,6 @@ export const chatSlice = createSlice({
 
 				return;
 			}
-
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === action.meta.arg.chatId) {
 					return {
