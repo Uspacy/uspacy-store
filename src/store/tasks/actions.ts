@@ -83,14 +83,17 @@ export const fetchParentTask = createAsyncThunk('tasks/fetchParentTask', async (
 	}
 });
 
-export const addTask = createAsyncThunk('tasks/addTask', async (data: ITaskValues, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.createTask(data);
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
+export const addTask = createAsyncThunk(
+	'tasks/addTask',
+	async ({ data, abilityToAddTask }: { data: ITaskValues; abilityToAddTask: boolean }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.tasksService.createTask(data);
+			return { task: res.data, abilityToAddTask };
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
 
 export const editTask = createAsyncThunk('tasks/editTask', async ({ id, data }: { id: string; data: ITaskValues }, { rejectWithValue }) => {
 	try {

@@ -43,6 +43,7 @@ const initialState = {
 	task: {},
 	parentTask: {},
 	addedTask: {},
+	addedToKanbanTask: {},
 	changeTask: {},
 	changeTasks: [],
 	deleteTaskId: 0,
@@ -385,18 +386,24 @@ const tasksReducer = createSlice({
 			state.errorLoadingTemplate = action.payload;
 		},
 
-		[addTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+		[addTask.fulfilled.type]: (state, action: PayloadAction<{ task: ITask; abilityToAddTask: boolean }>) => {
 			state.loadingAddingTask = false;
 			state.errorLoadingAddingTask = null;
-			if (state.isTable && !state.isRegularSection) {
-				state.tasks.data.unshift(action.payload);
-				state.meta.total = state.meta.total + 1;
+			if (action.payload.abilityToAddTask) {
+				if (state.isTable && !state.isRegularSection) {
+					state.tasks.data.unshift(action.payload.task);
+					state.meta.total = state.meta.total + 1;
+				}
+
+				if (state.isKanban && !state.isRegularSection) {
+					state.addedToKanbanTask = action.payload.task;
+				}
 			}
 			if (state.isSubtasks && !state.isCopyingTask) {
-				state.allSubtasks.unshift(action.payload);
+				state.allSubtasks.unshift(action.payload.task);
 				state.subtasks.meta.total = state.subtasks.meta.total + 1;
 			}
-			state.addedTask = action.payload;
+			state.addedTask = action.payload.task;
 		},
 		[addTask.pending.type]: (state) => {
 			state.loadingAddingTask = true;
