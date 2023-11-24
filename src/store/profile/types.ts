@@ -5,8 +5,18 @@ import { IUser } from '@uspacy/sdk/lib/models/user';
 export interface IState {
 	data?: IUser;
 	loading: boolean;
-	loadingRequisites: boolean;
-	loadingTemplates: boolean;
+	loadingTemplates: {
+		loadingCreateTemplates: boolean;
+		loadingReadTemplates: boolean;
+		loadingUpdateTemplates: boolean;
+		loadingDeleteTemplates: boolean;
+	};
+	loadingRequisites: {
+		loadingCreateRequisites: boolean;
+		loadingReadRequisites: boolean;
+		loadingUpdateRequisites: boolean;
+		loadingDeleteRequisites: boolean;
+	};
 	errorLoading: IErrorsAxiosResponse;
 	currentRequestId?: string;
 	requisites?: IRequisite[];
