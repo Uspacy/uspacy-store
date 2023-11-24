@@ -21,13 +21,13 @@ const initialState: IState = {
 	loading: true,
 	loadingTemplates: {
 		loadingCreateTemplates: false,
-		loadingReadTemplates: false,
+		loadingReadTemplates: true,
 		loadingUpdateTemplates: false,
 		loadingDeleteTemplates: false,
 	},
 	loadingRequisites: {
 		loadingCreateRequisites: false,
-		loadingReadRequisites: false,
+		loadingReadRequisites: true,
 		loadingUpdateRequisites: false,
 		loadingDeleteRequisites: false,
 	},
