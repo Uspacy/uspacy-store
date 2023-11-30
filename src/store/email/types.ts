@@ -1,16 +1,25 @@
-import { IFolder, IFolders, ILetter, ILetters } from '@uspacy/sdk/lib/models/email';
+import { IEmailBox, IEmailBoxes, IFolder, IFolders, ILetter, ILetters } from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
 export interface IState {
+	emailBoxes: IEmailBoxes;
+	emailBox: IEmailBox;
+	connectedEmailBox: IEmailBox;
 	folders: IFolders;
 	folder: IFolder;
 	letters: ILetters;
 	letter: ILetter;
+	loadingEmailBoxes: boolean;
+	loadingConnectEmailBox: boolean;
+	loadingRemoveEmailBox: boolean;
 	loadingFolders: boolean;
 	loadingLetters: boolean;
 	loadingLetter: boolean;
 	loadingCreatingLetter: boolean;
 	loadingDeletingLetter: boolean;
+	errorLoadingEmailBoxes: IErrorsAxiosResponse;
+	errorLoadingConnectEmailBox: IErrorsAxiosResponse;
+	errorLoadingRemoveEmailBox: IErrorsAxiosResponse;
 	errorLoadingFolders: IErrorsAxiosResponse;
 	errorLoadingLetters: IErrorsAxiosResponse;
 	errorLoadingLetter: IErrorsAxiosResponse;
