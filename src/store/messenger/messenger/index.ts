@@ -527,12 +527,11 @@ export const chatSlice = createSlice({
 			const isFirstOpenedChat = !state.messages.find((it) => it.chatId === action.payload.items[0]?.chatId);
 			const lastTimestamp = action.payload.items[action.payload.items.length - 1]?.timestamp;
 			const firstTimestamp = action.payload.items[0]?.timestamp;
-
 			// fix when we go to message in first opened chat
 			if (isFirstOpenedChat) {
 				state.messages.push({
 					message: '',
-					chatId: action.payload[0]?.chatId,
+					chatId: action.payload.items[0]?.chatId,
 					items: prepereMessages(action.payload.items, action.payload.profile),
 					loading: false,
 					lastTimestamp,
