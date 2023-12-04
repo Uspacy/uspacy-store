@@ -35,7 +35,7 @@ const initialState = {
 	errorLoadingGroups: null,
 	allGroups: [],
 	isNewGroupCreate: false,
-	modalOpened: { create: false, edit: false, confirm: false, invite: false },
+	modalOpened: { create: false, edit: false, confirm: false, invite: false, inviteSended: false },
 	action: { archive: false, delete: false, chat: false, id: null },
 	search: '',
 	usersWhoSendRequest: [],
@@ -44,6 +44,7 @@ const initialState = {
 	userSendRequestError: '',
 	isUserLeavedGroup: false,
 	errorInviteUsers: null,
+	loadingInvite: false,
 } as IState;
 
 const groupsReducer = createSlice({
@@ -255,15 +256,17 @@ const groupsReducer = createSlice({
 			state.loadingRequest = false;
 		},
 		[inviteUsersInGroup.fulfilled.type]: (state) => {
-			state.loadingGroups = false;
+			state.loadingInvite = false;
 			state.errorInviteUsers = false;
+			state.modalOpened.invite = false;
+			state.modalOpened.inviteSended = true;
 		},
 		[inviteUsersInGroup.pending.type]: (state) => {
-			state.loadingGroups = true;
+			state.loadingInvite = true;
 			state.errorInviteUsers = false;
 		},
 		[inviteUsersInGroup.rejected.type]: (state) => {
-			state.loadingGroups = false;
+			state.loadingInvite = false;
 			state.errorInviteUsers = true;
 		},
 	},
