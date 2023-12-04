@@ -125,7 +125,7 @@ export const inviteUsersInGroup = createAsyncThunk(
 		try {
 			return await uspacySdk.groupsService.inviteUsersInGroup({ groupId: groupId, userIds: userIds });
 		} catch (e) {
-			return thunkAPI.rejectWithValue('Failure');
+			return thunkAPI.rejectWithValue(e);
 		}
 	},
 );

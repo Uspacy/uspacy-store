@@ -13,6 +13,7 @@ import {
 	fetchGroupForTask,
 	fetchGroups,
 	getUsersRequestedForJoing,
+	inviteUsersInGroup,
 	leaveGroup,
 	uploadLogo,
 } from './actions';
@@ -42,6 +43,7 @@ const initialState = {
 	inviteAccepted: false,
 	userSendRequestError: '',
 	isUserLeavedGroup: false,
+	errorInviteUsers: null,
 } as IState;
 
 const groupsReducer = createSlice({
@@ -101,6 +103,9 @@ const groupsReducer = createSlice({
 
 			state.allGroups = state.allGroups.map((el) => (el.id.toString() === editedGroup.id.toString() ? editedGroup : el));
 		},
+		resetInviteError: (state) => {
+			state.errorInviteUsers = false;
+		},
 	},
 	extraReducers: {
 		[fetchGroups.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<IGroup>>) => {
@@ -147,7 +152,7 @@ const groupsReducer = createSlice({
 		[createGroup.fulfilled.type]: (state, action: PayloadAction<IGroup>) => {
 			state.loadingGroups = false;
 			state.errorLoadingGroups = null;
-			state.allGroups = state.allGroups.concat(action.payload);
+			state.allGroups.unshift(action.payload);
 			state.isLoaded = false;
 		},
 		[createGroup.pending.type]: (state) => {
@@ -249,6 +254,18 @@ const groupsReducer = createSlice({
 		[leaveGroup.rejected.type]: (state) => {
 			state.loadingRequest = false;
 		},
+		[inviteUsersInGroup.fulfilled.type]: (state) => {
+			state.loadingGroups = false;
+			state.errorInviteUsers = false;
+		},
+		[inviteUsersInGroup.pending.type]: (state) => {
+			state.loadingGroups = true;
+			state.errorInviteUsers = false;
+		},
+		[inviteUsersInGroup.rejected.type]: (state) => {
+			state.loadingGroups = false;
+			state.errorInviteUsers = true;
+		},
 	},
 });
 
@@ -265,5 +282,6 @@ export const {
 	clearRequests,
 	addGroupMember,
 	userLeavedGroup,
+	resetInviteError,
 } = groupsReducer.actions;
 export default groupsReducer.reducer;

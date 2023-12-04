@@ -24,4 +24,5 @@ export interface IState {
 	inviteAccepted: boolean;
 	userSendRequestError: string;
 	isUserLeavedGroup: boolean;
+	errorInviteUsers: boolean;
 }
