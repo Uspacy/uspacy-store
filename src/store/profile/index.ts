@@ -47,8 +47,12 @@ export const profileSlice = createSlice({
 		addToRequisites(state, action: PayloadAction<IRequisite>) {
 			state.requisites = [action.payload, ...state.requisites];
 		},
-		updateRequisites(state, action: PayloadAction<IRequisite[]>) {
-			state.requisites = action.payload;
+		updateRequisites(state, action: PayloadAction<IRequisite>) {
+			state.requisites = state.requisites.map((req) => {
+				const newBase = action.payload.is_basic;
+				if (req?.id === action.payload.id) return { ...req, ...action.payload };
+				return { ...req, is_basic: newBase ? false : req.is_basic };
+			})
 		}
 	},
 	extraReducers: {
