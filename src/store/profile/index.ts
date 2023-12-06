@@ -4,6 +4,7 @@ import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { ICountryTemplates, IRequisite, IRequisitesResponse, ITemplate, ITemplateResponse } from '@uspacy/sdk/lib/models/requisites';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
+import { checkBasicRequisite } from '../../helpers/checkBasicRequisite';
 import {
 	createTemplate,
 	fetchBasicTemplates,
@@ -44,6 +45,12 @@ export const profileSlice = createSlice({
 		setLoading(state, action: PayloadAction<boolean>) {
 			state.loading = action.payload;
 		},
+		addToRequisites(state, action: PayloadAction<IRequisite>) {
+			state.requisites = checkBasicRequisite([action.payload, ...state.requisites], action.payload)
+		},
+		updateRequisites(state, action: PayloadAction<IRequisite>) {
+			state.requisites = checkBasicRequisite(state.requisites, action.payload);
+		}
 	},
 	extraReducers: {
 		[fetchProfile.fulfilled.type]: (state: IState, action: PayloadAction<IUser>) => {
