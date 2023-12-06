@@ -16,6 +16,7 @@ import {
 	updateTemplate,
 } from './actions';
 import { IState } from './types';
+import {checkBasicRequisite} from 'src/helpers/checkBasicRequisite';
 
 const initialState: IState = {
 	loading: true,
@@ -45,18 +46,10 @@ export const profileSlice = createSlice({
 			state.loading = action.payload;
 		},
 		addToRequisites(state, action: PayloadAction<IRequisite>) {
-			state.requisites = [action.payload, ...state.requisites].map((req) => {
-				const newBase = action.payload.is_basic;
-				if (req?.id === action.payload.id) return { ...req, ...action.payload };
-				return { ...req, is_basic: newBase ? false : req.is_basic };
-			});
+			state.requisites = checkBasicRequisite([action.payload, ...state.requisites], action.payload)
 		},
 		updateRequisites(state, action: PayloadAction<IRequisite>) {
-			state.requisites = state.requisites.map((req) => {
-				const newBase = action.payload.is_basic;
-				if (req?.id === action.payload.id) return { ...req, ...action.payload };
-				return { ...req, is_basic: newBase ? false : req.is_basic };
-			})
+			state.requisites = checkBasicRequisite(state.requisites, action.payload);
 		}
 	},
 	extraReducers: {
