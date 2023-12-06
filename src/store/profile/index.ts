@@ -44,6 +44,12 @@ export const profileSlice = createSlice({
 		setLoading(state, action: PayloadAction<boolean>) {
 			state.loading = action.payload;
 		},
+		addToRequisites(state, action: PayloadAction<IRequisite>) {
+			state.requisites = [action.payload, ...state.requisites];
+		},
+		updateRequisites(state, action: PayloadAction<IRequisite[]>) {
+			state.requisites = action.payload;
+		}
 	},
 	extraReducers: {
 		[fetchProfile.fulfilled.type]: (state: IState, action: PayloadAction<IUser>) => {
