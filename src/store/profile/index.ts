@@ -4,6 +4,7 @@ import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { ICountryTemplates, IRequisite, IRequisitesResponse, ITemplate, ITemplateResponse } from '@uspacy/sdk/lib/models/requisites';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
+import { checkBasicRequisite } from '../../helpers/checkBasicRequisite';
 import {
 	createTemplate,
 	fetchBasicTemplates,
@@ -16,7 +17,6 @@ import {
 	updateTemplate,
 } from './actions';
 import { IState } from './types';
-import {checkBasicRequisite} from 'src/helpers/checkBasicRequisite';
 
 const initialState: IState = {
 	loading: true,
