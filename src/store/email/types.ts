@@ -1,4 +1,4 @@
-import { IEmailBox, IEmailBoxes, IFolder, IFolders, ILetter, ILetters } from '@uspacy/sdk/lib/models/email';
+import { IEmailBox, IEmailBoxes, IEmailFilters, IFolder, IFolders, ILetter, ILetters } from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
 export interface IState {
@@ -9,8 +9,11 @@ export interface IState {
 	folder: IFolder;
 	letters: ILetters;
 	letter: ILetter;
+	filters: IEmailFilters;
 	loadingEmailBoxes: boolean;
+	loadingEmailBox: boolean;
 	loadingConnectEmailBox: boolean;
+	loadingUpdateEmailBox: boolean;
 	loadingRemoveEmailBox: boolean;
 	loadingFolders: boolean;
 	loadingLetters: boolean;
@@ -18,7 +21,9 @@ export interface IState {
 	loadingCreatingLetter: boolean;
 	loadingDeletingLetter: boolean;
 	errorLoadingEmailBoxes: IErrorsAxiosResponse;
+	errorLoadingEmailBox: IErrorsAxiosResponse;
 	errorLoadingConnectEmailBox: IErrorsAxiosResponse;
+	errorLoadingUpdateEmailBox: IErrorsAxiosResponse;
 	errorLoadingRemoveEmailBox: IErrorsAxiosResponse;
 	errorLoadingFolders: IErrorsAxiosResponse;
 	errorLoadingLetters: IErrorsAxiosResponse;

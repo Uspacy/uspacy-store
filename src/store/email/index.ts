@@ -1,16 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IEmailBox, IEmailBoxes, IFolder, IFolders, ILetter, ILetters } from '@uspacy/sdk/lib/models/email';
+import { IEmailBox, IEmailBoxes, IEmailFilters, IFolder, IFolders, ILetter, ILetters } from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
 import {
 	connectEmailBox,
 	createEmailLetter,
+	getEmailBox,
 	getEmailFolders,
 	getEmailLetter,
 	getEmailLetters,
 	getEmailsBoxes,
 	removeEmailBox,
 	removeEmailLetter,
+	updateEmailBox,
 } from './actions';
 import { IState } from './types';
 
@@ -23,7 +25,9 @@ const initialState = {
 	letters: {},
 	letter: {},
 	loadingEmailBoxes: false,
+	loadingEmailBox: false,
 	loadingConnectEmailBox: false,
+	loadingUpdateEmailBox: false,
 	loadingRemoveEmailBox: false,
 	loadingFolders: false,
 	loadingLetters: false,
@@ -31,7 +35,9 @@ const initialState = {
 	loadingCreatingLetter: false,
 	loadingDeletingLetter: false,
 	errorLoadingEmailBoxes: null,
+	errorLoadingEmailBox: null,
 	errorLoadingConnectEmailBox: null,
+	errorLoadingUpdateEmailBox: null,
 	errorLoadingRemoveEmailBox: null,
 	errorLoadingFolders: null,
 	errorLoadingLetters: null,
@@ -39,6 +45,10 @@ const initialState = {
 	errorLoadingCreatingLetter: null,
 	errorLoadingDeletingLetter: null,
 	openLetter: false,
+	filters: {
+		page: 1,
+		list: 50,
+	},
 } as IState;
 
 const emailReducer = createSlice({
@@ -48,6 +58,9 @@ const emailReducer = createSlice({
 		setEmailBox: (state, action: PayloadAction<IEmailBox>) => {
 			state.emailBox = action.payload;
 		},
+		setConnectedEmailBox: (state, action: PayloadAction<IEmailBox>) => {
+			state.connectedEmailBox = action.payload;
+		},
 		setFolder: (state, action: PayloadAction<IFolder>) => {
 			state.folder = action.payload;
 		},
@@ -56,6 +69,9 @@ const emailReducer = createSlice({
 		},
 		setOpenLetter: (state, action: PayloadAction<boolean>) => {
 			state.openLetter = action.payload;
+		},
+		setFilters: (state, action: PayloadAction<IEmailFilters>) => {
+			state.filters = action.payload;
 		},
 	},
 	extraReducers: {
@@ -72,6 +88,19 @@ const emailReducer = createSlice({
 			state.loadingEmailBoxes = false;
 			state.errorLoadingEmailBoxes = action.payload;
 		},
+		[getEmailBox.fulfilled.type]: (state, action: PayloadAction<IEmailBox>) => {
+			state.loadingEmailBox = false;
+			state.errorLoadingEmailBox = null;
+			state.emailBox = action.payload;
+		},
+		[getEmailBox.pending.type]: (state) => {
+			state.loadingEmailBox = true;
+			state.errorLoadingEmailBox = null;
+		},
+		[getEmailBox.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingEmailBox = false;
+			state.errorLoadingEmailBox = action.payload;
+		},
 		[connectEmailBox.fulfilled.type]: (state, action: PayloadAction<IEmailBox>) => {
 			state.loadingConnectEmailBox = false;
 			state.errorLoadingConnectEmailBox = null;
@@ -85,6 +114,19 @@ const emailReducer = createSlice({
 		[connectEmailBox.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingConnectEmailBox = false;
 			state.errorLoadingConnectEmailBox = action.payload;
+		},
+		[updateEmailBox.fulfilled.type]: (state, action: PayloadAction<IEmailBox>) => {
+			state.loadingUpdateEmailBox = false;
+			state.errorLoadingUpdateEmailBox = null;
+			state.emailBoxes.data = state.emailBoxes.data.map((emailBox) => (emailBox.id === action.payload.id ? action.payload : emailBox));
+		},
+		[updateEmailBox.pending.type]: (state) => {
+			state.loadingUpdateEmailBox = true;
+			state.errorLoadingUpdateEmailBox = null;
+		},
+		[updateEmailBox.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdateEmailBox = false;
+			state.errorLoadingUpdateEmailBox = action.payload;
 		},
 		[removeEmailBox.fulfilled.type]: (state, action: PayloadAction<number>) => {
 			state.loadingDeletingLetter = false;
@@ -167,5 +209,5 @@ const emailReducer = createSlice({
 	},
 });
 
-export const { setEmailBox, setFolder, setLetter, setOpenLetter } = emailReducer.actions;
+export const { setEmailBox, setConnectedEmailBox, setFolder, setLetter, setOpenLetter, setFilters } = emailReducer.actions;
 export default emailReducer.reducer;
