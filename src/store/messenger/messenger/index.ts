@@ -80,7 +80,7 @@ export const chatSlice = createSlice({
 			state.chats.currentChatId = action.payload.id;
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === action.payload.id) {
-					const items = prepereMessages(group.items, action.payload.profile);
+					const items = prepereMessages(group.items, action.payload.profile).filter((message) => !message.isFirstUnread);
 					return {
 						...group,
 						items,
