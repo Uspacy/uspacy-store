@@ -172,7 +172,7 @@ export const updateLastMessageInExternalChat = (
 
 export const decUnreadCountByChatId = (chats: IChat[], chatId: IChat['id']) =>
 	chats.map((chat) => {
-		if (chat.id === chatId) {
+		if (chat.id === chatId && chat.unreadCount > 0) {
 			return {
 				...chat,
 				unreadCount: chat.unreadCount - 1,
