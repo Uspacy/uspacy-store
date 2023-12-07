@@ -478,7 +478,7 @@ export const chatSlice = createSlice({
 							: action.payload.items;
 					return {
 						...group,
-						items: prepereMessages(items, action.payload.profile),
+						items: prepereMessages(getUniqueItems(items), action.payload.profile),
 						loading: false,
 						lastTimestamp,
 						firstTimestamp,
