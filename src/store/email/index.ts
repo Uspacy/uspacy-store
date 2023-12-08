@@ -45,6 +45,7 @@ const initialState = {
 	errorLoadingCreatingLetter: null,
 	errorLoadingDeletingLetter: null,
 	openLetter: false,
+	isCreateNewLetter: false,
 	filters: {
 		page: 1,
 		list: 50,
@@ -69,6 +70,9 @@ const emailReducer = createSlice({
 		},
 		setOpenLetter: (state, action: PayloadAction<boolean>) => {
 			state.openLetter = action.payload;
+		},
+		setIsCreateNewLetter: (state, action: PayloadAction<boolean>) => {
+			state.isCreateNewLetter = action.payload;
 		},
 		setFilters: (state, action: PayloadAction<IEmailFilters>) => {
 			state.filters = action.payload;
@@ -209,5 +213,5 @@ const emailReducer = createSlice({
 	},
 });
 
-export const { setEmailBox, setConnectedEmailBox, setFolder, setLetter, setOpenLetter, setFilters } = emailReducer.actions;
+export const { setEmailBox, setConnectedEmailBox, setFolder, setLetter, setOpenLetter, setIsCreateNewLetter, setFilters } = emailReducer.actions;
 export default emailReducer.reducer;
