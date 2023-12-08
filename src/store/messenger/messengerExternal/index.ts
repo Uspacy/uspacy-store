@@ -98,9 +98,9 @@ export const externalChatSlice = createSlice({
 			const { message, userId } = action.payload;
 			state.externalChats.items.active = readLastMessageInChat(state.externalChats.items.active, message, userId);
 		},
-		readExtMessagesAction(state, action: PayloadAction<{ items: { id: string; readBy: number[] }[]; chatId: string }>) {
-			const { items, chatId } = action.payload;
-			state.externalChats.items.active = readLastMessagesInChat(state.externalChats.items.active, items, chatId);
+		readExtMessagesAction(state, action: PayloadAction<{ items: { id: string; readBy: number[] }[]; chatId: string; profile: IUser }>) {
+			const { items, chatId, profile } = action.payload;
+			state.externalChats.items.active = readLastMessagesInChat(state.externalChats.items.active, items, chatId, profile);
 		},
 	},
 	extraReducers: {

@@ -274,8 +274,8 @@ export const chatSlice = createSlice({
 
 			state.chats.items = decUnreadCountByChatId(readLastMessageInChat(state.chats.items, messageAction, userId), messageAction.chatId);
 		},
-		readMessages(state, action: PayloadAction<{ items: { id: string; readBy: number[] }[]; chatId: string }>) {
-			const { items: itemsAction, chatId } = action.payload;
+		readMessages(state, action: PayloadAction<{ items: { id: string; readBy: number[] }[]; chatId: string; profile: IUser }>) {
+			const { items: itemsAction, chatId, profile } = action.payload;
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === chatId) {
 					const items = group.items.map((message) => {
@@ -294,7 +294,7 @@ export const chatSlice = createSlice({
 				}
 				return group;
 			});
-			state.chats.items = readLastMessagesInChat(state.chats.items, itemsAction, chatId);
+			state.chats.items = readLastMessagesInChat(state.chats.items, itemsAction, chatId, profile);
 		},
 		setActiveMessengerType(state, action: PayloadAction<EMessengerType>) {
 			state.activeMessengerType = action.payload;
