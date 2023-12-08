@@ -9,7 +9,6 @@ export interface IState {
 	folder: IFolder;
 	letters: ILetters;
 	letter: ILetter;
-	filters: IEmailFilters;
 	loadingEmailBoxes: boolean;
 	loadingEmailBox: boolean;
 	loadingConnectEmailBox: boolean;
@@ -31,6 +30,8 @@ export interface IState {
 	errorLoadingCreatingLetter: IErrorsAxiosResponse;
 	errorLoadingDeletingLetter: IErrorsAxiosResponse;
 	openLetter: boolean;
+	isCreateNewLetter: boolean;
+	filters: IEmailFilters;
 }
 
 export interface ILettersParams {
