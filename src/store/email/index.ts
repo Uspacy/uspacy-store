@@ -14,7 +14,7 @@ import {
 	removeEmailLetter,
 	updateEmailBox,
 } from './actions';
-import { IState } from './types';
+import { createNewLetterModeType, IState } from './types';
 
 const initialState = {
 	emailBoxes: {},
@@ -46,6 +46,7 @@ const initialState = {
 	errorLoadingDeletingLetter: null,
 	openLetter: false,
 	isCreateNewLetter: false,
+	createNewLetterMode: 'window',
 	filters: {
 		page: 1,
 		list: 50,
@@ -73,6 +74,9 @@ const emailReducer = createSlice({
 		},
 		setIsCreateNewLetter: (state, action: PayloadAction<boolean>) => {
 			state.isCreateNewLetter = action.payload;
+		},
+		setCreateNewLetterMode: (state, action: PayloadAction<createNewLetterModeType>) => {
+			state.createNewLetterMode = action.payload;
 		},
 		setFilters: (state, action: PayloadAction<IEmailFilters>) => {
 			state.filters = action.payload;

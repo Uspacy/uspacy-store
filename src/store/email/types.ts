@@ -1,6 +1,7 @@
 import { IEmailBox, IEmailBoxes, IEmailFilters, IFolder, IFolders, ILetter, ILetters } from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
+export type createNewLetterModeType = 'window' | 'fullScreen' | 'fromLetter';
 export interface IState {
 	emailBoxes: IEmailBoxes;
 	emailBox: IEmailBox;
@@ -31,6 +32,7 @@ export interface IState {
 	errorLoadingDeletingLetter: IErrorsAxiosResponse;
 	openLetter: boolean;
 	isCreateNewLetter: boolean;
+	createNewLetterMode: createNewLetterModeType;
 	filters: IEmailFilters;
 }
 
