@@ -217,5 +217,6 @@ const emailReducer = createSlice({
 	},
 });
 
-export const { setEmailBox, setConnectedEmailBox, setFolder, setLetter, setOpenLetter, setIsCreateNewLetter, setFilters } = emailReducer.actions;
+export const { setEmailBox, setConnectedEmailBox, setFolder, setLetter, setOpenLetter, setIsCreateNewLetter, setCreateNewLetterMode, setFilters } =
+	emailReducer.actions;
 export default emailReducer.reducer;
