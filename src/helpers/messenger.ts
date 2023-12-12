@@ -66,14 +66,14 @@ export const readLastMessageInChat = (chats: IChat[], message: IMessage, userId:
 		return chat;
 	});
 
-export const readLastMessagesInChat = (chats: IChat[], items: { id: string; readBy: number[] }[], chatId: string) =>
+export const readLastMessagesInChat = (chats: IChat[], items: { id: string; readBy: number[] }[], chatId: string, profile: IUser) =>
 	chats.map((chat) => {
 		if (chat.id === chatId) {
 			const info = items.find(({ id }) => id === chat.lastMessage?.id);
 			if (info) {
 				return {
 					...chat,
-					unreadCount: Math.max(chat.unreadCount - items.length, 0),
+					...(info.readBy.includes(profile.authUserId) && { unreadCount: Math.max(chat.unreadCount - items.length, 0) }),
 					lastMessage: {
 						...chat.lastMessage,
 						readBy: info.readBy,
@@ -82,7 +82,6 @@ export const readLastMessagesInChat = (chats: IChat[], items: { id: string; read
 			}
 			return {
 				...chat,
-				unreadCount: Math.max(chat.unreadCount - items.length, 0),
 			};
 		}
 		return chat;
@@ -172,7 +171,7 @@ export const updateLastMessageInExternalChat = (
 
 export const decUnreadCountByChatId = (chats: IChat[], chatId: IChat['id']) =>
 	chats.map((chat) => {
-		if (chat.id === chatId) {
+		if (chat.id === chatId && chat.unreadCount > 0) {
 			return {
 				...chat,
 				unreadCount: chat.unreadCount - 1,
