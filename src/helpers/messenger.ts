@@ -68,8 +68,6 @@ export const readLastMessageInChat = (chats: IChat[], message: IMessage, userId:
 
 export const readLastMessagesInChat = (chats: IChat[], items: { id: string; readBy: number[] }[], chatId: string, profile: IUser) =>
 	chats.map((chat) => {
-		// eslint-disable-next-line no-console
-		console.log(profile);
 		if (chat.id === chatId) {
 			const info = items.find(({ id }) => id === chat.lastMessage?.id);
 			if (info) {
