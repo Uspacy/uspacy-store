@@ -57,14 +57,23 @@ const emailReducer = createSlice({
 	name: 'emailReducer',
 	initialState,
 	reducers: {
+		setEmailBoxes: (state, action: PayloadAction<IEmailBoxes>) => {
+			state.emailBoxes = action.payload;
+		},
 		setEmailBox: (state, action: PayloadAction<IEmailBox>) => {
 			state.emailBox = action.payload;
 		},
 		setConnectedEmailBox: (state, action: PayloadAction<IEmailBox>) => {
 			state.connectedEmailBox = action.payload;
 		},
+		setFolders: (state, action: PayloadAction<IFolders>) => {
+			state.folders = action.payload;
+		},
 		setFolder: (state, action: PayloadAction<IFolder>) => {
 			state.folder = action.payload;
+		},
+		setLetters: (state, action: PayloadAction<ILetters>) => {
+			state.letters = action.payload;
 		},
 		setLetter: (state, action: PayloadAction<ILetter>) => {
 			state.letter = action.payload;
@@ -217,6 +226,17 @@ const emailReducer = createSlice({
 	},
 });
 
-export const { setEmailBox, setConnectedEmailBox, setFolder, setLetter, setOpenLetter, setIsCreateNewLetter, setCreateNewLetterMode, setFilters } =
-	emailReducer.actions;
+export const {
+	setEmailBoxes,
+	setEmailBox,
+	setConnectedEmailBox,
+	setFolders,
+	setFolder,
+	setLetters,
+	setLetter,
+	setOpenLetter,
+	setIsCreateNewLetter,
+	setCreateNewLetterMode,
+	setFilters,
+} = emailReducer.actions;
 export default emailReducer.reducer;
