@@ -73,7 +73,7 @@ export const readLastMessagesInChat = (chats: IChat[], items: { id: string; read
 			if (info) {
 				return {
 					...chat,
-					...(chat.lastMessage.readBy.includes(profile.authUserId) && { unreadCount: Math.max(chat.unreadCount - items.length, 0) }),
+					...(info.readBy.includes(profile.authUserId) && { unreadCount: Math.max(chat.unreadCount - items.length, 0) }),
 					lastMessage: {
 						...chat.lastMessage,
 						readBy: info.readBy,
@@ -82,7 +82,6 @@ export const readLastMessagesInChat = (chats: IChat[], items: { id: string; read
 			}
 			return {
 				...chat,
-				...(chat.lastMessage.readBy.includes(profile.authUserId) && { unreadCount: Math.max(chat.unreadCount - items.length, 0) }),
 			};
 		}
 		return chat;
