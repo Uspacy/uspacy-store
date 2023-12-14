@@ -1,5 +1,6 @@
 import { IEmailBox, IEmailBoxes, IEmailFilters, IFolder, IFolders, ILetter, ILetters } from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
+import { IUpdateEmailBox } from '@uspacy/sdk/lib/services/EmailService/connect-email-box.dto';
 
 export type createNewLetterModeType = 'window' | 'fullScreen' | 'fromLetter';
 export interface IState {
@@ -13,6 +14,7 @@ export interface IState {
 	loadingEmailBoxes: boolean;
 	loadingEmailBox: boolean;
 	loadingConnectEmailBox: boolean;
+	loadingUpdateEmailCredentials: boolean;
 	loadingUpdateEmailBox: boolean;
 	loadingRemoveEmailBox: boolean;
 	loadingFolders: boolean;
@@ -23,6 +25,7 @@ export interface IState {
 	errorLoadingEmailBoxes: IErrorsAxiosResponse;
 	errorLoadingEmailBox: IErrorsAxiosResponse;
 	errorLoadingConnectEmailBox: IErrorsAxiosResponse;
+	errorLoadingUpdateEmailCredentials: IErrorsAxiosResponse;
 	errorLoadingUpdateEmailBox: IErrorsAxiosResponse;
 	errorLoadingRemoveEmailBox: IErrorsAxiosResponse;
 	errorLoadingFolders: IErrorsAxiosResponse;
@@ -40,4 +43,9 @@ export interface ILettersParams {
 	id: number;
 	page: number;
 	list: number;
+}
+
+export interface IUpdateEmailBoxPayload {
+	id: number;
+	data: IUpdateEmailBox;
 }
