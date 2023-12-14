@@ -12,7 +12,9 @@ import {
 	getEmailsBoxes,
 	removeEmailBox,
 	removeEmailLetter,
+	setupEmailBox,
 	updateEmailBox,
+	updateEmailBoxCredentials,
 } from './actions';
 import { createNewLetterModeType, IState } from './types';
 
@@ -27,6 +29,7 @@ const initialState = {
 	loadingEmailBoxes: false,
 	loadingEmailBox: false,
 	loadingConnectEmailBox: false,
+	loadingUpdateEmailCredentials: false,
 	loadingUpdateEmailBox: false,
 	loadingRemoveEmailBox: false,
 	loadingFolders: false,
@@ -37,6 +40,7 @@ const initialState = {
 	errorLoadingEmailBoxes: null,
 	errorLoadingEmailBox: null,
 	errorLoadingConnectEmailBox: null,
+	errorLoadingUpdateEmailCredentials: null,
 	errorLoadingUpdateEmailBox: null,
 	errorLoadingRemoveEmailBox: null,
 	errorLoadingFolders: null,
@@ -131,6 +135,33 @@ const emailReducer = createSlice({
 		[connectEmailBox.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingConnectEmailBox = false;
 			state.errorLoadingConnectEmailBox = action.payload;
+		},
+		[setupEmailBox.fulfilled.type]: (state, action: PayloadAction<IEmailBox>) => {
+			state.loadingUpdateEmailBox = false;
+			state.errorLoadingUpdateEmailBox = null;
+			state.emailBoxes.data = state.emailBoxes.data.map((emailBox) => (emailBox.id === action.payload.id ? action.payload : emailBox));
+		},
+		[setupEmailBox.pending.type]: (state) => {
+			state.loadingUpdateEmailBox = true;
+			state.errorLoadingUpdateEmailBox = null;
+		},
+		[setupEmailBox.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdateEmailBox = false;
+			state.errorLoadingUpdateEmailBox = action.payload;
+		},
+		[updateEmailBoxCredentials.fulfilled.type]: (state, action: PayloadAction<IEmailBox>) => {
+			state.loadingUpdateEmailCredentials = false;
+			state.errorLoadingUpdateEmailCredentials = null;
+			state.emailBox = action.payload;
+			state.emailBoxes.data = state.emailBoxes.data.map((emailBox) => (emailBox.id === action.payload.id ? action.payload : emailBox));
+		},
+		[updateEmailBoxCredentials.pending.type]: (state) => {
+			state.loadingUpdateEmailCredentials = true;
+			state.errorLoadingUpdateEmailCredentials = null;
+		},
+		[updateEmailBoxCredentials.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdateEmailCredentials = false;
+			state.errorLoadingUpdateEmailCredentials = action.payload;
 		},
 		[updateEmailBox.fulfilled.type]: (state, action: PayloadAction<IEmailBox>) => {
 			state.loadingUpdateEmailBox = false;
