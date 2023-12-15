@@ -9,6 +9,7 @@ import departments from './departments';
 import email from './email';
 import files from './files';
 import groups from './groups';
+import leadsFunnel from './leadsFunnel';
 import messengerReducer from './messenger';
 import migrationsReducer from './migrations';
 import newsfeed from './newsfeed';
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
 	comments,
 	crmEntities,
 	dealsFunnel,
+	leadsFunnel,
 	departments,
 	email,
 	files,
