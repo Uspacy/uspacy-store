@@ -1,15 +1,16 @@
+/* eslint-disable no-console */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 import { differenceInMinutes } from 'date-fns';
 
 import {
-	decUnreadCountByChatId,
 	getUniqueItems,
 	onlyUnique,
 	readLastMessageInChat,
 	readLastMessagesInChat,
 	sortChats,
+	updateUnreadCountAndMentionedByChatId,
 } from '../../../helpers/messenger';
 import { fetchChats, fetchMessages, fetchPinedMessages, goToMessage } from './actions';
 import { IState } from './types';
@@ -112,9 +113,10 @@ export const chatSlice = createSlice({
 			state.messages = state.messages.filter(({ chatId }) => chatId !== action.payload);
 		},
 		unshiftMessage(state, action: PayloadAction<{ chatId: string; item: IMessage; profile: IUser }>) {
+			const { chatId, item, profile } = action.payload;
 			state.messages = state.messages.map((group) => {
-				if (group.chatId === action.payload.chatId) {
-					const items = prepereMessages([action.payload.item, ...group.items], action.payload.profile);
+				if (group.chatId === chatId) {
+					const items = prepereMessages([item, ...group.items], profile);
 					return {
 						...group,
 						items,
@@ -123,17 +125,18 @@ export const chatSlice = createSlice({
 				return group;
 			});
 			const items = [...state.chats.items].map((chat) => {
-				if (chat.id === action.payload.chatId) {
+				if (chat.id === chatId) {
 					return {
 						...chat,
-						lastMessage: action.payload.item,
-						timestamp: action.payload.item.timestamp,
+						lastMessage: item,
+						timestamp: item.timestamp,
 						unreadCount:
-							action.payload.item.authorId !== action.payload.profile.authUserId && state.chats.currentChatId !== chat.id
-								? chat.unreadCount + 1
-								: chat.unreadCount,
+							item.authorId !== profile.authUserId && state.chats.currentChatId !== chat.id ? chat.unreadCount + 1 : chat.unreadCount,
+						// update unreadMentions when we get messages
+						...(item.mentioned.includes(profile.authUserId) && { unreadMentions: [item.id, ...chat.unreadMentions] }),
 					};
 				}
+
 				return chat;
 			});
 			state.chats.items = items.sort(sortChats);
@@ -275,7 +278,12 @@ export const chatSlice = createSlice({
 				return group;
 			});
 
-			state.chats.items = decUnreadCountByChatId(readLastMessageInChat(state.chats.items, messageAction, userId), messageAction.chatId);
+			state.chats.items = updateUnreadCountAndMentionedByChatId(
+				readLastMessageInChat(state.chats.items, messageAction, userId),
+				messageAction.chatId,
+				userId,
+				messageAction,
+			);
 		},
 		readMessages(state, action: PayloadAction<{ items: { id: string; readBy: number[] }[]; chatId: string; profile: IUser }>) {
 			const { items: itemsAction, chatId, profile } = action.payload;
@@ -430,6 +438,7 @@ export const chatSlice = createSlice({
 					return {
 						...it,
 						unreadCount: 0,
+						unreadMentions: [],
 					};
 				}
 				return it;
