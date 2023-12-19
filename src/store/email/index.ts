@@ -10,9 +10,13 @@ import {
 	getEmailLetter,
 	getEmailLetters,
 	getEmailsBoxes,
+	moveLetter,
+	moveLetters,
+	readEmailLetters,
 	removeEmailBox,
 	removeEmailLetter,
 	setupEmailBox,
+	unreadEmailLetters,
 	updateEmailBox,
 	updateEmailBoxCredentials,
 } from './actions';
@@ -37,6 +41,8 @@ const initialState = {
 	loadingLetter: false,
 	loadingCreatingLetter: false,
 	loadingDeletingLetter: false,
+	loadingIsReadStatus: false,
+	loadingMoveLetter: false,
 	errorLoadingEmailBoxes: null,
 	errorLoadingEmailBox: null,
 	errorLoadingConnectEmailBox: null,
@@ -48,12 +54,18 @@ const initialState = {
 	errorLoadingLetter: null,
 	errorLoadingCreatingLetter: null,
 	errorLoadingDeletingLetter: null,
+	errorLoadingIsReadStatus: null,
+	errorLoadingMoveLetter: null,
 	openLetter: false,
 	isCreateNewLetter: false,
 	createNewLetterMode: 'window',
 	filters: {
 		page: 1,
 		list: 50,
+		is_read: [],
+		date: [],
+		time_label: [],
+		certainDateOrPeriod: [],
 	},
 } as IState;
 
@@ -253,6 +265,58 @@ const emailReducer = createSlice({
 		[removeEmailLetter.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingDeletingLetter = false;
 			state.errorLoadingDeletingLetter = action.payload;
+		},
+		[readEmailLetters.fulfilled.type]: (state, action: PayloadAction<number[]>) => {
+			state.loadingIsReadStatus = false;
+			state.errorLoadingIsReadStatus = null;
+			state.letters.data = state.letters.data.map((letter) => (action.payload.includes(letter.id) ? { ...letter, is_read: true } : letter));
+		},
+		[readEmailLetters.pending.type]: (state) => {
+			state.loadingIsReadStatus = true;
+			state.errorLoadingIsReadStatus = null;
+		},
+		[readEmailLetters.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingIsReadStatus = false;
+			state.errorLoadingIsReadStatus = action.payload;
+		},
+		[unreadEmailLetters.fulfilled.type]: (state, action: PayloadAction<number[]>) => {
+			state.loadingIsReadStatus = false;
+			state.errorLoadingIsReadStatus = null;
+			state.letters.data = state.letters.data.map((letter) => (action.payload.includes(letter.id) ? { ...letter, is_read: false } : letter));
+		},
+		[unreadEmailLetters.pending.type]: (state) => {
+			state.loadingIsReadStatus = true;
+			state.errorLoadingIsReadStatus = null;
+		},
+		[unreadEmailLetters.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingIsReadStatus = false;
+			state.errorLoadingIsReadStatus = action.payload;
+		},
+		[moveLetter.fulfilled.type]: (state, action: PayloadAction<ILetter>) => {
+			state.loadingMoveLetter = false;
+			state.errorLoadingMoveLetter = null;
+			state.letters.data = state.letters.data.filter((letter) => letter?.id !== action.payload.id);
+		},
+		[moveLetter.pending.type]: (state) => {
+			state.loadingMoveLetter = true;
+			state.errorLoadingMoveLetter = null;
+		},
+		[moveLetter.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingMoveLetter = false;
+			state.errorLoadingMoveLetter = action.payload;
+		},
+		[moveLetters.fulfilled.type]: (state, action: PayloadAction<number[]>) => {
+			state.loadingMoveLetter = false;
+			state.errorLoadingMoveLetter = null;
+			state.letters.data = state.letters.data.filter((letter) => !action.payload.includes(letter.id));
+		},
+		[moveLetters.pending.type]: (state) => {
+			state.loadingMoveLetter = true;
+			state.errorLoadingMoveLetter = null;
+		},
+		[moveLetters.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingMoveLetter = false;
+			state.errorLoadingMoveLetter = action.payload;
 		},
 	},
 });
