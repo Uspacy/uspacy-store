@@ -57,6 +57,8 @@ export const readLastMessageInChat = (chats: IChat[], message: IMessage, userId:
 		if (chat.id === message.chatId && chat.lastMessage?.id === message.id) {
 			return {
 				...chat,
+				// update unreadMentions when we read messages
+				...(message.mentioned.includes(userId) && { unreadMentions: chat.unreadMentions.filter((it) => it !== message.id) }),
 				lastMessage: {
 					...chat.lastMessage,
 					readBy: [...(chat.lastMessage.readBy || []), userId],
@@ -66,14 +68,20 @@ export const readLastMessageInChat = (chats: IChat[], message: IMessage, userId:
 		return chat;
 	});
 
-export const readLastMessagesInChat = (chats: IChat[], items: { id: string; readBy: number[] }[], chatId: string) =>
+export const readLastMessagesInChat = (chats: IChat[], items: { id: string; readBy: number[] }[], chatId: string, profile: IUser) =>
 	chats.map((chat) => {
 		if (chat.id === chatId) {
 			const info = items.find(({ id }) => id === chat.lastMessage?.id);
 			if (info) {
 				return {
 					...chat,
-					unreadCount: Math.max(chat.unreadCount - items.length, 0),
+					...(info.readBy.includes(profile.authUserId) && {
+						// update unreadMentions when we read messages
+						...(chat.lastMessage.mentioned.includes(profile.authUserId) && {
+							unreadMentions: chat.unreadMentions.filter((it) => it !== chat.lastMessage.id),
+						}),
+						unreadCount: Math.max(chat.unreadCount - items.length, 0),
+					}),
 					lastMessage: {
 						...chat.lastMessage,
 						readBy: info.readBy,
@@ -82,7 +90,6 @@ export const readLastMessagesInChat = (chats: IChat[], items: { id: string; read
 			}
 			return {
 				...chat,
-				unreadCount: Math.max(chat.unreadCount - items.length, 0),
 			};
 		}
 		return chat;
@@ -170,12 +177,14 @@ export const updateLastMessageInExternalChat = (
 	};
 };
 
-export const decUnreadCountByChatId = (chats: IChat[], chatId: IChat['id']) =>
+export const updateUnreadCountAndMentionedByChatId = (chats: IChat[], chatId: IChat['id'], userId: number, messageAction: IMessage) =>
 	chats.map((chat) => {
-		if (chat.id === chatId) {
+		if (chat.id === chatId && chat.unreadCount > 0) {
 			return {
 				...chat,
 				unreadCount: chat.unreadCount - 1,
+				// update unreadMentions when we read messages
+				...(messageAction.mentioned.includes(userId) && { unreadMentions: chat.unreadMentions.filter((it) => it !== messageAction.id) }),
 			};
 		}
 
