@@ -22,6 +22,8 @@ export interface IState {
 	loadingLetter: boolean;
 	loadingCreatingLetter: boolean;
 	loadingDeletingLetter: boolean;
+	loadingIsReadStatus: boolean;
+	loadingMoveLetter: boolean;
 	errorLoadingEmailBoxes: IErrorsAxiosResponse;
 	errorLoadingEmailBox: IErrorsAxiosResponse;
 	errorLoadingConnectEmailBox: IErrorsAxiosResponse;
@@ -33,6 +35,8 @@ export interface IState {
 	errorLoadingLetter: IErrorsAxiosResponse;
 	errorLoadingCreatingLetter: IErrorsAxiosResponse;
 	errorLoadingDeletingLetter: IErrorsAxiosResponse;
+	errorLoadingIsReadStatus: IErrorsAxiosResponse;
+	errorLoadingMoveLetter: IErrorsAxiosResponse;
 	openLetter: boolean;
 	isCreateNewLetter: boolean;
 	createNewLetterMode: createNewLetterModeType;
@@ -48,4 +52,10 @@ export interface ILettersParams {
 export interface IUpdateEmailBoxPayload {
 	id: number;
 	data: IUpdateEmailBox;
+}
+
+export interface IMoveLetterPayload {
+	letterId?: number;
+	ids?: number[];
+	folderId: number;
 }
