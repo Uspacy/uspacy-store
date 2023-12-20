@@ -80,9 +80,9 @@ export const getEmailFolders = createAsyncThunk('email/getEmailFolders', async (
 	}
 });
 
-export const getEmailLetters = createAsyncThunk('email/getEmailLetters', async ({ id, page, list }: ILettersParams, thunkAPI) => {
+export const getEmailLetters = createAsyncThunk('email/getEmailLetters', async ({ id, params }: ILettersParams, thunkAPI) => {
 	try {
-		const res = await uspacySdk.emailService.getEmailLetters(id, page, list);
+		const res = await uspacySdk.emailService.getEmailLetters(id, params);
 		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
