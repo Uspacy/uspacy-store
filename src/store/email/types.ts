@@ -1,4 +1,4 @@
-import { IEmailBox, IEmailBoxes, IEmailFilters, IFolder, IFolders, ILetter, ILetters } from '@uspacy/sdk/lib/models/email';
+import { IEmailBox, IEmailBoxes, IEmailFilters, IEmailFiltersParams, IFolder, IFolders, ILetter, ILetters } from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
 export interface IState {
@@ -35,6 +35,5 @@ export interface IState {
 
 export interface ILettersParams {
 	id: number;
-	page: number;
-	list: number;
+	params: IEmailFiltersParams;
 }
