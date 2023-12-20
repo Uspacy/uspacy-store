@@ -48,6 +48,11 @@ const initialState = {
 	filters: {
 		page: 1,
 		list: 50,
+		is_read: [],
+		date: [],
+		certainDateOrPeriod_date: [],
+		time_label_date: [],
+		openCalendar: false,
 	},
 } as IState;
 
