@@ -64,8 +64,9 @@ const initialState = {
 		list: 50,
 		is_read: [],
 		date: [],
-		time_label: [],
-		certainDateOrPeriod: [],
+		certainDateOrPeriod_date: [],
+		time_label_date: [],
+		openCalendar: false,
 	},
 } as IState;
 
