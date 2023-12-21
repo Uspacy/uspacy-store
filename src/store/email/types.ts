@@ -41,6 +41,7 @@ export interface IState {
 	isCreateNewLetter: boolean;
 	createNewLetterMode: createNewLetterModeType;
 	filters: IEmailFilters;
+	selectedLetters: number[];
 }
 
 export interface ILettersParams {
