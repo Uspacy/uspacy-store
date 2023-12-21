@@ -68,6 +68,7 @@ const initialState = {
 		time_label_date: [],
 		openCalendar: false,
 	},
+	selectedLetters: [],
 } as IState;
 
 const emailReducer = createSlice({
@@ -106,6 +107,9 @@ const emailReducer = createSlice({
 		},
 		setFilters: (state, action: PayloadAction<IEmailFilters>) => {
 			state.filters = action.payload;
+		},
+		setSelectedLetters: (state, action: PayloadAction<number[]>) => {
+			state.selectedLetters = action.payload;
 		},
 	},
 	extraReducers: {
@@ -334,5 +338,6 @@ export const {
 	setIsCreateNewLetter,
 	setCreateNewLetterMode,
 	setFilters,
+	setSelectedLetters,
 } = emailReducer.actions;
 export default emailReducer.reducer;
