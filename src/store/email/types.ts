@@ -42,6 +42,7 @@ export interface IState {
 	createNewLetterMode: createNewLetterModeType;
 	filters: IEmailFilters;
 	selectedLetters: number[];
+	emailTableHeaderType: headerTypes;
 }
 
 export interface ILettersParams {
@@ -59,3 +60,5 @@ export interface IMoveLetterPayload {
 	ids?: number[];
 	folderId: number;
 }
+
+export type headerTypes = 'default' | 'massActions' | 'openedLetter' | 'createLetter';
