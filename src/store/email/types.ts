@@ -10,6 +10,7 @@ export interface IState {
 	folders: IFolders;
 	folder: IFolder;
 	letters: ILetters;
+	chainLetters: ILetters;
 	letter: ILetter;
 	loadingEmailBoxes: boolean;
 	loadingEmailBox: boolean;
@@ -19,6 +20,7 @@ export interface IState {
 	loadingRemoveEmailBox: boolean;
 	loadingFolders: boolean;
 	loadingLetters: boolean;
+	loadingChainLetters: boolean;
 	loadingLetter: boolean;
 	loadingCreatingLetter: boolean;
 	loadingDeletingLetter: boolean;
@@ -32,6 +34,7 @@ export interface IState {
 	errorLoadingRemoveEmailBox: IErrorsAxiosResponse;
 	errorLoadingFolders: IErrorsAxiosResponse;
 	errorLoadingLetters: IErrorsAxiosResponse;
+	errorLoadingChainLetters: IErrorsAxiosResponse;
 	errorLoadingLetter: IErrorsAxiosResponse;
 	errorLoadingCreatingLetter: IErrorsAxiosResponse;
 	errorLoadingDeletingLetter: IErrorsAxiosResponse;

@@ -6,6 +6,7 @@ import {
 	connectEmailBox,
 	createEmailLetter,
 	getEmailBox,
+	getEmailChainLetters,
 	getEmailFolders,
 	getEmailLetter,
 	getEmailLetters,
@@ -29,6 +30,7 @@ const initialState = {
 	folders: {},
 	folder: {},
 	letters: {},
+	chainLetters: {},
 	letter: {},
 	loadingEmailBoxes: false,
 	loadingEmailBox: false,
@@ -38,6 +40,7 @@ const initialState = {
 	loadingRemoveEmailBox: false,
 	loadingFolders: false,
 	loadingLetters: false,
+	loadingChainLetters: false,
 	loadingLetter: false,
 	loadingCreatingLetter: false,
 	loadingDeletingLetter: false,
@@ -51,6 +54,7 @@ const initialState = {
 	errorLoadingRemoveEmailBox: null,
 	errorLoadingFolders: null,
 	errorLoadingLetters: null,
+	errorLoadingChainLetters: null,
 	errorLoadingLetter: null,
 	errorLoadingCreatingLetter: null,
 	errorLoadingDeletingLetter: null,
@@ -93,6 +97,9 @@ const emailReducer = createSlice({
 		},
 		setLetters: (state, action: PayloadAction<ILetters>) => {
 			state.letters = action.payload;
+		},
+		setChainLetters: (state, action: PayloadAction<ILetters>) => {
+			state.chainLetters = action.payload;
 		},
 		setLetter: (state, action: PayloadAction<ILetter>) => {
 			state.letter = action.payload;
@@ -236,6 +243,19 @@ const emailReducer = createSlice({
 			state.loadingLetters = false;
 			state.errorLoadingLetters = action.payload;
 		},
+		[getEmailChainLetters.fulfilled.type]: (state, action: PayloadAction<ILetters>) => {
+			state.loadingChainLetters = false;
+			state.errorLoadingChainLetters = null;
+			state.chainLetters = action.payload;
+		},
+		[getEmailChainLetters.pending.type]: (state) => {
+			state.loadingChainLetters = true;
+			state.errorLoadingChainLetters = null;
+		},
+		[getEmailChainLetters.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingChainLetters = false;
+			state.errorLoadingChainLetters = action.payload;
+		},
 		[getEmailLetter.fulfilled.type]: (state, action: PayloadAction<ILetter>) => {
 			state.loadingLetter = false;
 			state.errorLoadingLetter = null;
@@ -337,6 +357,7 @@ export const {
 	setFolders,
 	setFolder,
 	setLetters,
+	setChainLetters,
 	setLetter,
 	setOpenLetter,
 	setIsCreateNewLetter,
