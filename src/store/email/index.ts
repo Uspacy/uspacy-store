@@ -20,7 +20,7 @@ import {
 	updateEmailBox,
 	updateEmailBoxCredentials,
 } from './actions';
-import { createNewLetterModeType, IState } from './types';
+import { createNewLetterModeType, headerTypes, IState } from './types';
 
 const initialState = {
 	emailBoxes: {},
@@ -69,6 +69,7 @@ const initialState = {
 		openCalendar: false,
 	},
 	selectedLetters: [],
+	emailTableHeaderType: 'default',
 } as IState;
 
 const emailReducer = createSlice({
@@ -110,6 +111,9 @@ const emailReducer = createSlice({
 		},
 		setSelectedLetters: (state, action: PayloadAction<number[]>) => {
 			state.selectedLetters = action.payload;
+		},
+		setEmailTableHeaderType: (state, action: PayloadAction<headerTypes>) => {
+			state.emailTableHeaderType = action.payload;
 		},
 	},
 	extraReducers: {
@@ -339,5 +343,6 @@ export const {
 	setCreateNewLetterMode,
 	setFilters,
 	setSelectedLetters,
+	setEmailTableHeaderType,
 } = emailReducer.actions;
 export default emailReducer.reducer;
