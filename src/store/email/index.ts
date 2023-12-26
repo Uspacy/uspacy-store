@@ -154,7 +154,7 @@ const emailReducer = createSlice({
 			state.loadingConnectEmailBox = false;
 			state.errorLoadingConnectEmailBox = null;
 			state.connectedEmailBox = action.payload;
-			state.emailBoxes.data = [action.payload, ...state.emailBoxes.data];
+			state.emailBoxes.data = [...state.emailBoxes.data, action.payload];
 		},
 		[connectEmailBox.pending.type]: (state) => {
 			state.loadingConnectEmailBox = true;
@@ -269,10 +269,9 @@ const emailReducer = createSlice({
 			state.loadingLetter = false;
 			state.errorLoadingLetter = action.payload;
 		},
-		[createEmailLetter.fulfilled.type]: (state, action: PayloadAction<ILetter>) => {
+		[createEmailLetter.fulfilled.type]: (state) => {
 			state.loadingCreatingLetter = false;
 			state.errorLoadingCreatingLetter = null;
-			state.letters.data = [action.payload, ...state.letters.data];
 		},
 		[createEmailLetter.pending.type]: (state) => {
 			state.loadingCreatingLetter = true;
@@ -286,6 +285,9 @@ const emailReducer = createSlice({
 			state.loadingDeletingLetter = false;
 			state.errorLoadingDeletingLetter = null;
 			state.letters.data = state.letters.data.filter((letter) => letter.id !== action.payload);
+			if (state.chainLetters.data) {
+				state.chainLetters.data = state.chainLetters.data.filter((letter) => letter.id !== action.payload);
+			}
 		},
 		[removeEmailLetter.pending.type]: (state) => {
 			state.loadingDeletingLetter = true;
