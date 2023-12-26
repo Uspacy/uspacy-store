@@ -16,6 +16,7 @@ import {
 	readEmailLetters,
 	removeEmailBox,
 	removeEmailLetter,
+	removeEmailLetters,
 	setupEmailBox,
 	unreadEmailLetters,
 	updateEmailBox,
@@ -44,6 +45,7 @@ const initialState = {
 	loadingLetter: false,
 	loadingCreatingLetter: false,
 	loadingDeletingLetter: false,
+	loadingDeletingLetters: false,
 	loadingIsReadStatus: false,
 	loadingMoveLetter: false,
 	errorLoadingEmailBoxes: null,
@@ -58,6 +60,7 @@ const initialState = {
 	errorLoadingLetter: null,
 	errorLoadingCreatingLetter: null,
 	errorLoadingDeletingLetter: null,
+	errorLoadingDeletingLetters: null,
 	errorLoadingIsReadStatus: null,
 	errorLoadingMoveLetter: null,
 	openLetter: false,
@@ -296,6 +299,19 @@ const emailReducer = createSlice({
 		[removeEmailLetter.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingDeletingLetter = false;
 			state.errorLoadingDeletingLetter = action.payload;
+		},
+		[removeEmailLetters.fulfilled.type]: (state, action: PayloadAction<number[]>) => {
+			state.loadingDeletingLetters = false;
+			state.errorLoadingDeletingLetters = null;
+			state.letters.data = state.letters.data.filter((letter) => !action.payload.includes(letter.id));
+		},
+		[removeEmailLetters.pending.type]: (state) => {
+			state.loadingDeletingLetters = true;
+			state.errorLoadingDeletingLetters = null;
+		},
+		[removeEmailLetters.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDeletingLetters = false;
+			state.errorLoadingDeletingLetters = action.payload;
 		},
 		[readEmailLetters.fulfilled.type]: (state, action: PayloadAction<number[]>) => {
 			state.loadingIsReadStatus = false;

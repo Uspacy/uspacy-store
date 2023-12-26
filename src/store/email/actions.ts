@@ -128,6 +128,15 @@ export const removeEmailLetter = createAsyncThunk('email/removeEmailLetter', asy
 	}
 });
 
+export const removeEmailLetters = createAsyncThunk('email/removeEmailLetters', async (ids: number[], thunkAPI) => {
+	try {
+		await uspacySdk.emailService.removeEmailLetters(ids);
+		return ids;
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
+	}
+});
+
 export const readEmailLetters = createAsyncThunk('email/readEmailLetters', async (ids: number[], thunkAPI) => {
 	try {
 		await uspacySdk.emailService.readEmailLetters(ids);
