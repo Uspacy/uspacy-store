@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
-import { FetchMessagesRequest, GoToMessageRequest, IChat } from '@uspacy/sdk/lib/models/messenger';
+import { FetchMessagesRequest, GoToMessageRequest, IChat, ICreateWidgetData } from '@uspacy/sdk/lib/models/messenger';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 import { formatChats } from '../../../helpers/messenger';
@@ -50,6 +50,14 @@ export const fetchPinedMessages = createAsyncThunk('messenger/fetchPinedMessages
 	try {
 		const items = (await uspacySdk.messengerService.getPinnedMessages(chatId)).data;
 		return { chatId, items };
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const createWidget = createAsyncThunk('messenger/createWidget', async (data: ICreateWidgetData, { rejectWithValue }) => {
+	try {
+		return (await uspacySdk.messengerService.createWidget(data)).data;
 	} catch (e) {
 		return rejectWithValue(e);
 	}

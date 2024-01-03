@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, IMessage } from '@uspacy/sdk/lib/models/messenger';
+import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, ICreateWidgetData, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 import { differenceInMinutes } from 'date-fns';
 
@@ -11,7 +11,7 @@ import {
 	sortChats,
 	updateUnreadCountAndMentionedByChatId,
 } from '../../../helpers/messenger';
-import { fetchChats, fetchMessages, fetchPinedMessages, goToMessage } from './actions';
+import { createWidget, fetchChats, fetchMessages, fetchPinedMessages, goToMessage } from './actions';
 import { IState } from './types';
 
 const initialState: IState = {
@@ -25,6 +25,10 @@ const initialState: IState = {
 	selectedMessages: [],
 	selectNotMyMessageCount: 0,
 	pinedMessages: [],
+	widgets: {
+		data: [],
+		loading: false,
+	},
 };
 
 interface IPreperedMessage extends IMessage {
@@ -589,6 +593,17 @@ export const chatSlice = createSlice({
 
 		[fetchPinedMessages.fulfilled.type]: (state, action: PayloadAction<{ chatId: IChat['id']; items: IMessage[] }>) => {
 			state.pinedMessages = [...state.pinedMessages, action.payload];
+		},
+
+		[createWidget.pending.type]: (state) => {
+			state.widgets.loading = true;
+		},
+		[createWidget.rejected.type]: (state) => {
+			state.widgets.loading = false;
+		},
+		[createWidget.fulfilled.type]: (state, action: PayloadAction<ICreateWidgetData>) => {
+			state.widgets.data = [...state.widgets.data, action.payload];
+			state.widgets.loading = false;
 		},
 	},
 });
