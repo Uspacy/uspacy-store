@@ -11,7 +11,7 @@ import {
 	sortChats,
 	updateUnreadCountAndMentionedByChatId,
 } from '../../../helpers/messenger';
-import { createWidget, fetchChats, fetchMessages, fetchPinedMessages, goToMessage } from './actions';
+import { createWidget, fetchChats, fetchMessages, fetchPinedMessages, getWidgets, goToMessage } from './actions';
 import { IState } from './types';
 
 const initialState: IState = {
@@ -594,7 +594,6 @@ export const chatSlice = createSlice({
 		[fetchPinedMessages.fulfilled.type]: (state, action: PayloadAction<{ chatId: IChat['id']; items: IMessage[] }>) => {
 			state.pinedMessages = [...state.pinedMessages, action.payload];
 		},
-
 		[createWidget.pending.type]: (state) => {
 			state.widgets.loading = true;
 		},
@@ -603,6 +602,16 @@ export const chatSlice = createSlice({
 		},
 		[createWidget.fulfilled.type]: (state, action: PayloadAction<ICreateWidgetData>) => {
 			state.widgets.data = [...state.widgets.data, action.payload];
+			state.widgets.loading = false;
+		},
+		[getWidgets.pending.type]: (state) => {
+			state.widgets.loading = true;
+		},
+		[getWidgets.rejected.type]: (state) => {
+			state.widgets.loading = false;
+		},
+		[getWidgets.fulfilled.type]: (state, action: PayloadAction<ICreateWidgetData[]>) => {
+			state.widgets.data = action.payload;
 			state.widgets.loading = false;
 		},
 	},
