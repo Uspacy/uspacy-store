@@ -78,3 +78,11 @@ export const deleteWidget = createAsyncThunk('messenger/deleteWidget', async (id
 		return rejectWithValue(e);
 	}
 });
+
+export const updateWidget = createAsyncThunk('messenger/updateWidget', async (data: ICreateWidgetData, { rejectWithValue }) => {
+	try {
+		return (await uspacySdk.messengerService.updateWidget(data)).data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});

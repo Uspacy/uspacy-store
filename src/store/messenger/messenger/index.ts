@@ -11,7 +11,7 @@ import {
 	sortChats,
 	updateUnreadCountAndMentionedByChatId,
 } from '../../../helpers/messenger';
-import { createWidget, deleteWidget, fetchChats, fetchMessages, fetchPinedMessages, getWidgets, goToMessage } from './actions';
+import { createWidget, deleteWidget, fetchChats, fetchMessages, fetchPinedMessages, getWidgets, goToMessage, updateWidget } from './actions';
 import { IState } from './types';
 
 const initialState: IState = {
@@ -616,6 +616,12 @@ export const chatSlice = createSlice({
 		},
 		[deleteWidget.fulfilled.type]: (state, action: PayloadAction<ICreateWidgetData>) => {
 			state.widgets.data = state.widgets.data.filter((it) => it.id !== action.payload.id);
+		},
+		[updateWidget.fulfilled.type]: (state, action: PayloadAction<ICreateWidgetData>) => {
+			state.widgets.data = state.widgets.data.map((it) => {
+				if (it.id === action.payload.id) return action.payload;
+				return it;
+			});
 		},
 	},
 });
