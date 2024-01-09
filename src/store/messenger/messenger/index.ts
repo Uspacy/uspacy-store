@@ -455,6 +455,10 @@ export const chatSlice = createSlice({
 				return group;
 			});
 		},
+
+		resetMessages(state) {
+			state.messages = [];
+		},
 	},
 	extraReducers: {
 		[fetchChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
@@ -627,6 +631,7 @@ export const {
 	updateMuteTimestampInChat,
 	updateLastUnreadMessage,
 	readAllMessages,
+	resetMessages,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
