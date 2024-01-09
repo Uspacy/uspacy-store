@@ -14,6 +14,7 @@ export interface IState {
 	task: ITask;
 	parentTask: ITask;
 	template: ITask;
+	taskFromTemplate: ITask;
 	addedTask: ITask;
 	addedToKanbanTask: ITask;
 	changeTask: ITask;

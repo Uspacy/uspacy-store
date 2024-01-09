@@ -42,6 +42,7 @@ const initialState = {
 	allSubtasks: [],
 	task: {},
 	parentTask: {},
+	taskFromTemplate: {},
 	addedTask: {},
 	addedToKanbanTask: {},
 	changeTask: {},
@@ -163,6 +164,9 @@ const tasksReducer = createSlice({
 		},
 		setTask: (state, action: PayloadAction<ITask>) => {
 			state.task = action.payload;
+		},
+		setTaskFromTemplate: (state, action: PayloadAction<ITask>) => {
+			state.taskFromTemplate = action.payload;
 		},
 		setParentTask: (state, action: PayloadAction<ITask>) => {
 			state.parentTask = action.payload;
@@ -776,6 +780,7 @@ export const {
 	addRegularTaskReducer,
 	editTaskReducer,
 	setTask,
+	setTaskFromTemplate,
 	setParentTask,
 	editSubTaskReducer,
 	fillSubtasksReducer,
