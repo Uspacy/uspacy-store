@@ -3,7 +3,7 @@ import { uspacySdk } from '@uspacy/sdk';
 import { IConnectEmailBox } from '@uspacy/sdk/lib/services/EmailService/connect-email-box.dto';
 import { ICreateLetterPayload } from '@uspacy/sdk/lib/services/EmailService/create-email.dto';
 
-import { ILettersParams, IMoveLetterPayload, IUpdateEmailBoxPayload } from './types';
+import { IEmailMassActionsResponse, ILettersParams, IMoveLetterPayload, IUpdateEmailBoxPayload } from './types';
 
 export const getEmailsBoxes = createAsyncThunk('email/getEmailsBoxes', async (_, thunkAPI) => {
 	try {
@@ -128,28 +128,31 @@ export const removeEmailLetter = createAsyncThunk('email/removeEmailLetter', asy
 	}
 });
 
-export const removeEmailLetters = createAsyncThunk('email/removeEmailLetters', async (ids: number[], thunkAPI) => {
+export const removeEmailLetters = createAsyncThunk('email/removeEmailLetters', async (data: IEmailMassActionsResponse, thunkAPI) => {
 	try {
+		const { ids, folderId } = data;
 		await uspacySdk.emailService.removeEmailLetters(ids);
-		return ids;
+		return { ids, folderId };
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
 });
 
-export const readEmailLetters = createAsyncThunk('email/readEmailLetters', async (ids: number[], thunkAPI) => {
+export const readEmailLetters = createAsyncThunk('email/readEmailLetters', async (data: IEmailMassActionsResponse, thunkAPI) => {
 	try {
+		const { ids, folderId } = data;
 		await uspacySdk.emailService.readEmailLetters(ids);
-		return ids;
+		return { ids, folderId };
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
 });
 
-export const unreadEmailLetters = createAsyncThunk('email/unreadEmailLetters', async (ids: number[], thunkAPI) => {
+export const unreadEmailLetters = createAsyncThunk('email/unreadEmailLetters', async (data: IEmailMassActionsResponse, thunkAPI) => {
 	try {
+		const { ids, folderId } = data;
 		await uspacySdk.emailService.unreadEmailLetters(ids);
-		return ids;
+		return { ids, folderId };
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
