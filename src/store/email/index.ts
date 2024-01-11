@@ -305,7 +305,7 @@ const emailReducer = createSlice({
 			state.errorLoadingDeletingLetters = null;
 			state.folders.data = state.folders.data.map((folder) => {
 				if (folder?.id === action.payload.folderId) {
-					return { ...folder, ununread_message_count: folder.unread_message_count - action.payload.ids.length };
+					return { ...folder, unread_message_count: folder.unread_message_count - action.payload.ids.length };
 				}
 				return folder;
 			});
@@ -324,7 +324,7 @@ const emailReducer = createSlice({
 			state.errorLoadingIsReadStatus = null;
 			state.folders.data = state.folders.data.map((folder) => {
 				if (folder?.id === action.payload.folderId) {
-					return { ...folder, ununread_message_count: folder.unread_message_count - action.payload.ids.length };
+					return { ...folder, unread_message_count: folder.unread_message_count - action.payload.ids.length };
 				}
 				return folder;
 			});
@@ -343,7 +343,7 @@ const emailReducer = createSlice({
 			state.errorLoadingIsReadStatus = null;
 			state.folders.data = state.folders.data.map((folder) => {
 				if (folder?.id === action.payload.folderId) {
-					return { ...folder, ununread_message_count: folder.unread_message_count + action.payload.ids.length };
+					return { ...folder, unread_message_count: folder.unread_message_count + action.payload.ids.length };
 				}
 				return folder;
 			});
