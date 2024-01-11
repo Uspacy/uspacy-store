@@ -22,7 +22,7 @@ import {
 	updateEmailBox,
 	updateEmailBoxCredentials,
 } from './actions';
-import { createNewLetterModeType, headerTypes, IState } from './types';
+import { createNewLetterModeType, headerTypes, IEmailMassActionsResponse, IState } from './types';
 
 const initialState = {
 	emailBoxes: {},
@@ -300,10 +300,16 @@ const emailReducer = createSlice({
 			state.loadingDeletingLetter = false;
 			state.errorLoadingDeletingLetter = action.payload;
 		},
-		[removeEmailLetters.fulfilled.type]: (state, action: PayloadAction<number[]>) => {
+		[removeEmailLetters.fulfilled.type]: (state, action: PayloadAction<IEmailMassActionsResponse>) => {
 			state.loadingDeletingLetters = false;
 			state.errorLoadingDeletingLetters = null;
-			state.letters.data = state.letters.data.filter((letter) => !action.payload.includes(letter.id));
+			state.folders.data = state.folders.data.map((folder) => {
+				if (folder?.id === action.payload.folderId) {
+					return { ...folder, ununread_message_count: folder.unread_message_count - action.payload.ids.length };
+				}
+				return folder;
+			});
+			state.letters.data = state.letters.data.filter((letter) => !action.payload.ids.includes(letter.id));
 		},
 		[removeEmailLetters.pending.type]: (state) => {
 			state.loadingDeletingLetters = true;
@@ -313,10 +319,16 @@ const emailReducer = createSlice({
 			state.loadingDeletingLetters = false;
 			state.errorLoadingDeletingLetters = action.payload;
 		},
-		[readEmailLetters.fulfilled.type]: (state, action: PayloadAction<number[]>) => {
+		[readEmailLetters.fulfilled.type]: (state, action: PayloadAction<IEmailMassActionsResponse>) => {
 			state.loadingIsReadStatus = false;
 			state.errorLoadingIsReadStatus = null;
-			state.letters.data = state.letters.data.map((letter) => (action.payload.includes(letter.id) ? { ...letter, is_read: true } : letter));
+			state.folders.data = state.folders.data.map((folder) => {
+				if (folder?.id === action.payload.folderId) {
+					return { ...folder, ununread_message_count: folder.unread_message_count - action.payload.ids.length };
+				}
+				return folder;
+			});
+			state.letters.data = state.letters.data.map((letter) => (action.payload.ids.includes(letter.id) ? { ...letter, is_read: true } : letter));
 		},
 		[readEmailLetters.pending.type]: (state) => {
 			state.loadingIsReadStatus = true;
@@ -326,10 +338,18 @@ const emailReducer = createSlice({
 			state.loadingIsReadStatus = false;
 			state.errorLoadingIsReadStatus = action.payload;
 		},
-		[unreadEmailLetters.fulfilled.type]: (state, action: PayloadAction<number[]>) => {
+		[unreadEmailLetters.fulfilled.type]: (state, action: PayloadAction<IEmailMassActionsResponse>) => {
 			state.loadingIsReadStatus = false;
 			state.errorLoadingIsReadStatus = null;
-			state.letters.data = state.letters.data.map((letter) => (action.payload.includes(letter.id) ? { ...letter, is_read: false } : letter));
+			state.folders.data = state.folders.data.map((folder) => {
+				if (folder?.id === action.payload.folderId) {
+					return { ...folder, ununread_message_count: folder.unread_message_count + action.payload.ids.length };
+				}
+				return folder;
+			});
+			state.letters.data = state.letters.data.map((letter) => {
+				return action.payload.ids.includes(letter.id) ? { ...letter, is_read: false } : letter;
+			});
 		},
 		[unreadEmailLetters.pending.type]: (state) => {
 			state.loadingIsReadStatus = true;

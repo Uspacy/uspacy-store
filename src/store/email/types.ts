@@ -67,4 +67,9 @@ export interface IMoveLetterPayload {
 	folderId: number;
 }
 
+export interface IEmailMassActionsResponse {
+	ids: number[];
+	folderId: number;
+}
+
 export type headerTypes = 'default' | 'massActions' | 'openedLetter' | 'createLetter';
