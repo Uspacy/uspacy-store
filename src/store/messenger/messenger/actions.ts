@@ -65,7 +65,7 @@ export const createWidget = createAsyncThunk('messenger/createWidget', async (da
 
 export const getWidgets = createAsyncThunk('messenger/getWidgets', async (_, { rejectWithValue }) => {
 	try {
-		return (await uspacySdk.messengerService.getWidgets()).data;
+		return (await uspacySdk.messengerService.getWidgets()).data.data;
 	} catch (e) {
 		return rejectWithValue(e);
 	}
