@@ -36,4 +36,5 @@ export interface IState {
 export interface ILettersParams {
 	id: number;
 	params: IEmailFiltersParams;
+	signal: AbortSignal;
 }
