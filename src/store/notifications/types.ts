@@ -8,6 +8,7 @@ export interface INotification {
 	link?: string;
 	read?: boolean;
 	author?: IUser;
+	mentioned?: boolean;
 }
 
 export interface IState {
