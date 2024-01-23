@@ -33,6 +33,8 @@ const initialState = {
 	letters: {},
 	chainLetters: {},
 	letter: {},
+	createdLetter: {},
+	removedLetterId: null,
 	loadingEmailBoxes: false,
 	loadingEmailBox: false,
 	loadingConnectEmailBox: false,
@@ -106,6 +108,9 @@ const emailReducer = createSlice({
 		},
 		setLetter: (state, action: PayloadAction<ILetter>) => {
 			state.letter = action.payload;
+		},
+		setCreatedLetter: (state, action: PayloadAction<ILetter>) => {
+			state.createdLetter = action.payload;
 		},
 		setOpenLetter: (state, action: PayloadAction<boolean>) => {
 			state.openLetter = action.payload;
@@ -272,9 +277,10 @@ const emailReducer = createSlice({
 			state.loadingLetter = false;
 			state.errorLoadingLetter = action.payload;
 		},
-		[createEmailLetter.fulfilled.type]: (state) => {
+		[createEmailLetter.fulfilled.type]: (state, action: PayloadAction<ILetter>) => {
 			state.loadingCreatingLetter = false;
 			state.errorLoadingCreatingLetter = null;
+			state.createdLetter = action.payload;
 		},
 		[createEmailLetter.pending.type]: (state) => {
 			state.loadingCreatingLetter = true;
@@ -288,9 +294,7 @@ const emailReducer = createSlice({
 			state.loadingDeletingLetter = false;
 			state.errorLoadingDeletingLetter = null;
 			state.letters.data = state.letters.data.filter((letter) => letter.id !== action.payload);
-			if (state.chainLetters.data) {
-				state.chainLetters.data = state.chainLetters.data.filter((letter) => letter.id !== action.payload);
-			}
+			state.removedLetterId = action.payload;
 		},
 		[removeEmailLetter.pending.type]: (state) => {
 			state.loadingDeletingLetter = true;
@@ -400,6 +404,7 @@ export const {
 	setLetters,
 	setChainLetters,
 	setLetter,
+	setCreatedLetter,
 	setOpenLetter,
 	setIsCreateNewLetter,
 	setCreateNewLetterMode,
