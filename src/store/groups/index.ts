@@ -222,6 +222,7 @@ const groupsReducer = createSlice({
 			state.loadingGroups = false;
 			state.errorLoadingGroups = null;
 			state.allGroups = state.allGroups.map((el) => (el.id === action.payload.id ? action.payload : el));
+			state.group.logo = action.payload.logo;
 		},
 		[uploadLogo.pending.type]: (state) => {
 			state.loadingGroups = true;
