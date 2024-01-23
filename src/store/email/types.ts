@@ -12,6 +12,8 @@ export interface IState {
 	letters: ILetters;
 	chainLetters: ILetters;
 	letter: ILetter;
+	createdLetter: ILetter;
+	removedLetterId: number;
 	loadingEmailBoxes: boolean;
 	loadingEmailBox: boolean;
 	loadingConnectEmailBox: boolean;
