@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, ICreateWidgetData, IMessage } from '@uspacy/sdk/lib/models/messenger';
+import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 import { differenceInMinutes } from 'date-fns';
 
@@ -27,6 +28,14 @@ const initialState: IState = {
 	pinedMessages: [],
 	widgets: {
 		data: [],
+		meta: {
+			currentPage: 1,
+			from: 0,
+			lastPage: 1,
+			perPage: 0,
+			to: 0,
+			total: 0,
+		},
 		loading: false,
 	},
 };
@@ -606,6 +615,7 @@ export const chatSlice = createSlice({
 		},
 		[createWidget.fulfilled.type]: (state, action: PayloadAction<ICreateWidgetData>) => {
 			state.widgets.data = [...state.widgets.data, action.payload];
+			state.widgets.meta.total = state.widgets.meta.total + 1;
 			state.widgets.loading = false;
 		},
 		[getWidgets.pending.type]: (state) => {
@@ -614,8 +624,9 @@ export const chatSlice = createSlice({
 		[getWidgets.rejected.type]: (state) => {
 			state.widgets.loading = false;
 		},
-		[getWidgets.fulfilled.type]: (state, action: PayloadAction<ICreateWidgetData[]>) => {
-			state.widgets.data = action.payload;
+		[getWidgets.fulfilled.type]: (state, action: PayloadAction<{ data: ICreateWidgetData[]; meta: IMeta }>) => {
+			state.widgets.data = action.payload.data;
+			state.widgets.meta = action.payload.meta;
 			state.widgets.loading = false;
 		},
 		[deleteWidget.fulfilled.type]: (state, action: PayloadAction<ICreateWidgetData>) => {
