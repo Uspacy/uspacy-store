@@ -63,13 +63,16 @@ export const createWidget = createAsyncThunk('messenger/createWidget', async (da
 	}
 });
 
-export const getWidgets = createAsyncThunk('messenger/getWidgets', async (_, { rejectWithValue }) => {
-	try {
-		return (await uspacySdk.messengerService.getWidgets()).data.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
+export const getWidgets = createAsyncThunk(
+	'messenger/getWidgets',
+	async ({ limit, page }: { limit?: number; page?: number }, { rejectWithValue }) => {
+		try {
+			return (await uspacySdk.messengerService.getWidgets(limit, page)).data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
 
 export const deleteWidget = createAsyncThunk('messenger/deleteWidget', async (id: ICreateWidgetData['id'], { rejectWithValue }) => {
 	try {
