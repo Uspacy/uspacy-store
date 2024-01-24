@@ -3,6 +3,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import apps from './apps';
 import auth from './auth';
 import comments from './comments';
+import crmCalls from './crmCalls';
 import crmEntities from './crmEntities';
 import dealsFunnel from './dealsFunnel';
 import departments from './departments';
@@ -48,6 +49,7 @@ const rootReducer = combineReducers({
 	newsfeed,
 	migrationsReducer,
 	messengerReducer,
+	crmCalls,
 });
 
 export const setupStore = () => {
