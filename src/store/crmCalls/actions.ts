@@ -5,7 +5,8 @@ import { ICallFilters } from '@uspacy/sdk/lib/models/crm-filters';
 
 export const fetchCalls = createAsyncThunk('calls/fetchCalls', async (_, thunkAPI) => {
 	try {
-		return await uspacySdk.crmCallsService.getCalls();
+		const res = await uspacySdk.crmCallsService.getCalls();
+		return res?.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
@@ -22,7 +23,8 @@ export const fetchCallsWithFilters = createAsyncThunk('calls/fetchCallsWithFilte
 		q: data.search,
 	};
 	try {
-		return await uspacySdk.crmCallsService.getCallsWithFilters(params);
+		const res = await uspacySdk.crmCallsService.getCallsWithFilters(params);
+		return res?.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
@@ -32,7 +34,8 @@ export const createCall = createAsyncThunk('calls/createCall', async (data: ICal
 	try {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { id, ...rest } = data;
-		return await uspacySdk.crmCallsService.createCall(rest);
+		const res = await uspacySdk.crmCallsService.createCall(rest);
+		return res?.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
@@ -40,7 +43,8 @@ export const createCall = createAsyncThunk('calls/createCall', async (data: ICal
 
 export const editCall = createAsyncThunk('calls/editCall', async ({ id, data }: { id: number; data: Partial<ICall> }, thunkAPI) => {
 	try {
-		return await uspacySdk.crmCallsService.editCall(id, data);
+		const res = await uspacySdk.crmCallsService.editCall(id, data);
+		return res?.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
@@ -48,7 +52,8 @@ export const editCall = createAsyncThunk('calls/editCall', async ({ id, data }: 
 
 export const fetchCall = createAsyncThunk('calls/fetchCall', async (id: string, thunkAPI) => {
 	try {
-		return await uspacySdk.crmCallsService.getCall(id);
+		const res = await uspacySdk.crmCallsService.getCall(id);
+		return res?.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure!');
 	}
