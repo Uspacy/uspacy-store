@@ -4,6 +4,7 @@ import apps from './apps';
 import auth from './auth';
 import comments from './comments';
 import crmCalls from './crmCalls';
+import crmCompanies from './crmCompanies';
 import crmEntities from './crmEntities';
 import dealsFunnel from './dealsFunnel';
 import departments from './departments';
@@ -50,6 +51,7 @@ const rootReducer = combineReducers({
 	migrationsReducer,
 	messengerReducer,
 	crmCalls,
+	crmCompanies,
 });
 
 export const setupStore = () => {
