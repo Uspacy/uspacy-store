@@ -8,12 +8,13 @@ export interface ITaskCardActions {
 
 export interface IState {
 	tasks: ITasks;
-	regularTasks: ITasks;
+	recurringTasks: ITasks;
+	oneTimeTasks: ITasks;
 	subtasks: ITasks;
 	allSubtasks: ITask[];
 	task: ITask;
 	parentTask: ITask;
-	template: ITask;
+	recurringTemplate: ITask;
 	taskFromTemplate: ITask;
 	addedTask: ITask;
 	addedToKanbanTask: ITask;

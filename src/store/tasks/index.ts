@@ -12,12 +12,12 @@ import {
 	editSubTask,
 	editTask,
 	fetchParentTask,
-	fetchRegularTasksWithFilters,
 	fetchSubtasks,
 	fetchTask,
 	fetchTaskFields,
-	fetchTasksWithFilters,
-	fetchTemplate,
+	getRecurringTemplate,
+	getRecurringTemplates,
+	getTasks,
 	massCompletion,
 	massDeletion,
 	massEditing,
@@ -32,7 +32,11 @@ const initialState = {
 		data: [],
 		aborted: false,
 	},
-	regularTasks: {
+	recurringTasks: {
+		data: [],
+		aborted: false,
+	},
+	oneTimeTasks: {
 		data: [],
 		aborted: false,
 	},
@@ -41,8 +45,8 @@ const initialState = {
 	},
 	allSubtasks: [],
 	task: {},
+	recurringTemplate: {},
 	parentTask: {},
-	taskFromTemplate: {},
 	addedTask: {},
 	addedToKanbanTask: {},
 	changeTask: {},
@@ -155,7 +159,7 @@ const tasksReducer = createSlice({
 	reducers: {
 		addRegularTaskReducer: (state, action: PayloadAction<ITask>) => {
 			if (state.isRegularSection) {
-				state.regularTasks.data.unshift(action.payload);
+				state.recurringTasks.data.unshift(action.payload);
 				state.regularTasksMeta.total = state.regularTasksMeta.total + 1;
 			}
 		},
@@ -164,9 +168,6 @@ const tasksReducer = createSlice({
 		},
 		setTask: (state, action: PayloadAction<ITask>) => {
 			state.task = action.payload;
-		},
-		setTaskFromTemplate: (state, action: PayloadAction<ITask>) => {
-			state.taskFromTemplate = action.payload;
 		},
 		setParentTask: (state, action: PayloadAction<ITask>) => {
 			state.parentTask = action.payload;
@@ -211,8 +212,8 @@ const tasksReducer = createSlice({
 		clearParentTaskReducer: (state) => {
 			state.parentTask = {} as ITask;
 		},
-		clearTemplateReducer: (state) => {
-			state.template = {} as ITask;
+		clearRecurringTemplateReducer: (state) => {
+			state.recurringTemplate = {} as ITask;
 		},
 		clearChangeTask: (state) => {
 			state.changeTask = {} as ITask;
@@ -229,7 +230,7 @@ const tasksReducer = createSlice({
 		},
 		addTaskToEndTable: (state, action: PayloadAction<ITask>) => {
 			if (state.isRegularSection) {
-				state.regularTasks.data.push(action.payload);
+				state.recurringTasks.data.push(action.payload);
 			} else {
 				state.tasks.data.push(action.payload);
 			}
@@ -247,7 +248,7 @@ const tasksReducer = createSlice({
 					state.regularTasksMeta.total >= state.regularTasksMeta.perPage ||
 					state.regularTasksMeta.currentPage !== state.regularTasksMeta.lastPage
 				) {
-					state.regularTasks.data.splice(-1);
+					state.recurringTasks.data.splice(-1);
 				}
 			}
 		},
@@ -257,7 +258,7 @@ const tasksReducer = createSlice({
 				state.meta.total = state.meta.total - 1;
 			}
 			if (state.isRegularSection) {
-				state.regularTasks.data = state.regularTasks.data.filter((task) => task?.id !== String(action?.payload));
+				state.recurringTasks.data = state.recurringTasks.data.filter((task) => task?.id !== String(action?.payload));
 				state.regularTasksMeta.total = state.regularTasksMeta.total - 1;
 			}
 		},
@@ -269,7 +270,7 @@ const tasksReducer = createSlice({
 		},
 		clearTasks: (state) => {
 			state.tasks.data = [];
-			state.regularTasks.data = [];
+			state.recurringTasks.data = [];
 			state.loadingTasks = true;
 			state.loadingRegularTasks = true;
 		},
@@ -305,31 +306,31 @@ const tasksReducer = createSlice({
 		},
 	},
 	extraReducers: {
-		[fetchTasksWithFilters.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
+		[getTasks.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
 			state.loadingTasks = action.payload.aborted;
 			state.errorLoadingTasks = null;
 			state.tasks = action.payload.aborted ? state.tasks : action.payload;
 			state.meta = action.payload.aborted ? state.meta : action.payload.meta;
 		},
-		[fetchTasksWithFilters.pending.type]: (state) => {
+		[getTasks.pending.type]: (state) => {
 			state.loadingTasks = true;
 			state.errorLoadingTasks = null;
 		},
-		[fetchTasksWithFilters.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[getTasks.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingTasks = false;
 			state.errorLoadingTasks = action.payload;
 		},
-		[fetchRegularTasksWithFilters.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
+		[getRecurringTemplates.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
 			state.loadingRegularTasks = action.payload.aborted;
 			state.errorLoadingSchedulerTasks = null;
-			state.regularTasks = action.payload.aborted ? state.regularTasks : action.payload;
+			state.recurringTasks = action.payload.aborted ? state.recurringTasks : action.payload;
 			state.regularTasksMeta = action.payload.aborted ? state.regularTasksMeta : action.payload.meta;
 		},
-		[fetchRegularTasksWithFilters.pending.type]: (state) => {
+		[getRecurringTemplates.pending.type]: (state) => {
 			state.loadingRegularTasks = true;
 			state.errorLoadingSchedulerTasks = null;
 		},
-		[fetchRegularTasksWithFilters.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[getRecurringTemplates.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingRegularTasks = false;
 			state.errorLoadingSchedulerTasks = action.payload;
 		},
@@ -376,16 +377,16 @@ const tasksReducer = createSlice({
 			state.errorLoadingParentTask = action.payload;
 		},
 
-		[fetchTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+		[getRecurringTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingTemplate = false;
 			state.errorLoadingTemplate = null;
-			state.template = action.payload;
+			state.recurringTemplate = action.payload;
 		},
-		[fetchTemplate.pending.type]: (state) => {
+		[getRecurringTemplate.pending.type]: (state) => {
 			state.loadingTemplate = true;
 			state.errorLoadingTemplate = null;
 		},
-		[fetchTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[getRecurringTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingTemplate = false;
 			state.errorLoadingTemplate = action.payload;
 		},
@@ -425,7 +426,7 @@ const tasksReducer = createSlice({
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
 			if (state.isRegularSection) {
-				state.regularTasks.data = state.regularTasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
+				state.recurringTasks.data = state.recurringTasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
 			if (state.task.id) {
 				state.task = action.payload;
@@ -504,7 +505,7 @@ const tasksReducer = createSlice({
 				});
 			}
 			if (state.isRegularSection) {
-				state.regularTasks.data = state.regularTasks.data.map((task) => {
+				state.recurringTasks.data = state.recurringTasks.data.map((task) => {
 					const setterTaskUser = task?.setterId === String(action.payload.profile.id);
 
 					const checkPermissionsForEdit = admin || setterTaskUser;
@@ -554,7 +555,7 @@ const tasksReducer = createSlice({
 				state.meta.total = state.meta.total - 1;
 			}
 			if (state.isRegularSection) {
-				state.regularTasks.data = state.regularTasks.data.filter((task) => task?.id !== String(action?.payload));
+				state.recurringTasks.data = state.recurringTasks.data.filter((task) => task?.id !== String(action?.payload));
 				state.regularTasksMeta.total = state.regularTasksMeta.total - 1;
 			}
 		},
@@ -599,7 +600,7 @@ const tasksReducer = createSlice({
 			}
 
 			if (state.isRegularSection) {
-				state.regularTasks.data = state.regularTasks.data.filter((task) => {
+				state.recurringTasks.data = state.recurringTasks.data.filter((task) => {
 					const setterTaskUser = task?.setterId === String(action.payload.profile.id);
 
 					const checkPermissionsForEdit = admin || setterTaskUser;
@@ -780,7 +781,6 @@ export const {
 	addRegularTaskReducer,
 	editTaskReducer,
 	setTask,
-	setTaskFromTemplate,
 	setParentTask,
 	editSubTaskReducer,
 	fillSubtasksReducer,
@@ -788,7 +788,7 @@ export const {
 	clearTaskReducer,
 	clearAddedTaskReducer,
 	clearParentTaskReducer,
-	clearTemplateReducer,
+	clearRecurringTemplateReducer,
 	clearChangeTask,
 	deleteTaskReducer,
 	changeFilter,
