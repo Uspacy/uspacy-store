@@ -13,7 +13,7 @@ export interface IState {
 	chainLetters: ILetters;
 	letter: ILetter;
 	createdLetter: ILetter;
-	removedLetterId: number;
+	removedLetterIds: number[];
 	loadingEmailBoxes: boolean;
 	loadingEmailBox: boolean;
 	loadingConnectEmailBox: boolean;
