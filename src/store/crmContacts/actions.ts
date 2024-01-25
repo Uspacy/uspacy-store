@@ -1,54 +1,54 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
-import { ICompanyFilters } from '@uspacy/sdk/lib/models/crm-filters';
+import { IContactFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IField } from '@uspacy/sdk/lib/models/field';
 
-export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async (_, thunkAPI) => {
+export const fetchContacts = createAsyncThunk('contacts/fetchContacts', async (_, thunkAPI) => {
 	try {
-		const res = await uspacySdk?.crmCompaniesService?.getCompanies();
+		const res = await uspacySdk?.crmContactsService?.getContacts();
 		return res?.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
 });
 
-export const createCompany = createAsyncThunk('companies/createCompany', async (data: Partial<IEntityData>, thunkAPI) => {
+export const createContact = createAsyncThunk('contacts/createContact', async (data: Partial<IEntityData>, thunkAPI) => {
 	try {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { id, ...rest } = data;
-		const res = await uspacySdk.crmCompaniesService.createCompany(rest);
+		const res = await uspacySdk.crmContactsService.createContact(rest);
 		return res?.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
 });
 
-export const updateCompany = createAsyncThunk('companies/updateCompany', async (data: IEntityData, thunkAPI) => {
+export const updateContact = createAsyncThunk('contacts/updateContact', async (data: IEntityData, thunkAPI) => {
 	try {
 		const { id, ...rest } = data;
-		const res = await uspacySdk.crmCompaniesService.updateCompany(id, rest);
+		const res = await uspacySdk.crmContactsService.updateContact(id, rest);
 		return res?.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
 });
 
-export const deleteCompany = createAsyncThunk('companies/deleteCompany', async (id: number, thunkAPI) => {
+export const deleteContact = createAsyncThunk('contacts/deleteContact', async (id: number, thunkAPI) => {
 	try {
-		await uspacySdk.crmCompaniesService.deleteCompany(id);
+		await uspacySdk.crmContactsService.deleteContact(id);
 		return id;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
 });
 
-export const massCompaniesDeletion = createAsyncThunk(
-	'companies/massDeletion',
+export const massContactsDeletion = createAsyncThunk(
+	'contacts/massDeletion',
 	async ({ entityIds, exceptIds, all, params }: IMassActions, { rejectWithValue }) => {
 		try {
-			await uspacySdk.crmCompaniesService.massCompaniesDeletion({
+			await uspacySdk.crmContactsService.massContactsDeletion({
 				all,
 				entityIds,
 				exceptIds,
@@ -62,11 +62,11 @@ export const massCompaniesDeletion = createAsyncThunk(
 	},
 );
 
-export const massCompaniesEditing = createAsyncThunk(
-	'companies/massEditing',
+export const massContactsEditing = createAsyncThunk(
+	'contacts/massEditing',
 	async ({ entityIds, exceptIds, all, params, payload, settings, profile, admin }: IMassActions, { rejectWithValue }) => {
 		try {
-			await uspacySdk.crmCompaniesService.massCompaniesEditing({
+			await uspacySdk.crmContactsService.massContactsEditing({
 				all,
 				entityIds,
 				exceptIds,
@@ -82,10 +82,10 @@ export const massCompaniesEditing = createAsyncThunk(
 	},
 );
 
-export const fetchCompaniesWithFilters = createAsyncThunk(
-	'companies/fetchCompaniesWithFilters',
+export const fetchContactsWithFilters = createAsyncThunk(
+	'contacts/fetchContactsWithFilters',
 	async (
-		data: { params: Omit<ICompanyFilters, 'openDatePicker'>; signal: AbortSignal; relatedEntityId?: string; relatedEntityType?: string },
+		data: { params: Omit<IContactFilters, 'openDatePicker'>; signal: AbortSignal; relatedEntityId?: string; relatedEntityType?: string },
 		thunkAPI,
 	) => {
 		try {
@@ -96,7 +96,7 @@ export const fetchCompaniesWithFilters = createAsyncThunk(
 				q: data.params.search,
 				source: data.params.source,
 				created_at: data.params.period,
-				company_label: data.params.company_label,
+				contact_label: data.params.contact_label,
 				owner: data.params.owner,
 				deals: noDeals ? [] : deals,
 				page: data.params.page,
@@ -104,7 +104,7 @@ export const fetchCompaniesWithFilters = createAsyncThunk(
 				table_fields: data.params.table_fields,
 			};
 
-			const res = await uspacySdk.crmCompaniesService.getCompaniesWithFilters(
+			const res = await uspacySdk.crmContactsService.getContactsWithFilters(
 				params,
 				data?.signal,
 				data?.relatedEntityId,
@@ -124,47 +124,47 @@ export const fetchCompaniesWithFilters = createAsyncThunk(
 	},
 );
 
-export const fetchFieldsForCompany = createAsyncThunk('companies/fetchFieldsForCompany', async (_, thunkAPI) => {
+export const fetchFieldsForContact = createAsyncThunk('contacts/fetchFieldsForContact', async (_, thunkAPI) => {
 	try {
-		const res = await uspacySdk.crmCompaniesService.getCompanyFields();
+		const res = await uspacySdk.crmContactsService.getContactFields();
 		return res?.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
 });
 
-export const updateCompanyField = createAsyncThunk('companies/updateCompanyField', async (data: IField, thunkAPI) => {
+export const updateContactField = createAsyncThunk('contacts/updateContactField', async (data: IField, thunkAPI) => {
 	try {
-		const res = await uspacySdk.crmCompaniesService.updateCompanyField(data);
+		const res = await uspacySdk.crmContactsService.updateContactField(data);
 		return res?.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
 });
 
-export const updateCompanyListValues = createAsyncThunk('companies/updateCompanyListValues', async (data: IField, thunkAPI) => {
+export const updateContactListValues = createAsyncThunk('contacts/updateContactListValues', async (data: IField, thunkAPI) => {
 	try {
-		const res = await uspacySdk.crmCompaniesService.updateCompanyListValues(data);
+		const res = await uspacySdk.crmContactsService.updateContactListValues(data);
 		return { ...data, values: res?.data };
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
 });
 
-export const createCompanyField = createAsyncThunk('companies/createCompanyField', async (data: IField, thunkAPI) => {
+export const createContactField = createAsyncThunk('contacts/createContactField', async (data: IField, thunkAPI) => {
 	try {
-		const res = await uspacySdk.crmCompaniesService.createCompanyField(data);
+		const res = await uspacySdk.crmContactsService.createContactField(data);
 		return res?.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
 });
 
-export const deleteCompanyListValues = createAsyncThunk(
-	'companies/deleteCompanyListValues',
+export const deleteContactListValues = createAsyncThunk(
+	'contacts/deleteContactListValues',
 	async ({ value, fieldCode }: { value: string; fieldCode: string }, thunkAPI) => {
 		try {
-			await uspacySdk.crmCompaniesService.deleteCompanyListValues(value, fieldCode);
+			await uspacySdk.crmContactsService.deleteContactListValues(value, fieldCode);
 			return { value, fieldCode };
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
@@ -172,9 +172,9 @@ export const deleteCompanyListValues = createAsyncThunk(
 	},
 );
 
-export const deleteCompanyField = createAsyncThunk('companies/deleteCompanyField', async (code: string, thunkAPI) => {
+export const deleteContactField = createAsyncThunk('contacts/deleteContactField', async (code: string, thunkAPI) => {
 	try {
-		await uspacySdk.crmCompaniesService.deleteCompanyField(code);
+		await uspacySdk.crmContactsService.deleteContactField(code);
 		return code;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
