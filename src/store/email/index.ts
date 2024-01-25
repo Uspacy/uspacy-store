@@ -34,7 +34,7 @@ const initialState = {
 	chainLetters: {},
 	letter: {},
 	createdLetter: {},
-	removedLetterId: null,
+	removedLetterIds: null,
 	loadingEmailBoxes: false,
 	loadingEmailBox: false,
 	loadingConnectEmailBox: false,
@@ -294,7 +294,7 @@ const emailReducer = createSlice({
 			state.loadingDeletingLetter = false;
 			state.errorLoadingDeletingLetter = null;
 			state.letters.data = state.letters.data.filter((letter) => letter.id !== action.payload);
-			state.removedLetterId = action.payload;
+			state.removedLetterIds = [action.payload];
 		},
 		[removeEmailLetter.pending.type]: (state) => {
 			state.loadingDeletingLetter = true;
@@ -315,6 +315,7 @@ const emailReducer = createSlice({
 				return folder;
 			});
 			state.letters.data = state.letters.data.filter((letter) => !action.payload.ids.includes(letter.id));
+			state.removedLetterIds = action.payload.ids;
 		},
 		[removeEmailLetters.pending.type]: (state) => {
 			state.loadingDeletingLetters = true;
@@ -370,6 +371,7 @@ const emailReducer = createSlice({
 			state.loadingMoveLetter = false;
 			state.errorLoadingMoveLetter = null;
 			state.letters.data = state.letters.data.filter((letter) => letter?.id !== action.payload.id);
+			state.removedLetterIds = [action.payload.id];
 		},
 		[moveLetter.pending.type]: (state) => {
 			state.loadingMoveLetter = true;
@@ -383,6 +385,7 @@ const emailReducer = createSlice({
 			state.loadingMoveLetter = false;
 			state.errorLoadingMoveLetter = null;
 			state.letters.data = state.letters.data.filter((letter) => !action.payload.includes(letter.id));
+			state.removedLetterIds = action.payload;
 		},
 		[moveLetters.pending.type]: (state) => {
 			state.loadingMoveLetter = true;
