@@ -7,15 +7,17 @@ import crmCalls from './crmCalls';
 import crmCompanies from './crmCompanies';
 import crmContacts from './crmContacts';
 import crmDeals from './crmDeals';
+import dealsFunnel from './crmDealsFunnel';
+import dealsStages from './crmDealsStages';
 import crmEntities from './crmEntities';
 import crmLeads from './crmLeads';
+import leadsFunnel from './crmLeadsFunnel';
+import leadsStages from './crmLeadsStages';
 import crmTasks from './crmTasks';
-import dealsFunnel from './dealsFunnel';
 import departments from './departments';
 import email from './email';
 import files from './files';
 import groups from './groups';
-import leadsFunnel from './leadsFunnel';
 import messengerReducer from './messenger';
 import migrationsReducer from './migrations';
 import newsfeed from './newsfeed';
@@ -37,6 +39,8 @@ const rootReducer = combineReducers({
 	crmEntities,
 	dealsFunnel,
 	leadsFunnel,
+	dealsStages,
+	leadsStages,
 	departments,
 	email,
 	files,

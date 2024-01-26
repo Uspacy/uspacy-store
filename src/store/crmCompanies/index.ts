@@ -5,6 +5,7 @@ import { ICompanyFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IField, IFields } from '@uspacy/sdk/lib/models/field';
 
+import { idColumn } from './../../const';
 import {
 	createCompany,
 	createCompanyField,
@@ -21,21 +22,6 @@ import {
 	updateCompanyListValues,
 } from './actions';
 import { IState } from './types';
-
-const idColumn: IField = {
-	name: 'number_',
-	code: 'id_column',
-	required: false,
-	editable: false,
-	show: false,
-	hidden: true,
-	multiple: false,
-	type: 'id_column',
-	field_section_id: '',
-	system_field: true,
-	sort: '',
-	default_value: '',
-};
 
 const initialCompanies = {
 	data: [],

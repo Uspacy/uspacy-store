@@ -6,6 +6,7 @@ import { IDnDItem } from '@uspacy/sdk/lib/models/crm-kanban';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IField, IFields } from '@uspacy/sdk/lib/models/field';
 
+import { idColumn } from './../../const';
 import {
 	createLead,
 	createLeadField,
@@ -24,22 +25,6 @@ import {
 	updateLeadListValues,
 } from './actions';
 import { IMoveCardsData, IState } from './types';
-
-const idColumn: IField = {
-	name: 'number_',
-	code: 'id_column',
-	required: false,
-	editable: false,
-	show: false,
-	hidden: true,
-	multiple: false,
-	type: 'id_column',
-	field_section_id: '',
-	system_field: true,
-	sort: '',
-	default_value: '',
-};
-
 const initialDnD = {
 	fromColumnId: '',
 	toColumnId: '',
