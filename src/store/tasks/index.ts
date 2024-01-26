@@ -151,6 +151,7 @@ const initialState = {
 	taskStatus: '',
 	isRegularSection: false,
 	tasksCardPermissions: {
+		type: 'task',
 		mode: 'view',
 	},
 } as IState;
