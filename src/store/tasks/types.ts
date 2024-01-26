@@ -3,6 +3,7 @@ import { IFields } from '@uspacy/sdk/lib/models/field';
 import { IFilterTasks, IMeta, ITask, ITasks } from '@uspacy/sdk/lib/models/tasks';
 
 export interface ITaskCardActions {
+	type: 'task' | 'recurring' | 'one_time';
 	mode: 'view' | 'add' | 'edit';
 }
 
