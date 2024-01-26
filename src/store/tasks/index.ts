@@ -6,16 +6,15 @@ import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-act
 
 import { fillTheString } from '../../helpers/stringsHelper';
 import {
-	addTask,
 	completeTask,
+	createTask,
 	deleteTask,
-	editSubTask,
-	editTask,
 	fetchParentTask,
-	fetchSubtasks,
 	fetchTaskFields,
+	getOneTimeTemplate,
 	getRecurringTemplate,
 	getRecurringTemplates,
+	getSubtasks,
 	getTask,
 	getTasks,
 	massCompletion,
@@ -24,6 +23,8 @@ import {
 	pauseTask,
 	restartTask,
 	startTask,
+	updateSubtask,
+	updateTask,
 } from './actions';
 import { IState, ITaskCardActions } from './types';
 
@@ -45,8 +46,9 @@ const initialState = {
 	},
 	allSubtasks: [],
 	task: {},
-	recurringTemplate: {},
+	template: {},
 	parentTask: {},
+	taskFromTemplate: {},
 	addedTask: {},
 	addedToKanbanTask: {},
 	changeTask: {},
@@ -114,10 +116,10 @@ const initialState = {
 	loadingReсurringTemplates: true,
 	loadingSubtasks: true,
 	loadingTask: false,
-	loadingRecurringTemplate: false,
+	loadingTemplate: false,
 	loadingParentTask: false,
-	loadingAddingTask: false,
-	loadingEditingTask: false,
+	loadingCreatingTask: false,
+	loadingUpdatingTask: false,
 	loadingDeletingTask: false,
 	loadingStatusesTask: false,
 	loadingTaskFields: false,
@@ -125,10 +127,10 @@ const initialState = {
 	errorLoadingRecurringTemplates: null,
 	errorLoadingSubtasks: null,
 	errorLoadingTask: null,
-	errorLoadingRecurringTemplate: null,
+	errorLoadingTemplate: null,
 	errorLoadingParentTask: null,
-	errorLoadingAddingTask: null,
-	errorLoadingEditingTask: null,
+	errorLoadingCreatingTask: null,
+	errorLoadingUpdatingTask: null,
 	errorLoadingDeletingTask: null,
 	errorLoadingStatusesTask: null,
 	errorLoadingTaskFields: null,
@@ -172,8 +174,14 @@ const tasksReducer = createSlice({
 		setTask: (state, action: PayloadAction<ITask>) => {
 			state.task = action.payload;
 		},
+		setTemplate: (state, action: PayloadAction<ITask>) => {
+			state.template = action.payload;
+		},
 		setParentTask: (state, action: PayloadAction<ITask>) => {
 			state.parentTask = action.payload;
+		},
+		setTaskFromTemplate: (state, action: PayloadAction<ITask>) => {
+			state.taskFromTemplate = action.payload;
 		},
 		editSubTaskReducer: (state, action: PayloadAction<ITask>) => {
 			state.allSubtasks = state.allSubtasks.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
@@ -206,17 +214,8 @@ const tasksReducer = createSlice({
 			state.allSubtasks = [];
 			state.subtasks = {} as ITasks;
 		},
-		clearTaskReducer: (state) => {
-			state.task = {} as ITask;
-		},
 		clearAddedTaskReducer: (state) => {
 			state.addedTask = {} as ITask;
-		},
-		clearParentTaskReducer: (state) => {
-			state.parentTask = {} as ITask;
-		},
-		clearRecurringTemplateReducer: (state) => {
-			state.recurringTemplate = {} as ITask;
 		},
 		clearChangeTask: (state) => {
 			state.changeTask = {} as ITask;
@@ -337,21 +336,20 @@ const tasksReducer = createSlice({
 			state.loadingReсurringTemplates = false;
 			state.errorLoadingRecurringTemplates = action.payload;
 		},
-		[fetchSubtasks.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
+		[getSubtasks.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
 			state.loadingSubtasks = false;
 			state.errorLoadingSubtasks = null;
 			state.subtasks = action.payload;
 			state.allSubtasks = [...state.allSubtasks, ...action.payload.data];
 		},
-		[fetchSubtasks.pending.type]: (state) => {
+		[getSubtasks.pending.type]: (state) => {
 			state.loadingSubtasks = true;
 			state.errorLoadingSubtasks = null;
 		},
-		[fetchSubtasks.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[getSubtasks.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingSubtasks = false;
 			state.errorLoadingSubtasks = action.payload;
 		},
-
 		[getTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingTask = false;
 			state.errorLoadingTask = null;
@@ -362,6 +360,32 @@ const tasksReducer = createSlice({
 			state.errorLoadingTask = null;
 		},
 		[getTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingTask = false;
+			state.errorLoadingTask = action.payload;
+		},
+		[getRecurringTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+			state.loadingTask = false;
+			state.errorLoadingTask = null;
+			state.task = action.payload;
+		},
+		[getRecurringTemplate.pending.type]: (state) => {
+			state.loadingTask = true;
+			state.errorLoadingTask = null;
+		},
+		[getRecurringTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingTask = false;
+			state.errorLoadingTask = action.payload;
+		},
+		[getOneTimeTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+			state.loadingTask = false;
+			state.errorLoadingTask = null;
+			state.task = action.payload;
+		},
+		[getOneTimeTemplate.pending.type]: (state) => {
+			state.loadingTask = true;
+			state.errorLoadingTask = null;
+		},
+		[getOneTimeTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingTask = false;
 			state.errorLoadingTask = action.payload;
 		},
@@ -379,24 +403,9 @@ const tasksReducer = createSlice({
 			state.loadingParentTask = false;
 			state.errorLoadingParentTask = action.payload;
 		},
-
-		[getRecurringTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingRecurringTemplate = false;
-			state.errorLoadingRecurringTemplate = null;
-			state.recurringTemplate = action.payload;
-		},
-		[getRecurringTemplate.pending.type]: (state) => {
-			state.loadingRecurringTemplate = true;
-			state.errorLoadingRecurringTemplate = null;
-		},
-		[getRecurringTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingRecurringTemplate = false;
-			state.errorLoadingRecurringTemplate = action.payload;
-		},
-
-		[addTask.fulfilled.type]: (state, action: PayloadAction<{ task: ITask; abilityToAddTask: boolean }>) => {
-			state.loadingAddingTask = false;
-			state.errorLoadingAddingTask = null;
+		[createTask.fulfilled.type]: (state, action: PayloadAction<{ task: ITask; abilityToAddTask: boolean }>) => {
+			state.loadingCreatingTask = false;
+			state.errorLoadingCreatingTask = null;
 			if (action.payload.abilityToAddTask) {
 				if (state.isTable && !state.isRegularSection) {
 					state.tasks.data.unshift(action.payload.task);
@@ -413,18 +422,18 @@ const tasksReducer = createSlice({
 			}
 			state.addedTask = action.payload.task;
 		},
-		[addTask.pending.type]: (state) => {
-			state.loadingAddingTask = true;
-			state.errorLoadingAddingTask = null;
+		[createTask.pending.type]: (state) => {
+			state.loadingCreatingTask = true;
+			state.errorLoadingCreatingTask = null;
 		},
-		[addTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingAddingTask = false;
-			state.errorLoadingAddingTask = action.payload;
+		[createTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreatingTask = false;
+			state.errorLoadingCreatingTask = action.payload;
 		},
 
-		[editTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = null;
+		[updateTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = null;
 			if (state.isTable && !state.isRegularSection) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
@@ -438,29 +447,29 @@ const tasksReducer = createSlice({
 				state.changeTask = action?.payload;
 			}
 		},
-		[editTask.pending.type]: (state) => {
-			state.loadingEditingTask = true;
-			state.errorLoadingEditingTask = null;
+		[updateTask.pending.type]: (state) => {
+			state.loadingUpdatingTask = true;
+			state.errorLoadingUpdatingTask = null;
 		},
-		[editTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = action.payload;
+		[updateTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = action.payload;
 		},
-		[editSubTask.fulfilled.type]: (state) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = null;
+		[updateSubtask.fulfilled.type]: (state) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = null;
 		},
-		[editSubTask.pending.type]: (state) => {
-			state.loadingEditingTask = true;
-			state.errorLoadingEditingTask = null;
+		[updateSubtask.pending.type]: (state) => {
+			state.loadingUpdatingTask = true;
+			state.errorLoadingUpdatingTask = null;
 		},
-		[editSubTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = action.payload;
+		[updateSubtask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = action.payload;
 		},
 		[massEditing.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = null;
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = null;
 
 			const admin = action.payload.admin;
 
@@ -540,12 +549,12 @@ const tasksReducer = createSlice({
 			}
 		},
 		[massEditing.pending.type]: (state) => {
-			state.loadingEditingTask = true;
-			state.errorLoadingEditingTask = null;
+			state.loadingUpdatingTask = true;
+			state.errorLoadingUpdatingTask = null;
 		},
 		[massEditing.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = action.payload;
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = action.payload;
 		},
 		[deleteTask.fulfilled.type]: (state, action: PayloadAction<number>) => {
 			state.loadingDeletingTask = false;
@@ -708,8 +717,8 @@ const tasksReducer = createSlice({
 			state.errorLoadingStatusesTask = action.payload;
 		},
 		[massCompletion.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = null;
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = null;
 			state.tasks.data = state.tasks.data.map((task) => {
 				const responsibleUser = task?.responsibleId === String(action.payload.profile?.id);
 				const setterTaskUser = task?.setterId === String(action.payload.profile.id);
@@ -731,12 +740,12 @@ const tasksReducer = createSlice({
 			});
 		},
 		[massCompletion.pending.type]: (state) => {
-			state.loadingEditingTask = true;
-			state.errorLoadingEditingTask = null;
+			state.loadingUpdatingTask = true;
+			state.errorLoadingUpdatingTask = null;
 		},
 		[massCompletion.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = action.payload;
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = action.payload;
 		},
 		[restartTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingStatusesTask = false;
@@ -784,14 +793,13 @@ export const {
 	addRegularTaskReducer,
 	editTaskReducer,
 	setTask,
+	setTemplate,
 	setParentTask,
+	setTaskFromTemplate,
 	editSubTaskReducer,
 	fillSubtasksReducer,
 	clearSubstasksReducer,
-	clearTaskReducer,
 	clearAddedTaskReducer,
-	clearParentTaskReducer,
-	clearRecurringTemplateReducer,
 	clearChangeTask,
 	deleteTaskReducer,
 	changeFilter,

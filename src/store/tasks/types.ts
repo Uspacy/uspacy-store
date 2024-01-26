@@ -14,8 +14,8 @@ export interface IState {
 	subtasks: ITasks;
 	allSubtasks: ITask[];
 	task: ITask;
+	template: ITask;
 	parentTask: ITask;
-	recurringTemplate: ITask;
 	taskFromTemplate: ITask;
 	addedTask: ITask;
 	addedToKanbanTask: ITask;
@@ -33,10 +33,10 @@ export interface IState {
 	loadingReсurringTemplates: boolean;
 	loadingSubtasks: boolean;
 	loadingTask: boolean;
-	loadingRecurringTemplate: boolean;
+	loadingTemplate: boolean;
 	loadingParentTask: boolean;
-	loadingAddingTask: boolean;
-	loadingEditingTask: boolean;
+	loadingCreatingTask: boolean;
+	loadingUpdatingTask: boolean;
 	loadingDeletingTask: boolean;
 	loadingStatusesTask: boolean;
 	loadingTaskFields: boolean;
@@ -44,10 +44,10 @@ export interface IState {
 	errorLoadingRecurringTemplates: IErrorsAxiosResponse;
 	errorLoadingSubtasks: IErrorsAxiosResponse;
 	errorLoadingTask: IErrorsAxiosResponse;
-	errorLoadingRecurringTemplate: IErrorsAxiosResponse;
+	errorLoadingTemplate: IErrorsAxiosResponse;
 	errorLoadingParentTask: IErrorsAxiosResponse;
-	errorLoadingAddingTask: IErrorsAxiosResponse;
-	errorLoadingEditingTask: IErrorsAxiosResponse;
+	errorLoadingCreatingTask: IErrorsAxiosResponse;
+	errorLoadingUpdatingTask: IErrorsAxiosResponse;
 	errorLoadingDeletingTask: IErrorsAxiosResponse;
 	errorLoadingStatusesTask: IErrorsAxiosResponse;
 	errorLoadingTaskFields: IErrorsAxiosResponse;

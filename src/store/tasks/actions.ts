@@ -41,8 +41,8 @@ export const getRecurringTemplates = createAsyncThunk(
 	},
 );
 
-export const fetchSubtasks = createAsyncThunk(
-	'tasks/fetchSubtasks',
+export const getSubtasks = createAsyncThunk(
+	'tasks/getSubtasks',
 	async ({ id, page, list, isTemplate = false }: { id: string; page: number; list: number; isTemplate?: boolean }, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.getSubtasks(id, page, list, isTemplate);
@@ -74,6 +74,15 @@ export const getRecurringTemplate = createAsyncThunk('tasks/getRecurringTemplate
 	}
 });
 
+export const getOneTimeTemplate = createAsyncThunk('tasks/getOneTimeTemplate', async (id: string, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.tasksService.getOneTimeTemplate(id);
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
 export const fetchParentTask = createAsyncThunk('tasks/fetchParentTask', async (id: string, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk.tasksService.getParentTask(id);
@@ -83,8 +92,8 @@ export const fetchParentTask = createAsyncThunk('tasks/fetchParentTask', async (
 	}
 });
 
-export const addTask = createAsyncThunk(
-	'tasks/addTask',
+export const createTask = createAsyncThunk(
+	'tasks/createTask',
 	async ({ data, abilityToAddTask }: { data: ITaskValues; abilityToAddTask: boolean }, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.createTask(data);
@@ -95,7 +104,7 @@ export const addTask = createAsyncThunk(
 	},
 );
 
-export const editTask = createAsyncThunk('tasks/editTask', async ({ id, data }: { id: string; data: ITaskValues }, { rejectWithValue }) => {
+export const updateTask = createAsyncThunk('tasks/updateTask', async ({ id, data }: { id: string; data: ITaskValues }, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk.tasksService.updateTask(id, data);
 		return res.data;
@@ -104,7 +113,7 @@ export const editTask = createAsyncThunk('tasks/editTask', async ({ id, data }: 
 	}
 });
 
-export const editSubTask = createAsyncThunk('tasks/editSubTask', async ({ id, data }: { id: string; data: ITaskValues }, { rejectWithValue }) => {
+export const updateSubtask = createAsyncThunk('tasks/updateSubtask', async ({ id, data }: { id: string; data: ITaskValues }, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk.tasksService.updateSubtask(id, data);
 		return res.data;
