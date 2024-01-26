@@ -1,4 +1,4 @@
-import { IReasons, IStages } from '@uspacy/sdk/lib/models/crm-stages';
+import { IReasons, IStage, IStages } from '@uspacy/sdk/lib/models/crm-stages';
 
 export interface IState {
 	stages: IStages;
