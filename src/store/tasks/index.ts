@@ -111,7 +111,7 @@ const initialState = {
 	},
 	taskFields: {},
 	loadingTasks: true,
-	loadingReсurringTasks: true,
+	loadingReсurringTemplates: true,
 	loadingSubtasks: true,
 	loadingTask: false,
 	loadingRecurringTemplate: false,
@@ -122,7 +122,7 @@ const initialState = {
 	loadingStatusesTask: false,
 	loadingTaskFields: false,
 	errorLoadingTasks: null,
-	errorLoadingRecurringTasks: null,
+	errorLoadingRecurringTemplates: null,
 	errorLoadingSubtasks: null,
 	errorLoadingTask: null,
 	errorLoadingRecurringTemplate: null,
@@ -274,7 +274,7 @@ const tasksReducer = createSlice({
 			state.tasks.data = [];
 			state.recurringTasks.data = [];
 			state.loadingTasks = true;
-			state.loadingReсurringTasks = true;
+			state.loadingReсurringTemplates = true;
 		},
 		setIsSubtasks: (state, action: PayloadAction<boolean>) => {
 			state.isSubtasks = action.payload;
@@ -323,18 +323,18 @@ const tasksReducer = createSlice({
 			state.errorLoadingTasks = action.payload;
 		},
 		[getRecurringTemplates.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
-			state.loadingReсurringTasks = action.payload.aborted;
-			state.errorLoadingRecurringTasks = null;
+			state.loadingReсurringTemplates = action.payload.aborted;
+			state.errorLoadingRecurringTemplates = null;
 			state.recurringTasks = action.payload.aborted ? state.recurringTasks : action.payload;
 			state.recurringTemplatesMeta = action.payload.aborted ? state.recurringTemplatesMeta : action.payload.meta;
 		},
 		[getRecurringTemplates.pending.type]: (state) => {
-			state.loadingReсurringTasks = true;
-			state.errorLoadingRecurringTasks = null;
+			state.loadingReсurringTemplates = true;
+			state.errorLoadingRecurringTemplates = null;
 		},
 		[getRecurringTemplates.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingReсurringTasks = false;
-			state.errorLoadingRecurringTasks = action.payload;
+			state.loadingReсurringTemplates = false;
+			state.errorLoadingRecurringTemplates = action.payload;
 		},
 		[fetchSubtasks.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
 			state.loadingSubtasks = false;
