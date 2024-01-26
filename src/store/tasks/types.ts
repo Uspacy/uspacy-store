@@ -29,7 +29,7 @@ export interface IState {
 	tasksCardPermissions: ITaskCardActions;
 	isEditMode: boolean;
 	loadingTasks: boolean;
-	loadingReсurringTasks: boolean;
+	loadingReсurringTemplates: boolean;
 	loadingSubtasks: boolean;
 	loadingTask: boolean;
 	loadingRecurringTemplate: boolean;
@@ -40,7 +40,7 @@ export interface IState {
 	loadingStatusesTask: boolean;
 	loadingTaskFields: boolean;
 	errorLoadingTasks: IErrorsAxiosResponse;
-	errorLoadingRecurringTasks: IErrorsAxiosResponse;
+	errorLoadingRecurringTemplates: IErrorsAxiosResponse;
 	errorLoadingSubtasks: IErrorsAxiosResponse;
 	errorLoadingTask: IErrorsAxiosResponse;
 	errorLoadingRecurringTemplate: IErrorsAxiosResponse;
