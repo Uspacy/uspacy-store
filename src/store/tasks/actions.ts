@@ -53,8 +53,8 @@ export const fetchSubtasks = createAsyncThunk(
 	},
 );
 
-export const fetchTask = createAsyncThunk(
-	'tasks/fetchTask',
+export const getTask = createAsyncThunk(
+	'tasks/getTask',
 	async ({ id, crm_entity_list }: { id: string; crm_entity_list?: boolean }, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.getTask(id, crm_entity_list);
