@@ -2,15 +2,15 @@ import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFields } from '@uspacy/sdk/lib/models/field';
 import { IFilterTasks, IMeta, ITask, ITasks } from '@uspacy/sdk/lib/models/tasks';
 
+export type tasksTypes = 'task' | 'recurring' | 'one_time';
+
 export interface ITaskCardActions {
-	type: 'task' | 'recurring' | 'one_time';
+	type: tasksTypes;
 	mode: 'view' | 'add' | 'edit';
 }
 
 export interface IState {
 	tasks: ITasks;
-	recurringTasks: ITasks;
-	oneTimeTasks: ITasks;
 	subtasks: ITasks;
 	allSubtasks: ITask[];
 	task: ITask;
@@ -30,7 +30,6 @@ export interface IState {
 	tasksCardPermissions: ITaskCardActions;
 	isEditMode: boolean;
 	loadingTasks: boolean;
-	loadingReсurringTemplates: boolean;
 	loadingSubtasks: boolean;
 	loadingTask: boolean;
 	loadingTemplate: boolean;
@@ -41,7 +40,6 @@ export interface IState {
 	loadingStatusesTask: boolean;
 	loadingTaskFields: boolean;
 	errorLoadingTasks: IErrorsAxiosResponse;
-	errorLoadingRecurringTemplates: IErrorsAxiosResponse;
 	errorLoadingSubtasks: IErrorsAxiosResponse;
 	errorLoadingTask: IErrorsAxiosResponse;
 	errorLoadingTemplate: IErrorsAxiosResponse;
@@ -52,7 +50,6 @@ export interface IState {
 	errorLoadingStatusesTask: IErrorsAxiosResponse;
 	errorLoadingTaskFields: IErrorsAxiosResponse;
 	meta: IMeta;
-	recurringTemplatesMeta: IMeta;
 	popupLinks: ITask[];
 	isSubtasks: boolean;
 	isCopyingTask: boolean;
