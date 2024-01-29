@@ -9,6 +9,7 @@ import crmContacts from './crmContacts';
 import crmDeals from './crmDeals';
 import dealsFunnel from './crmDealsFunnel';
 import dealsStages from './crmDealsStages';
+import crmDocumentTemplates from './crmDocumentTemplates';
 import crmEntities from './crmEntities';
 import crmLeads from './crmLeads';
 import leadsFunnel from './crmLeadsFunnel';
@@ -74,6 +75,7 @@ const rootReducer = combineReducers({
 	crmProductsForEntity,
 	crmProductsTaxes,
 	crmProductsUnit,
+	crmDocumentTemplates,
 });
 
 export const setupStore = () => {
