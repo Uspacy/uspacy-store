@@ -93,7 +93,7 @@ export const fetchContactsWithFilters = createAsyncThunk(
 			const noDeals = dealsArray.includes('NO_DEALS');
 			const deals = dealsArray.filter((el) => el !== 'NO_DEALS');
 			const params = {
-				q: data.params.search,
+				...(data.params.search ? { q: data.params.search } : {}),
 				source: data.params.source,
 				created_at: data.params.period,
 				contact_label: data.params.contact_label,

@@ -28,7 +28,7 @@ export const fetchDealsWithFilters = createAsyncThunk(
 			// @ts-ignore
 			const tasks = tasksArray.filter((el) => el !== 0);
 			const params = {
-				q: data.params.search,
+				...(data.params.search ? { q: data.params.search } : {}),
 				stages: data.params.stages,
 				created_at: data.params.period,
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any

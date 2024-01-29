@@ -20,7 +20,7 @@ export const fetchCallsWithFilters = createAsyncThunk('calls/fetchCallsWithFilte
 		type: data.type,
 		responsible_id: data.responsible_id,
 		start_time: data.period,
-		q: data.search,
+		...(data.search ? { q: data.search } : {}),
 	};
 	try {
 		const res = await uspacySdk.crmCallsService.getCallsWithFilters(params);

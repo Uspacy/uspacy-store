@@ -28,14 +28,14 @@ export const fetchProductsWithFilters = createAsyncThunk(
 			const product_category_ids = normalizeCategories(data.params.select);
 			const withoutCategories = product_category_ids === null;
 			const params = {
-				q: data.params.search,
+				...(data.params.search ? { q: data.params.search } : {}),
 				page: data.params.page,
 				list: data.params.perPage,
 				availability: Array.isArray(data.params.availability) ? data.params.availability : [data.params.availability],
 				type: Array.isArray(data.params.type) ? data.params.type : [data.params.type],
 				currency: (data.params.price_from || data.params.price_to) && data.params.currency,
-				price_from: Math.round(data.params.price_from * 100),
-				price_to: Math.round(data.params.price_to * 100),
+				...(data.params.price_from ? { price_from: Math.round(data.params.price_from * 100) } : {}),
+				...(data.params.price_to ? { price_to: Math.round(data.params.price_to * 100) } : {}),
 				balance_from: data.params.balance_from,
 				balance_to: data.params.balance_to,
 				is_active: (Array.isArray(data.params.is_active) ? data.params.is_active : [data.params.is_active]).map((it) => {
