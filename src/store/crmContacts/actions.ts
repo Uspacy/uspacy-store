@@ -98,7 +98,8 @@ export const fetchContactsWithFilters = createAsyncThunk(
 				created_at: data.params.period,
 				contact_label: data.params.contact_label,
 				owner: data.params.owner,
-				deals: noDeals ? [] : deals,
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				deals: noDeals ? (' ' as any) : deals,
 				page: data.params.page,
 				list: data.params.perPage,
 				table_fields: data.params.table_fields,

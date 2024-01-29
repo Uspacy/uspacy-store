@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
@@ -98,7 +99,7 @@ export const fetchCompaniesWithFilters = createAsyncThunk(
 				created_at: data.params.period,
 				company_label: data.params.company_label,
 				owner: data.params.owner,
-				deals: noDeals ? [] : deals,
+				deals: noDeals ? (' ' as any) : deals,
 				page: data.params.page,
 				list: data.params.perPage,
 				table_fields: data.params.table_fields,

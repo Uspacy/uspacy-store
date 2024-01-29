@@ -31,7 +31,8 @@ export const fetchDealsWithFilters = createAsyncThunk(
 				q: data.params.search,
 				stages: data.params.stages,
 				created_at: data.params.period,
-				tasks: noTasks ? [] : tasks,
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				tasks: noTasks ? (' ' as any) : tasks,
 				kanban_status: data.params.kanban_status,
 				owner: data.params.owner,
 				page: data.params.page,

@@ -13,6 +13,11 @@ import crmEntities from './crmEntities';
 import crmLeads from './crmLeads';
 import leadsFunnel from './crmLeadsFunnel';
 import leadsStages from './crmLeadsStages';
+import crmProducts from './crmProducts';
+import crmProductsCategory from './crmProductsCategory';
+import crmProductsForEntity from './crmProductsForEntity';
+import crmProductsTaxes from './crmProductsTaxes';
+import crmProductsUnit from './crmProductsUnit';
 import crmTasks from './crmTasks';
 import departments from './departments';
 import email from './email';
@@ -64,6 +69,11 @@ const rootReducer = combineReducers({
 	crmDeals,
 	crmLeads,
 	crmTasks,
+	crmProducts,
+	crmProductsCategory,
+	crmProductsForEntity,
+	crmProductsTaxes,
+	crmProductsUnit,
 });
 
 export const setupStore = () => {

@@ -21,3 +21,27 @@ export enum EntityIds {
 	contacts = '3',
 	companies = '4',
 }
+
+export const defaultProductFieldKeys = [
+	'owner',
+	'id',
+	'title',
+	'product_category_id',
+	'type',
+	'article',
+	'prices',
+	'measurement_unit_id',
+	'comment',
+	'currency',
+	'tax',
+	'link',
+	'availability',
+	'is_active',
+	'description',
+	'quantity',
+	'reserved_quantity',
+	'remainder',
+	'preview_image_id',
+	'file_ids',
+	'files',
+];
