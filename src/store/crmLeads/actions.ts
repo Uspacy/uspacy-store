@@ -16,7 +16,7 @@ export const fetchLeadsWithFilters = createAsyncThunk(
 			const params = {
 				page: data.params.page,
 				list: data.params.perPage,
-				q: data.params.search,
+				...(data.params.search ? { q: data.params.search } : {}),
 				stages: data.params.stages,
 				source: data.params.source,
 				created_at: data.params.period,

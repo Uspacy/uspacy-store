@@ -36,7 +36,7 @@ export const fetchTasksWithFilters = createAsyncThunk(
 			participants: data.params.participants,
 			responsible_id: data.params.responsible_id,
 			start_time: data.params.period,
-			q: data.params.search,
+			...(data.params.search ? { q: data.params.search } : {}),
 		};
 		try {
 			const res = await uspacySdk.crmTasksService.getTasksWithFilters(params, data?.signal);
