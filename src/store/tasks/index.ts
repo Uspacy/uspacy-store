@@ -12,6 +12,7 @@ import {
 	fetchParentTask,
 	fetchTaskFields,
 	getOneTimeTemplate,
+	getOneTimeTemplates,
 	getRecurringTemplate,
 	getRecurringTemplates,
 	getSubtasks,
@@ -295,6 +296,20 @@ const tasksReducer = createSlice({
 			state.errorLoadingTasks = null;
 		},
 		[getRecurringTemplates.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingTasks = false;
+			state.errorLoadingTasks = action.payload;
+		},
+		[getOneTimeTemplates.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
+			state.loadingTasks = action.payload.aborted;
+			state.errorLoadingTasks = null;
+			state.tasks = action.payload.aborted ? state.tasks : action.payload;
+			state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+		},
+		[getOneTimeTemplates.pending.type]: (state) => {
+			state.loadingTasks = true;
+			state.errorLoadingTasks = null;
+		},
+		[getOneTimeTemplates.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingTasks = false;
 			state.errorLoadingTasks = action.payload;
 		},
