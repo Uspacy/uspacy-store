@@ -8,7 +8,14 @@ import {
 import { IErrors } from '@uspacy/sdk/lib/models/crm-errors';
 import { IDocumentTemplateFieldFilters, IDocumentTemplateFilters } from '@uspacy/sdk/lib/models/crm-filters';
 
-import { createTemplate, deleteArrayTemplates, deleteTemplate, fetchDocumentTemplates, fetchDocumentTemplatesFields, updateTemplate } from './action';
+import {
+	createTemplate,
+	deleteArrayTemplates,
+	deleteTemplate,
+	fetchDocumentTemplates,
+	fetchDocumentTemplatesFields,
+	updateTemplate,
+} from './actions';
 import { IState } from './types';
 
 export const defaultTemplate: Partial<IDocumentTemplate> = {

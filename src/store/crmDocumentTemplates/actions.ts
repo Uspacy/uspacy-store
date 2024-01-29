@@ -5,7 +5,7 @@ import { IDocumentTemplate } from '@uspacy/sdk/lib/models/crm-document-template'
 import { IDocumentTemplateFieldFilters, IDocumentTemplateFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IFile } from '@uspacy/sdk/lib/models/files';
 
-import { API_PREFIX_FILES } from './../../const';
+import { API_PREFIX_FILES } from '../../const';
 
 export const fetchDocumentTemplates = createAsyncThunk(
 	'documentTemplates/fetchDocumentTemplates',
@@ -14,7 +14,7 @@ export const fetchDocumentTemplates = createAsyncThunk(
 			const params = {
 				page: data.params.page,
 				list: data.params.list,
-				search: data.params.search,
+				...(data.params.search ? { search: data.params.search } : {}),
 				is_active: (Array.isArray(data.params.is_active) ? data.params.is_active : [data.params.is_active]).map((it) => {
 					if (it === 'active') return 1;
 					if (it === 'noActive') return 0;
