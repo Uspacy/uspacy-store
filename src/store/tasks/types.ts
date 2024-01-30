@@ -1,11 +1,9 @@
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFields } from '@uspacy/sdk/lib/models/field';
-import { IFilterTasks, IMeta, ITask, ITasks } from '@uspacy/sdk/lib/models/tasks';
-
-export type tasksTypes = 'task' | 'recurring' | 'one_time';
+import { IFilterTasks, IMeta, ITask, ITasks, taskType } from '@uspacy/sdk/lib/models/tasks';
 
 export interface ITaskCardActions {
-	type: tasksTypes;
+	type: taskType;
 	mode: 'view' | 'add' | 'edit';
 }
 

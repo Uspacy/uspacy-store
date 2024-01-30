@@ -122,6 +122,30 @@ export const createTask = createAsyncThunk(
 	},
 );
 
+export const createRecurringTemplate = createAsyncThunk(
+	'tasks/createRecurringTemplate',
+	async ({ data, abilityToAddTask }: { data: ITaskValues; abilityToAddTask: boolean }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.tasksService.createRecurringTemplate(data);
+			return { task: res.data, abilityToAddTask };
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const createOneTimeTemplate = createAsyncThunk(
+	'tasks/createOneTimeTemplate',
+	async ({ data, abilityToAddTask }: { data: ITaskValues; abilityToAddTask: boolean }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.tasksService.createOneTimeTemplate(data);
+			return { task: res.data, abilityToAddTask };
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
 export const updateTask = createAsyncThunk('tasks/updateTask', async ({ id, data }: { id: string; data: ITaskValues }, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk.tasksService.updateTask(id, data);
@@ -130,6 +154,30 @@ export const updateTask = createAsyncThunk('tasks/updateTask', async ({ id, data
 		return rejectWithValue(e);
 	}
 });
+
+export const updateRecurringTemplate = createAsyncThunk(
+	'tasks/updateRecurringTemplate',
+	async ({ id, data }: { id: string; data: ITaskValues }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.tasksService.updateRecurringTemplate(id, data);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const updateOneTimeTemplate = createAsyncThunk(
+	'tasks/updateOneTimeTemplate',
+	async ({ id, data }: { id: string; data: ITaskValues }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.tasksService.updateOneTimeTemplate(id, data);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
 
 export const updateSubtask = createAsyncThunk('tasks/updateSubtask', async ({ id, data }: { id: string; data: ITaskValues }, { rejectWithValue }) => {
 	try {
