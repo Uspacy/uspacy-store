@@ -83,24 +83,6 @@ export const getTask = createAsyncThunk(
 	},
 );
 
-export const getRecurringTemplate = createAsyncThunk('tasks/getRecurringTemplate', async (id: string, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.getRecurringTemplate(id);
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
-export const getOneTimeTemplate = createAsyncThunk('tasks/getOneTimeTemplate', async (id: string, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.getOneTimeTemplate(id);
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
 export const fetchParentTask = createAsyncThunk('tasks/fetchParentTask', async (id: string, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk.tasksService.getParentTask(id);
