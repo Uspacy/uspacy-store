@@ -19,6 +19,7 @@ import crmProductsCategory from './crmProductsCategory';
 import crmProductsForEntity from './crmProductsForEntity';
 import crmProductsTaxes from './crmProductsTaxes';
 import crmProductsUnit from './crmProductsUnit';
+import crmRequisite from './crmRequisite';
 import crmTasks from './crmTasks';
 import departments from './departments';
 import email from './email';
@@ -42,7 +43,6 @@ const rootReducer = combineReducers({
 	apps,
 	auth,
 	comments,
-	crmEntities,
 	dealsFunnel,
 	leadsFunnel,
 	dealsStages,
@@ -64,6 +64,7 @@ const rootReducer = combineReducers({
 	newsfeed,
 	migrationsReducer,
 	messengerReducer,
+	crmEntities,
 	crmCalls,
 	crmCompanies,
 	crmContacts,
@@ -76,6 +77,7 @@ const rootReducer = combineReducers({
 	crmProductsTaxes,
 	crmProductsUnit,
 	crmDocumentTemplates,
+	crmRequisite,
 });
 
 export const setupStore = () => {
