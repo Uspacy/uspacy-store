@@ -25,7 +25,6 @@ export interface IState {
 	filters: IFilterTasks;
 	regularFilter: IFilterTasks;
 	taskFields: IFields;
-	tasksCardPermissions: ITaskCardActions;
 	isEditMode: boolean;
 	loadingTasks: boolean;
 	loadingSubtasks: boolean;
@@ -56,4 +55,6 @@ export interface IState {
 	isTable: boolean;
 	taskStatus: string;
 	isRegularSection: boolean;
+	tasksCardPermissions: ITaskCardActions;
+	tasksServiceType: taskType;
 }

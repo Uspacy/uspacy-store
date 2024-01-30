@@ -83,7 +83,7 @@ export const getTask = createAsyncThunk(
 	},
 );
 
-export const fetchParentTask = createAsyncThunk('tasks/fetchParentTask', async (id: string, { rejectWithValue }) => {
+export const getParentTask = createAsyncThunk('tasks/getParentTask', async (id: string, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk.tasksService.getParentTask(id);
 		return res.data;

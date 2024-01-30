@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFields } from '@uspacy/sdk/lib/models/field';
-import { IFilterTasks, ITask, ITasks } from '@uspacy/sdk/lib/models/tasks';
+import { IFilterTasks, ITask, ITasks, taskType } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 
 import { fillTheString } from '../../helpers/stringsHelper';
@@ -11,9 +11,9 @@ import {
 	createRecurringTemplate,
 	createTask,
 	deleteTask,
-	fetchParentTask,
 	fetchTaskFields,
 	getOneTimeTemplates,
+	getParentTask,
 	getRecurringTemplates,
 	getSubtasks,
 	getTask,
@@ -142,6 +142,7 @@ const initialState = {
 	taskStatus: '',
 	isRegularSection: false,
 	tasksCardPermissions: { type: 'task', mode: 'view' },
+	tasksServiceType: 'task',
 } as IState;
 
 const tasksReducer = createSlice({
@@ -266,11 +267,14 @@ const tasksReducer = createSlice({
 		setDeleteAllFromKanban: (state, action: PayloadAction<boolean>) => {
 			state.deleteAllFromKanban = action.payload;
 		},
+		setAnEditMode: (state, action: PayloadAction<boolean>) => {
+			state.isEditMode = action.payload;
+		},
 		changeTasksCardViewMode: (state, action: PayloadAction<ITaskCardActions>) => {
 			state.tasksCardPermissions = action.payload;
 		},
-		setAnEditMode: (state, action: PayloadAction<boolean>) => {
-			state.isEditMode = action.payload;
+		setTasksServiceType: (state, action: PayloadAction<taskType>) => {
+			state.tasksServiceType = action.payload;
 		},
 	},
 	extraReducers: {
@@ -344,16 +348,16 @@ const tasksReducer = createSlice({
 			state.errorLoadingTask = action.payload;
 		},
 
-		[fetchParentTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+		[getParentTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingTask = false;
 			state.loadingParentTask = null;
 			state.parentTask = action.payload;
 		},
-		[fetchParentTask.pending.type]: (state) => {
+		[getParentTask.pending.type]: (state) => {
 			state.loadingParentTask = true;
 			state.errorLoadingParentTask = null;
 		},
-		[fetchParentTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[getParentTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingParentTask = false;
 			state.errorLoadingParentTask = action.payload;
 		},
@@ -813,7 +817,8 @@ export const {
 	setIsRegularSection,
 	setTotalTasks,
 	setDeleteAllFromKanban,
-	changeTasksCardViewMode,
 	setAnEditMode,
+	changeTasksCardViewMode,
+	setTasksServiceType,
 } = tasksReducer.actions;
 export default tasksReducer.reducer;
