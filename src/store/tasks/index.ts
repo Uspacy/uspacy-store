@@ -7,6 +7,8 @@ import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-act
 import { fillTheString } from '../../helpers/stringsHelper';
 import {
 	completeTask,
+	createOneTimeTemplate,
+	createRecurringTemplate,
 	createTask,
 	deleteTask,
 	fetchParentTask,
@@ -24,6 +26,8 @@ import {
 	pauseTask,
 	restartTask,
 	startTask,
+	updateOneTimeTemplate,
+	updateRecurringTemplate,
 	updateSubtask,
 	updateTask,
 } from './actions';
@@ -384,12 +388,12 @@ const tasksReducer = createSlice({
 			state.loadingCreatingTask = false;
 			state.errorLoadingCreatingTask = null;
 			if (action.payload.abilityToAddTask) {
-				if (state.isTable && !state.isRegularSection) {
+				if (state.isTable) {
 					state.tasks.data.unshift(action.payload.task);
 					state.meta.total = state.meta.total + 1;
 				}
 
-				if (state.isKanban && !state.isRegularSection) {
+				if (state.isKanban) {
 					state.addedToKanbanTask = action.payload.task;
 				}
 			}
@@ -407,7 +411,60 @@ const tasksReducer = createSlice({
 			state.loadingCreatingTask = false;
 			state.errorLoadingCreatingTask = action.payload;
 		},
+		[createRecurringTemplate.fulfilled.type]: (state, action: PayloadAction<{ task: ITask; abilityToAddTask: boolean }>) => {
+			state.loadingCreatingTask = false;
+			state.errorLoadingCreatingTask = null;
+			if (action.payload.abilityToAddTask) {
+				if (state.isTable) {
+					state.tasks.data.unshift(action.payload.task);
+					state.meta.total = state.meta.total + 1;
+				}
 
+				if (state.isKanban) {
+					state.addedToKanbanTask = action.payload.task;
+				}
+			}
+			if (state.isSubtasks && !state.isCopyingTask) {
+				state.allSubtasks.unshift(action.payload.task);
+				state.subtasks.meta.total = state.subtasks.meta.total + 1;
+			}
+			state.addedTask = action.payload.task;
+		},
+		[createRecurringTemplate.pending.type]: (state) => {
+			state.loadingCreatingTask = true;
+			state.errorLoadingCreatingTask = null;
+		},
+		[createRecurringTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreatingTask = false;
+			state.errorLoadingCreatingTask = action.payload;
+		},
+		[createOneTimeTemplate.fulfilled.type]: (state, action: PayloadAction<{ task: ITask; abilityToAddTask: boolean }>) => {
+			state.loadingCreatingTask = false;
+			state.errorLoadingCreatingTask = null;
+			if (action.payload.abilityToAddTask) {
+				if (state.isTable) {
+					state.tasks.data.unshift(action.payload.task);
+					state.meta.total = state.meta.total + 1;
+				}
+
+				if (state.isKanban) {
+					state.addedToKanbanTask = action.payload.task;
+				}
+			}
+			if (state.isSubtasks && !state.isCopyingTask) {
+				state.allSubtasks.unshift(action.payload.task);
+				state.subtasks.meta.total = state.subtasks.meta.total + 1;
+			}
+			state.addedTask = action.payload.task;
+		},
+		[createOneTimeTemplate.pending.type]: (state) => {
+			state.loadingCreatingTask = true;
+			state.errorLoadingCreatingTask = null;
+		},
+		[createOneTimeTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreatingTask = false;
+			state.errorLoadingCreatingTask = action.payload;
+		},
 		[updateTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingUpdatingTask = false;
 			state.errorLoadingUpdatingTask = null;
@@ -429,6 +486,45 @@ const tasksReducer = createSlice({
 			state.loadingUpdatingTask = false;
 			state.errorLoadingUpdatingTask = action.payload;
 		},
+
+		[updateRecurringTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = null;
+			if (state.isTable) {
+				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
+			}
+			if (state.task.id) {
+				state.task = action.payload;
+			}
+		},
+		[updateRecurringTemplate.pending.type]: (state) => {
+			state.loadingUpdatingTask = true;
+			state.errorLoadingUpdatingTask = null;
+		},
+		[updateRecurringTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = action.payload;
+		},
+
+		[updateOneTimeTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = null;
+			if (state.isTable) {
+				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
+			}
+			if (state.task.id) {
+				state.task = action.payload;
+			}
+		},
+		[updateOneTimeTemplate.pending.type]: (state) => {
+			state.loadingUpdatingTask = true;
+			state.errorLoadingUpdatingTask = null;
+		},
+		[updateOneTimeTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = action.payload;
+		},
+
 		[updateSubtask.fulfilled.type]: (state) => {
 			state.loadingUpdatingTask = false;
 			state.errorLoadingUpdatingTask = null;
