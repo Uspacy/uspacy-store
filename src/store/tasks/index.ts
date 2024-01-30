@@ -13,9 +13,7 @@ import {
 	deleteTask,
 	fetchParentTask,
 	fetchTaskFields,
-	getOneTimeTemplate,
 	getOneTimeTemplates,
-	getRecurringTemplate,
 	getRecurringTemplates,
 	getSubtasks,
 	getTask,
@@ -137,15 +135,13 @@ const initialState = {
 	popupLinks: [],
 	isSubtasks: false,
 	isCopyingTask: false,
+	isTaskFromTemplate: false,
 	isKanban: false,
 	isTable: false,
 	isEditMode: false,
 	taskStatus: '',
 	isRegularSection: false,
-	tasksCardPermissions: {
-		type: 'task',
-		mode: 'view',
-	},
+	tasksCardPermissions: { type: 'task', mode: 'view' },
 } as IState;
 
 const tasksReducer = createSlice({
@@ -249,6 +245,9 @@ const tasksReducer = createSlice({
 		setIsCopyingTask: (state, action: PayloadAction<boolean>) => {
 			state.isCopyingTask = action.payload;
 		},
+		setIsTaskFromTemplate: (state, action: PayloadAction<boolean>) => {
+			state.isTaskFromTemplate = action.payload;
+		},
 		setIsKanban: (state, action: PayloadAction<boolean>) => {
 			state.isKanban = action.payload;
 		},
@@ -341,32 +340,6 @@ const tasksReducer = createSlice({
 			state.errorLoadingTask = null;
 		},
 		[getTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingTask = false;
-			state.errorLoadingTask = action.payload;
-		},
-		[getRecurringTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingTask = false;
-			state.errorLoadingTask = null;
-			state.task = action.payload;
-		},
-		[getRecurringTemplate.pending.type]: (state) => {
-			state.loadingTask = true;
-			state.errorLoadingTask = null;
-		},
-		[getRecurringTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingTask = false;
-			state.errorLoadingTask = action.payload;
-		},
-		[getOneTimeTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingTask = false;
-			state.errorLoadingTask = null;
-			state.task = action.payload;
-		},
-		[getOneTimeTemplate.pending.type]: (state) => {
-			state.loadingTask = true;
-			state.errorLoadingTask = null;
-		},
-		[getOneTimeTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingTask = false;
 			state.errorLoadingTask = action.payload;
 		},
@@ -832,6 +805,7 @@ export const {
 	clearTasks,
 	setIsSubtasks,
 	setIsCopyingTask,
+	setIsTaskFromTemplate,
 	removeTaskFromNPositionTable,
 	setIsKanban,
 	setIsTable,

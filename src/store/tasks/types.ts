@@ -51,6 +51,7 @@ export interface IState {
 	popupLinks: ITask[];
 	isSubtasks: boolean;
 	isCopyingTask: boolean;
+	isTaskFromTemplate: boolean;
 	isKanban: boolean;
 	isTable: boolean;
 	taskStatus: string;
