@@ -14,6 +14,7 @@ import {
 	fetchGroups,
 	getUsersRequestedForJoing,
 	inviteUsersInGroup,
+	joinGroup,
 	leaveGroup,
 	uploadLogo,
 } from './actions';
@@ -103,16 +104,28 @@ const groupsReducer = createSlice({
 			}
 
 			state.allGroups = state.allGroups.map((el) => (el.id.toString() === editedGroup.id.toString() ? editedGroup : el));
+			state.groups.data = state.groups.data.map((el) => (el.id.toString() === editedGroup.id.toString() ? editedGroup : el));
+		},
+		userJoinGroup: (state, action: PayloadAction<{ id: string; groupId: string }>) => {
+			const editedGroup = state.allGroups.find((grp) => grp.id.toString() === action.payload.groupId);
+			const addUser = editedGroup.usersIds.concat(action.payload.id);
+			editedGroup.usersIds = addUser;
+			state.allGroups = state.allGroups.map((el) => (el.id.toString() === editedGroup.id.toString() ? editedGroup : el));
+			state.groups.data = state.groups.data.map((el) => (el.id.toString() === editedGroup.id.toString() ? editedGroup : el));
 		},
 		resetInviteError: (state) => {
 			state.errorInviteUsers = false;
+		},
+		addGroupToEndTable: (state, action: PayloadAction<IGroup>) => {
+			state.allGroups.push(action.payload);
 		},
 	},
 	extraReducers: {
 		[fetchGroups.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<IGroup>>) => {
 			state.loadingGroups = false;
 			state.errorLoadingGroups = null;
-			state.groups = action.payload;
+			state.groups.data = action.payload.data;
+			state.groups.meta = action.payload.meta;
 		},
 		[fetchGroups.pending.type]: (state) => {
 			state.loadingGroups = true;
@@ -155,6 +168,7 @@ const groupsReducer = createSlice({
 			state.errorLoadingGroups = null;
 			state.allGroups.unshift(action.payload);
 			state.isLoaded = false;
+			state.groups.meta.total = state.groups.meta.total + 1;
 		},
 		[createGroup.pending.type]: (state) => {
 			state.loadingGroups = true;
@@ -182,6 +196,7 @@ const groupsReducer = createSlice({
 			state.loadingGroups = false;
 			state.errorLoadingGroups = null;
 			state.allGroups = state.allGroups.filter((group) => group?.id?.toString() !== action.payload.toString());
+			state.groups.meta.total = state.groups.meta.total - 1;
 		},
 		[deleteGroup.pending.type]: (state) => {
 			state.loadingGroups = true;
@@ -270,6 +285,19 @@ const groupsReducer = createSlice({
 			state.loadingInvite = false;
 			state.errorInviteUsers = true;
 		},
+
+		[joinGroup.fulfilled.type]: (state) => {
+			state.loadingGroups = false;
+			state.errorLoadingGroups = null;
+			state.isUserLeavedGroup = true;
+		},
+		[joinGroup.pending.type]: (state) => {
+			state.loadingGroups = true;
+			state.errorLoadingGroups = null;
+		},
+		[joinGroup.rejected.type]: (state) => {
+			state.loadingGroups = false;
+		},
 	},
 });
 
@@ -287,5 +315,7 @@ export const {
 	addGroupMember,
 	userLeavedGroup,
 	resetInviteError,
+	userJoinGroup,
+	addGroupToEndTable,
 } = groupsReducer.actions;
 export default groupsReducer.reducer;
