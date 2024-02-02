@@ -64,11 +64,8 @@ const groupsReducer = createSlice({
 		chatOpened: (state, action) => {
 			state.isChatOpened = action.payload;
 		},
-		addToAllGroups: (state, action: PayloadAction<IGroup[]>) => {
-			state.allGroups = action.payload;
-		},
 		clearGroups: (state) => {
-			state.allGroups = [];
+			state.allGroups = initialState.allGroups;
 		},
 		changeNewGroupStatus: (state, action: PayloadAction<boolean>) => {
 			state.isNewGroupCreate = action.payload;
@@ -126,6 +123,7 @@ const groupsReducer = createSlice({
 			state.errorLoadingGroups = null;
 			state.groups.data = action.payload.data;
 			state.groups.meta = action.payload.meta;
+			state.allGroups = state.allGroups.concat(action.payload.data);
 		},
 		[fetchGroups.pending.type]: (state) => {
 			state.loadingGroups = true;
@@ -169,6 +167,7 @@ const groupsReducer = createSlice({
 			state.allGroups.unshift(action.payload);
 			state.isLoaded = false;
 			state.groups.meta.total = state.groups.meta.total + 1;
+			state.allGroups = state.allGroups.slice(0, -1);
 		},
 		[createGroup.pending.type]: (state) => {
 			state.loadingGroups = true;
@@ -306,7 +305,6 @@ export const {
 	setGroupForTask,
 	clearGroupReducer,
 	chatOpened,
-	addToAllGroups,
 	changeNewGroupStatus,
 	setModalOpened,
 	setAction,
