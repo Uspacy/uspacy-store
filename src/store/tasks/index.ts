@@ -606,7 +606,7 @@ const tasksReducer = createSlice({
 					const checkPermissionsForEdit = admin || setterTaskUser;
 
 					if (state.isKanban && checkPermissionsForEdit) {
-						state.deleteTaskIds = action?.payload.taskIds.map((id) => id);
+						state.deleteTaskIds = action?.payload?.taskIds?.map((id) => id);
 
 						if (action.payload.all) {
 							state.deleteAllFromKanban = true;
