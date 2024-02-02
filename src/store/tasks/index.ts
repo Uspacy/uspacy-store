@@ -579,8 +579,10 @@ const tasksReducer = createSlice({
 				state.deleteTaskId = action?.payload;
 			}
 			if (state.isTable) {
-				state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload));
-				state.meta.total = state.meta.total - 1;
+				if (state.tasksServiceType === state.tasksCardPermissions.type) {
+					state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload));
+					state.meta.total = state.meta.total - 1;
+				}
 			}
 		},
 		[deleteTask.pending.type]: (state) => {
