@@ -599,7 +599,7 @@ const tasksReducer = createSlice({
 
 			const admin = action.payload.admin;
 
-			if (state.isTable && !state.isRegularSection) {
+			if (state.isTable) {
 				state.tasks.data = state.tasks.data.filter((task) => {
 					const setterTaskUser = task?.setterId === String(action.payload.profile.id);
 
