@@ -12,7 +12,7 @@ export interface IState {
 	subtasks: ITasks;
 	allSubtasks: ITask[];
 	task: ITask;
-	template: ITask;
+	recurringTemplate: ITask;
 	parentTask: ITask;
 	taskFromTemplate: ITask;
 	addedTask: ITask;
@@ -29,7 +29,7 @@ export interface IState {
 	loadingTasks: boolean;
 	loadingSubtasks: boolean;
 	loadingTask: boolean;
-	loadingTemplate: boolean;
+	loadingRecurringTemplate: boolean;
 	loadingParentTask: boolean;
 	loadingCreatingTask: boolean;
 	loadingUpdatingTask: boolean;
@@ -39,7 +39,7 @@ export interface IState {
 	errorLoadingTasks: IErrorsAxiosResponse;
 	errorLoadingSubtasks: IErrorsAxiosResponse;
 	errorLoadingTask: IErrorsAxiosResponse;
-	errorLoadingTemplate: IErrorsAxiosResponse;
+	errorLoadingRecurringTemplate: IErrorsAxiosResponse;
 	errorLoadingParentTask: IErrorsAxiosResponse;
 	errorLoadingCreatingTask: IErrorsAxiosResponse;
 	errorLoadingUpdatingTask: IErrorsAxiosResponse;

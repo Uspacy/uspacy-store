@@ -83,6 +83,18 @@ export const getTask = createAsyncThunk(
 	},
 );
 
+export const getRecurringTemplate = createAsyncThunk(
+	'tasks/getRecurringTemplate',
+	async ({ id, crm_entity_list }: { id: string; crm_entity_list?: boolean }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.tasksService.getRecurringTemplate(id, crm_entity_list);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
 export const getParentTask = createAsyncThunk('tasks/getParentTask', async (id: string, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk.tasksService.getParentTask(id);
