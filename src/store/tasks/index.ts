@@ -14,6 +14,7 @@ import {
 	fetchTaskFields,
 	getOneTimeTemplates,
 	getParentTask,
+	getRecurringTemplate,
 	getRecurringTemplates,
 	getSubtasks,
 	getTask,
@@ -41,7 +42,7 @@ const initialState = {
 	},
 	allSubtasks: [],
 	task: {},
-	template: {},
+	recurringTemplate: {},
 	parentTask: {},
 	taskFromTemplate: {},
 	addedTask: {},
@@ -110,7 +111,7 @@ const initialState = {
 	loadingTasks: true,
 	loadingSubtasks: true,
 	loadingTask: false,
-	loadingTemplate: false,
+	loadingRecurringTemplate: false,
 	loadingParentTask: false,
 	loadingCreatingTask: false,
 	loadingUpdatingTask: false,
@@ -120,7 +121,7 @@ const initialState = {
 	errorLoadingTasks: null,
 	errorLoadingSubtasks: null,
 	errorLoadingTask: null,
-	errorLoadingTemplate: null,
+	errorLoadingRecurringTemplate: null,
 	errorLoadingParentTask: null,
 	errorLoadingCreatingTask: null,
 	errorLoadingUpdatingTask: null,
@@ -156,7 +157,7 @@ const tasksReducer = createSlice({
 			state.task = action.payload;
 		},
 		setTemplate: (state, action: PayloadAction<ITask>) => {
-			state.template = action.payload;
+			state.recurringTemplate = action.payload;
 		},
 		setParentTask: (state, action: PayloadAction<ITask>) => {
 			state.parentTask = action.payload;
@@ -347,7 +348,19 @@ const tasksReducer = createSlice({
 			state.loadingTask = false;
 			state.errorLoadingTask = action.payload;
 		},
-
+		[getRecurringTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+			state.loadingRecurringTemplate = false;
+			state.errorLoadingRecurringTemplate = null;
+			state.recurringTemplate = action.payload;
+		},
+		[getRecurringTemplate.pending.type]: (state) => {
+			state.loadingRecurringTemplate = true;
+			state.errorLoadingRecurringTemplate = null;
+		},
+		[getRecurringTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingRecurringTemplate = false;
+			state.errorLoadingRecurringTemplate = action.payload;
+		},
 		[getParentTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingTask = false;
 			state.loadingParentTask = null;
