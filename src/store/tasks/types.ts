@@ -7,6 +7,11 @@ export interface ITaskCardActions {
 	mode: 'view' | 'add' | 'edit';
 }
 
+export interface IDeleteTaskPayload {
+	id: string;
+	type: taskType;
+}
+
 export interface IState {
 	tasks: ITasks;
 	subtasks: ITasks;

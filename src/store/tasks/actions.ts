@@ -5,6 +5,8 @@ import { ITasksParams } from '@uspacy/sdk/lib/models/tasks';
 import { ITaskValues } from '@uspacy/sdk/lib/services/TasksService/dto/create-update-task.dto';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 
+import { IDeleteTaskPayload } from './types';
+
 export const getTasks = createAsyncThunk(
 	'tasks/getTasks',
 	async ({ params, withoutResponsible, signal }: { params: ITasksParams; withoutResponsible: boolean; signal: AbortSignal }, thunkAPI) => {
@@ -195,10 +197,10 @@ export const massEditing = createAsyncThunk(
 	},
 );
 
-export const deleteTask = createAsyncThunk('tasks/deleteTask', async (id: string, { rejectWithValue }) => {
+export const deleteTask = createAsyncThunk('tasks/deleteTask', async ({ id, type }: IDeleteTaskPayload, { rejectWithValue }) => {
 	try {
 		await uspacySdk.tasksService.deleteTask(id);
-		return id;
+		return { id, type };
 	} catch (e) {
 		return rejectWithValue(e);
 	}

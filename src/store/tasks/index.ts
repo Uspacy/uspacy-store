@@ -30,7 +30,7 @@ import {
 	updateSubtask,
 	updateTask,
 } from './actions';
-import { IState, ITaskCardActions } from './types';
+import { IDeleteTaskPayload, IState, ITaskCardActions } from './types';
 
 const initialState = {
 	tasks: {
@@ -585,14 +585,14 @@ const tasksReducer = createSlice({
 			state.loadingUpdatingTask = false;
 			state.errorLoadingUpdatingTask = action.payload;
 		},
-		[deleteTask.fulfilled.type]: (state, action: PayloadAction<number>) => {
+		[deleteTask.fulfilled.type]: (state, action: PayloadAction<IDeleteTaskPayload>) => {
 			state.loadingDeletingTask = false;
 			state.errorLoadingDeletingTask = null;
 			if (state.isKanban) {
-				state.deleteTaskId = action?.payload;
+				state.deleteTaskId = +action?.payload?.id;
 			}
 			if (state.isTable) {
-				if (state.tasksServiceType === state.tasksCardPermissions.type) {
+				if (state.tasksServiceType === action.payload.type) {
 					state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload));
 					state.meta.total = state.meta.total - 1;
 				}
