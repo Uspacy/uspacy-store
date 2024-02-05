@@ -533,49 +533,43 @@ const tasksReducer = createSlice({
 
 			const admin = action.payload.admin;
 
-			if (!state.isRegularSection) {
-				state.tasks.data = state.tasks.data.map((task) => {
-					const setterTaskUser = task?.setterId === String(action.payload.profile.id);
+			state.tasks.data = state.tasks.data.map((task) => {
+				const setterTaskUser = task?.setterId === String(action.payload.profile.id);
 
-					const checkPermissionsForEdit = admin || setterTaskUser;
+				const checkPermissionsForEdit = admin || setterTaskUser;
 
-					if (action.payload.taskIds.includes(task?.id) && checkPermissionsForEdit) {
-						const copiedTask = { ...task };
+				if (action.payload.taskIds.includes(task?.id) && checkPermissionsForEdit) {
+					const copiedTask = { ...task };
 
-						for (const key in action.payload.payload) {
-							if (action.payload.payload.hasOwnProperty(key) && action.payload.settings[key]) {
-								if (Array.isArray(action.payload.payload[key])) {
-									copiedTask[key] = Array.from(new Set([...copiedTask[key], ...action.payload.payload[key]]));
-								} else {
-									copiedTask[key] = fillTheString(
-										copiedTask[key],
-										action.payload.payload[key],
-										action.payload.settings[key].position,
-									);
-								}
+					for (const key in action.payload.payload) {
+						if (action.payload.payload.hasOwnProperty(key) && action.payload.settings[key]) {
+							if (Array.isArray(action.payload.payload[key])) {
+								copiedTask[key] = Array.from(new Set([...copiedTask[key], ...action.payload.payload[key]]));
 							} else {
-								if (key === 'deadline' && copiedTask['status'] === 'scheduled' && !action.payload.payload[key]) {
-									copiedTask['status'] = 'notScheduled';
-									copiedTask[key] = action.payload.payload[key];
-								} else if (key === 'deadline' && copiedTask['status'] === 'notScheduled' && action.payload.payload[key] > 0) {
-									copiedTask['status'] = 'scheduled';
-									copiedTask[key] = action.payload.payload[key];
-								} else {
-									copiedTask[key] = action.payload.payload[key];
-								}
+								copiedTask[key] = fillTheString(copiedTask[key], action.payload.payload[key], action.payload.settings[key].position);
+							}
+						} else {
+							if (key === 'deadline' && copiedTask['status'] === 'scheduled' && !action.payload.payload[key]) {
+								copiedTask['status'] = 'notScheduled';
+								copiedTask[key] = action.payload.payload[key];
+							} else if (key === 'deadline' && copiedTask['status'] === 'notScheduled' && action.payload.payload[key] > 0) {
+								copiedTask['status'] = 'scheduled';
+								copiedTask[key] = action.payload.payload[key];
+							} else {
+								copiedTask[key] = action.payload.payload[key];
 							}
 						}
-
-						if (state.isKanban) {
-							state.changeTasks.push(copiedTask);
-						}
-
-						return copiedTask;
 					}
 
-					return task;
-				});
-			}
+					if (state.isKanban) {
+						state.changeTasks.push(copiedTask);
+					}
+
+					return copiedTask;
+				}
+
+				return task;
+			});
 		},
 		[massEditing.pending.type]: (state) => {
 			state.loadingUpdatingTask = true;
