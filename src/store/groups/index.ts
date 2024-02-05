@@ -64,6 +64,10 @@ const groupsReducer = createSlice({
 		chatOpened: (state, action) => {
 			state.isChatOpened = action.payload;
 		},
+		// ! @RealSolomon, I returned this reducer temporary, only for stage, please don't remove it
+		addToAllGroups: (state, action: PayloadAction<IGroup[]>) => {
+			state.allGroups = action.payload;
+		},
 		clearGroups: (state) => {
 			state.allGroups = initialState.allGroups;
 		},
@@ -305,6 +309,7 @@ export const {
 	setGroupForTask,
 	clearGroupReducer,
 	chatOpened,
+	addToAllGroups,
 	changeNewGroupStatus,
 	setModalOpened,
 	setAction,
