@@ -593,7 +593,7 @@ const tasksReducer = createSlice({
 			}
 			if (state.isTable) {
 				if (state.tasksServiceType === action.payload.type) {
-					state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload));
+					state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload?.id));
 					state.meta.total = state.meta.total - 1;
 				}
 			}
