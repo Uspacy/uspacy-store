@@ -309,7 +309,6 @@ export const {
 	setGroupForTask,
 	clearGroupReducer,
 	chatOpened,
-	addToAllGroups,
 	changeNewGroupStatus,
 	setModalOpened,
 	setAction,
