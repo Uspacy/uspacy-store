@@ -119,6 +119,15 @@ export const createEmailLetter = createAsyncThunk(
 	},
 );
 
+export const resendEmailLetter = createAsyncThunk('email/resendEmailLetter', async ({ id }: { id: number }, thunkAPI) => {
+	try {
+		await uspacySdk.emailService.resendEmailLetter(id);
+		return id;
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
+	}
+});
+
 export const removeEmailLetter = createAsyncThunk('email/removeEmailLetter', async (id: number, thunkAPI) => {
 	try {
 		await uspacySdk.emailService.removeEmailLetter(id);

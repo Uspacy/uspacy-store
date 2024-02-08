@@ -1,4 +1,4 @@
-import { IFunnel } from '@uspacy/sdk/lib/models/crm-deals-funnel';
+import { IFunnel } from '@uspacy/sdk/lib/models/crm-funnel';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
 export interface IState {

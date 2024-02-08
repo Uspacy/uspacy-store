@@ -25,6 +25,7 @@ export interface IState {
 	loadingChainLetters: boolean;
 	loadingLetter: boolean;
 	loadingCreatingLetter: boolean;
+	loadingResendLetter: boolean;
 	loadingDeletingLetter: boolean;
 	loadingDeletingLetters: boolean;
 	loadingIsReadStatus: boolean;
@@ -40,6 +41,7 @@ export interface IState {
 	errorLoadingChainLetters: IErrorsAxiosResponse;
 	errorLoadingLetter: IErrorsAxiosResponse;
 	errorLoadingCreatingLetter: IErrorsAxiosResponse;
+	errorLoadingResendLetter: IErrorsAxiosResponse;
 	errorLoadingDeletingLetter: IErrorsAxiosResponse;
 	errorLoadingDeletingLetters: IErrorsAxiosResponse;
 	errorLoadingIsReadStatus: IErrorsAxiosResponse;
