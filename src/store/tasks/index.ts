@@ -1,38 +1,39 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFields } from '@uspacy/sdk/lib/models/field';
-import { IFilterTasks, ITask, ITasks } from '@uspacy/sdk/lib/models/tasks';
+import { IFilterTasks, ITask, ITasks, taskType } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 
 import { fillTheString } from '../../helpers/stringsHelper';
 import {
-	addTask,
 	completeTask,
+	createOneTimeTemplate,
+	createRecurringTemplate,
+	createTask,
 	deleteTask,
-	editSubTask,
-	editTask,
-	fetchParentTask,
-	fetchRegularTasksWithFilters,
-	fetchSubtasks,
-	fetchTask,
 	fetchTaskFields,
-	fetchTasksWithFilters,
-	fetchTemplate,
+	getOneTimeTemplates,
+	getParentTask,
+	getRecurringTemplate,
+	getRecurringTemplates,
+	getSubtasks,
+	getTask,
+	getTasks,
 	massCompletion,
 	massDeletion,
 	massEditing,
 	pauseTask,
 	restartTask,
 	startTask,
+	updateOneTimeTemplate,
+	updateRecurringTemplate,
+	updateSubtask,
+	updateTask,
 } from './actions';
-import { IState, ITaskCardActions } from './types';
+import { IDeleteTaskPayload, IState, ITaskCardActions } from './types';
 
 const initialState = {
 	tasks: {
-		data: [],
-		aborted: false,
-	},
-	regularTasks: {
 		data: [],
 		aborted: false,
 	},
@@ -41,7 +42,9 @@ const initialState = {
 	},
 	allSubtasks: [],
 	task: {},
+	recurringTemplate: {},
 	parentTask: {},
+	taskFromTemplate: {},
 	addedTask: {},
 	addedToKanbanTask: {},
 	changeTask: {},
@@ -106,22 +109,22 @@ const initialState = {
 	},
 	taskFields: {},
 	loadingTasks: true,
-	loadingRegularTasks: true,
 	loadingSubtasks: true,
 	loadingTask: false,
+	loadingRecurringTemplate: false,
 	loadingParentTask: false,
-	loadingAddingTask: false,
-	loadingEditingTask: false,
+	loadingCreatingTask: false,
+	loadingUpdatingTask: false,
 	loadingDeletingTask: false,
 	loadingStatusesTask: false,
 	loadingTaskFields: false,
 	errorLoadingTasks: null,
-	errorLoadingSchedulerTasks: null,
 	errorLoadingSubtasks: null,
 	errorLoadingTask: null,
+	errorLoadingRecurringTemplate: null,
 	errorLoadingParentTask: null,
-	errorLoadingAddingTask: null,
-	errorLoadingEditingTask: null,
+	errorLoadingCreatingTask: null,
+	errorLoadingUpdatingTask: null,
 	errorLoadingDeletingTask: null,
 	errorLoadingStatusesTask: null,
 	errorLoadingTaskFields: null,
@@ -130,42 +133,37 @@ const initialState = {
 		perPage: 20,
 		total: 0,
 	},
-	regularTasksMeta: {
-		currentPage: 0,
-		perPage: 20,
-		total: 0,
-	},
 	popupLinks: [],
 	isSubtasks: false,
 	isCopyingTask: false,
+	isTaskFromTemplate: false,
 	isKanban: false,
 	isTable: false,
 	isEditMode: false,
 	taskStatus: '',
 	isRegularSection: false,
-	tasksCardPermissions: {
-		mode: 'view',
-	},
+	tasksCardPermissions: { type: 'task', mode: 'view' },
+	tasksServiceType: 'task',
 } as IState;
 
 const tasksReducer = createSlice({
 	name: 'tasksReducer',
 	initialState,
 	reducers: {
-		addRegularTaskReducer: (state, action: PayloadAction<ITask>) => {
-			if (state.isRegularSection) {
-				state.regularTasks.data.unshift(action.payload);
-				state.regularTasksMeta.total = state.regularTasksMeta.total + 1;
-			}
-		},
 		editTaskReducer: (state, action: PayloadAction<ITask>) => {
 			state.tasks.data = state.allSubtasks.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 		},
 		setTask: (state, action: PayloadAction<ITask>) => {
 			state.task = action.payload;
 		},
+		setTemplate: (state, action: PayloadAction<ITask>) => {
+			state.recurringTemplate = action.payload;
+		},
 		setParentTask: (state, action: PayloadAction<ITask>) => {
 			state.parentTask = action.payload;
+		},
+		setTaskFromTemplate: (state, action: PayloadAction<ITask>) => {
+			state.taskFromTemplate = action.payload;
 		},
 		editSubTaskReducer: (state, action: PayloadAction<ITask>) => {
 			state.allSubtasks = state.allSubtasks.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
@@ -198,17 +196,8 @@ const tasksReducer = createSlice({
 			state.allSubtasks = [];
 			state.subtasks = {} as ITasks;
 		},
-		clearTaskReducer: (state) => {
-			state.task = {} as ITask;
-		},
 		clearAddedTaskReducer: (state) => {
 			state.addedTask = {} as ITask;
-		},
-		clearParentTaskReducer: (state) => {
-			state.parentTask = {} as ITask;
-		},
-		clearTemplateReducer: (state) => {
-			state.template = {} as ITask;
 		},
 		clearChangeTask: (state) => {
 			state.changeTask = {} as ITask;
@@ -224,37 +213,22 @@ const tasksReducer = createSlice({
 			state.regularFilter.perPage = 20;
 		},
 		addTaskToEndTable: (state, action: PayloadAction<ITask>) => {
-			if (state.isRegularSection) {
-				state.regularTasks.data.push(action.payload);
-			} else {
-				state.tasks.data.push(action.payload);
-			}
+			state.tasks.data.push(action.payload);
 		},
 		addTasksToEndTable: (state, action: PayloadAction<ITasks>) => {
 			state.tasks.data = state.tasks.data.concat(action.payload.data);
 		},
 		removeTaskFromEndTable: (state) => {
-			if (state.isTable && !state.isRegularSection) {
+			if (state.isTable) {
 				if (state.meta.total >= state.meta.perPage || state.meta.currentPage !== state.meta.lastPage) {
 					state.tasks.data.splice(-1);
-				}
-			} else {
-				if (
-					state.regularTasksMeta.total >= state.regularTasksMeta.perPage ||
-					state.regularTasksMeta.currentPage !== state.regularTasksMeta.lastPage
-				) {
-					state.regularTasks.data.splice(-1);
 				}
 			}
 		},
 		removeTaskFromNPositionTable: (state, action: PayloadAction<string>) => {
-			if (state.isTable && !state.isRegularSection) {
+			if (state.isTable) {
 				state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload));
 				state.meta.total = state.meta.total - 1;
-			}
-			if (state.isRegularSection) {
-				state.regularTasks.data = state.regularTasks.data.filter((task) => task?.id !== String(action?.payload));
-				state.regularTasksMeta.total = state.regularTasksMeta.total - 1;
 			}
 		},
 		addPopupLink: (state, action: PayloadAction<ITask>) => {
@@ -265,15 +239,16 @@ const tasksReducer = createSlice({
 		},
 		clearTasks: (state) => {
 			state.tasks.data = [];
-			state.regularTasks.data = [];
 			state.loadingTasks = true;
-			state.loadingRegularTasks = true;
 		},
 		setIsSubtasks: (state, action: PayloadAction<boolean>) => {
 			state.isSubtasks = action.payload;
 		},
 		setIsCopyingTask: (state, action: PayloadAction<boolean>) => {
 			state.isCopyingTask = action.payload;
+		},
+		setIsTaskFromTemplate: (state, action: PayloadAction<boolean>) => {
+			state.isTaskFromTemplate = action.payload;
 		},
 		setIsKanban: (state, action: PayloadAction<boolean>) => {
 			state.isKanban = action.payload;
@@ -293,109 +268,122 @@ const tasksReducer = createSlice({
 		setDeleteAllFromKanban: (state, action: PayloadAction<boolean>) => {
 			state.deleteAllFromKanban = action.payload;
 		},
-		changeTasksCardViewMode: (state, action: PayloadAction<ITaskCardActions>) => {
-			state.tasksCardPermissions = action.payload;
-		},
 		setAnEditMode: (state, action: PayloadAction<boolean>) => {
 			state.isEditMode = action.payload;
 		},
+		changeTasksCardViewMode: (state, action: PayloadAction<ITaskCardActions>) => {
+			state.tasksCardPermissions = action.payload;
+		},
+		setTasksServiceType: (state, action: PayloadAction<taskType>) => {
+			state.tasksServiceType = action.payload;
+		},
 	},
 	extraReducers: {
-		[fetchTasksWithFilters.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
+		[getTasks.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
 			state.loadingTasks = action.payload.aborted;
 			state.errorLoadingTasks = null;
 			state.tasks = action.payload.aborted ? state.tasks : action.payload;
 			state.meta = action.payload.aborted ? state.meta : action.payload.meta;
 		},
-		[fetchTasksWithFilters.pending.type]: (state) => {
+		[getTasks.pending.type]: (state) => {
 			state.loadingTasks = true;
 			state.errorLoadingTasks = null;
 		},
-		[fetchTasksWithFilters.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[getTasks.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingTasks = false;
 			state.errorLoadingTasks = action.payload;
 		},
-		[fetchRegularTasksWithFilters.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
-			state.loadingRegularTasks = action.payload.aborted;
-			state.errorLoadingSchedulerTasks = null;
-			state.regularTasks = action.payload.aborted ? state.regularTasks : action.payload;
-			state.regularTasksMeta = action.payload.aborted ? state.regularTasksMeta : action.payload.meta;
+		[getRecurringTemplates.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
+			state.loadingTasks = action.payload.aborted;
+			state.errorLoadingTasks = null;
+			state.tasks = action.payload.aborted ? state.tasks : action.payload;
+			state.meta = action.payload.aborted ? state.meta : action.payload.meta;
 		},
-		[fetchRegularTasksWithFilters.pending.type]: (state) => {
-			state.loadingRegularTasks = true;
-			state.errorLoadingSchedulerTasks = null;
+		[getRecurringTemplates.pending.type]: (state) => {
+			state.loadingTasks = true;
+			state.errorLoadingTasks = null;
 		},
-		[fetchRegularTasksWithFilters.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingRegularTasks = false;
-			state.errorLoadingSchedulerTasks = action.payload;
+		[getRecurringTemplates.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingTasks = false;
+			state.errorLoadingTasks = action.payload;
 		},
-		[fetchSubtasks.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
+		[getOneTimeTemplates.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
+			state.loadingTasks = action.payload.aborted;
+			state.errorLoadingTasks = null;
+			state.tasks = action.payload.aborted ? state.tasks : action.payload;
+			state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+		},
+		[getOneTimeTemplates.pending.type]: (state) => {
+			state.loadingTasks = true;
+			state.errorLoadingTasks = null;
+		},
+		[getOneTimeTemplates.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingTasks = false;
+			state.errorLoadingTasks = action.payload;
+		},
+		[getSubtasks.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
 			state.loadingSubtasks = false;
 			state.errorLoadingSubtasks = null;
 			state.subtasks = action.payload;
 			state.allSubtasks = [...state.allSubtasks, ...action.payload.data];
 		},
-		[fetchSubtasks.pending.type]: (state) => {
+		[getSubtasks.pending.type]: (state) => {
 			state.loadingSubtasks = true;
 			state.errorLoadingSubtasks = null;
 		},
-		[fetchSubtasks.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[getSubtasks.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingSubtasks = false;
 			state.errorLoadingSubtasks = action.payload;
 		},
-
-		[fetchTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+		[getTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingTask = false;
 			state.errorLoadingTask = null;
 			state.task = action.payload;
 		},
-		[fetchTask.pending.type]: (state) => {
+		[getTask.pending.type]: (state) => {
 			state.loadingTask = true;
 			state.errorLoadingTask = null;
 		},
-		[fetchTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[getTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingTask = false;
 			state.errorLoadingTask = action.payload;
 		},
-
-		[fetchParentTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+		[getRecurringTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+			state.loadingRecurringTemplate = false;
+			state.errorLoadingRecurringTemplate = null;
+			state.recurringTemplate = action.payload;
+		},
+		[getRecurringTemplate.pending.type]: (state) => {
+			state.loadingRecurringTemplate = true;
+			state.errorLoadingRecurringTemplate = null;
+		},
+		[getRecurringTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingRecurringTemplate = false;
+			state.errorLoadingRecurringTemplate = action.payload;
+		},
+		[getParentTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingTask = false;
 			state.loadingParentTask = null;
 			state.parentTask = action.payload;
 		},
-		[fetchParentTask.pending.type]: (state) => {
+		[getParentTask.pending.type]: (state) => {
 			state.loadingParentTask = true;
 			state.errorLoadingParentTask = null;
 		},
-		[fetchParentTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[getParentTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingParentTask = false;
 			state.errorLoadingParentTask = action.payload;
 		},
-
-		[fetchTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingTemplate = false;
-			state.errorLoadingTemplate = null;
-			state.template = action.payload;
-		},
-		[fetchTemplate.pending.type]: (state) => {
-			state.loadingTemplate = true;
-			state.errorLoadingTemplate = null;
-		},
-		[fetchTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingTemplate = false;
-			state.errorLoadingTemplate = action.payload;
-		},
-
-		[addTask.fulfilled.type]: (state, action: PayloadAction<{ task: ITask; abilityToAddTask: boolean }>) => {
-			state.loadingAddingTask = false;
-			state.errorLoadingAddingTask = null;
+		[createTask.fulfilled.type]: (state, action: PayloadAction<{ task: ITask; abilityToAddTask: boolean }>) => {
+			state.loadingCreatingTask = false;
+			state.errorLoadingCreatingTask = null;
 			if (action.payload.abilityToAddTask) {
-				if (state.isTable && !state.isRegularSection) {
+				if (state.isTable) {
 					state.tasks.data.unshift(action.payload.task);
 					state.meta.total = state.meta.total + 1;
 				}
 
-				if (state.isKanban && !state.isRegularSection) {
+				if (state.isKanban) {
 					state.addedToKanbanTask = action.payload.task;
 				}
 			}
@@ -405,23 +393,73 @@ const tasksReducer = createSlice({
 			}
 			state.addedTask = action.payload.task;
 		},
-		[addTask.pending.type]: (state) => {
-			state.loadingAddingTask = true;
-			state.errorLoadingAddingTask = null;
+		[createTask.pending.type]: (state) => {
+			state.loadingCreatingTask = true;
+			state.errorLoadingCreatingTask = null;
 		},
-		[addTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingAddingTask = false;
-			state.errorLoadingAddingTask = action.payload;
+		[createTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreatingTask = false;
+			state.errorLoadingCreatingTask = action.payload;
 		},
+		[createRecurringTemplate.fulfilled.type]: (state, action: PayloadAction<{ task: ITask; abilityToAddTask: boolean }>) => {
+			state.loadingCreatingTask = false;
+			state.errorLoadingCreatingTask = null;
+			if (action.payload.abilityToAddTask) {
+				if (state.isTable) {
+					state.tasks.data.unshift(action.payload.task);
+					state.meta.total = state.meta.total + 1;
+				}
 
-		[editTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = null;
-			if (state.isTable && !state.isRegularSection) {
-				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
+				if (state.isKanban) {
+					state.addedToKanbanTask = action.payload.task;
+				}
 			}
-			if (state.isRegularSection) {
-				state.regularTasks.data = state.regularTasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
+			if (state.isSubtasks && !state.isCopyingTask) {
+				state.allSubtasks.unshift(action.payload.task);
+				state.subtasks.meta.total = state.subtasks.meta.total + 1;
+			}
+			state.addedTask = action.payload.task;
+		},
+		[createRecurringTemplate.pending.type]: (state) => {
+			state.loadingCreatingTask = true;
+			state.errorLoadingCreatingTask = null;
+		},
+		[createRecurringTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreatingTask = false;
+			state.errorLoadingCreatingTask = action.payload;
+		},
+		[createOneTimeTemplate.fulfilled.type]: (state, action: PayloadAction<{ task: ITask; abilityToAddTask: boolean }>) => {
+			state.loadingCreatingTask = false;
+			state.errorLoadingCreatingTask = null;
+			if (action.payload.abilityToAddTask) {
+				if (state.isTable) {
+					state.tasks.data.unshift(action.payload.task);
+					state.meta.total = state.meta.total + 1;
+				}
+
+				if (state.isKanban) {
+					state.addedToKanbanTask = action.payload.task;
+				}
+			}
+			if (state.isSubtasks && !state.isCopyingTask) {
+				state.allSubtasks.unshift(action.payload.task);
+				state.subtasks.meta.total = state.subtasks.meta.total + 1;
+			}
+			state.addedTask = action.payload.task;
+		},
+		[createOneTimeTemplate.pending.type]: (state) => {
+			state.loadingCreatingTask = true;
+			state.errorLoadingCreatingTask = null;
+		},
+		[createOneTimeTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreatingTask = false;
+			state.errorLoadingCreatingTask = action.payload;
+		},
+		[updateTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = null;
+			if (state.isTable) {
+				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
 			if (state.task.id) {
 				state.task = action.payload;
@@ -430,128 +468,128 @@ const tasksReducer = createSlice({
 				state.changeTask = action?.payload;
 			}
 		},
-		[editTask.pending.type]: (state) => {
-			state.loadingEditingTask = true;
-			state.errorLoadingEditingTask = null;
+		[updateTask.pending.type]: (state) => {
+			state.loadingUpdatingTask = true;
+			state.errorLoadingUpdatingTask = null;
 		},
-		[editTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = action.payload;
+		[updateTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = action.payload;
 		},
-		[editSubTask.fulfilled.type]: (state) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = null;
+
+		[updateRecurringTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = null;
+			if (state.isTable) {
+				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
+			}
+			if (state.task.id) {
+				state.task = action.payload;
+			}
 		},
-		[editSubTask.pending.type]: (state) => {
-			state.loadingEditingTask = true;
-			state.errorLoadingEditingTask = null;
+		[updateRecurringTemplate.pending.type]: (state) => {
+			state.loadingUpdatingTask = true;
+			state.errorLoadingUpdatingTask = null;
 		},
-		[editSubTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = action.payload;
+		[updateRecurringTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = action.payload;
+		},
+
+		[updateOneTimeTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = null;
+			if (state.isTable) {
+				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
+			}
+			if (state.task.id) {
+				state.task = action.payload;
+			}
+		},
+		[updateOneTimeTemplate.pending.type]: (state) => {
+			state.loadingUpdatingTask = true;
+			state.errorLoadingUpdatingTask = null;
+		},
+		[updateOneTimeTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = action.payload;
+		},
+
+		[updateSubtask.fulfilled.type]: (state) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = null;
+		},
+		[updateSubtask.pending.type]: (state) => {
+			state.loadingUpdatingTask = true;
+			state.errorLoadingUpdatingTask = null;
+		},
+		[updateSubtask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = action.payload;
 		},
 		[massEditing.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = null;
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = null;
 
 			const admin = action.payload.admin;
 
-			if (!state.isRegularSection) {
-				state.tasks.data = state.tasks.data.map((task) => {
-					const setterTaskUser = task?.setterId === String(action.payload.profile.id);
+			state.tasks.data = state.tasks.data.map((task) => {
+				const setterTaskUser = task?.setterId === String(action.payload.profile.id);
 
-					const checkPermissionsForEdit = admin || setterTaskUser;
+				const checkPermissionsForEdit = admin || setterTaskUser;
 
-					if (action.payload.taskIds.includes(task?.id) && checkPermissionsForEdit) {
-						const copiedTask = { ...task };
+				if (action.payload.taskIds.includes(task?.id) && checkPermissionsForEdit) {
+					const copiedTask = { ...task };
 
-						for (const key in action.payload.payload) {
-							if (action.payload.payload.hasOwnProperty(key) && action.payload.settings[key]) {
-								if (Array.isArray(action.payload.payload[key])) {
-									copiedTask[key] = Array.from(new Set([...copiedTask[key], ...action.payload.payload[key]]));
-								} else {
-									copiedTask[key] = fillTheString(
-										copiedTask[key],
-										action.payload.payload[key],
-										action.payload.settings[key].position,
-									);
-								}
+					for (const key in action.payload.payload) {
+						if (action.payload.payload.hasOwnProperty(key) && action.payload.settings[key]) {
+							if (Array.isArray(action.payload.payload[key])) {
+								copiedTask[key] = Array.from(new Set([...copiedTask[key], ...action.payload.payload[key]]));
 							} else {
-								if (key === 'deadline' && copiedTask['status'] === 'scheduled' && !action.payload.payload[key]) {
-									copiedTask['status'] = 'notScheduled';
-									copiedTask[key] = action.payload.payload[key];
-								} else if (key === 'deadline' && copiedTask['status'] === 'notScheduled' && action.payload.payload[key] > 0) {
-									copiedTask['status'] = 'scheduled';
-									copiedTask[key] = action.payload.payload[key];
-								} else {
-									copiedTask[key] = action.payload.payload[key];
-								}
+								copiedTask[key] = fillTheString(copiedTask[key], action.payload.payload[key], action.payload.settings[key].position);
 							}
-						}
-
-						if (state.isKanban) {
-							state.changeTasks.push(copiedTask);
-						}
-
-						return copiedTask;
-					}
-
-					return task;
-				});
-			}
-			if (state.isRegularSection) {
-				state.regularTasks.data = state.regularTasks.data.map((task) => {
-					const setterTaskUser = task?.setterId === String(action.payload.profile.id);
-
-					const checkPermissionsForEdit = admin || setterTaskUser;
-
-					if (action.payload.taskIds.includes(task?.id) && checkPermissionsForEdit) {
-						const copiedTask = { ...task };
-
-						for (const key in action.payload.payload) {
-							if (action.payload.payload.hasOwnProperty(key) && action.payload.settings[key]) {
-								if (Array.isArray(action.payload.payload[key])) {
-									copiedTask[key] = Array.from(new Set([...copiedTask[key], ...action.payload.payload[key]]));
-								} else {
-									copiedTask[key] = fillTheString(
-										copiedTask[key],
-										action.payload.payload[key],
-										action.payload.settings[key].position,
-									);
-								}
+						} else {
+							if (key === 'deadline' && copiedTask['status'] === 'scheduled' && !action.payload.payload[key]) {
+								copiedTask['status'] = 'notScheduled';
+								copiedTask[key] = action.payload.payload[key];
+							} else if (key === 'deadline' && copiedTask['status'] === 'notScheduled' && action.payload.payload[key] > 0) {
+								copiedTask['status'] = 'scheduled';
+								copiedTask[key] = action.payload.payload[key];
 							} else {
 								copiedTask[key] = action.payload.payload[key];
 							}
 						}
-
-						return copiedTask;
 					}
 
-					return task;
-				});
-			}
+					if (state.isKanban) {
+						state.changeTasks.push(copiedTask);
+					}
+
+					return copiedTask;
+				}
+
+				return task;
+			});
 		},
 		[massEditing.pending.type]: (state) => {
-			state.loadingEditingTask = true;
-			state.errorLoadingEditingTask = null;
+			state.loadingUpdatingTask = true;
+			state.errorLoadingUpdatingTask = null;
 		},
 		[massEditing.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = action.payload;
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = action.payload;
 		},
-		[deleteTask.fulfilled.type]: (state, action: PayloadAction<number>) => {
+		[deleteTask.fulfilled.type]: (state, action: PayloadAction<IDeleteTaskPayload>) => {
 			state.loadingDeletingTask = false;
 			state.errorLoadingDeletingTask = null;
 			if (state.isKanban) {
-				state.deleteTaskId = action?.payload;
+				state.deleteTaskId = +action?.payload?.id;
 			}
-			if (state.isTable && !state.isRegularSection) {
-				state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload));
-				state.meta.total = state.meta.total - 1;
-			}
-			if (state.isRegularSection) {
-				state.regularTasks.data = state.regularTasks.data.filter((task) => task?.id !== String(action?.payload));
-				state.regularTasksMeta.total = state.regularTasksMeta.total - 1;
+			if (state.isTable) {
+				if (state.tasksServiceType === action.payload.type) {
+					state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload?.id));
+					state.meta.total = state.meta.total - 1;
+				}
 			}
 		},
 		[deleteTask.pending.type]: (state) => {
@@ -568,14 +606,14 @@ const tasksReducer = createSlice({
 
 			const admin = action.payload.admin;
 
-			if (state.isTable && !state.isRegularSection) {
+			if (state.isTable) {
 				state.tasks.data = state.tasks.data.filter((task) => {
 					const setterTaskUser = task?.setterId === String(action.payload.profile.id);
 
 					const checkPermissionsForEdit = admin || setterTaskUser;
 
 					if (state.isKanban && checkPermissionsForEdit) {
-						state.deleteTaskIds = action?.payload.taskIds.map((id) => id);
+						state.deleteTaskIds = action?.payload?.taskIds?.map((id) => id);
 
 						if (action.payload.all) {
 							state.deleteAllFromKanban = true;
@@ -588,24 +626,6 @@ const tasksReducer = createSlice({
 						state.meta.total = action.payload.exceptIds.length;
 					} else {
 						state.meta.total = state.meta.total - action.payload.taskIds.length;
-					}
-
-					return checkPermissionsForEdit && !action.payload.taskIds.includes(task?.id);
-				});
-			}
-
-			if (state.isRegularSection) {
-				state.regularTasks.data = state.regularTasks.data.filter((task) => {
-					const setterTaskUser = task?.setterId === String(action.payload.profile.id);
-
-					const checkPermissionsForEdit = admin || setterTaskUser;
-
-					if (action.payload.all && checkPermissionsForEdit) {
-						state.regularTasksMeta.total = 0;
-					} else if (action.payload.all && checkPermissionsForEdit && action.payload.exceptIds.length) {
-						state.regularTasksMeta.total = action.payload.exceptIds.length;
-					} else {
-						state.regularTasksMeta.total = state.regularTasksMeta.total - action.payload.taskIds.length;
 					}
 
 					return checkPermissionsForEdit && !action.payload.taskIds.includes(task?.id);
@@ -700,8 +720,8 @@ const tasksReducer = createSlice({
 			state.errorLoadingStatusesTask = action.payload;
 		},
 		[massCompletion.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = null;
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = null;
 			state.tasks.data = state.tasks.data.map((task) => {
 				const responsibleUser = task?.responsibleId === String(action.payload.profile?.id);
 				const setterTaskUser = task?.setterId === String(action.payload.profile.id);
@@ -723,12 +743,12 @@ const tasksReducer = createSlice({
 			});
 		},
 		[massCompletion.pending.type]: (state) => {
-			state.loadingEditingTask = true;
-			state.errorLoadingEditingTask = null;
+			state.loadingUpdatingTask = true;
+			state.errorLoadingUpdatingTask = null;
 		},
 		[massCompletion.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingEditingTask = false;
-			state.errorLoadingEditingTask = action.payload;
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = action.payload;
 		},
 		[restartTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingStatusesTask = false;
@@ -773,17 +793,15 @@ const tasksReducer = createSlice({
 });
 
 export const {
-	addRegularTaskReducer,
 	editTaskReducer,
 	setTask,
+	setTemplate,
 	setParentTask,
+	setTaskFromTemplate,
 	editSubTaskReducer,
 	fillSubtasksReducer,
 	clearSubstasksReducer,
-	clearTaskReducer,
 	clearAddedTaskReducer,
-	clearParentTaskReducer,
-	clearTemplateReducer,
 	clearChangeTask,
 	deleteTaskReducer,
 	changeFilter,
@@ -800,6 +818,7 @@ export const {
 	clearTasks,
 	setIsSubtasks,
 	setIsCopyingTask,
+	setIsTaskFromTemplate,
 	removeTaskFromNPositionTable,
 	setIsKanban,
 	setIsTable,
@@ -807,7 +826,8 @@ export const {
 	setIsRegularSection,
 	setTotalTasks,
 	setDeleteAllFromKanban,
-	changeTasksCardViewMode,
 	setAnEditMode,
+	changeTasksCardViewMode,
+	setTasksServiceType,
 } = tasksReducer.actions;
 export default tasksReducer.reducer;
