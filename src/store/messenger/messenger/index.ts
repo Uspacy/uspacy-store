@@ -454,9 +454,18 @@ export const chatSlice = createSlice({
 				return group;
 			});
 		},
-
 		resetMessages(state) {
 			state.messages = [];
+		},
+		saveDraftMessage(state, action: PayloadAction<{ chatId: IChat['id']; message: IMessage['message'] }>) {
+			state.chats.items = state.chats.items.map((it) => {
+				if (it.id === action.payload.chatId)
+					return {
+						...it,
+						draftMessage: action.payload.message,
+					};
+				return it;
+			});
 		},
 	},
 	extraReducers: {
@@ -631,6 +640,7 @@ export const {
 	updateLastUnreadMessage,
 	readAllMessages,
 	resetMessages,
+	saveDraftMessage,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
