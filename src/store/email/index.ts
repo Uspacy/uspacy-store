@@ -355,6 +355,9 @@ const emailReducer = createSlice({
 				return folder;
 			});
 			state.letters.data = state.letters.data.map((letter) => (action.payload.ids.includes(letter.id) ? { ...letter, is_read: true } : letter));
+			if (state.letter?.id && !state.letter.is_read) {
+				state.letter.is_read = true;
+			}
 		},
 		[readEmailLetters.pending.type]: (state) => {
 			state.loadingIsReadStatus = true;
@@ -377,6 +380,9 @@ const emailReducer = createSlice({
 			state.letters.data = state.letters.data.map((letter) => {
 				return action.payload.ids.includes(letter.id) ? { ...letter, is_read: false } : letter;
 			});
+			if (state.letter?.id && state.letter.is_read) {
+				state.letter.is_read = false;
+			}
 		},
 		[unreadEmailLetters.pending.type]: (state) => {
 			state.loadingIsReadStatus = true;
