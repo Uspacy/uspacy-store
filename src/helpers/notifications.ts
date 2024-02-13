@@ -29,9 +29,15 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 
 export const getNotificationTitle = (message: INotificationMessage): string | undefined => {
 	const service = getServiceName(message.data.service);
+	const mentioned = !!message.data.entity?.mentioned?.users?.[0];
+	const parentEntityType = message.data.entity?.parent?.entity_type || message.data.entity?.parent?.type;
+	const entityType = message.data.entity?.parent ? parentEntityType : message.data.entity?.entity_type;
 	if (message.data.entity?.new_kanban_stage_id && message.data.entity?.old_kanban_stage_id) {
 		return `notifications.${service}.${message.data.entity?.table_name || message.type}.${NotificationAction.UPDATE_STAGE}`;
 	}
+	if (mentioned) return `notifications.${service}.${entityType}.${message.type}.mentioned`;
+	if (service === 'comments') return `notifications.${service}.${entityType}.${message.type}.${message.data.action}`;
+
 	return `notifications.${service}.${message.data.entity?.table_name || message.type}.${message.data.action}`;
 };
 
@@ -52,9 +58,18 @@ export const getNotificationSubTitle = (message: INotificationMessage): string |
 	}
 };
 
+export const getNotificationCommentEntitytitle = (message: INotificationMessage): string | undefined => {
+	const oneLevelComment = message.data.entity?.parent?.data;
+	const twoLevelComment = message.data.entity?.parent?.parent?.data;
+
+	return !!oneLevelComment ? oneLevelComment?.entity?.title : twoLevelComment?.entity?.title;
+};
+
 export const transformNotificationMessage = (message: INotificationMessage, users: IUser[]): INotification => {
 	const user = users.find(({ id }) => id === message.data.user_id);
 	const timestamp = new Date(message.data.timestamp).getTime();
+	const mentioned = !!message.data.entity?.mentioned?.users?.[0];
+	const commentEntityTitle = getNotificationCommentEntitytitle(message);
 	return {
 		id: message.id,
 		title: getNotificationTitle(message),
@@ -62,6 +77,8 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 		date: timestamp,
 		link: getLinkEntity(message),
 		author: user,
+		mentioned: mentioned,
+		commentEntityTitle,
 	};
 };
 
