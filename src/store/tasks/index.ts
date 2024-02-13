@@ -77,7 +77,7 @@ const initialState = {
 		time_tracking: [],
 		openCalendar: false,
 		search: '',
-		boolean_operator: 'OR',
+		boolean_operator: 'XOR',
 		// ! its temporary, i'll be removed it
 		time_label: [],
 		accomplices: [],
