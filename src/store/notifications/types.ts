@@ -8,6 +8,8 @@ export interface INotification {
 	link?: string;
 	read?: boolean;
 	author?: IUser;
+	mentioned?: boolean;
+	commentEntityTitle?: string;
 }
 
 export interface IState {
