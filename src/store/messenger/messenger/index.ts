@@ -458,13 +458,15 @@ export const chatSlice = createSlice({
 			state.messages = [];
 		},
 		saveDraftMessage(state, action: PayloadAction<{ chatId: IChat['id']; message: IMessage['message'] }>) {
-			state.chats.items = state.chats.items.map((it) => {
-				if (it.id === action.payload.chatId)
+			state.messages = state.messages.map((group) => {
+				if (group.chatId === action.payload.chatId) {
 					return {
-						...it,
+						...group,
 						draftMessage: action.payload.message,
 					};
-				return it;
+				}
+
+				return group;
 			});
 		},
 	},
@@ -521,7 +523,7 @@ export const chatSlice = createSlice({
 					chatId: action.meta.arg.chatId,
 					items: [],
 					loading: true,
-					message: '',
+					draftMessage: '',
 				});
 			} else {
 				state.messages = state.messages.map((group) => {
@@ -554,7 +556,7 @@ export const chatSlice = createSlice({
 			// fix when we go to message in first opened chat
 			if (isFirstOpenedChat) {
 				state.messages.push({
-					message: '',
+					draftMessage: '',
 					chatId: action.payload.items[0]?.chatId,
 					items: prepereMessages(action.payload.items, action.payload.profile),
 					loading: false,
