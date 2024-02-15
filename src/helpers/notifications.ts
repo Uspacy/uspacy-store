@@ -64,7 +64,7 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 	const user = users.find(({ id }) => id === message.data.user_id);
 	const timestamp = new Date(message.data.timestamp).getTime();
 	const mentioned = !!message.data.entity?.mentioned?.users?.[0];
-	const commentEntityTitle = message.data.root_parent.data.title;
+	const commentEntityTitle = message?.data.root_parent?.data.title;
 	return {
 		id: message.id,
 		title: getNotificationTitle(message),
