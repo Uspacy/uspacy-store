@@ -16,16 +16,12 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 			return `/crm/${message.data.entity?.table_name || `${message.type === 'task' ? 'tasks/task' : message.type}`}/${message.data.entity.id}`;
 		case 'comments':
 			if (!message.data.entity?.entity_type) return undefined;
-			const linkData = message.data.entity.parent || message.data.entity;
-			const isTasksLink = !!message.data.entity?.parent;
-			const oneLevelComment = message.data.entity?.parent?.data;
-			const twoLevelComment = message.data.entity?.parent?.parent?.data;
-			const tasksEntityBase = !!oneLevelComment ? oneLevelComment.entity : twoLevelComment.entity;
-			const entityType = isTasksLink ? `${tasksEntityBase.table_name}s` : `${linkData.type}s`;
+			const linkData = message.data.root_parent || message.data.entity;
+			const isWithParent = !!message.data.root_parent;
 
 			const prefix = ['lead', 'deal', 'company', 'contact'].includes(linkData?.entity_type) ? '/crm' : '';
-			const entityBase = linkData.entity_type === 'company' ? 'companies' : linkData.entity_type === 'post' ? 'newsfeed' : entityType;
-			return `${prefix}/${entityBase}/${isTasksLink ? tasksEntityBase.id : linkData.entity_id}`;
+			const entityBase = linkData.entity_type === 'company' ? 'companies' : linkData.entity_type === 'post' ? 'newsfeed' : `${linkData.type}s`;
+			return `${prefix}/${entityBase}/${isWithParent ? linkData.data.id : linkData.entity_id}`;
 		default: {
 			return `/${service}/${message.data.entity.id}`;
 		}
@@ -63,18 +59,11 @@ export const getNotificationSubTitle = (message: INotificationMessage): string |
 	}
 };
 
-export const getNotificationCommentEntitytitle = (message: INotificationMessage): string | undefined => {
-	const oneLevelComment = message.data.entity?.parent?.data;
-	const twoLevelComment = message.data.entity?.parent?.parent?.data;
-
-	return !!oneLevelComment ? oneLevelComment?.entity?.title : twoLevelComment?.entity?.title;
-};
-
 export const transformNotificationMessage = (message: INotificationMessage, users: IUser[]): INotification => {
 	const user = users.find(({ id }) => id === message.data.user_id);
 	const timestamp = new Date(message.data.timestamp).getTime();
 	const mentioned = !!message.data.entity?.mentioned?.users?.[0];
-	const commentEntityTitle = getNotificationCommentEntitytitle(message);
+	const commentEntityTitle = message.data.root_parent.data.title;
 	return {
 		id: message.id,
 		title: getNotificationTitle(message),
@@ -82,7 +71,7 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 		date: timestamp,
 		link: getLinkEntity(message),
 		author: user,
-		mentioned: mentioned,
+		mentioned,
 		commentEntityTitle,
 	};
 };
