@@ -127,7 +127,7 @@ const emailReducer = createSlice({
 		setFilters: (state, action: PayloadAction<IEmailFilters>) => {
 			state.filters = action.payload;
 		},
-		setSelectedLetters: (state, action: PayloadAction<number[]>) => {
+		setSelectedLetters: (state, action: PayloadAction<ILetter[]>) => {
 			state.selectedLetters = action.payload;
 		},
 		setEmailTableHeaderType: (state, action: PayloadAction<headerTypes>) => {

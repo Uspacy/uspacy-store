@@ -50,7 +50,7 @@ export interface IState {
 	isCreateNewLetter: boolean;
 	createNewLetterMode: createNewLetterModeType;
 	filters: IEmailFilters;
-	selectedLetters: number[];
+	selectedLetters: ILetter[];
 	emailTableHeaderType: headerTypes;
 }
 
