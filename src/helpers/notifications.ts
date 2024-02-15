@@ -16,7 +16,8 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 			return `/crm/${message.data.entity?.table_name || `${message.type === 'task' ? 'tasks/task' : message.type}`}/${message.data.entity.id}`;
 		case 'comments':
 			if (!message.data.entity?.entity_type) return undefined;
-			const linkData = message.data.root_parent || message.data.entity;
+			const linkData =
+				message.data.root_parent && Object.keys(message.data.root_parent).length ? message.data.root_parent : message.data.entity;
 			const isWithParent = !!message.data.root_parent;
 
 			const prefix = ['lead', 'deal', 'company', 'contact'].includes(linkData?.entity_type) ? '/crm' : '';
