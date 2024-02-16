@@ -40,9 +40,9 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 	}
 };
 
-export const getNotificationTitle = (message: INotificationMessage): string | undefined => {
+export const getNotificationTitle = (message: INotificationMessage, profileId: number): string | undefined => {
 	const service = getServiceName(message.data.service);
-	const mentioned = !!message.data.entity?.mentioned?.users?.[0];
+	const mentioned = !!message.data.entity?.mentioned?.users?.includes(profileId);
 	const parentEntityType = message.data?.root_parent?.type;
 	const entityType = message.data.root_parent && Object.keys(message.data.root_parent).length ? parentEntityType : message.data.entity?.entity_type;
 	if (message.data.entity?.new_kanban_stage_id && message.data.entity?.old_kanban_stage_id) {
@@ -71,14 +71,14 @@ export const getNotificationSubTitle = (message: INotificationMessage): string |
 	}
 };
 
-export const transformNotificationMessage = (message: INotificationMessage, users: IUser[]): INotification => {
+export const transformNotificationMessage = (message: INotificationMessage, users: IUser[], profileId: number): INotification => {
 	const user = users.find(({ id }) => id === message.data.user_id);
 	const timestamp = new Date(message.data.timestamp).getTime();
-	const mentioned = !!message.data.entity?.mentioned?.users?.[0];
+	const mentioned = !!message.data.entity?.mentioned?.users?.includes(profileId);
 	const commentEntityTitle = message.data?.root_parent?.data?.title;
 	return {
 		id: message.id,
-		title: getNotificationTitle(message),
+		title: getNotificationTitle(message, profileId),
 		subTitle: getNotificationSubTitle(message),
 		date: timestamp,
 		link: getLinkEntity(message),

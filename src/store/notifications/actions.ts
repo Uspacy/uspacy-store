@@ -8,10 +8,11 @@ export const fetchNotifications = createAsyncThunk('notifications/fetchNotificat
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const state: any = getState();
 		const users = state.users.data;
+		const profileId = state.profile.data.id;
 		const { data: items } = await uspacySdk.notificationsService.getNotifications();
 		const read = await getRead();
 		return items.map((it) => {
-			const notification = transformNotificationMessage(it, users);
+			const notification = transformNotificationMessage(it, users, profileId);
 			return {
 				...notification,
 				read: read.includes(notification.id),
