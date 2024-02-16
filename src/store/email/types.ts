@@ -68,6 +68,7 @@ export interface IUpdateEmailBoxPayload {
 export interface IMoveLetterPayload {
 	letterId?: number;
 	ids?: number[];
+	chain_ids?: number[];
 	folderId: number;
 }
 

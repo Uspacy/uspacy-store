@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IConnectEmailBox } from '@uspacy/sdk/lib/services/EmailService/connect-email-box.dto';
@@ -176,9 +177,9 @@ export const moveLetter = createAsyncThunk('email/moveLetter', async ({ letterId
 	}
 });
 
-export const moveLetters = createAsyncThunk('email/moveLetters', async ({ ids, folderId }: IMoveLetterPayload, thunkAPI) => {
+export const moveLetters = createAsyncThunk('email/moveLetters', async ({ ids, folderId, chain_ids }: IMoveLetterPayload, thunkAPI) => {
 	try {
-		await uspacySdk.emailService.moveLetters(ids, folderId);
+		await uspacySdk.emailService.moveLetters(ids, folderId, chain_ids);
 		return ids;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
