@@ -6,6 +6,8 @@ import { IDealFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IField } from '@uspacy/sdk/lib/models/field';
 
+import { IMoveCardsData } from './types';
+
 export const fetchDeals = createAsyncThunk('deals/fetchDeals', async (_, thunkAPI) => {
 	try {
 		const res = await uspacySdk?.crmDealsService?.getDeals();
@@ -211,18 +213,10 @@ export const deleteDealField = createAsyncThunk('deals/deleteDealField', async (
 export const moveDealFromStageToStage = createAsyncThunk(
 	'stages/moveLeadFromStageToStage',
 	// eslint-disable-next-line camelcase
-	async (
-		{
-			entityId,
-			stageId,
-			reason_id,
-			funnelHasChanged,
-		}: { entityId: number; stageId: number; reason_id: number | null; funnelHasChanged?: boolean },
-		thunkAPI,
-	) => {
+	async ({ entityId, stageId, reason_id, funnelHasChanged, isFinishedStage, profileId }: IMoveCardsData, thunkAPI) => {
 		try {
 			await uspacySdk.crmDealsService.moveDealFromStageToStage(entityId, stageId, reason_id);
-			return { entityId, stageId, funnelHasChanged };
+			return { entityId, stageId, funnelHasChanged, isFinishedStage, profileId };
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
 		}

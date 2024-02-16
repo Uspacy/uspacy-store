@@ -116,10 +116,18 @@ const leadsReducer = createSlice({
 		clearLeadsFilter: (state) => {
 			state.leadFilters = { ...initialLeadsFilter, page: 1, perPage: 20 };
 		},
-		moveLeadChangeCardInColumn: (state, action: PayloadAction<IDnDItem>) => {
-			state.dndLeadItem = action.payload;
+		moveLeadChangeCardInColumn: (state, action: PayloadAction<{ data: IDnDItem; meta: Partial<IEntityData> }>) => {
+			state.dndLeadItem = action.payload?.data;
 			state.leads.data = state.leads.data.map((it) =>
-				it.id === +action.payload.item.id ? { ...it, kanban_stage_id: action.payload.toColumnId } : it,
+				it.id === +action.payload?.data?.item?.id
+					? {
+							...it,
+							...(action.payload?.meta || {}),
+							first_closed_at: it.first_closed_at || action.payload?.meta?.closed_at,
+							first_closed_by: it.first_closed_by || action.payload?.meta?.changed_by,
+							kanban_stage_id: +action.payload.data?.toColumnId,
+					  }
+					: it,
 			);
 		},
 		clearCreatedLead: (state) => {
@@ -404,6 +412,14 @@ const leadsReducer = createSlice({
 					return {
 						...lead,
 						kanban_stage_id: +action.payload.stageId,
+						updated_at: Math.floor(new Date().valueOf() / 1000),
+						changed_by: action?.payload?.profileId,
+						...(action?.payload?.isFinishedStage && {
+							first_closed_at: lead?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
+							closed_at: Math.floor(new Date().valueOf() / 1000),
+							first_closed_by: lead?.first_closed_by || action?.payload?.profileId,
+							closed_by: action?.payload?.profileId,
+						}),
 					};
 				}
 

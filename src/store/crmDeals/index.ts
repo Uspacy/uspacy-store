@@ -121,10 +121,18 @@ const dealsReducer = createSlice({
 			state.taskTime = [];
 			state.dealFilters = { ...initialDealsFilter, page: 1, perPage: 20 };
 		},
-		moveDealChangeCardInColumn: (state, action: PayloadAction<IDnDItem>) => {
-			state.dndDealItem = action.payload;
+		moveDealChangeCardInColumn: (state, action: PayloadAction<{ data: IDnDItem; meta: Partial<IEntityData> }>) => {
+			state.dndDealItem = action.payload?.data;
 			state.deals.data = state.deals.data.map((it) =>
-				it.id === +action.payload.item.id ? { ...it, kanban_stage_id: +action.payload.toColumnId } : it,
+				it.id === +action.payload?.data?.item?.id
+					? {
+							...it,
+							...(action.payload?.meta || {}),
+							first_closed_at: it.first_closed_at || action.payload?.meta?.closed_at,
+							first_closed_by: it.first_closed_by || action.payload?.meta?.changed_by,
+							kanban_stage_id: +action.payload.data?.toColumnId,
+					  }
+					: it,
 			);
 		},
 		dndHandlerDeleteCardFromColumn: (state) => {
@@ -405,6 +413,14 @@ const dealsReducer = createSlice({
 						? {
 								...deal,
 								kanban_stage_id: action.payload.stageId,
+								updated_at: Math.floor(new Date().valueOf() / 1000),
+								changed_by: action?.payload?.profileId,
+								...(action?.payload?.isFinishedStage && {
+									first_closed_at: deal?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
+									closed_at: Math.floor(new Date().valueOf() / 1000),
+									first_closed_by: deal?.first_closed_by || action?.payload?.profileId,
+									closed_by: action?.payload?.profileId,
+								}),
 						  }
 						: deal,
 				);
