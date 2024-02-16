@@ -1,11 +1,17 @@
 import { uspacySdk } from '@uspacy/sdk';
 import { INotificationMessage, NotificationAction } from '@uspacy/sdk/lib/models/notifications';
 import { IUser } from '@uspacy/sdk/lib/models/user';
-import { INotification } from 'src/store/notifications/types';
+import { ILinkData, INotification } from 'src/store/notifications/types';
 
 export const getServiceName = (serviceName: string) => {
 	const [service] = serviceName.split('-');
 	return service.replace('news_feed', 'newsfeed');
+};
+
+const getEntityBase = (linkData: ILinkData) => {
+	if (linkData.entity_type === 'company') return 'companies';
+	if (linkData.entity_type === 'post') return 'newsfeed';
+	return `${linkData.type}s`;
 };
 
 export const getLinkEntity = (message: INotificationMessage): string | undefined => {
@@ -21,7 +27,8 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 			const isWithParent = !!message.data.root_parent;
 
 			const prefix = ['lead', 'deal', 'company', 'contact'].includes(linkData?.entity_type) ? '/crm' : '';
-			const entityBase = linkData.entity_type === 'company' ? 'companies' : linkData.entity_type === 'post' ? 'newsfeed' : `${linkData.type}s`;
+			const entityBase = getEntityBase(linkData);
+
 			return `${prefix}/${entityBase}/${isWithParent ? linkData.data.id : linkData.entity_id}`;
 		default: {
 			return `/${service}/${message.data.entity.id}`;
