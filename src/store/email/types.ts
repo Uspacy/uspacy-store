@@ -69,7 +69,7 @@ export interface IEmailMassActionsResponse {
 	letterId?: number;
 	ids: number[];
 	chain_ids?: number[];
-	list_ids?: number;
+	list_ids?: number[];
 	folderId: number;
 }
 
