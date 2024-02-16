@@ -183,12 +183,20 @@ const entitiesReducer = createSlice({
 				return entity;
 			});
 		},
-		moveEntityChangeCardInColumn: (state, action: PayloadAction<{ dndItem: IDnDItem; entityCode: string }>) => {
+		moveEntityChangeCardInColumn: (state, action: PayloadAction<{ dndItem: IDnDItem; entityCode: string; meta: Partial<IEntityData> }>) => {
 			state.dndEntityItem = action.payload.dndItem;
 			state.entities.data = state?.entities?.data?.map((entity) => {
 				if (entity?.table_name === action?.payload?.entityCode) {
 					entity?.items?.data?.map((it) =>
-						it?.id === +action?.payload?.dndItem?.item?.id ? { ...it, kanban_stage_id: +action?.payload?.dndItem?.toColumnId } : it,
+						it?.id === +action?.payload?.dndItem?.item?.id
+							? {
+									...it,
+									...(action.payload?.meta || {}),
+									first_closed_at: it.first_closed_at || action.payload?.meta?.closed_at,
+									first_closed_by: it.first_closed_by || action.payload?.meta?.changed_by,
+									kanban_stage_id: +action?.payload?.dndItem?.toColumnId,
+							  }
+							: it,
 					);
 					return entity;
 				}
@@ -844,6 +852,14 @@ const entitiesReducer = createSlice({
 								? {
 										...item,
 										kanban_stage_id: action.payload.stageId,
+										updated_at: Math.floor(new Date().valueOf() / 1000),
+										changed_by: action?.payload?.profileId,
+										...(action?.payload?.isFinishedStage && {
+											first_closed_at: item?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
+											closed_at: Math.floor(new Date().valueOf() / 1000),
+											first_closed_by: item?.first_closed_by || action?.payload?.profileId,
+											closed_by: action?.payload?.profileId,
+										}),
 								  }
 								: item,
 						);

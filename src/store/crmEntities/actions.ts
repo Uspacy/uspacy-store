@@ -8,6 +8,8 @@ import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IReason, IReasonsCreate, IStage } from '@uspacy/sdk/lib/models/crm-stages';
 import { IField } from '@uspacy/sdk/lib/models/field';
 
+import { IMoveCardsData } from './types';
+
 export const fetchEntities = createAsyncThunk('entities/fetchEntities', async (_, thunkAPI) => {
 	try {
 		const res = await uspacySdk.crmEntitiesService.getEntities();
@@ -417,13 +419,15 @@ export const moveUniversalItemFromStageToStage = createAsyncThunk(
 			reason_id,
 			funnelHasChanged,
 			entityCode,
-		}: { entityId: number; stageId: number; reason_id: number | null; funnelHasChanged?: boolean; entityCode: string },
+			isFinishedStage,
+			profileId,
+		}: IMoveCardsData,
 		thunkAPI,
 	) => {
 		try {
 			await uspacySdk.crmEntitiesService.moveEntityItemFromStageToStage(entityCode, entityId, stageId, reason_id);
 
-			return { entityId: entityId, stageId: stageId, funnelHasChanged: funnelHasChanged, entityCode };
+			return { entityId: entityId, stageId: stageId, funnelHasChanged: funnelHasChanged, entityCode, isFinishedStage, profileId };
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
 		}

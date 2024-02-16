@@ -29,4 +29,6 @@ export interface IMoveCardsData {
 	reason_id: number | null;
 	funnelHasChanged?: boolean;
 	entityCode: string;
+	profileId: number;
+	isFinishedStage?: boolean;
 }

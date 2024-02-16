@@ -6,6 +6,8 @@ import { ILeadFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IField } from '@uspacy/sdk/lib/models/field';
 
+import { IMoveCardsData } from './types';
+
 export const fetchLeadsWithFilters = createAsyncThunk(
 	'leads/fetchLeadsWithFilters',
 	async (
@@ -193,10 +195,10 @@ export const deleteLeadField = createAsyncThunk('leads/deleteLeadField', async (
 export const moveLeadFromStageToStage = createAsyncThunk(
 	'stages/moveLeadFromStageToStage',
 	// eslint-disable-next-line camelcase
-	async ({ entityId, stageId, reason_id }: { entityId: number; stageId: number; reason_id: number | null }, thunkAPI) => {
+	async ({ entityId, stageId, reason_id, isFinishedStage, profileId }: IMoveCardsData, thunkAPI) => {
 		try {
 			await uspacySdk.crmLeadsService.moveLeadFromStageToStage(entityId, stageId, reason_id);
-			return { entityId, stageId };
+			return { entityId, stageId, isFinishedStage, profileId };
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
 		}
