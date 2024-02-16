@@ -9,9 +9,14 @@ export const getServiceName = (serviceName: string) => {
 };
 
 const getEntityBase = (linkData: ILinkData) => {
-	if (linkData.entity_type === 'company') return 'companies';
-	if (linkData.entity_type === 'post') return 'newsfeed';
-	return `${linkData.type}s`;
+	switch (linkData.entity_type) {
+		case 'company':
+			return 'companies';
+		case 'post':
+			return 'newsfeed';
+		default:
+			return `${linkData.type}s`;
+	}
 };
 
 export const getLinkEntity = (message: INotificationMessage): string | undefined => {
