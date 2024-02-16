@@ -525,7 +525,10 @@ export const chatSlice = createSlice({
 					chatId: action.meta.arg.chatId,
 					items: [],
 					loading: true,
-					message: '',
+					draftMessage: {
+						message: '',
+						lexicalState: '',
+					},
 				});
 			} else {
 				state.messages = state.messages.map((group) => {
@@ -558,7 +561,10 @@ export const chatSlice = createSlice({
 			// fix when we go to message in first opened chat
 			if (isFirstOpenedChat) {
 				state.messages.push({
-					message: '',
+					draftMessage: {
+						message: '',
+						lexicalState: '',
+					},
 					chatId: action.payload.items[0]?.chatId,
 					items: prepereMessages(action.payload.items, action.payload.profile),
 					loading: false,
