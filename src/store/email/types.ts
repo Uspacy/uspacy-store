@@ -65,15 +65,11 @@ export interface IUpdateEmailBoxPayload {
 	data: IUpdateEmailBox;
 }
 
-export interface IMoveLetterPayload {
-	letterId?: number;
-	ids?: number[];
-	chain_ids?: number[];
-	folderId: number;
-}
-
 export interface IEmailMassActionsResponse {
+	letterId?: number;
 	ids: number[];
+	chain_ids?: number[];
+	list_ids?: number;
 	folderId: number;
 }
 
