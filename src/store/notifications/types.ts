@@ -8,9 +8,16 @@ export interface INotification {
 	link?: string;
 	read?: boolean;
 	author?: IUser;
+	mentioned?: boolean;
+	commentEntityTitle?: string;
 }
 
 export interface IState {
 	notifications: INotification[];
 	loading: boolean;
+}
+
+export interface ILinkData {
+	entity_type?: string;
+	type?: string;
 }
