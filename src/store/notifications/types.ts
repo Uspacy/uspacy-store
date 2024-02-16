@@ -16,3 +16,8 @@ export interface IState {
 	notifications: INotification[];
 	loading: boolean;
 }
+
+export interface ILinkData {
+	entity_type?: string;
+	type?: string;
+}
