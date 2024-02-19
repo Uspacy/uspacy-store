@@ -15,7 +15,7 @@ const getEntityBase = (linkData: ILinkData) => {
 		case 'post':
 			return 'newsfeed';
 		default:
-			return `${linkData.type}s`;
+			return linkData.type ? `${linkData.type}s` : `${linkData.entity_type}s`;
 	}
 };
 
