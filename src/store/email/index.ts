@@ -328,12 +328,12 @@ const emailReducer = createSlice({
 			state.errorLoadingDeletingLetters = null;
 			state.folders.data = state.folders.data.map((folder) => {
 				if (folder?.id === action.payload.folderId) {
-					const readIds = state.letters.data.filter((letter) => action.payload.ids.includes(letter.id) && !letter.is_read).length;
+					const readIds = state.letters.data.filter((letter) => action.payload.list_ids.includes(letter.id) && !letter.is_read).length;
 					return { ...folder, unread_message_count: folder.unread_message_count - readIds };
 				}
 				return folder;
 			});
-			state.letters.data = state.letters.data.filter((letter) => !action.payload.ids.includes(letter.id));
+			state.letters.data = state.letters.data.filter((letter) => !action.payload.list_ids.includes(letter.id));
 			state.removedLetterIds = action.payload.ids;
 		},
 		[removeEmailLetters.pending.type]: (state) => {
@@ -349,12 +349,15 @@ const emailReducer = createSlice({
 			state.errorLoadingIsReadStatus = null;
 			state.folders.data = state.folders.data.map((folder) => {
 				if (folder?.id === action.payload.folderId) {
-					const readIds = state.letters.data.filter((letter) => action.payload.ids.includes(letter.id) && !letter.is_read).length;
+					const readIds = state.letters.data.filter((letter) => action.payload.list_ids.includes(letter.id) && !letter.is_read).length;
 					return { ...folder, unread_message_count: folder.unread_message_count - readIds };
 				}
 				return folder;
 			});
-			state.letters.data = state.letters.data.map((letter) => (action.payload.ids.includes(letter.id) ? { ...letter, is_read: true } : letter));
+			state.letters.data = state.letters.data.map((letter) => {
+				if (action.payload.list_ids.includes(letter.id)) return { ...letter, is_read: true };
+				return letter;
+			});
 			if (state.letter?.id && !state.letter.is_read) {
 				state.letter.is_read = true;
 			}
@@ -372,13 +375,14 @@ const emailReducer = createSlice({
 			state.errorLoadingIsReadStatus = null;
 			state.folders.data = state.folders.data.map((folder) => {
 				if (folder?.id === action.payload.folderId) {
-					const unreadIds = state.letters.data.filter((letter) => action.payload.ids.includes(letter.id) && letter.is_read).length;
+					const unreadIds = state.letters.data.filter((letter) => action.payload.list_ids.includes(letter.id) && letter.is_read).length;
 					return { ...folder, unread_message_count: folder.unread_message_count + unreadIds };
 				}
 				return folder;
 			});
 			state.letters.data = state.letters.data.map((letter) => {
-				return action.payload.ids.includes(letter.id) ? { ...letter, is_read: false } : letter;
+				if (action.payload.list_ids.includes(letter.id)) return { ...letter, is_read: false };
+				return letter;
 			});
 			if (state.letter?.id && state.letter.is_read) {
 				state.letter.is_read = false;
