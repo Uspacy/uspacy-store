@@ -468,9 +468,37 @@ export const chatSlice = createSlice({
 				return group;
 			});
 		},
-
 		resetMessages(state) {
 			state.messages = [];
+		},
+		saveDraftMessage(state, action: PayloadAction<{ chatId: IChat['id']; message: string; lexicalState: string }>) {
+			state.messages = state.messages.map((group) => {
+				if (group.chatId === action.payload.chatId) {
+					return {
+						...group,
+						draftMessage: {
+							message: action.payload.message,
+							lexicalState: action.payload.lexicalState,
+						},
+					};
+				}
+
+				return group;
+			});
+		},
+		setTimestamp(state, action: PayloadAction<{ chatId: IChat['id']; divider: 'now' | 'original' }>) {
+			state.chats.items = state.chats.items
+				.map((it) => {
+					if (it.id === action.payload.chatId) {
+						return {
+							...it,
+							timestamp: action.payload.divider === 'now' ? Date.now() : it.originalTimestamp,
+							originalTimestamp: it.timestamp,
+						};
+					}
+					return it;
+				})
+				.sort(sortChats);
 		},
 	},
 	extraReducers: {
@@ -682,6 +710,8 @@ export const {
 	updateLastUnreadMessage,
 	readAllMessages,
 	resetMessages,
+	saveDraftMessage,
+	setTimestamp,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
