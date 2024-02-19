@@ -67,10 +67,10 @@ export interface IUpdateEmailBoxPayload {
 
 export interface IEmailMassActionsResponse {
 	letterId?: number;
-	ids: number[];
+	ids?: number[];
 	chain_ids?: number[];
 	list_ids?: number[];
-	folderId: number;
+	folderId?: number;
 }
 
 export type headerTypes = 'default' | 'massActions' | 'openedLetter' | 'createLetter';
