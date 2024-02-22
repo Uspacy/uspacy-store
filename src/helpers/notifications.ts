@@ -28,7 +28,9 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 		case 'comments':
 			if (!message.data.entity?.entity_type) return undefined;
 			const isWithParent = message.data.root_parent && Object.keys(message.data.root_parent).length;
-			const linkData = isWithParent ? message.data.root_parent : message.data.entity;
+			const isWithEntityParent = message.data.entity.parent;
+			const entityParentLink = isWithEntityParent ? message.data.entity.parent : message.data.entity;
+			const linkData = isWithParent ? message.data.root_parent : entityParentLink;
 
 			const prefix = ['lead', 'deal', 'company', 'contact'].includes(linkData?.entity_type) ? '/crm' : '';
 			const entityBase = getEntityBase(linkData);
@@ -40,11 +42,18 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 	}
 };
 
+const getEntityType = (message: INotificationMessage) => {
+	const rootParentEntityType = message.data?.root_parent?.type;
+	const parentEntityType = message.data?.entity?.parent?.entity_type;
+	if (message.data.root_parent && Object.keys(message.data.root_parent).length) return rootParentEntityType;
+	if (parentEntityType) return parentEntityType;
+	return message.data.entity?.entity_type;
+};
+
 export const getNotificationTitle = (message: INotificationMessage, profileId: number): string | undefined => {
 	const service = getServiceName(message.data.service);
 	const mentioned = !!message.data.entity?.mentioned?.users?.includes(profileId);
-	const parentEntityType = message.data?.root_parent?.type;
-	const entityType = message.data.root_parent && Object.keys(message.data.root_parent).length ? parentEntityType : message.data.entity?.entity_type;
+	const entityType = getEntityType(message);
 	if (message.data.entity?.new_kanban_stage_id && message.data.entity?.old_kanban_stage_id) {
 		return `notifications.${service}.${message.data.entity?.table_name || message.type}.${NotificationAction.UPDATE_STAGE}`;
 	}
