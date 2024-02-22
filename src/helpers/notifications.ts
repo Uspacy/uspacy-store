@@ -1,11 +1,22 @@
 import { uspacySdk } from '@uspacy/sdk';
 import { INotificationMessage, NotificationAction } from '@uspacy/sdk/lib/models/notifications';
 import { IUser } from '@uspacy/sdk/lib/models/user';
-import { INotification } from 'src/store/notifications/types';
+import { ILinkData, INotification } from 'src/store/notifications/types';
 
 export const getServiceName = (serviceName: string) => {
 	const [service] = serviceName.split('-');
 	return service.replace('news_feed', 'newsfeed');
+};
+
+const getEntityBase = (linkData: ILinkData) => {
+	switch (linkData.entity_type) {
+		case 'company':
+			return 'companies';
+		case 'post':
+			return 'newsfeed';
+		default:
+			return linkData.type ? `${linkData.type}s` : `${linkData.entity_type}s`;
+	}
 };
 
 export const getLinkEntity = (message: INotificationMessage): string | undefined => {
@@ -16,22 +27,39 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 			return `/crm/${message.data.entity?.table_name || `${message.type === 'task' ? 'tasks/task' : message.type}`}/${message.data.entity.id}`;
 		case 'comments':
 			if (!message.data.entity?.entity_type) return undefined;
-			const linkData = message.data.entity.parent || message.data.entity;
+			const isWithParent = message.data.root_parent && Object.keys(message.data.root_parent).length;
+			const isWithEntityParent = message.data.entity.parent;
+			const entityParentLink = isWithEntityParent ? message.data.entity.parent : message.data.entity;
+			const linkData = isWithParent ? message.data.root_parent : entityParentLink;
+
 			const prefix = ['lead', 'deal', 'company', 'contact'].includes(linkData?.entity_type) ? '/crm' : '';
-			const entityBase =
-				linkData.entity_type === 'company' ? 'companies' : linkData.entity_type === 'post' ? 'newsfeed' : `${linkData.entity_type}s`;
-			return `${prefix}/${entityBase}/${linkData.entity_id}`;
+			const entityBase = getEntityBase(linkData);
+
+			return `${prefix}/${entityBase}/${isWithParent ? linkData.data?.id : linkData.entity_id}`;
 		default: {
 			return `/${service}/${message.data.entity.id}`;
 		}
 	}
 };
 
-export const getNotificationTitle = (message: INotificationMessage): string | undefined => {
+const getEntityType = (message: INotificationMessage) => {
+	const rootParentEntityType = message.data?.root_parent?.type;
+	const parentEntityType = message.data?.entity?.parent?.entity_type;
+	if (message.data.root_parent && Object.keys(message.data.root_parent).length) return rootParentEntityType;
+	if (parentEntityType) return parentEntityType;
+	return message.data.entity?.entity_type;
+};
+
+export const getNotificationTitle = (message: INotificationMessage, profileId: number): string | undefined => {
 	const service = getServiceName(message.data.service);
+	const mentioned = !!message.data.entity?.mentioned?.users?.includes(profileId);
+	const entityType = getEntityType(message);
 	if (message.data.entity?.new_kanban_stage_id && message.data.entity?.old_kanban_stage_id) {
 		return `notifications.${service}.${message.data.entity?.table_name || message.type}.${NotificationAction.UPDATE_STAGE}`;
 	}
+	if (mentioned) return `notifications.${service}.${entityType}.${message.type}.mentioned`;
+	if (service === 'comments') return `notifications.${service}.${entityType}.${message.type}.${message.data.action}`;
+
 	return `notifications.${service}.${message.data.entity?.table_name || message.type}.${message.data.action}`;
 };
 
@@ -52,16 +80,20 @@ export const getNotificationSubTitle = (message: INotificationMessage): string |
 	}
 };
 
-export const transformNotificationMessage = (message: INotificationMessage, users: IUser[]): INotification => {
+export const transformNotificationMessage = (message: INotificationMessage, users: IUser[], profileId: number): INotification => {
 	const user = users.find(({ id }) => id === message.data.user_id);
 	const timestamp = new Date(message.data.timestamp).getTime();
+	const mentioned = !!message.data.entity?.mentioned?.users?.includes(profileId);
+	const commentEntityTitle = message.data?.root_parent?.data?.title;
 	return {
 		id: message.id,
-		title: getNotificationTitle(message),
+		title: getNotificationTitle(message, profileId),
 		subTitle: getNotificationSubTitle(message),
 		date: timestamp,
 		link: getLinkEntity(message),
 		author: user,
+		mentioned,
+		commentEntityTitle,
 	};
 };
 
