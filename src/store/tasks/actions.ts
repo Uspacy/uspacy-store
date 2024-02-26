@@ -5,7 +5,7 @@ import { ITasksParams } from '@uspacy/sdk/lib/models/tasks';
 import { ITaskValues } from '@uspacy/sdk/lib/services/TasksService/dto/create-update-task.dto';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 
-import { IDeleteTaskPayload } from './types';
+import { ICreateTaskPayload, IDeleteTaskPayload } from './types';
 
 export const getTasks = createAsyncThunk(
 	'tasks/getTasks',
@@ -106,21 +106,18 @@ export const getParentTask = createAsyncThunk('tasks/getParentTask', async (id: 
 	}
 });
 
-export const createTask = createAsyncThunk(
-	'tasks/createTask',
-	async ({ data, abilityToAddTask }: { data: ITaskValues; abilityToAddTask: boolean }, { rejectWithValue }) => {
-		try {
-			const res = await uspacySdk.tasksService.createTask(data);
-			return { task: res.data, abilityToAddTask };
-		} catch (e) {
-			return rejectWithValue(e);
-		}
-	},
-);
+export const createTask = createAsyncThunk('tasks/createTask', async ({ data, abilityToAddTask }: ICreateTaskPayload, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.tasksService.createTask(data);
+		return { task: res.data, abilityToAddTask };
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
 
 export const createRecurringTemplate = createAsyncThunk(
 	'tasks/createRecurringTemplate',
-	async ({ data, abilityToAddTask }: { data: ITaskValues; abilityToAddTask: boolean }, { rejectWithValue }) => {
+	async ({ data, abilityToAddTask }: ICreateTaskPayload, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.createRecurringTemplate(data);
 			return { task: res.data, abilityToAddTask };
@@ -132,9 +129,21 @@ export const createRecurringTemplate = createAsyncThunk(
 
 export const createOneTimeTemplate = createAsyncThunk(
 	'tasks/createOneTimeTemplate',
-	async ({ data, abilityToAddTask }: { data: ITaskValues; abilityToAddTask: boolean }, { rejectWithValue }) => {
+	async ({ data, abilityToAddTask }: ICreateTaskPayload, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.createOneTimeTemplate(data);
+			return { task: res.data, abilityToAddTask };
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const replicateTask = createAsyncThunk(
+	'tasks/replicateTask',
+	async ({ data, abilityToAddTask, id }: ICreateTaskPayload, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.tasksService.replicateTask(data, id);
 			return { task: res.data, abilityToAddTask };
 		} catch (e) {
 			return rejectWithValue(e);
