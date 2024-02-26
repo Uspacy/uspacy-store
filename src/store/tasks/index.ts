@@ -199,6 +199,9 @@ const tasksReducer = createSlice({
 		clearAddedTaskReducer: (state) => {
 			state.addedTask = {} as ITask;
 		},
+		clearAddedToKanbanTaskReducer: (state) => {
+			state.addedToKanbanTask = {} as ITask;
+		},
 		clearChangeTask: (state) => {
 			state.changeTask = {} as ITask;
 		},
@@ -802,6 +805,7 @@ export const {
 	fillSubtasksReducer,
 	clearSubstasksReducer,
 	clearAddedTaskReducer,
+	clearAddedToKanbanTaskReducer,
 	clearChangeTask,
 	deleteTaskReducer,
 	changeFilter,
