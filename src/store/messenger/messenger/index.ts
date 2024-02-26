@@ -489,7 +489,6 @@ export const chatSlice = createSlice({
 						return {
 							...it,
 							timestamp: action.payload.divider === 'now' ? Date.now() : it.originalTimestamp,
-							originalTimestamp: it.timestamp,
 						};
 					}
 					return it;

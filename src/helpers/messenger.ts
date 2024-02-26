@@ -34,6 +34,7 @@ export const formatChat = (chat: IChat, users: IUser[], profile: IUser, formatte
 	...chat,
 	name: getChatName(chat, users, profile, formattedUserName),
 	pictureUrl: getChatPictureUrl(chat, users, profile),
+	originalTimestamp: chat.timestamp,
 });
 
 export const formatChats = (chats: IChat[], users: IUser[], profile: IUser, formattedUserName: (u: IUser) => string) => {
