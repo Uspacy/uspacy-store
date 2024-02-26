@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IFunnel } from '@uspacy/sdk/lib/models/crm-funnel';
+import { IFunnel } from '@uspacy/sdk/lib/models/crm-deals-funnel';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
 import { fetchDealsFunnel } from './actions';
