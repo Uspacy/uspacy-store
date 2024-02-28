@@ -16,7 +16,7 @@ export interface IState {
 	errorLoadingGroups: IErrorsAxiosResponse;
 	allGroups: IGroup[];
 	isNewGroupCreate: boolean;
-	modalOpened: { create: boolean; edit: boolean; confirm: boolean; invite: boolean; inviteSended: boolean };
+	modalOpened: { create: boolean; edit: boolean; confirm: boolean; invite: boolean; inviteSended: boolean; about: boolean };
 	action: { archive: boolean; delete: boolean; chat: boolean; id: number };
 	search: string;
 	usersWhoSendRequest: number[];
