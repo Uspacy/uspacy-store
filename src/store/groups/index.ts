@@ -36,7 +36,7 @@ const initialState = {
 	errorLoadingGroups: null,
 	allGroups: [],
 	isNewGroupCreate: false,
-	modalOpened: { create: false, edit: false, confirm: false, invite: false, inviteSended: false },
+	modalOpened: { create: false, edit: false, confirm: false, invite: false, inviteSended: false, about: false },
 	action: { archive: false, delete: false, chat: false, id: null },
 	search: '',
 	usersWhoSendRequest: [],
