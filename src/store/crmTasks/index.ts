@@ -1,8 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ITaskFilters } from '@uspacy/sdk/lib/models/crm-filters';
+import { IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
+import { IFilter, ITaskFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { ITask, ITasks } from '@uspacy/sdk/lib/models/crm-tasks';
+import { IField } from '@uspacy/sdk/lib/models/field';
 
+import { idColumn } from './../../const';
 import {
 	createTask,
 	deleteTaskById,
@@ -15,6 +18,13 @@ import {
 } from './actions';
 import { IState } from './types';
 
+const initialTasksFilterPreset = {
+	isNewPreset: false,
+	currentPreset: {},
+	standardPreset: {},
+	filterPresets: [],
+};
+
 const initialTasks = {
 	data: [],
 	meta: {
@@ -26,7 +36,7 @@ const initialTasks = {
 	aborted: false,
 };
 
-const initialTaskFilter = {
+export const initialTaskFilter: ITaskFilters = {
 	page: 0,
 	perPage: 0,
 	status: [],
@@ -37,8 +47,104 @@ const initialTaskFilter = {
 	time_label: [],
 	certainDateOrPeriod: [],
 	participants: [],
+	boolean_operator: '',
 	task_type: [],
 };
+
+export const fieldForTasks: IField[] = [
+	idColumn,
+	{
+		name: 'taskTitle',
+		code: 'title',
+		required: false,
+		editable: false,
+		show: true,
+		hidden: false,
+		multiple: false,
+		type: 'string',
+		sort: '',
+		system_field: false,
+		default_value: '',
+	},
+	{
+		name: 'leadOrAgreement',
+		code: 'leadOrDeal',
+		required: false,
+		editable: false,
+		show: true,
+		hidden: false,
+		multiple: false,
+		type: 'customLink',
+		sort: '',
+		system_field: false,
+		default_value: '',
+	},
+	{
+		name: 'contacts',
+		code: 'contacts',
+		required: false,
+		editable: false,
+		show: true,
+		hidden: false,
+		multiple: false,
+		type: 'customLink',
+		sort: '',
+		system_field: false,
+		default_value: '',
+	},
+	{
+		name: 'company',
+		code: 'company',
+		required: false,
+		editable: false,
+		show: true,
+		hidden: false,
+		multiple: false,
+		type: 'customLink',
+		sort: '',
+		system_field: false,
+		default_value: '',
+	},
+	{
+		name: 'startTime',
+		code: 'start_time',
+		required: false,
+		editable: false,
+		show: true,
+		hidden: false,
+		multiple: false,
+		type: 'dateCheap',
+		sort: '',
+		system_field: false,
+		default_value: '',
+	},
+	{
+		name: 'responsibleId',
+		code: 'responsible_id',
+		required: false,
+		editable: false,
+		show: true,
+		hidden: false,
+		multiple: false,
+		type: 'user_id',
+		sort: '',
+		system_field: false,
+		default_value: '',
+	},
+	{
+		name: 'status',
+		code: 'status',
+		required: false,
+		editable: false,
+		show: true,
+		hidden: false,
+		multiple: false,
+		type: 'status',
+		sort: '',
+		system_field: false,
+		default_value: '',
+	},
+];
 
 const initialState = {
 	tasks: initialTasks,
@@ -49,7 +155,11 @@ const initialState = {
 	deleteAllFromKanban: false,
 	changeTasks: [],
 	taskCopy: {},
+	tasksFields: {
+		data: fieldForTasks,
+	},
 	taskFilter: initialTaskFilter,
+	taskFiltersPreset: initialTasksFilterPreset,
 	errorMessage: '',
 	loading: false,
 	loadingTaskList: true,
@@ -77,10 +187,10 @@ const tasksReducer = createSlice({
 		setCopy: (state, action) => {
 			state.isCopy = action.payload;
 		},
-		changeFilterTasks: (state, action: PayloadAction<{ key: string; value: ITaskFilters[keyof ITaskFilters] }>) => {
+		changeFilterTasks: (state, action: PayloadAction<{ key: string; value: IFilter[keyof IFilter] }>) => {
 			state.taskFilter[action.payload.key] = action.payload.value;
 		},
-		changeItemsFilterTasks: (state, action: PayloadAction<ITaskFilters>) => {
+		changeItemsFilterTasks: (state, action: PayloadAction<IFilter>) => {
 			state.taskFilter = action.payload;
 		},
 		addTaskToState: (state, action: PayloadAction<ITask>) => {
@@ -102,7 +212,7 @@ const tasksReducer = createSlice({
 		clearTasksFilter: (state) => {
 			state.taskFilter = initialTaskFilter;
 		},
-		choosenTaskId: (state, action: PayloadAction<number>) => {
+		chooseTaskId: (state, action: PayloadAction<number>) => {
 			state.clickedTaskId = action.payload;
 		},
 		setDeletionModalOpen: (state, action: PayloadAction<{ action: boolean; id?: number }>) => {
@@ -138,6 +248,18 @@ const tasksReducer = createSlice({
 		},
 		setDeleteAllFromKanban: (state, action: PayloadAction<boolean>) => {
 			state.deleteAllFromKanban = action.payload;
+		},
+		setIsNewPreset: (state, action: PayloadAction<boolean>) => {
+			state.taskFiltersPreset.isNewPreset = action.payload;
+		},
+		setCurrentPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.taskFiltersPreset.currentPreset = action.payload;
+		},
+		setStandardPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.taskFiltersPreset.standardPreset = action.payload;
+		},
+		setFilterPresets: (state, action: PayloadAction<IFilterPreset[]>) => {
+			state.taskFiltersPreset.filterPresets = action.payload;
 		},
 	},
 	extraReducers: {
@@ -320,10 +442,14 @@ export const {
 	openCompleteTaskModal,
 	clearTasks,
 	clearTasksFilter,
-	choosenTaskId,
+	chooseTaskId,
 	setDeletionModalOpen,
 	editContactFromCard,
 	editCompanyFromCard,
 	setDeleteAllFromKanban,
+	setIsNewPreset,
+	setCurrentPreset,
+	setStandardPreset,
+	setFilterPresets,
 } = tasksReducer.actions;
 export default tasksReducer.reducer;

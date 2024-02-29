@@ -1,14 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IEntityData, IEntityMain } from '@uspacy/sdk/lib/models/crm-entities';
 import { IErrors } from '@uspacy/sdk/lib/models/crm-errors';
-import { IEntityFilters } from '@uspacy/sdk/lib/models/crm-filters';
+import { IFiltersPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
+import { IFilter } from '@uspacy/sdk/lib/models/crm-filters';
 import { IDnDItem } from '@uspacy/sdk/lib/models/crm-kanban';
 
 export interface IState {
 	loading: boolean;
 	entities: IEntityMain;
 	entitiesWithFunnels: IEntityMain;
-	entityFilters?: IEntityFilters;
+	entityFilters?: {
+		[key: string]: IFilter;
+	};
+	entityFiltersPreset: IFiltersPreset;
 	entityItemsColumns: any;
 	errorMessage: IErrors;
 	// funnels: IFunnel[];

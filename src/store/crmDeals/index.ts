@@ -1,12 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ICardBlock } from '@uspacy/sdk/lib/models/crm-card-blocks';
 import { IEntity, IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
+import { IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { ICreatedAt, IDealFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IDnDItem } from '@uspacy/sdk/lib/models/crm-kanban';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IField, IFields } from '@uspacy/sdk/lib/models/field';
 
-import { idColumn } from './../../const';
+import { idColumn, OTHER_DEFAULT_FIELDS, taskField } from './../../const';
+import { getField } from './../../helpers/filterFieldsArrs';
 import {
 	createDeal,
 	createDealField,
@@ -25,6 +27,13 @@ import {
 	updateDealListValues,
 } from './actions';
 import { IMoveCardsData, IState } from './types';
+
+const initialDealsFilterPreset = {
+	isNewPreset: false,
+	currentPreset: {},
+	standardPreset: {},
+	filterPresets: [],
+};
 
 const initialDnD = {
 	fromColumnId: '',
@@ -46,7 +55,7 @@ const initialDeals = {
 	aborted: false,
 };
 
-const initialDealsFilter = {
+export const initialDealsFilter: IDealFilters = {
 	kanban_status: [],
 	stages: [],
 	period: [],
@@ -60,6 +69,7 @@ const initialDealsFilter = {
 	page: 0,
 	perPage: 0,
 	select: 0,
+	boolean_operator: '',
 	table_fields: [],
 };
 
@@ -75,7 +85,8 @@ const initialState = {
 	deleteAllFromKanban: false,
 	changeDeals: [],
 	taskTime: [],
-	dealFilters: initialDealsFilter,
+	dealFilters: {},
+	dealFiltersPreset: initialDealsFilterPreset,
 	errorMessage: '',
 	loading: false,
 	loadingDealList: true,
@@ -119,7 +130,16 @@ const dealsReducer = createSlice({
 		},
 		clearDealsFilter: (state) => {
 			state.taskTime = [];
-			state.dealFilters = { ...initialDealsFilter, page: 1, perPage: 20 };
+			if (!!Object.keys(state.dealFields.data)?.length) {
+				state.dealFilters = {
+					...state.dealFields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+					...OTHER_DEFAULT_FIELDS,
+					table_fields: state?.dealFilters?.table_fields || [],
+					page: 1,
+					perPage: 20,
+					select: 0,
+				};
+			}
 		},
 		moveDealChangeCardInColumn: (state, action: PayloadAction<{ data: IDnDItem; meta: Partial<IEntityData> }>) => {
 			state.dndDealItem = action.payload?.data;
@@ -161,6 +181,18 @@ const dealsReducer = createSlice({
 		},
 		setDeleteAllFromKanban: (state, action: PayloadAction<boolean>) => {
 			state.deleteAllFromKanban = action.payload;
+		},
+		setIsNewPreset: (state, action: PayloadAction<boolean>) => {
+			state.dealFiltersPreset.isNewPreset = action.payload;
+		},
+		setCurrentPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.dealFiltersPreset.currentPreset = action.payload;
+		},
+		setStandardPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.dealFiltersPreset.standardPreset = action.payload;
+		},
+		setFilterPresets: (state, action: PayloadAction<IFilterPreset[]>) => {
+			state.dealFiltersPreset.filterPresets = action.payload;
 		},
 		setCardBlocks: (state, action: PayloadAction<ICardBlock[]>) => {
 			state.cardBlocks = action.payload;
@@ -307,9 +339,18 @@ const dealsReducer = createSlice({
 			state.dealFields.data.splice(0, 0, idColumn);
 			// @ts-ignore
 			state.dealFields.data.splice(2, 0, stage);
+			// @ts-ignore
+			state.dealFields.data.splice(0, 0, taskField);
 			state.dealFields.data.forEach((field) => {
 				field?.values?.sort((a, b) => a.sort - b.sort);
 			});
+			if (!Object.keys(state.dealFilters)?.length) {
+				state.dealFilters = {
+					...state.dealFields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+					...OTHER_DEFAULT_FIELDS,
+					select: 0,
+				};
+			}
 		},
 		[fetchFieldsForDeal.pending.type]: (state) => {
 			state.loading = true;
@@ -450,6 +491,10 @@ export const {
 	clearDNDItem,
 	changeReasonForDeal,
 	setDeleteAllFromKanban,
+	setIsNewPreset,
+	setCurrentPreset,
+	setStandardPreset,
+	setFilterPresets,
 	setCardBlocks,
 } = dealsReducer.actions;
 export default dealsReducer.reducer;

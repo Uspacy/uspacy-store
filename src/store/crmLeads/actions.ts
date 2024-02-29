@@ -6,26 +6,26 @@ import { ILeadFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IField } from '@uspacy/sdk/lib/models/field';
 
+import { getFilterParams } from './../../helpers/filterFieldsArrs';
+import { makeURIParams } from './../../helpers/makeURIParams';
 import { IMoveCardsData } from './types';
 
 export const fetchLeadsWithFilters = createAsyncThunk(
 	'leads/fetchLeadsWithFilters',
 	async (
-		data: { params: Omit<ILeadFilters, 'openDatePicker'>; signal: AbortSignal; relatedEntityId?: string; relatedEntityType?: string },
+		data: {
+			params: Omit<ILeadFilters, 'openDatePicker'>;
+			signal: AbortSignal;
+			fields?: IField[];
+			relatedEntityId?: string;
+			relatedEntityType?: string;
+		},
 		thunkAPI,
 	) => {
 		try {
-			const params = {
-				page: data.params.page,
-				list: data.params.perPage,
-				...(data.params.search ? { q: data.params.search } : {}),
-				stages: data.params.stages,
-				source: data.params.source,
-				created_at: data.params.period,
-				kanban_status: data.params.kanban_status,
-				owner: data.params.owner,
-				table_fields: data.params.table_fields,
-			};
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const filterParam = getFilterParams(data.params as any, data?.fields || []);
+			const params = makeURIParams(filterParam);
 
 			const res = await uspacySdk.crmLeadsService.getLeadsWithFilters(params, data?.signal, data?.relatedEntityId, data?.relatedEntityType);
 			return res?.data;

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ICardBlock } from '@uspacy/sdk/lib/models/crm-card-blocks';
 import { IEntity, IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
+import { IFiltersPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { ICreatedAt, IDealFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IDnDItem } from '@uspacy/sdk/lib/models/crm-kanban';
 import { IFields } from '@uspacy/sdk/lib/models/field';
@@ -17,6 +18,7 @@ export interface IState {
 	taskTime: ICreatedAt[];
 	dealFields: IFields;
 	dealFilters: IDealFilters;
+	dealFiltersPreset: IFiltersPreset;
 	loading: boolean;
 	loadingDealList: boolean;
 	loadingDealFields: boolean;

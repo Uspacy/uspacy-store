@@ -1,11 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ICardBlock } from '@uspacy/sdk/lib/models/crm-card-blocks';
 import { IEntity, IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
+import { IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { IContactFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IField, IFields } from '@uspacy/sdk/lib/models/field';
 
-import { idColumn } from './../../const';
+import { idColumn, OTHER_DEFAULT_FIELDS } from './../../const';
+import { getField } from './../../helpers/filterFieldsArrs';
 import {
 	createContact,
 	createContactField,
@@ -23,6 +25,13 @@ import {
 } from './actions';
 import { IState } from './types';
 
+const initialContactFilterPreset = {
+	isNewPreset: false,
+	currentPreset: {},
+	standardPreset: {},
+	filterPresets: [],
+};
+
 const initialContacts = {
 	data: [],
 	meta: {
@@ -34,7 +43,7 @@ const initialContacts = {
 	aborted: false,
 };
 
-const initialContactsFilters = {
+export const initialContactsFilters: IContactFilters = {
 	contact_label: [],
 	source: [],
 	period: [],
@@ -46,6 +55,7 @@ const initialContactsFilters = {
 	search: '',
 	page: 0,
 	perPage: 0,
+	boolean_operator: '',
 	table_fields: [],
 };
 
@@ -55,7 +65,8 @@ const initialState = {
 	contactFields: {
 		data: [],
 	},
-	contactFilters: initialContactsFilters,
+	contactFilters: {},
+	contactFiltersPreset: initialContactFilterPreset,
 	errorMessage: '',
 	loading: false,
 	loadingContactList: true,
@@ -95,7 +106,27 @@ export const contactsReducer = createSlice({
 		},
 		clearContactFilters: (state) => {
 			state.createdAt = [];
-			state.contactFilters = { ...initialContactsFilters, page: 1, perPage: 20 };
+			if (!!Object.keys(state.contactFields.data)?.length) {
+				state.contactFilters = {
+					...state.contactFields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+					...OTHER_DEFAULT_FIELDS,
+					table_fields: state?.contactFilters?.table_fields || [],
+					page: 1,
+					perPage: 20,
+				};
+			}
+		},
+		setIsNewPreset: (state, action: PayloadAction<boolean>) => {
+			state.contactFiltersPreset.isNewPreset = action.payload;
+		},
+		setCurrentPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.contactFiltersPreset.currentPreset = action.payload;
+		},
+		setStandardPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.contactFiltersPreset.standardPreset = action.payload;
+		},
+		setFilterPresets: (state, action: PayloadAction<IFilterPreset[]>) => {
+			state.contactFiltersPreset.filterPresets = action.payload;
 		},
 		setCardBlocks: (state, action: PayloadAction<ICardBlock[]>) => {
 			state.cardBlocks = action.payload;
@@ -223,6 +254,15 @@ export const contactsReducer = createSlice({
 			});
 			// @ts-ignore
 			state.contactFields.data.splice(0, 0, idColumn);
+			// TODO wait api
+			// // @ts-ignore
+			// state.contactFields.data.splice(0, 0, dealsField);
+			if (!Object.keys(state.contactFilters)?.length) {
+				state.contactFilters = {
+					...state.contactFields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+					...OTHER_DEFAULT_FIELDS,
+				};
+			}
 		},
 		[fetchFieldsForContact.pending.type]: (state) => {
 			state.loading = true;
@@ -318,6 +358,16 @@ export const contactsReducer = createSlice({
 	},
 });
 
-export const { changeFilterContact, changeItemsFilterContact, clearContacts, clearContactFilters, setCardBlocks } = contactsReducer.actions;
+export const {
+	changeFilterContact,
+	changeItemsFilterContact,
+	clearContacts,
+	clearContactFilters,
+	setIsNewPreset,
+	setCurrentPreset,
+	setStandardPreset,
+	setFilterPresets,
+	setCardBlocks,
+} = contactsReducer.actions;
 
 export default contactsReducer.reducer;

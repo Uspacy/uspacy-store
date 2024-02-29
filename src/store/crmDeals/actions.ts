@@ -2,10 +2,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
-import { IDealFilters } from '@uspacy/sdk/lib/models/crm-filters';
+import { IFilter } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IField } from '@uspacy/sdk/lib/models/field';
 
+import { getFilterParams } from './../../helpers/filterFieldsArrs';
+import { makeURIParams } from './../../helpers/makeURIParams';
 import { IMoveCardsData } from './types';
 
 export const fetchDeals = createAsyncThunk('deals/fetchDeals', async (_, thunkAPI) => {
@@ -20,28 +22,22 @@ export const fetchDeals = createAsyncThunk('deals/fetchDeals', async (_, thunkAP
 export const fetchDealsWithFilters = createAsyncThunk(
 	'deals/fetchDealsWithFilters',
 	async (
-		data: { params: Omit<IDealFilters, 'openDatePicker'>; signal: AbortSignal; relatedEntityId?: string; relatedEntityType?: string },
+		data: {
+			params: Omit<IFilter, 'openDatePicker'>;
+			signal: AbortSignal;
+			fields?: IField[];
+			relatedEntityId?: string;
+			relatedEntityType?: string;
+		},
 		thunkAPI,
 	) => {
 		try {
-			const tasksArray = Array.isArray(data.params.tasks) ? data.params.tasks : [data.params.tasks];
-			// @ts-ignore
-			const noTasks = tasksArray.includes(0);
-			// @ts-ignore
-			const tasks = tasksArray.filter((el) => el !== 0);
-			const params = {
-				...(data.params.search ? { q: data.params.search } : {}),
-				stages: data.params.stages,
-				created_at: data.params.period,
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				tasks: noTasks ? (' ' as any) : tasks,
-				kanban_status: data.params.kanban_status,
-				owner: data.params.owner,
-				page: data.params.page,
-				list: data.params.perPage,
-				funnel_id: data.params.select,
-				table_fields: data.params.table_fields,
-			};
+			const tasksArray = (
+				Array.isArray(data.params['time_label_tasks']) ? data.params['time_label_tasks'] : [data.params['time_label_task']]
+			).filter((it) => Boolean(it));
+			const noTasks = typeof data.params['time_label_tasks'] !== 'undefined' && tasksArray.includes('noBusiness');
+			const filterParam = getFilterParams(data.params, data.fields || []);
+			const params = `${makeURIParams(filterParam)}${noTasks ? '&tasks=' : ''}`;
 
 			const res = await uspacySdk.crmDealsService.getDealsWithFilters(params, data?.signal, data?.relatedEntityId, data?.relatedEntityType);
 			return res?.data;

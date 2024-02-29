@@ -1,10 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { ICreatedAt, IProductFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IProduct, IProducts } from '@uspacy/sdk/lib/models/crm-products';
 import { IField, IFields } from '@uspacy/sdk/lib/models/field';
 
-import { idColumn } from './../../const';
+import { idColumn, OTHER_DEFAULT_FIELDS } from './../../const';
+import { getField } from './../../helpers/filterFieldsArrs';
 import { normalizeGetProducts, normalizeProductField, normalizeProductFields } from './../../helpers/normalizeProduct';
 import {
 	createProduct,
@@ -22,6 +24,13 @@ import {
 	updateProductListValues,
 } from './actions';
 import { IState } from './types';
+
+const initialProductsFilterPreset = {
+	isNewPreset: false,
+	currentPreset: {},
+	standardPreset: {},
+	filterPresets: [],
+};
 
 const defColumn: IField = {
 	name: '',
@@ -85,7 +94,7 @@ const initialProducts = {
 	aborted: false,
 };
 
-const initialProductsFilter: IProductFilters = {
+export const initialProductsFilter: IProductFilters = {
 	availability: [],
 	type: [],
 	currency: '',
@@ -99,7 +108,9 @@ const initialProductsFilter: IProductFilters = {
 	page: 0,
 	perPage: 0,
 	select: 0,
+	boolean_operator: '',
 };
+
 const initialState = {
 	products: { ...initialProducts },
 	product: { ...initialProducts.data[0] },
@@ -114,6 +125,7 @@ const initialState = {
 	changeProducts: [],
 	productTime: [],
 	productFilters: initialProductsFilter,
+	productFiltersPreset: initialProductsFilterPreset,
 	errorMessage: '',
 	loading: false,
 	loadingProductList: true,
@@ -138,7 +150,14 @@ const productsReducer = createSlice({
 		},
 		clearProductsFilter: (state) => {
 			state.productTime = [];
-			state.productFilters = { ...initialProductsFilter, page: 1, perPage: 20 };
+			if (!!Object.keys(state.productFields.data)?.length) {
+				state.productFilters = {
+					...state.productFields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+					...OTHER_DEFAULT_FIELDS,
+					page: 1,
+					perPage: 20,
+				};
+			}
 		},
 		clearCreatedProduct: (state) => {
 			state.createdProduct = defaultProduct;
@@ -157,6 +176,18 @@ const productsReducer = createSlice({
 		},
 		setDeleteAllFromKanban: (state, action: PayloadAction<boolean>) => {
 			state.deleteAllFromKanban = action.payload;
+		},
+		setIsNewPreset: (state, action: PayloadAction<boolean>) => {
+			state.productFiltersPreset.isNewPreset = action.payload;
+		},
+		setCurrentPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.productFiltersPreset.currentPreset = action.payload;
+		},
+		setStandardPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.productFiltersPreset.standardPreset = action.payload;
+		},
+		setFilterPresets: (state, action: PayloadAction<IFilterPreset[]>) => {
+			state.productFiltersPreset.filterPresets = action.payload;
 		},
 	},
 	extraReducers: {
@@ -387,5 +418,9 @@ export const {
 	clearCreatedProduct,
 	changeReasonForProduct,
 	setDeleteAllFromKanban,
+	setIsNewPreset,
+	setCurrentPreset,
+	setStandardPreset,
+	setFilterPresets,
 } = productsReducer.actions;
 export default productsReducer.reducer;
