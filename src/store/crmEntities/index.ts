@@ -3,14 +3,16 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ICardBlock } from '@uspacy/sdk/lib/models/crm-card-blocks';
 import { IEntity, IEntityData, IEntityMain, IEntityMainData } from '@uspacy/sdk/lib/models/crm-entities';
 import { IErrors } from '@uspacy/sdk/lib/models/crm-errors';
-import { IEntityFilters } from '@uspacy/sdk/lib/models/crm-filters';
+import { IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
+import { IEntityFilters, IFilter } from '@uspacy/sdk/lib/models/crm-filters';
 import { IFunnel } from '@uspacy/sdk/lib/models/crm-funnel';
 import { IColumns, IDnDItem } from '@uspacy/sdk/lib/models/crm-kanban';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IReason, IStage, IStages } from '@uspacy/sdk/lib/models/crm-stages';
 import { IField, IFields, IFieldValue } from '@uspacy/sdk/lib/models/field';
 
-import { idColumn } from './../../const';
+import { idColumn, OTHER_DEFAULT_FIELDS } from './../../const';
+import { getField } from './../../helpers/filterFieldsArrs';
 import { sortStagesWhenCreateNew } from './../../helpers/sortStagesWhenCreateNew';
 import {
 	createFieldForUniversalEntity,
@@ -46,7 +48,14 @@ import {
 } from './actions';
 import { IMoveCardsData, IState } from './types';
 
-const initialEntityItemFilter: IEntityFilters = {
+export const initialEntityFilterPreset = {
+	isNewPreset: false,
+	currentPreset: {},
+	standardPreset: {},
+	filterPresets: [],
+};
+
+export const initialEntityItemFilter: IEntityFilters = {
 	created_at: [],
 	updated_at: [],
 	created_at_period: [],
@@ -61,6 +70,9 @@ const initialEntityItemFilter: IEntityFilters = {
 	perPage: 0,
 	select: 0,
 	entityCode: '',
+	boolean_operator: '',
+	stages: [],
+	openDatePicker: false,
 	table_fields: [],
 };
 
@@ -95,7 +107,8 @@ const initialState = {
 	entitiesWithFunnels: {
 		data: [],
 	} as any,
-	entityFilters: initialEntityItemFilter,
+	entityFilters: {},
+	entityFiltersPreset: initialEntityFilterPreset,
 	entityItemsColumns: {},
 	errorMessage: null,
 	loading: false,
@@ -113,17 +126,44 @@ const entitiesReducer = createSlice({
 	name: 'entities',
 	initialState,
 	reducers: {
-		changeFilterUniversalEntity: (state, action: PayloadAction<{ key: string; value: IEntityFilters[keyof IEntityFilters] }>) => {
-			state.entityFilters[action.payload.key] = action.payload.value;
+		changeFilterUniversalEntity: (state, action: PayloadAction<{ tableCode: string; key: string; value: IFilter[keyof IFilter] }>) => {
+			state.entityFilters = {
+				...state.entityFilters,
+				[action.payload.tableCode]: { ...state.entityFilters[action.payload.tableCode], [action.payload.key]: action.payload.value },
+			};
 		},
-		changeItemsFilterUniversalEntity: (state, action: PayloadAction<IEntityFilters>) => {
-			state.entityFilters = action.payload;
+		changeItemsFilterUniversalEntity: (state, action: PayloadAction<{ tableCode: string; filters: IFilter }>) => {
+			state.entityFilters = {
+				...state.entityFilters,
+				[action.payload.tableCode]: action.payload.filters,
+			};
 		},
-		clearItemsFilterUniversalEntity: (state) => {
-			state.entityFilters = { ...initialEntityItemFilter, page: 1, perPage: 20, entityCode: state.entityFilters.entityCode };
+		clearItemsFilterUniversalEntity: (state, action: PayloadAction<{ tableCode: string }>) => {
+			if (!!Object.keys(state.entityFilters[action.payload.tableCode])?.length) {
+				const fields = state.entities.data.find((entity) => entity.table_name === action.payload.tableCode)?.fields?.data || [];
+				state.entityFilters = {
+					...state.entityFilters,
+					[action.payload.tableCode]: {
+						...state.entityFilters[action.payload.tableCode],
+						...fields?.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+						...OTHER_DEFAULT_FIELDS,
+						table_fields: state.entityFilters[action.payload.tableCode]?.table_fields || [],
+						page: 1,
+						perPage: 20,
+						select: 0,
+						entityCode: state.entityFilters[action.payload.tableCode].entityCode,
+					},
+				};
+			}
 		},
-		changeEntityCode: (state, action: PayloadAction<string>) => {
-			state.entityFilters = { ...state.entityFilters, entityCode: action.payload };
+		changeEntityCode: (state, action: PayloadAction<{ tableCode: string; entityCode: string }>) => {
+			state.entityFilters = {
+				...state.entityFilters,
+				[action.payload.tableCode]: {
+					...state.entityFilters[action.payload.tableCode],
+					entityCode: action.payload.entityCode,
+				},
+			};
 		},
 		changeCreateEntityMode: (state, action: PayloadAction<boolean>) => {
 			state.createEntityMode = action.payload;
@@ -216,10 +256,24 @@ const entitiesReducer = createSlice({
 			state.createdUniversalEntityItem = { id: 0 };
 		},
 		clearDataByTableName: (state, action: PayloadAction<string>) => {
-			state.entities.data = state?.entities?.data?.map((it) => (it?.table_name === action?.payload ? { ...it, data: [] } : it));
+			// @ts-ignore
+			state.entities.data = state?.entities?.data?.map((it) => (it?.table_name === action?.payload ? { ...it, data: [], items: [] } : it));
+			state.loadingItems = true;
 		},
 		setDeleteAllFromKanban: (state, action: PayloadAction<boolean>) => {
 			state.deleteAllFromKanban = action.payload;
+		},
+		setIsNewPreset: (state, action: PayloadAction<boolean>) => {
+			state.entityFiltersPreset.isNewPreset = action.payload;
+		},
+		setCurrentPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.entityFiltersPreset.currentPreset = action.payload;
+		},
+		setStandardPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.entityFiltersPreset.standardPreset = action.payload;
+		},
+		setFilterPresets: (state, action: PayloadAction<IFilterPreset[]>) => {
+			state.entityFiltersPreset.filterPresets = action.payload;
 		},
 		setUniversalEntityCardBlocks: (state, action: PayloadAction<{ cardBlocks: ICardBlock[]; entityCode: string }>) => {
 			state.entities.data = state?.entities?.data?.map((it) =>
@@ -336,6 +390,16 @@ const entitiesReducer = createSlice({
 					entity.fields.data.splice(0, 0, idColumn);
 					// @ts-ignore
 					entity.fields.data.splice(2, 0, stage);
+					state.entityFilters = {
+						...state.entityFilters,
+						[action.payload.code]: {
+							...state.entityFilters[action.payload.code],
+							...entity.fields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+							...OTHER_DEFAULT_FIELDS,
+							select: 0,
+							entityCode: action.payload.code,
+						},
+					};
 				}
 			});
 		},
@@ -919,6 +983,10 @@ export const {
 	clearCreatedUniversalEntityItem,
 	clearDataByTableName,
 	setDeleteAllFromKanban,
+	setIsNewPreset,
+	setCurrentPreset,
+	setStandardPreset,
+	setFilterPresets,
 	setUniversalEntityCardBlocks,
 } = entitiesReducer.actions;
 export default entitiesReducer.reducer;

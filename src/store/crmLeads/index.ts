@@ -1,12 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ICardBlock } from '@uspacy/sdk/lib/models/crm-card-blocks';
 import { IEntity, IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
+import { IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { ILeadFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IDnDItem } from '@uspacy/sdk/lib/models/crm-kanban';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IField, IFields } from '@uspacy/sdk/lib/models/field';
 
-import { idColumn } from './../../const';
+import { idColumn, OTHER_DEFAULT_FIELDS } from './../../const';
+import { getField } from './../../helpers/filterFieldsArrs';
 import {
 	createLead,
 	createLeadField,
@@ -25,6 +27,14 @@ import {
 	updateLeadListValues,
 } from './actions';
 import { IMoveCardsData, IState } from './types';
+
+const initialLeadsFilterPreset = {
+	isNewPreset: false,
+	currentPreset: {},
+	standardPreset: {},
+	filterPresets: [],
+};
+
 const initialDnD = {
 	fromColumnId: '',
 	toColumnId: '',
@@ -45,7 +55,7 @@ const initialLeads = {
 	aborted: false,
 };
 
-const initialLeadsFilter = {
+export const initialLeadsFilter: ILeadFilters = {
 	kanban_status: [],
 	stages: [],
 	source: [],
@@ -57,6 +67,7 @@ const initialLeadsFilter = {
 	search: '',
 	page: 0,
 	perPage: 0,
+	boolean_operator: '',
 	table_fields: [],
 };
 
@@ -67,14 +78,14 @@ const initialState = {
 	leadCard: {},
 	createdLead: {},
 	leadFields: {
-		// eslint-disable-next-line @typescript-eslint/no-array-constructor, no-array-constructor
-		data: new Array(),
+		data: [],
 	},
 	deleteLeadId: 0,
 	deleteLeadIds: [],
 	deleteAllFromKanban: false,
 	changeLeads: [],
-	leadFilters: initialLeadsFilter,
+	leadFilters: {},
+	leadFiltersPreset: initialLeadsFilterPreset,
 	errorMessage: '',
 	loading: false,
 	loadingLeadList: true,
@@ -114,7 +125,15 @@ const leadsReducer = createSlice({
 			state.loadingLeadList = true;
 		},
 		clearLeadsFilter: (state) => {
-			state.leadFilters = { ...initialLeadsFilter, page: 1, perPage: 20 };
+			if (!!Object.keys(state.leadFields.data)?.length) {
+				state.leadFilters = {
+					...state.leadFields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+					...OTHER_DEFAULT_FIELDS,
+					table_fields: state?.leadFilters?.table_fields || [],
+					page: 1,
+					perPage: 20,
+				};
+			}
 		},
 		moveLeadChangeCardInColumn: (state, action: PayloadAction<{ data: IDnDItem; meta: Partial<IEntityData> }>) => {
 			state.dndLeadItem = action.payload?.data;
@@ -159,6 +178,18 @@ const leadsReducer = createSlice({
 		},
 		setDeleteAllFromKanban: (state, action: PayloadAction<boolean>) => {
 			state.deleteAllFromKanban = action.payload;
+		},
+		setIsNewPreset: (state, action: PayloadAction<boolean>) => {
+			state.leadFiltersPreset.isNewPreset = action.payload;
+		},
+		setCurrentPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.leadFiltersPreset.currentPreset = action.payload;
+		},
+		setStandardPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.leadFiltersPreset.standardPreset = action.payload;
+		},
+		setFilterPresets: (state, action: PayloadAction<IFilterPreset[]>) => {
+			state.leadFiltersPreset.filterPresets = action.payload;
 		},
 		setCardBlocks: (state, action: PayloadAction<ICardBlock[]>) => {
 			state.cardBlocks = action.payload;
@@ -267,7 +298,6 @@ const leadsReducer = createSlice({
 			if (action.payload.all) {
 				state.deleteAllFromKanban = true;
 			}
-
 			if (action.payload.all) {
 				state.leads.meta.total = 0;
 			} else if (action.payload.all && action.payload.exceptIds.length) {
@@ -312,6 +342,9 @@ const leadsReducer = createSlice({
 			state.leadFields.data.forEach((field) => {
 				field?.values?.sort((a, b) => a.sort - b.sort);
 			});
+			if (!Object.keys(state.leadFilters)?.length) {
+				state.leadFilters = { ...state.leadFields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}), ...OTHER_DEFAULT_FIELDS };
+			}
 		},
 		[fetchFieldsForLead.pending.type]: (state) => {
 			state.loading = true;
@@ -450,6 +483,10 @@ export const {
 	clearUpdateLead,
 	changeReasonForLead,
 	setDeleteAllFromKanban,
+	setIsNewPreset,
+	setCurrentPreset,
+	setStandardPreset,
+	setFilterPresets,
 	setCardBlocks,
 } = leadsReducer.actions;
 export default leadsReducer.reducer;

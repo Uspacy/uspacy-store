@@ -8,6 +8,8 @@ import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IReason, IReasonsCreate, IStage } from '@uspacy/sdk/lib/models/crm-stages';
 import { IField } from '@uspacy/sdk/lib/models/field';
 
+import { getFilterParams } from './../../helpers/filterFieldsArrs';
+import { makeURIParams } from './../../helpers/makeURIParams';
 import { IMoveCardsData } from './types';
 
 export const fetchEntities = createAsyncThunk('entities/fetchEntities', async (_, thunkAPI) => {
@@ -288,6 +290,7 @@ export const fetchUniversalEntityItemsWithFilters = createAsyncThunk(
 			data: {
 				params: Omit<IEntityFilters, 'openDatePicker'>;
 				signal: AbortSignal;
+				fields: IField[];
 				relatedEntityId?: string;
 				relatedEntityType?: string;
 			};
@@ -295,24 +298,15 @@ export const fetchUniversalEntityItemsWithFilters = createAsyncThunk(
 		thunkAPI,
 	) => {
 		try {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const filterParam = getFilterParams(data.params as any, data?.fields || []);
+			const params = makeURIParams(filterParam);
 			const entityCode = data.params.entityCode;
 			const signal = data.signal;
-			const params = {
-				...(data?.params?.search ? { q: data.params.search } : {}),
-				created_at: data.params.created_at_period,
-				updated_at: data.params.updated_at_period,
-				owner: data.params.owner,
-				created_by: data.params.created_by,
-				changed_by: data.params.changed_by,
-				page: data.params.page,
-				list: data.params.perPage,
-				funnel_id: data.params.select,
-				table_fields: data.params.table_fields,
-			};
 
 			const res = await uspacySdk.crmEntitiesService.getEntityItemsWithFilters(
 				entityCode,
-				params as any,
+				params,
 				signal,
 				data?.relatedEntityId,
 				data?.relatedEntityType,

@@ -1,11 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ICardBlock } from '@uspacy/sdk/lib/models/crm-card-blocks';
 import { IEntity, IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
+import { IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { ICompanyFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IField, IFields } from '@uspacy/sdk/lib/models/field';
 
-import { idColumn } from './../../const';
+import { idColumn, OTHER_DEFAULT_FIELDS } from './../../const';
+import { getField } from './../../helpers/filterFieldsArrs';
 import {
 	createCompany,
 	createCompanyField,
@@ -23,6 +25,13 @@ import {
 } from './actions';
 import { IState } from './types';
 
+const initialCompaniesFilterPreset = {
+	isNewPreset: false,
+	currentPreset: {},
+	standardPreset: {},
+	filterPresets: [],
+};
+
 const initialCompanies = {
 	data: [],
 	meta: {
@@ -34,7 +43,7 @@ const initialCompanies = {
 	aborted: false,
 };
 
-const initialCompaniesFilter = {
+export const initialCompaniesFilter: ICompanyFilters = {
 	company_label: [],
 	source: [],
 	period: [],
@@ -46,6 +55,7 @@ const initialCompaniesFilter = {
 	search: '',
 	page: 0,
 	perPage: 0,
+	boolean_operator: '',
 	table_fields: [],
 };
 
@@ -55,7 +65,8 @@ const initialState = {
 	companyFields: {
 		data: [],
 	},
-	companyFilters: initialCompaniesFilter,
+	companyFilters: {},
+	companyFiltersPreset: initialCompaniesFilterPreset,
 	errorMessage: '',
 	loading: false,
 	loadingCompanyList: true,
@@ -94,7 +105,27 @@ export const companiesReducer = createSlice({
 			state.loadingCompanyList = true;
 		},
 		clearCompanyFilters: (state) => {
-			state.companyFilters = { ...initialCompaniesFilter, page: 1, perPage: 20 };
+			if (!!Object.keys(state.companyFields.data)?.length) {
+				state.companyFilters = {
+					...state.companyFields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+					...OTHER_DEFAULT_FIELDS,
+					table_fields: state?.companyFilters?.table_fields || [],
+					page: 1,
+					perPage: 20,
+				};
+			}
+		},
+		setIsNewPreset: (state, action: PayloadAction<boolean>) => {
+			state.companyFiltersPreset.isNewPreset = action.payload;
+		},
+		setCurrentPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.companyFiltersPreset.currentPreset = action.payload;
+		},
+		setStandardPreset: (state, action: PayloadAction<IFilterPreset>) => {
+			state.companyFiltersPreset.standardPreset = action.payload;
+		},
+		setFilterPresets: (state, action: PayloadAction<IFilterPreset[]>) => {
+			state.companyFiltersPreset.filterPresets = action.payload;
 		},
 		setCardBlocks: (state, action: PayloadAction<ICardBlock[]>) => {
 			state.cardBlocks = action.payload;
@@ -222,6 +253,15 @@ export const companiesReducer = createSlice({
 			state.companyFields.data.splice(2, 0, requisite);
 			// @ts-ignore
 			state.companyFields.data.splice(0, 0, idColumn);
+			// TODO wait api
+			// // @ts-ignore
+			// state.companyFields.data.splice(0, 0, dealsField);
+			if (!Object.keys(state.companyFilters)?.length) {
+				state.companyFilters = {
+					...state.companyFields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+					...OTHER_DEFAULT_FIELDS,
+				};
+			}
 		},
 		[fetchFieldsForCompany.pending.type]: (state) => {
 			state.loading = true;
@@ -317,6 +357,16 @@ export const companiesReducer = createSlice({
 	},
 });
 
-export const { changeFilterCompany, changeItemsFilterCompany, clearCompanies, clearCompanyFilters, setCardBlocks } = companiesReducer.actions;
+export const {
+	changeFilterCompany,
+	changeItemsFilterCompany,
+	clearCompanies,
+	clearCompanyFilters,
+	setIsNewPreset,
+	setCurrentPreset,
+	setStandardPreset,
+	setFilterPresets,
+	setCardBlocks,
+} = companiesReducer.actions;
 
 export default companiesReducer.reducer;

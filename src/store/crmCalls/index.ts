@@ -29,6 +29,7 @@ const initialCallFilter = {
 	time_label: [],
 	certainDateOrPeriod: [],
 	participants: [],
+	boolean_operator: '',
 	type: [],
 };
 

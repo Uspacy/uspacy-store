@@ -1,5 +1,7 @@
+import { IFiltersPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { ITaskFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { ITask, ITasks } from '@uspacy/sdk/lib/models/crm-tasks';
+import { IFields } from '@uspacy/sdk/lib/models/field';
 
 export interface IErrors {
 	status: number;
@@ -15,7 +17,9 @@ export interface IState {
 	deleteAllFromKanban: boolean;
 	changeTasks: ITask[];
 	taskCopy: ITask;
+	tasksFields: IFields;
 	taskFilter: ITaskFilters;
+	taskFiltersPreset: IFiltersPreset;
 	loading: boolean;
 	loadingTaskList: boolean;
 	errorMessage: string;

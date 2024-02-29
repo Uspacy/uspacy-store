@@ -6,6 +6,9 @@ import { ICompanyFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IField } from '@uspacy/sdk/lib/models/field';
 
+import { getFilterParams } from './../../helpers/filterFieldsArrs';
+import { makeURIParams } from './../../helpers/makeURIParams';
+
 export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async (_, thunkAPI) => {
 	try {
 		const res = await uspacySdk?.crmCompaniesService?.getCompanies();
@@ -86,24 +89,22 @@ export const massCompaniesEditing = createAsyncThunk(
 export const fetchCompaniesWithFilters = createAsyncThunk(
 	'companies/fetchCompaniesWithFilters',
 	async (
-		data: { params: Omit<ICompanyFilters, 'openDatePicker'>; signal: AbortSignal; relatedEntityId?: string; relatedEntityType?: string },
+		data: {
+			params: Omit<ICompanyFilters, 'openDatePicker'>;
+			signal: AbortSignal;
+			fields?: IField[];
+			relatedEntityId?: string;
+			relatedEntityType?: string;
+		},
 		thunkAPI,
 	) => {
 		try {
 			const dealsArray = Array.isArray(data.params.deals) ? data.params.deals : [data.params.deals];
 			const noDeals = dealsArray.includes('NO_DEALS');
-			const deals = dealsArray.filter((el) => el !== 'NO_DEALS');
-			const params = {
-				...(data.params.search ? { q: data.params.search } : {}),
-				source: data.params.source,
-				created_at: data.params.period,
-				company_label: data.params.company_label,
-				owner: data.params.owner,
-				deals: noDeals ? (' ' as any) : deals,
-				page: data.params.page,
-				list: data.params.perPage,
-				table_fields: data.params.table_fields,
-			};
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const filterParam = getFilterParams(data.params as any, data?.fields || []);
+
+			const params = `${makeURIParams(filterParam)}${noDeals ? '&deals=' : ''}`;
 
 			const res = await uspacySdk.crmCompaniesService.getCompaniesWithFilters(
 				params,
