@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IColumns, IStage, IStages } from '@uspacy/sdk/lib/models/tasks-stages';
+import { IStage, IStages } from '@uspacy/sdk/lib/models/tasks-stages';
 
-import { changeColumn } from '../../helpers/changeColumn';
 import { fetchStages, moveTask } from './actions';
 import { IDnDItem, IMoveTaskId, IState } from './types';
 
@@ -44,14 +43,6 @@ const stagesReducer = createSlice({
 		addStageReducer: (state, action: PayloadAction<IStage>) => {
 			state.stages.data = state.stages.data.concat(action.payload);
 		},
-		changeColumnsState: (state, action: PayloadAction<{ data: IColumns; isColumnsChanged: boolean }>) => {
-			state.columns = action.payload.data;
-			const { isUpdateStages, newStageArray } = changeColumn(action.payload.data, action.payload.isColumnsChanged, state.stages.data);
-
-			if (isUpdateStages) {
-				state.stages.data = newStageArray;
-			}
-		},
 		moveTaskChangeCardInColumn: (state, action: PayloadAction<IDnDItem>) => {
 			state.dndItem = action.payload;
 		},
@@ -89,5 +80,5 @@ const stagesReducer = createSlice({
 	},
 });
 
-export const { setStages, deleteStageReducer, addStageReducer, changeColumnsState, moveTaskChangeCardInColumn, clearDnDItem } = stagesReducer.actions;
+export const { setStages, deleteStageReducer, addStageReducer, moveTaskChangeCardInColumn, clearDnDItem } = stagesReducer.actions;
 export default stagesReducer.reducer;
