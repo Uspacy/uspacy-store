@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IColumn, IColumns, IStage, IStages } from '@uspacy/sdk/lib/models/tasks-stages';
+import { IColumns, IStage, IStages } from '@uspacy/sdk/lib/models/tasks-stages';
 
 import { changeColumn } from '../../helpers/changeColumn';
 import { fetchStages, moveTask } from './actions';
@@ -18,7 +18,6 @@ const initialState = {
 		data: [],
 	},
 	columns: {},
-	columnsArr: [],
 	moveTask: {},
 	dndItem: initialDnD,
 	loadingStages: false,
@@ -37,8 +36,8 @@ const stagesReducer = createSlice({
 	name: 'stagesReducer',
 	initialState,
 	reducers: {
-		clearStages: (state) => {
-			state.stages = {} as IStages;
+		setStages: (state, action: PayloadAction<IStages>) => {
+			state.stages = action.payload;
 		},
 		deleteStageReducer: (state, action: PayloadAction<string | number>) => {
 			state.stages.data = state.stages.data.filter((stage) => stage?.id !== String(action?.payload));
@@ -53,9 +52,6 @@ const stagesReducer = createSlice({
 			if (isUpdateStages) {
 				state.stages.data = newStageArray as any;
 			}
-		},
-		setColumnsArr: (state, action: PayloadAction<IColumn[]>) => {
-			state.columnsArr = action.payload;
 		},
 		moveTaskChangeCardInColumn: (state, action: PayloadAction<IDnDItem>) => {
 			state.dndItem = action.payload;
@@ -94,6 +90,5 @@ const stagesReducer = createSlice({
 	},
 });
 
-export const { deleteStageReducer, addStageReducer, changeColumnsState, setColumnsArr, moveTaskChangeCardInColumn, clearDnDItem, clearStages } =
-	stagesReducer.actions;
+export const { setStages, deleteStageReducer, addStageReducer, changeColumnsState, moveTaskChangeCardInColumn, clearDnDItem } = stagesReducer.actions;
 export default stagesReducer.reducer;
