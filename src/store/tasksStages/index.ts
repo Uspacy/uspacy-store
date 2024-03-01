@@ -35,8 +35,8 @@ const stagesReducer = createSlice({
 	name: 'stagesReducer',
 	initialState,
 	reducers: {
-		clearStages: (state) => {
-			state.stages = {} as IStages;
+		setStages: (state, action: PayloadAction<IStages>) => {
+			state.stages = action.payload;
 		},
 		deleteStageReducer: (state, action: PayloadAction<string | number>) => {
 			state.stages.data = state.stages.data.filter((stage) => stage?.id !== String(action?.payload));
@@ -89,6 +89,5 @@ const stagesReducer = createSlice({
 	},
 });
 
-export const { deleteStageReducer, addStageReducer, changeColumnsState, moveTaskChangeCardInColumn, clearDnDItem, clearStages } =
-	stagesReducer.actions;
+export const { setStages, deleteStageReducer, addStageReducer, changeColumnsState, moveTaskChangeCardInColumn, clearDnDItem } = stagesReducer.actions;
 export default stagesReducer.reducer;
