@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IColumn, IColumns, IStages } from '@uspacy/sdk/lib/models/tasks-stages';
+import { IColumn, IStages } from '@uspacy/sdk/lib/models/tasks-stages';
 
 export interface IMoveTaskId {
 	id: string;
@@ -15,8 +15,7 @@ export interface IDnDItem {
 
 export interface IState {
 	stages: IStages;
-	columns: IColumns;
-	columnsArr: IColumn[];
+	columnsState: IColumn[];
 	moveTask: IMoveTaskId;
 	dndItem: IDnDItem;
 	loadingStages: boolean;
