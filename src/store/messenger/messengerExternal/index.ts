@@ -7,6 +7,7 @@ import {
 	readLastMessageInChat,
 	readLastMessagesInChat,
 	separateExternalChats,
+	sortChats,
 	updateExternalChat,
 	updateLastMessageInExternalChat,
 } from '../../../helpers/messenger';
@@ -102,6 +103,19 @@ export const externalChatSlice = createSlice({
 			const { items, chatId, profile } = action.payload;
 			state.externalChats.items.active = readLastMessagesInChat(state.externalChats.items.active, items, chatId, profile);
 		},
+		setTimestamp(state, action: PayloadAction<{ chatId: IChat['id']; divider: 'now' | 'original' }>) {
+			state.externalChats.items.active = state.externalChats.items.active
+				.map((it) => {
+					if (it.id === action.payload.chatId) {
+						return {
+							...it,
+							timestamp: action.payload.divider === 'now' ? Date.now() : it.originalTimestamp,
+						};
+					}
+					return it;
+				})
+				.sort(sortChats);
+		},
 	},
 	extraReducers: {
 		[fetchExternalChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
@@ -134,6 +148,7 @@ export const {
 	deleteExternalMembersAction,
 	readLastMessageInExternalChat,
 	readExtMessagesAction,
+	setTimestamp,
 } = externalChatSlice.actions;
 
 export default externalChatSlice.reducer;
