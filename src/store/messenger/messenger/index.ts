@@ -142,6 +142,7 @@ export const chatSlice = createSlice({
 						...chat,
 						lastMessage: item,
 						timestamp: item.timestamp,
+						originalTimestamp: item.timestamp,
 						unreadCount:
 							item.authorId !== profile.authUserId && state.chats.currentChatId !== chat.id ? chat.unreadCount + 1 : chat.unreadCount,
 						// update unreadMentions when we get messages
