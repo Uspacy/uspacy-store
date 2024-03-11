@@ -17,6 +17,7 @@ import {
 	joinGroup,
 	leaveGroup,
 	uploadLogo,
+	userApplyToJoinGroup,
 } from './actions';
 import { IState } from './types';
 
@@ -46,6 +47,8 @@ const initialState = {
 	isUserLeavedGroup: false,
 	errorInviteUsers: null,
 	loadingInvite: false,
+	loadingApplyToJoin: false,
+	errorLoadingApplyToJoinGrroup: false,
 } as IState;
 
 const groupsReducer = createSlice({
@@ -296,6 +299,19 @@ const groupsReducer = createSlice({
 		},
 		[joinGroup.rejected.type]: (state) => {
 			state.loadingGroups = false;
+		},
+		[userApplyToJoinGroup.fulfilled.type]: (state) => {
+			state.loadingApplyToJoin = false;
+			state.errorLoadingApplyToJoinGrroup = false;
+			state.isUserLeavedGroup = true;
+		},
+		[userApplyToJoinGroup.pending.type]: (state) => {
+			state.loadingApplyToJoin = true;
+			state.errorLoadingApplyToJoinGrroup = false;
+		},
+		[userApplyToJoinGroup.rejected.type]: (state) => {
+			state.loadingApplyToJoin = false;
+			state.errorLoadingApplyToJoinGrroup = true;
 		},
 	},
 });
