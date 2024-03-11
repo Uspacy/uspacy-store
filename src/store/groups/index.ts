@@ -303,7 +303,6 @@ const groupsReducer = createSlice({
 		[userApplyToJoinGroup.fulfilled.type]: (state) => {
 			state.loadingApplyToJoin = false;
 			state.errorLoadingApplyToJoinGrroup = false;
-			state.isUserLeavedGroup = true;
 		},
 		[userApplyToJoinGroup.pending.type]: (state) => {
 			state.loadingApplyToJoin = true;
