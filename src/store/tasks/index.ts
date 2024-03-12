@@ -23,6 +23,7 @@ import {
 	massDeletion,
 	massEditing,
 	pauseTask,
+	replicateTask,
 	restartTask,
 	startTask,
 	updateOneTimeTemplate,
@@ -198,6 +199,9 @@ const tasksReducer = createSlice({
 		},
 		clearAddedTaskReducer: (state) => {
 			state.addedTask = {} as ITask;
+		},
+		clearAddedToKanbanTaskReducer: (state) => {
+			state.addedToKanbanTask = {} as ITask;
 		},
 		clearChangeTask: (state) => {
 			state.changeTask = {} as ITask;
@@ -452,6 +456,33 @@ const tasksReducer = createSlice({
 			state.errorLoadingCreatingTask = null;
 		},
 		[createOneTimeTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreatingTask = false;
+			state.errorLoadingCreatingTask = action.payload;
+		},
+		[replicateTask.fulfilled.type]: (state, action: PayloadAction<{ task: ITask; abilityToAddTask: boolean }>) => {
+			state.loadingCreatingTask = false;
+			state.errorLoadingCreatingTask = null;
+			if (action.payload.abilityToAddTask) {
+				if (state.isTable) {
+					state.tasks.data.unshift(action.payload.task);
+					state.meta.total = state.meta.total + 1;
+				}
+
+				if (state.isKanban) {
+					state.addedToKanbanTask = action.payload.task;
+				}
+			}
+			if (state.isSubtasks && !state.isCopyingTask) {
+				state.allSubtasks.unshift(action.payload.task);
+				state.subtasks.meta.total = state.subtasks.meta.total + 1;
+			}
+			state.addedTask = action.payload.task;
+		},
+		[replicateTask.pending.type]: (state) => {
+			state.loadingCreatingTask = true;
+			state.errorLoadingCreatingTask = null;
+		},
+		[replicateTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingCreatingTask = false;
 			state.errorLoadingCreatingTask = action.payload;
 		},
@@ -802,6 +833,7 @@ export const {
 	fillSubtasksReducer,
 	clearSubstasksReducer,
 	clearAddedTaskReducer,
+	clearAddedToKanbanTaskReducer,
 	clearChangeTask,
 	deleteTaskReducer,
 	changeFilter,

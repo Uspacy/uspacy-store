@@ -90,15 +90,6 @@ export const getEmailLetters = createAsyncThunk('email/getEmailLetters', async (
 	}
 });
 
-export const getEmailChainLetters = createAsyncThunk('email/getEmailChainLetters', async ({ id, params }: ILettersParams, thunkAPI) => {
-	try {
-		const res = await uspacySdk.emailService.getEmailChainLetters(id, params);
-		return res.data;
-	} catch (e) {
-		return thunkAPI.rejectWithValue(e);
-	}
-});
-
 export const getEmailLetter = createAsyncThunk('email/getEmailLetter', async (id: number, thunkAPI) => {
 	try {
 		const res = await uspacySdk.emailService.getEmailLetter(id);
