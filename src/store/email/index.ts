@@ -6,7 +6,6 @@ import {
 	connectEmailBox,
 	createEmailLetter,
 	getEmailBox,
-	getEmailChainLetters,
 	getEmailFolders,
 	getEmailLetter,
 	getEmailLetters,
@@ -253,19 +252,6 @@ const emailReducer = createSlice({
 		[getEmailLetters.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingLetters = false;
 			state.errorLoadingLetters = action.payload;
-		},
-		[getEmailChainLetters.fulfilled.type]: (state, action: PayloadAction<ILetters>) => {
-			state.loadingChainLetters = false;
-			state.errorLoadingChainLetters = null;
-			state.chainLetters = action.payload;
-		},
-		[getEmailChainLetters.pending.type]: (state) => {
-			state.loadingChainLetters = true;
-			state.errorLoadingChainLetters = null;
-		},
-		[getEmailChainLetters.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingChainLetters = false;
-			state.errorLoadingChainLetters = action.payload;
 		},
 		[getEmailLetter.fulfilled.type]: (state, action: PayloadAction<ILetter>) => {
 			state.loadingLetter = false;
