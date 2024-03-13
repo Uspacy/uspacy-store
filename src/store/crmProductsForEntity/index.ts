@@ -44,6 +44,9 @@ const productsForEntityReducer = createSlice({
 	name: 'productsForEntity',
 	initialState,
 	reducers: {
+		changeDefaultCurrency: (state, action: PayloadAction<string>) => {
+			state.defaultProduct = { ...state.defaultProduct, currency: action.payload };
+		},
 		liveEditProductForEntity: (state, action: PayloadAction<IProductForEntity>) => {
 			state.productsWithInfoForEntity.list_products = state.productsWithInfoForEntity.list_products.map((product) => {
 				if (product.id === action.payload.id) {
@@ -271,6 +274,7 @@ export const {
 	addProduct,
 	liveEditProductsForEntity,
 	deleteLocalProduct,
+	changeDefaultCurrency,
 } = productsForEntityReducer.actions;
 
 export default productsForEntityReducer.reducer;
