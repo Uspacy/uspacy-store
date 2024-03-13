@@ -1,4 +1,14 @@
-import { IEmailBox, IEmailBoxes, IEmailFilters, IEmailFiltersParams, IFolder, IFolders, ILetter, ILetters } from '@uspacy/sdk/lib/models/email';
+import {
+	IEmailBox,
+	IEmailBoxes,
+	IEmailFilters,
+	IEmailFiltersParams,
+	IFolder,
+	IFolders,
+	ILetter,
+	ILetters,
+	IThreads,
+} from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IUpdateEmailBox } from '@uspacy/sdk/lib/services/EmailService/connect-email-box.dto';
 
@@ -68,9 +78,9 @@ export interface IUpdateEmailBoxPayload {
 export interface IEmailMassActionsResponse {
 	letterId?: number;
 	ids?: number[];
-	chain_ids?: number[];
 	list_ids?: number[];
 	folderId?: number;
+	threads: IThreads;
 }
 
 export type headerTypes = 'default' | 'massActions' | 'openedLetter' | 'createLetter';
