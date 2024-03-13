@@ -131,9 +131,9 @@ export const removeEmailLetter = createAsyncThunk('email/removeEmailLetter', asy
 
 export const removeEmailLetters = createAsyncThunk(
 	'email/removeEmailLetters',
-	async ({ ids, folderId, list_ids }: IEmailMassActionsResponse, thunkAPI) => {
+	async ({ ids, folderId, list_ids, threads }: IEmailMassActionsResponse, thunkAPI) => {
 		try {
-			await uspacySdk.emailService.removeEmailLetters(ids);
+			await uspacySdk.emailService.removeEmailLetters(ids, threads);
 			return { list_ids, folderId };
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
@@ -143,9 +143,9 @@ export const removeEmailLetters = createAsyncThunk(
 
 export const readEmailLetters = createAsyncThunk(
 	'email/readEmailLetters',
-	async ({ ids, folderId, chain_ids, list_ids }: IEmailMassActionsResponse, thunkAPI) => {
+	async ({ ids, folderId, list_ids, threads }: IEmailMassActionsResponse, thunkAPI) => {
 		try {
-			await uspacySdk.emailService.readEmailLetters(ids, chain_ids);
+			await uspacySdk.emailService.readEmailLetters(ids, threads);
 			return { list_ids, folderId };
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
@@ -155,9 +155,9 @@ export const readEmailLetters = createAsyncThunk(
 
 export const unreadEmailLetters = createAsyncThunk(
 	'email/unreadEmailLetters',
-	async ({ ids, folderId, chain_ids, list_ids }: IEmailMassActionsResponse, thunkAPI) => {
+	async ({ ids, folderId, list_ids, threads }: IEmailMassActionsResponse, thunkAPI) => {
 		try {
-			await uspacySdk.emailService.unreadEmailLetters(ids, chain_ids);
+			await uspacySdk.emailService.unreadEmailLetters(ids, threads);
 			return { list_ids, folderId };
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
@@ -176,9 +176,9 @@ export const moveLetter = createAsyncThunk('email/moveLetter', async ({ letterId
 
 export const moveLetters = createAsyncThunk(
 	'email/moveLetters',
-	async ({ ids, folderId, chain_ids, list_ids }: IEmailMassActionsResponse, thunkAPI) => {
+	async ({ ids, folderId, list_ids, threads }: IEmailMassActionsResponse, thunkAPI) => {
 		try {
-			await uspacySdk.emailService.moveLetters(ids, folderId, chain_ids);
+			await uspacySdk.emailService.moveLetters(ids, folderId, threads);
 			return list_ids;
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
