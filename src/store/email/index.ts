@@ -78,6 +78,7 @@ const initialState = {
 		certainDateOrPeriod_date: [],
 		time_label_date: [],
 		openCalendar: false,
+		q: '',
 	},
 	selectedLetters: [],
 	emailTableHeaderType: 'default',
