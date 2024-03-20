@@ -10,7 +10,6 @@ import {
 	getEmailLetter,
 	getEmailLetters,
 	getEmailsBoxes,
-	moveLetter,
 	moveLetters,
 	readEmailLetters,
 	removeEmailBox,
@@ -383,25 +382,18 @@ const emailReducer = createSlice({
 			state.loadingIsReadStatus = false;
 			state.errorLoadingIsReadStatus = action.payload;
 		},
-		[moveLetter.fulfilled.type]: (state, action: PayloadAction<ILetter>) => {
+		[moveLetters.fulfilled.type]: (state, action: PayloadAction<IEmailMassActionsResponse>) => {
 			state.loadingMoveLetter = false;
 			state.errorLoadingMoveLetter = null;
-			state.letters.data = state.letters.data.filter((letter) => letter?.id !== action.payload.id);
-			state.removedLetterIds = [action.payload.id];
-		},
-		[moveLetter.pending.type]: (state) => {
-			state.loadingMoveLetter = true;
-			state.errorLoadingMoveLetter = null;
-		},
-		[moveLetter.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingMoveLetter = false;
-			state.errorLoadingMoveLetter = action.payload;
-		},
-		[moveLetters.fulfilled.type]: (state, action: PayloadAction<number[]>) => {
-			state.loadingMoveLetter = false;
-			state.errorLoadingMoveLetter = null;
-			state.letters.data = state.letters.data.filter((letter) => !action.payload.includes(letter.id));
-			state.removedLetterIds = action.payload;
+			state.folders.data = state.folders.data.map((folder) => {
+				if (folder?.id === action.payload.folderId) {
+					const readIds = state.letters.data.filter((letter) => action.payload.list_ids.includes(letter.id) && !letter.is_read).length;
+					return { ...folder, unread_message_count: folder.unread_message_count - readIds };
+				}
+				return folder;
+			});
+			state.letters.data = state.letters.data.filter((letter) => !action.payload.list_ids.includes(letter.id));
+			state.removedLetterIds = action.payload.ids;
 		},
 		[moveLetters.pending.type]: (state) => {
 			state.loadingMoveLetter = true;
