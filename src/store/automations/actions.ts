@@ -5,7 +5,7 @@ import { IAutomation } from '@uspacy/sdk/lib/models/automations';
 export const fetchAutomations = createAsyncThunk('automations/fetchAutomations', async ({ page, list }: { page: number; list: number }, thunkAPI) => {
 	try {
 		const res = await uspacySdk.automationsService.getAutomations(page, list);
-		return res;
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
