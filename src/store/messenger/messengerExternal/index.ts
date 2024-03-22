@@ -159,6 +159,7 @@ export const {
 	readLastMessageInExternalChat,
 	readExtMessagesAction,
 	setTimestamp,
+	setInviteStatus,
 } = externalChatSlice.actions;
 
 export default externalChatSlice.reducer;
