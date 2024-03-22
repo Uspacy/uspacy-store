@@ -116,6 +116,16 @@ export const externalChatSlice = createSlice({
 				})
 				.sort(sortChats);
 		},
+		setInviteStatus(state, action: PayloadAction<{ chatId: IChat['id']; value: boolean }>) {
+			state.externalChats.items.active = state.externalChats.items.active.map((it) => {
+				if (it.id === action.payload.chatId)
+					return {
+						...it,
+						isInviteChat: action.payload.value,
+					};
+				return it;
+			});
+		},
 	},
 	extraReducers: {
 		[fetchExternalChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
@@ -149,6 +159,7 @@ export const {
 	readLastMessageInExternalChat,
 	readExtMessagesAction,
 	setTimestamp,
+	setInviteStatus,
 } = externalChatSlice.actions;
 
 export default externalChatSlice.reducer;
