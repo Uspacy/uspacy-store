@@ -16,9 +16,6 @@ const automationsReducer = createSlice({
 	name: 'automationsReducer',
 	initialState,
 	reducers: {
-		getCopyWebhook: (state, action: PayloadAction<number>) => {
-			state.automation = state.automations.data.find((it) => it.id === action.payload);
-		},
 		addAutomationToEndTable: (state, action: PayloadAction<IAutomation>) => {
 			state.automations.data.push(action.payload);
 		},
@@ -67,5 +64,5 @@ const automationsReducer = createSlice({
 	},
 });
 
-export const { getCopyWebhook, addAutomationToEndTable } = automationsReducer.actions;
+export const { addAutomationToEndTable } = automationsReducer.actions;
 export default automationsReducer.reducer;

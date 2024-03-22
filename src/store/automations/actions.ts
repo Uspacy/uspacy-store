@@ -2,14 +2,17 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IAutomation } from '@uspacy/sdk/lib/models/automations';
 
-export const fetchAutomations = createAsyncThunk('automations/fetchAutomations', async ({ page, list }: { page: number; list: number }, thunkAPI) => {
-	try {
-		const res = await uspacySdk.automationsService.getAutomations(page, list);
-		return res.data;
-	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
-	}
-});
+export const fetchAutomations = createAsyncThunk(
+	'automations/fetchAutomations',
+	async ({ page, list, search }: { page: number; list?: number; search?: string }, thunkAPI) => {
+		try {
+			const res = await uspacySdk.automationsService.getAutomations(page, list, search);
+			return res.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue('Failure');
+		}
+	},
+);
 
 export const deleteAutomation = createAsyncThunk('automations/deleteAutomations', async (id: number, thunkAPI) => {
 	try {
