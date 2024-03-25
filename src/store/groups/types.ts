@@ -26,4 +26,6 @@ export interface IState {
 	isUserLeavedGroup: boolean;
 	errorInviteUsers: boolean;
 	loadingInvite: boolean;
+	loadingApplyToJoin: boolean;
+	errorLoadingApplyToJoinGrroup: boolean;
 }
