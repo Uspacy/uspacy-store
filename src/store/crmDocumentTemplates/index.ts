@@ -189,7 +189,7 @@ const documentTemplatesReducer = createSlice({
 			state.documentTemplates = {
 				meta: { ...state.documentTemplates.meta, total: state.documentTemplates.meta.total - action.payload.length },
 				data: state.documentTemplates.data.filter((it) => !action.payload.includes(it.id)),
-				total_templates_count: state.documentTemplates.total_templates_count + action.payload.length,
+				total_templates_count: state.documentTemplates.total_templates_count - action.payload.length,
 			};
 			state.template = defaultTemplate;
 		},
