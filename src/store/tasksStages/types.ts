@@ -5,6 +5,12 @@ export interface IMoveTaskId {
 	id: string;
 }
 
+export interface IMoveTaskPayload {
+	cardId: string;
+	stageId: string;
+	prevCardId?: string;
+}
+
 export interface IDnDItem {
 	fromColumnId: string;
 	toColumnId: string;
