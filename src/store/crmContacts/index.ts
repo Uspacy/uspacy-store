@@ -252,10 +252,8 @@ export const contactsReducer = createSlice({
 			state.contactFields.data.forEach((field) => {
 				field?.values?.sort((a, b) => a.sort - b.sort);
 			});
-			// @ts-ignore
 			state.contactFields.data.splice(0, 0, idColumn);
 			// TODO wait api
-			// // @ts-ignore
 			// state.contactFields.data.splice(0, 0, dealsField);
 			if (!Object.keys(state.contactFilters)?.length) {
 				state.contactFilters = {

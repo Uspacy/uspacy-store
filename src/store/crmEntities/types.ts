@@ -15,7 +15,6 @@ export interface IState {
 	entityFiltersPreset: IFiltersPreset;
 	entityItemsColumns: any;
 	errorMessage: IErrors;
-	// funnels: IFunnel[];
 	loadingItems: boolean;
 	createEntityMode: boolean;
 	movingCard: boolean;

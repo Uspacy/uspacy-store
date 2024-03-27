@@ -20,8 +20,8 @@ import {
 	getTask,
 	getTasks,
 	massCompletion,
-	massDeletion,
-	massEditing,
+	massTasksDeletion,
+	massTasksEditing,
 	pauseTask,
 	replicateTask,
 	restartTask,
@@ -558,7 +558,7 @@ const tasksReducer = createSlice({
 			state.loadingUpdatingTask = false;
 			state.errorLoadingUpdatingTask = action.payload;
 		},
-		[massEditing.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
+		[massTasksEditing.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
 			state.loadingUpdatingTask = false;
 			state.errorLoadingUpdatingTask = null;
 
@@ -602,11 +602,11 @@ const tasksReducer = createSlice({
 				return task;
 			});
 		},
-		[massEditing.pending.type]: (state) => {
+		[massTasksEditing.pending.type]: (state) => {
 			state.loadingUpdatingTask = true;
 			state.errorLoadingUpdatingTask = null;
 		},
-		[massEditing.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[massTasksEditing.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingUpdatingTask = false;
 			state.errorLoadingUpdatingTask = action.payload;
 		},
@@ -631,7 +631,7 @@ const tasksReducer = createSlice({
 			state.loadingDeletingTask = false;
 			state.errorLoadingDeletingTask = action.payload;
 		},
-		[massDeletion.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
+		[massTasksDeletion.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
 			state.loadingDeletingTask = false;
 			state.errorLoadingDeletingTask = null;
 
@@ -663,11 +663,11 @@ const tasksReducer = createSlice({
 				});
 			}
 		},
-		[massDeletion.pending.type]: (state) => {
+		[massTasksDeletion.pending.type]: (state) => {
 			state.loadingDeletingTask = true;
 			state.errorLoadingDeletingTask = null;
 		},
-		[massDeletion.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[massTasksDeletion.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingDeletingTask = false;
 			state.errorLoadingDeletingTask = action.payload;
 		},

@@ -30,7 +30,7 @@ export const fetchEntitiesWithFunnels = createAsyncThunk('entities/fetchEntities
 	}
 });
 
-export const createUniversalEntity = createAsyncThunk('entities/createEntity', async (data: Partial<IEntityMainData>, thunkAPI) => {
+export const createUniversalEntity = createAsyncThunk('entities/createUniversalEntity', async (data: Partial<IEntityMainData>, thunkAPI) => {
 	try {
 		const res = await uspacySdk.crmEntitiesService.createEntity(data);
 		return res?.data;

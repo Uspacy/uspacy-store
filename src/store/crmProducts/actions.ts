@@ -94,7 +94,7 @@ export const deleteProduct = createAsyncThunk('products/deleteProduct', async (i
 });
 
 export const massProductsDeletion = createAsyncThunk(
-	'products/massDeletion',
+	'products/massProductsDeletion',
 	async ({ entityIds, exceptIds, all, params }: IMassActions, { rejectWithValue }) => {
 		try {
 			await uspacySdk.crmProductsService.massProductsDeletion({
@@ -112,7 +112,7 @@ export const massProductsDeletion = createAsyncThunk(
 );
 
 export const massProductsEditing = createAsyncThunk(
-	'products/massEditing',
+	'products/massProductsEditing',
 	async ({ entityIds, exceptIds, all, params, payload, settings, profile, admin }: IMassActions, { rejectWithValue }) => {
 		try {
 			await uspacySdk.crmProductsService.massProductsEditing({

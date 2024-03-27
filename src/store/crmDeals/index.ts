@@ -335,11 +335,9 @@ const dealsReducer = createSlice({
 			state.loadingDealFields = false;
 			state.errorMessage = '';
 			state.dealFields = action.payload;
-			// @ts-ignore
 			state.dealFields.data.splice(0, 0, idColumn);
 			// @ts-ignore
 			state.dealFields.data.splice(2, 0, stage);
-			// @ts-ignore
 			state.dealFields.data.splice(0, 0, taskField);
 			state.dealFields.data.forEach((field) => {
 				field?.values?.sort((a, b) => a.sort - b.sort);
