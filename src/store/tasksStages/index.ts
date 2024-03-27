@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IColumns, IStage, IStages } from '@uspacy/sdk/lib/models/tasks-stages';
 
@@ -46,10 +47,10 @@ const stagesReducer = createSlice({
 		},
 		changeColumnsState: (state, action: PayloadAction<{ data: IColumns; isColumnsChanged: boolean }>) => {
 			state.columns = action.payload.data;
-			const { isUpdateStages, newStageArray } = changeColumn(action.payload.data, action.payload.isColumnsChanged, state.stages.data);
+			const { isUpdateStages, newStageArray } = changeColumn(action.payload.data, action.payload.isColumnsChanged, state.stages.data as any);
 
 			if (isUpdateStages) {
-				state.stages.data = newStageArray;
+				state.stages.data = newStageArray as any;
 			}
 		},
 		moveTaskChangeCardInColumn: (state, action: PayloadAction<IDnDItem>) => {
