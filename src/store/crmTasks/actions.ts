@@ -81,7 +81,7 @@ export const deleteTaskById = createAsyncThunk('tasks/deleteTaskById', async (id
 });
 
 export const massTasksDeletion = createAsyncThunk(
-	'crmTasks/massDeletion',
+	'crmTasks/massTasksDeletion',
 	async ({ entityIds, exceptIds, all, params }: IMassActions, { rejectWithValue }) => {
 		try {
 			await uspacySdk.crmTasksService.massTasksDeletion({
@@ -99,7 +99,7 @@ export const massTasksDeletion = createAsyncThunk(
 );
 
 export const massTasksEditing = createAsyncThunk(
-	'crmTasks/massEditing',
+	'crmTasks/massTasksEditing',
 	async ({ entityIds, exceptIds, all, params, payload, settings, profile, admin }: IMassActions, { rejectWithValue }) => {
 		try {
 			await uspacySdk.crmTasksService.massTasksEditing({

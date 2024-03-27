@@ -85,15 +85,18 @@ export const createReasonsForDealsFunnelStage = createAsyncThunk(
 	},
 );
 
-export const editReasonsForDealsFunnelStage = createAsyncThunk('dealsFunnel/editReasonForDealsStage', async (reasonData: IReason, thunkAPI) => {
-	const { id, ...data } = reasonData;
-	try {
-		const res = await uspacySdk?.crmDealsFunnelsService?.updateReasonsForDealsFunnelStage(id, data);
-		return res?.data;
-	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
-	}
-});
+export const editReasonsForDealsFunnelStage = createAsyncThunk(
+	'dealsFunnel/editReasonsForDealsFunnelStage',
+	async (reasonData: IReason, thunkAPI) => {
+		const { id, ...data } = reasonData;
+		try {
+			const res = await uspacySdk?.crmDealsFunnelsService?.updateReasonsForDealsFunnelStage(id, data);
+			return res?.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue('Failure');
+		}
+	},
+);
 
 export const deleteReasonsForDealsFunnelStage = createAsyncThunk('dealsFunnel/deleteReasonsForDealsFunnelStage', async (id: number, thunkAPI) => {
 	try {

@@ -65,7 +65,7 @@ export const createDeal = createAsyncThunk('deals/createDeal', async (data: Part
 });
 
 export const createDealFromKanban = createAsyncThunk(
-	'deals/createDeal',
+	'deals/createDealFromKanban',
 	async ({ data, dontRenderInKanban }: { data: Partial<IEntityData>; dontRenderInKanban?: boolean }, thunkAPI) => {
 		try {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -102,7 +102,7 @@ export const deleteDeal = createAsyncThunk('deals/deleteDeal', async (id: number
 });
 
 export const massDealsDeletion = createAsyncThunk(
-	'deals/massDeletion',
+	'deals/massDealsDeletion',
 	async ({ entityIds, exceptIds, all, params }: IMassActions, { rejectWithValue }) => {
 		try {
 			await uspacySdk.crmDealsService.massDealsDeletion({
@@ -120,7 +120,7 @@ export const massDealsDeletion = createAsyncThunk(
 );
 
 export const massDealsEditing = createAsyncThunk(
-	'deals/massEditing',
+	'deals/massDealsEditing',
 	async ({ entityIds, exceptIds, all, params, payload, settings, profile, admin }: IMassActions, { rejectWithValue }) => {
 		try {
 			await uspacySdk.crmDealsService.massDealsEditing({

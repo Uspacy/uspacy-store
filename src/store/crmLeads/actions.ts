@@ -98,7 +98,7 @@ export const deleteLead = createAsyncThunk('leads/deleteLead', async (id: number
 });
 
 export const massLeadsDeletion = createAsyncThunk(
-	'leads/massDeletion',
+	'leads/massLeadsDeletion',
 	async ({ entityIds, exceptIds, all, params }: IMassActions, { rejectWithValue }) => {
 		try {
 			await uspacySdk.crmLeadsService.massLeadsDeletion({
@@ -116,7 +116,7 @@ export const massLeadsDeletion = createAsyncThunk(
 );
 
 export const massLeadsEditing = createAsyncThunk(
-	'leads/massEditing',
+	'leads/massLeadsEditing',
 	async ({ entityIds, exceptIds, all, params, payload, settings, profile, admin }: IMassActions, { rejectWithValue }) => {
 		try {
 			await uspacySdk.crmLeadsService.massLeadsEditing({

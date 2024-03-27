@@ -47,7 +47,7 @@ export const deleteContact = createAsyncThunk('contacts/deleteContact', async (i
 });
 
 export const massContactsDeletion = createAsyncThunk(
-	'contacts/massDeletion',
+	'contacts/massContactsDeletion',
 	async ({ entityIds, exceptIds, all, params }: IMassActions, { rejectWithValue }) => {
 		try {
 			await uspacySdk.crmContactsService.massContactsDeletion({
@@ -65,7 +65,7 @@ export const massContactsDeletion = createAsyncThunk(
 );
 
 export const massContactsEditing = createAsyncThunk(
-	'contacts/massEditing',
+	'contacts/massContactsEditing',
 	async ({ entityIds, exceptIds, all, params, payload, settings, profile, admin }: IMassActions, { rejectWithValue }) => {
 		try {
 			await uspacySdk.crmContactsService.massContactsEditing({
