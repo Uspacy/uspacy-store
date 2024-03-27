@@ -72,7 +72,6 @@ export const createLeadFromKanban = createAsyncThunk(
 				data: res?.data,
 				dontRenderInKanban,
 			};
-			// eslint-disable-next-line prettier/prettier, @typescript-eslint/no-explicit-any
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
 		}

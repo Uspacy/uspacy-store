@@ -23,15 +23,24 @@ export const getDefaultFastFields = (entityType: string) => {
 		case 'product':
 			return ['kanban_status', 'kanban_stage_id', 'source', 'created_at', 'owner', 'contact_label', 'deals', 'company_label'];
 		default:
-			return ['created_at', 'updated_at', 'owner', 'created_by', 'changed_by'];
+			return ['created_at', 'updated_at', 'owner', 'created_by', 'changed_by', 'created_at_custom', 'updated_at_custom'];
 	}
 };
 
 export const getFilterField = (fields: IFields, entityType: string): IFilterField[] => {
+	const isDefaultCode = ['lead', 'deal', 'contact', 'product', 'company', 'task'];
 	if (!fields?.data?.length) return [];
 	const result = [];
-	const firstFilterField = fields?.data?.find((field) => field.code === getDefaultFastFields(entityType)[0]);
-	const secondFilterField = fields?.data?.find((field) => field.code === getDefaultFastFields(entityType)[1]);
+	const firstFilterField = fields?.data?.find((field) =>
+		isDefaultCode.includes(entityType)
+			? field.code === getDefaultFastFields(entityType)[0]
+			: field.code.includes(getDefaultFastFields(entityType)[0]),
+	);
+	const secondFilterField = fields?.data?.find((field) =>
+		isDefaultCode.includes(entityType)
+			? field.code === getDefaultFastFields(entityType)[1]
+			: field.code.includes(getDefaultFastFields(entityType)[1]),
+	);
 	const thirdFilterField = fields?.data?.find((field) => field.code === getDefaultFastFields(entityType)[2]);
 	const fourthFilterField = fields?.data?.find((field) => field.code === getDefaultFastFields(entityType)[3]);
 	const fifthFilterField = fields?.data.find((field) => field.code === getDefaultFastFields(entityType)[4]);

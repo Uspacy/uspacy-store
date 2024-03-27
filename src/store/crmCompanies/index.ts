@@ -251,10 +251,8 @@ export const companiesReducer = createSlice({
 			});
 			// @ts-ignore
 			state.companyFields.data.splice(2, 0, requisite);
-			// @ts-ignore
 			state.companyFields.data.splice(0, 0, idColumn);
 			// TODO wait api
-			// // @ts-ignore
 			// state.companyFields.data.splice(0, 0, dealsField);
 			if (!Object.keys(state.companyFilters)?.length) {
 				state.companyFilters = {
