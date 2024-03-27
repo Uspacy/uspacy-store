@@ -19,6 +19,9 @@ const automationsReducer = createSlice({
 		addAutomationToEndTable: (state, action: PayloadAction<IAutomation>) => {
 			state.automations.data.push(action.payload);
 		},
+		toggleActiveAutomation: (state, action: PayloadAction<number>) => {
+			state.automations.data = state.automations.data.map((it) => (it.id === action.payload ? { ...it, active: !it.active } : it));
+		},
 	},
 	extraReducers: {
 		[fetchAutomations.fulfilled.type]: (state, action: PayloadAction<IAutomationsResponse>) => {
@@ -64,5 +67,5 @@ const automationsReducer = createSlice({
 	},
 });
 
-export const { addAutomationToEndTable } = automationsReducer.actions;
+export const { addAutomationToEndTable, toggleActiveAutomation } = automationsReducer.actions;
 export default automationsReducer.reducer;
