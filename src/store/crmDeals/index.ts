@@ -224,6 +224,7 @@ const dealsReducer = createSlice({
 		[createDeal.fulfilled.type]: (state, action: PayloadAction<IEntityData>) => {
 			state.loading = false;
 			state.errorMessage = '';
+			console.log('test 0', action.payload);
 			state.deals.data.unshift(action.payload);
 			state.deals.meta.total = ++state.deals.meta.total;
 		},
@@ -242,6 +243,7 @@ const dealsReducer = createSlice({
 		[createDealFromKanban.fulfilled.type]: (state, action: PayloadAction<{ data: IEntityData; dontRenderInKanban?: boolean }>) => {
 			state.loading = false;
 			state.errorMessage = '';
+			console.log('test 1', action.payload?.data);
 			state.deals.data.unshift(action.payload?.data);
 			if (!action.payload?.dontRenderInKanban) {
 				state.createdDeal = action.payload?.data;
