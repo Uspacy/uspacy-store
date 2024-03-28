@@ -109,6 +109,7 @@ export const initialProductsFilter: IProductFilters = {
 	perPage: 0,
 	select: 0,
 	boolean_operator: '',
+	sortModel: [],
 };
 
 const initialState = {

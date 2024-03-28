@@ -57,6 +57,7 @@ export const initialContactsFilters: IContactFilters = {
 	perPage: 0,
 	boolean_operator: '',
 	table_fields: [],
+	sortModel: [],
 };
 
 const initialState = {

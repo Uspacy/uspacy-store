@@ -69,6 +69,7 @@ export const initialLeadsFilter: ILeadFilters = {
 	perPage: 0,
 	boolean_operator: '',
 	table_fields: [],
+	sortModel: [],
 };
 
 const initialState = {
