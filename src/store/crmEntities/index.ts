@@ -74,6 +74,7 @@ export const initialEntityItemFilter: IEntityFilters = {
 	stages: [],
 	openDatePicker: false,
 	table_fields: [],
+	sortModel: [],
 };
 
 const stage = {

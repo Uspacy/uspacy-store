@@ -71,6 +71,7 @@ export const initialDealsFilter: IDealFilters = {
 	select: 0,
 	boolean_operator: '',
 	table_fields: [],
+	sortModel: [],
 };
 
 const initialState = {

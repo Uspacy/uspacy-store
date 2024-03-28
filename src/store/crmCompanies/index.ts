@@ -57,6 +57,7 @@ export const initialCompaniesFilter: ICompanyFilters = {
 	perPage: 0,
 	boolean_operator: '',
 	table_fields: [],
+	sortModel: [],
 };
 
 const initialState = {
