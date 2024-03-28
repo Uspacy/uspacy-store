@@ -148,7 +148,7 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			) {
 				return false;
 			}
-			if (isKanban && ['select', 'page', 'perPage', 'table_fields', 'entityCode'].includes(key)) {
+			if (isKanban && ['select', 'page', 'perPage', 'table_fields', 'entityCode', 'sortModel'].includes(key)) {
 				return false;
 			}
 			if (key.includes('select')) {
@@ -189,6 +189,14 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 
 			if (['owner'].includes(key)) {
 				return { ...acc, [key]: value == 0 ? null : value?.filter((el) => el !== 0) };
+			}
+
+			if (['sortModel'].includes(key)) {
+				const array = isArray(value) ? value : [value];
+				if (array.length === 0) return acc;
+				const [field, sort] = Object.entries(array[0])[0];
+				const checkField = field === 'id_column' ? 'id' : field;
+				return { ...acc, [`sort_by[${checkField}]`]: sort };
 			}
 
 			if (key.startsWith('from_') || key.startsWith('to_') || key.startsWith('currency_')) {
