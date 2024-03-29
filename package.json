@@ -31,11 +31,7 @@
     "@reduxjs/toolkit": "1.9.5",
     "@typescript-eslint/eslint-plugin": "6.3.0",
     "@typescript-eslint/parser": "6.3.0",
-<<<<<<< HEAD
-    "@uspacy/sdk": "0.0.72-alpha.2",
-=======
     "@uspacy/sdk": "0.0.72-alpha.3",
->>>>>>> hotfix/2968_crm_products
     "cross-env": "7.0.3",
     "dotenv-webpack": "8.0.1",
     "eslint": "8.46.0",
