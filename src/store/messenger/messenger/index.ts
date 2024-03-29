@@ -136,6 +136,7 @@ export const chatSlice = createSlice({
 				}
 				return group;
 			});
+			// eslint-disable-next-line no-console
 			const items = [...state.chats.items].map((chat) => {
 				if (chat.id === chatId) {
 					return {
@@ -143,8 +144,7 @@ export const chatSlice = createSlice({
 						lastMessage: item,
 						timestamp: item.timestamp,
 						originalTimestamp: item.timestamp,
-						unreadCount:
-							item.authorId !== profile.authUserId && state.chats.currentChatId !== chat.id ? chat.unreadCount + 1 : chat.unreadCount,
+						unreadCount: item.authorId !== profile.authUserId ? chat.unreadCount + 1 : chat.unreadCount,
 						// update unreadMentions when we get messages
 						...(item.mentioned.includes(profile.authUserId) && { unreadMentions: [item.id, ...chat.unreadMentions] }),
 					};
