@@ -6,7 +6,10 @@ import { deleteAutomation, fetchAutomations, toggleAutomation } from './actions'
 import { IState } from './types';
 
 const initialState = {
-	automations: {},
+	automations: {
+		data: [],
+		meta: {},
+	},
 	automation: {},
 	loadingAutomations: false,
 	errorLoadingAutomations: null,
