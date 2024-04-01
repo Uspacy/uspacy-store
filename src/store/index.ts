@@ -4,13 +4,28 @@ import apps from './apps';
 import auth from './auth';
 import automations from './automations';
 import comments from './comments';
+import crmCalls from './crmCalls';
+import crmCompanies from './crmCompanies';
+import crmContacts from './crmContacts';
+import crmDeals from './crmDeals';
+import dealsFunnel from './crmDealsFunnel';
+import dealsStages from './crmDealsStages';
+import crmDocumentTemplates from './crmDocumentTemplates';
 import crmEntities from './crmEntities';
-import dealsFunnel from './dealsFunnel';
+import crmLeads from './crmLeads';
+import leadsFunnel from './crmLeadsFunnel';
+import leadsStages from './crmLeadsStages';
+import crmProducts from './crmProducts';
+import crmProductsCategory from './crmProductsCategory';
+import crmProductsForEntity from './crmProductsForEntity';
+import crmProductsTaxes from './crmProductsTaxes';
+import crmProductsUnit from './crmProductsUnit';
+import crmRequisite from './crmRequisite';
+import crmTasks from './crmTasks';
 import departments from './departments';
 import email from './email';
 import files from './files';
 import groups from './groups';
-import leadsFunnel from './leadsFunnel';
 import messengerReducer from './messenger';
 import migrationsReducer from './migrations';
 import newsfeed from './newsfeed';
@@ -29,9 +44,10 @@ const rootReducer = combineReducers({
 	apps,
 	auth,
 	comments,
-	crmEntities,
 	dealsFunnel,
 	leadsFunnel,
+	dealsStages,
+	leadsStages,
 	departments,
 	email,
 	files,
@@ -50,6 +66,20 @@ const rootReducer = combineReducers({
 	migrationsReducer,
 	messengerReducer,
 	automations,
+	crmEntities,
+	crmCalls,
+	crmCompanies,
+	crmContacts,
+	crmDeals,
+	crmLeads,
+	crmTasks,
+	crmProducts,
+	crmProductsCategory,
+	crmProductsForEntity,
+	crmProductsTaxes,
+	crmProductsUnit,
+	crmDocumentTemplates,
+	crmRequisite,
 });
 
 export const setupStore = () => {
