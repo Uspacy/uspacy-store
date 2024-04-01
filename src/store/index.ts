@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
 import apps from './apps';
 import auth from './auth';
+import automations from './automations';
 import comments from './comments';
 import crmCalls from './crmCalls';
 import crmCompanies from './crmCompanies';
@@ -64,6 +65,7 @@ const rootReducer = combineReducers({
 	newsfeed,
 	migrationsReducer,
 	messengerReducer,
+	automations,
 	crmEntities,
 	crmCalls,
 	crmCompanies,
