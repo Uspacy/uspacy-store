@@ -6,6 +6,7 @@ import comments from './comments';
 import crmEntities from './crmEntities';
 import dealsFunnel from './dealsFunnel';
 import departments from './departments';
+import drawersManagement from './drawersManagement';
 import email from './email';
 import files from './files';
 import groups from './groups';
@@ -48,6 +49,7 @@ const rootReducer = combineReducers({
 	newsfeed,
 	migrationsReducer,
 	messengerReducer,
+	drawersManagement,
 });
 
 export const setupStore = () => {
