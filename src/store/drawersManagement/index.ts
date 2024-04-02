@@ -1,12 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { EMessengerType, IChat } from '@uspacy/sdk/lib/models/messenger';
+import { EMessengerType } from '@uspacy/sdk/lib/models/messenger';
 
-import { IState } from './types';
+import { IMessengerDrawerData, IState } from './types';
 
 const initialState: IState = {
 	messengerData: {
 		type: EMessengerType.INTERNAL_CHAT,
-		chatId: null,
+		data: {
+			chatId: null,
+		},
 	},
 };
 
@@ -14,7 +16,7 @@ export const drawersSlice = createSlice({
 	name: 'messenger',
 	initialState,
 	reducers: {
-		setMessengerDrawerData(state, action: PayloadAction<{ type: EMessengerType; chatId: IChat['id'] | null }>) {
+		setMessengerDrawerData(state, action: PayloadAction<IMessengerDrawerData>) {
 			state.messengerData = action.payload;
 		},
 		clearDrawerData(state) {
