@@ -61,6 +61,24 @@ export const getOneTimeTemplates = createAsyncThunk(
 	},
 );
 
+export const getHierarchies = createAsyncThunk(
+	'tasks/getHierarchies',
+	async ({ params, withoutResponsible, signal }: { params: ITasksParams; withoutResponsible: boolean; signal: AbortSignal }, thunkAPI) => {
+		try {
+			const res = await uspacySdk.tasksService.getHierarchies(params, withoutResponsible, signal);
+			return res.data;
+		} catch (e) {
+			if (signal.aborted) {
+				return {
+					aborted: true,
+				};
+			} else {
+				return thunkAPI.rejectWithValue(e);
+			}
+		}
+	},
+);
+
 export const getSubtasks = createAsyncThunk(
 	'tasks/getSubtasks',
 	async ({ id, page, list, isTemplate = false }: { id: string; page: number; list: number; isTemplate?: boolean }, { rejectWithValue }) => {

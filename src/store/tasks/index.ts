@@ -12,6 +12,7 @@ import {
 	createTask,
 	deleteTask,
 	fetchTaskFields,
+	getHierarchies,
 	getOneTimeTemplates,
 	getParentTask,
 	getRecurringTemplate,
@@ -151,6 +152,9 @@ const tasksReducer = createSlice({
 	name: 'tasksReducer',
 	initialState,
 	reducers: {
+		setTasksReducer: (state, action: PayloadAction<ITasks>) => {
+			state.tasks = action.payload;
+		},
 		editTaskReducer: (state, action: PayloadAction<ITask>) => {
 			state.tasks.data = state.allSubtasks.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 		},
@@ -322,6 +326,20 @@ const tasksReducer = createSlice({
 			state.errorLoadingTasks = null;
 		},
 		[getOneTimeTemplates.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingTasks = false;
+			state.errorLoadingTasks = action.payload;
+		},
+		[getHierarchies.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
+			state.loadingTasks = action.payload.aborted;
+			state.errorLoadingTasks = null;
+			state.tasks = action.payload.aborted ? state.tasks : action.payload;
+			state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+		},
+		[getHierarchies.pending.type]: (state) => {
+			state.loadingTasks = true;
+			state.errorLoadingTasks = null;
+		},
+		[getHierarchies.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingTasks = false;
 			state.errorLoadingTasks = action.payload;
 		},
@@ -824,6 +842,7 @@ const tasksReducer = createSlice({
 });
 
 export const {
+	setTasksReducer,
 	editTaskReducer,
 	setTask,
 	setTemplate,

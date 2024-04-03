@@ -67,6 +67,7 @@ const rootReducer = combineReducers({
 	migrationsReducer,
 	messengerReducer,
 	automations,
+	drawersManagement,
 	crmEntities,
 	crmCalls,
 	crmCompanies,
@@ -81,7 +82,6 @@ const rootReducer = combineReducers({
 	crmProductsUnit,
 	crmDocumentTemplates,
 	crmRequisite,
-	drawersManagement,
 });
 
 export const setupStore = () => {
