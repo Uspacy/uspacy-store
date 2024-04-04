@@ -1,6 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 
+import { IMoveTaskPayload } from './types';
+
 export const fetchStages = createAsyncThunk('stages/fetchStages', async (groupId: number, thunkAPI) => {
 	try {
 		const res = await uspacySdk.tasksStagesService.getTasksStages(groupId);
@@ -10,9 +12,9 @@ export const fetchStages = createAsyncThunk('stages/fetchStages', async (groupId
 	}
 });
 
-export const moveTask = createAsyncThunk('stages/moveTask', async ({ cardId, stageId }: { cardId: string; stageId: string }, thunkAPI) => {
+export const moveTask = createAsyncThunk('stages/moveTask', async ({ cardId, stageId, prevCardId }: IMoveTaskPayload, thunkAPI) => {
 	try {
-		return await uspacySdk.tasksStagesService.moveTask(cardId, stageId);
+		return await uspacySdk.tasksStagesService.moveTask(cardId, stageId, prevCardId);
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	}
