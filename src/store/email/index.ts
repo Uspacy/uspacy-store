@@ -24,10 +24,14 @@ import {
 import { createNewLetterModeType, headerTypes, IEmailMassActionsResponse, IState } from './types';
 
 const initialState = {
-	emailBoxes: {},
+	emailBoxes: {
+		data: [],
+	},
 	emailBox: {},
 	connectedEmailBox: {},
-	folders: {},
+	folders: {
+		data: [],
+	},
 	folder: {},
 	letters: {},
 	chainLetters: {},
