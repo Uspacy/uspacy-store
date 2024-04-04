@@ -337,6 +337,9 @@ const tasksReducer = createSlice({
 			state.loadingTasks = action.payload.aborted;
 			state.errorLoadingTasks = null;
 			state.tasks = action.payload.aborted ? state.tasks : action.payload;
+			state.allHierarchies = action.payload.aborted
+				? [...state.allHierarchies, ...state.tasks.data]
+				: [...state.allHierarchies, ...action.payload.data];
 			state.meta = action.payload.aborted ? state.meta : action.payload.meta;
 		},
 		[getHierarchies.pending.type]: (state) => {
