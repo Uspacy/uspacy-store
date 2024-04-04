@@ -43,6 +43,7 @@ const initialState = {
 		data: [],
 	},
 	allSubtasks: [],
+	allHierarchies: [],
 	task: {},
 	recurringTemplate: {},
 	parentTask: {},
@@ -194,8 +195,11 @@ const tasksReducer = createSlice({
 		changeItemsFilterRegularTasks: (state, action: PayloadAction<IFilterTasks>) => {
 			state.regularFilter = action.payload;
 		},
-		fillSubtasksReducer: (state, action: PayloadAction<ITask[]>) => {
+		setAllSubtasks: (state, action: PayloadAction<ITask[]>) => {
 			state.allSubtasks = action.payload;
+		},
+		setAllHierarchies: (state, action: PayloadAction<ITask[]>) => {
+			state.allHierarchies = action.payload;
 		},
 		clearSubstasksReducer: (state) => {
 			state.allSubtasks = [];
@@ -849,7 +853,8 @@ export const {
 	setParentTask,
 	setTaskFromTemplate,
 	editSubTaskReducer,
-	fillSubtasksReducer,
+	setAllSubtasks,
+	setAllHierarchies,
 	clearSubstasksReducer,
 	clearAddedTaskReducer,
 	clearAddedToKanbanTaskReducer,
