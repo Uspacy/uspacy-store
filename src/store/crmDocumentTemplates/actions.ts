@@ -6,7 +6,6 @@ import { IDocumentTemplateFieldFilters, IDocumentTemplateFilters } from '@uspacy
 import { IFile } from '@uspacy/sdk/lib/models/files';
 
 import { API_PREFIX_FILES } from '../../const';
-import isEmpty from 'lodash/isEmpty';
 
 export const fetchDocumentTemplates = createAsyncThunk(
 	'documentTemplates/fetchDocumentTemplates',
