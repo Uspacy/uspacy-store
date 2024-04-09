@@ -142,6 +142,7 @@ const initialState = {
 	isTaskFromTemplate: false,
 	isKanban: false,
 	isTable: false,
+	isHierarchy: false,
 	isEditMode: false,
 	taskStatus: '',
 	isRegularSection: false,
@@ -176,7 +177,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.isKanban) {
+			if (state.isKanban || state.isHierarchy) {
 				state.changeTask = action?.payload;
 			}
 		},
@@ -268,6 +269,9 @@ const tasksReducer = createSlice({
 		setIsTable: (state, action: PayloadAction<boolean>) => {
 			state.isTable = action.payload;
 		},
+		setIsHierarchy: (state, action: PayloadAction<boolean>) => {
+			state.isHierarchy = action.payload;
+		},
 		setStatus: (state, action: PayloadAction<string>) => {
 			state.taskStatus = action.payload;
 		},
@@ -337,9 +341,7 @@ const tasksReducer = createSlice({
 			state.loadingTasks = action.payload.aborted;
 			state.errorLoadingTasks = null;
 			state.tasks = action.payload.aborted ? state.tasks : action.payload;
-			state.allHierarchies = action.payload.aborted
-				? [...state.allHierarchies, ...state.tasks.data]
-				: [...state.allHierarchies, ...action.payload.data];
+			state.allHierarchies = [...state.allHierarchies, ...(action.payload.aborted ? state.tasks.data : action.payload.data)];
 			state.meta = action.payload.aborted ? state.meta : action.payload.meta;
 		},
 		[getHierarchies.pending.type]: (state) => {
@@ -407,7 +409,7 @@ const tasksReducer = createSlice({
 			state.loadingCreatingTask = false;
 			state.errorLoadingCreatingTask = null;
 			if (action.payload.abilityToAddTask) {
-				if (state.isTable) {
+				if (state.isTable && !state.isHierarchy) {
 					state.tasks.data.unshift(action.payload.task);
 					state.meta.total = state.meta.total + 1;
 				}
@@ -881,6 +883,7 @@ export const {
 	removeTaskFromNPositionTable,
 	setIsKanban,
 	setIsTable,
+	setIsHierarchy,
 	setStatus,
 	setIsRegularSection,
 	setTotalTasks,
