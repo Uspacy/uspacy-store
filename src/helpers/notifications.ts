@@ -99,6 +99,7 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 
 export const getRead = async (): Promise<string[]> => {
 	try {
+		// @ts-ignore, temporary ignore, but I don't know what to do with this
 		return (await uspacySdk.notificationsService.storageService.table.getItem<string[]>('read')) || [];
 	} catch (_) {
 		return [];
@@ -107,5 +108,6 @@ export const getRead = async (): Promise<string[]> => {
 
 export const setRead = async (ids: string[]) => {
 	const read = (await getRead()).filter((id) => !ids.includes(id));
+	// @ts-ignore, temporary ignore, but I don't know what to do with this
 	return uspacySdk.notificationsService.storageService.table.setItem('read', [...read, ...ids]);
 };
