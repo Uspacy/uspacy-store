@@ -6,6 +6,7 @@ import { IDocumentTemplateFieldFilters, IDocumentTemplateFilters } from '@uspacy
 import { IFile } from '@uspacy/sdk/lib/models/files';
 
 import { API_PREFIX_FILES } from '../../const';
+import isEmpty from 'lodash/isEmpty';
 
 export const fetchDocumentTemplates = createAsyncThunk(
 	'documentTemplates/fetchDocumentTemplates',
@@ -49,9 +50,10 @@ export const fetchDocumentTemplatesFields = createAsyncThunk(
 	'documentTemplates/fetchDocumentTemplatesFields',
 	async (data: { params: IDocumentTemplateFieldFilters; signal: AbortSignal }, thunkAPI) => {
 		try {
+			const { search, ...paramsWithoutSearch } = data?.params
 			const formattedParams = {
-				...data?.params,
-				...(!!data?.params?.search ? { search: data?.params?.search } : {}),
+				...paramsWithoutSearch,
+				...(!!search ? { search: search } : {}),
 			};
 
 			const res = await uspacySdk?.crmDocumentTemplatesService?.getDocumentTemplatesFields(formattedParams, data?.signal);
