@@ -66,6 +66,7 @@ export interface IState {
 	isTaskFromTemplate: boolean;
 	isKanban: boolean;
 	isTable: boolean;
+	isHierarchy: boolean;
 	taskStatus: string;
 	isRegularSection: boolean;
 	tasksCardPermissions: ITaskCardActions;
