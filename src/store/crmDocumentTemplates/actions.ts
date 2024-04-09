@@ -51,7 +51,7 @@ export const fetchDocumentTemplatesFields = createAsyncThunk(
 		try {
 			const formattedParams = {
 				...data?.params,
-				...(data?.params?.search ? { search: data?.params?.search } : {}),
+				...(!!data?.params?.search ? { search: data?.params?.search } : {}),
 			};
 
 			const res = await uspacySdk?.crmDocumentTemplatesService?.getDocumentTemplatesFields(formattedParams, data?.signal);
