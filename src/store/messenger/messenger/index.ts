@@ -137,7 +137,7 @@ export const chatSlice = createSlice({
 				}
 				return group;
 			});
-			// eslint-disable-next-line no-console
+
 			const items = [...state.chats.items].map((chat) => {
 				if (chat.id === chatId) {
 					return {

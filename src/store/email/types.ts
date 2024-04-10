@@ -1,4 +1,5 @@
 import {
+	ICrmSetting,
 	IEmailBox,
 	IEmailBoxes,
 	IEmailFilters,
@@ -62,6 +63,7 @@ export interface IState {
 	filters: IEmailFilters;
 	selectedLetters: ILetter[];
 	emailTableHeaderType: headerTypes;
+	crmSettings: ICrmSetting[];
 }
 
 export interface ILettersParams {

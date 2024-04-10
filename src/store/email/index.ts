@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IEmailBox, IEmailBoxes, IEmailFilters, IFolder, IFolders, ILetter, ILetters } from '@uspacy/sdk/lib/models/email';
+import { ESettingName, ICrmSetting, IEmailBox, IEmailBoxes, IEmailFilters, IFolder, IFolders, ILetter, ILetters } from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
 import {
@@ -10,6 +11,7 @@ import {
 	getEmailLetter,
 	getEmailLetters,
 	getEmailsBoxes,
+	getIntgrWithCrmSettings,
 	moveLetters,
 	readEmailLetters,
 	removeEmailBox,
@@ -37,6 +39,7 @@ const initialState = {
 	chainLetters: {},
 	letter: {},
 	createdLetter: {},
+	crmSettings: [],
 	removedLetterIds: null,
 	loadingEmailBoxes: false,
 	loadingEmailBox: false,
@@ -135,6 +138,24 @@ const emailReducer = createSlice({
 		},
 		setEmailTableHeaderType: (state, action: PayloadAction<headerTypes>) => {
 			state.emailTableHeaderType = action.payload;
+		},
+		setSrmConnectStatus: (state, action: PayloadAction<number>) => {
+			state.emailBox = {
+				...state.emailBox,
+				crm_integration_enabled: action.payload,
+			};
+		},
+		setSrmSetting: (state, action: PayloadAction<{ key: ESettingName; value: ICrmSetting['setting_value'] }>) => {
+			const { key, value } = action.payload;
+
+			state.crmSettings = state.crmSettings.map((it) => {
+				if (it.setting_name === key)
+					return {
+						...it,
+						setting_value: value,
+					};
+				return it;
+			});
 		},
 	},
 	extraReducers: {
@@ -407,6 +428,9 @@ const emailReducer = createSlice({
 			state.loadingMoveLetter = false;
 			state.errorLoadingMoveLetter = action.payload;
 		},
+		[getIntgrWithCrmSettings.fulfilled.type]: (state, action: PayloadAction<{ data: ICrmSetting[] }>) => {
+			state.crmSettings = action.payload.data;
+		},
 	},
 });
 
@@ -426,5 +450,7 @@ export const {
 	setFilters,
 	setSelectedLetters,
 	setEmailTableHeaderType,
+	setSrmConnectStatus,
+	setSrmSetting,
 } = emailReducer.actions;
 export default emailReducer.reducer;
