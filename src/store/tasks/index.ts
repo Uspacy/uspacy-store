@@ -344,7 +344,6 @@ const tasksReducer = createSlice({
 			state.errorLoadingTasks = null;
 			if (state.isHierarchy) {
 				state.tasks = action.payload.aborted ? state.tasks : action.payload;
-				state.allHierarchies = [...state.allHierarchies, ...(action.payload.aborted ? state.tasks.data : action.payload.data)];
 				state.meta = action.payload.aborted ? state.meta : action.payload.meta;
 			}
 		},
