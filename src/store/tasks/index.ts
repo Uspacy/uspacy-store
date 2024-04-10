@@ -298,8 +298,10 @@ const tasksReducer = createSlice({
 		[getTasks.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
 			state.loadingTasks = action.payload.aborted;
 			state.errorLoadingTasks = null;
-			state.tasks = action.payload.aborted ? state.tasks : action.payload;
-			state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+			if (state.isTable) {
+				state.tasks = action.payload.aborted ? state.tasks : action.payload;
+				state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+			}
 		},
 		[getTasks.pending.type]: (state) => {
 			state.loadingTasks = true;
@@ -340,9 +342,11 @@ const tasksReducer = createSlice({
 		[getHierarchies.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
 			state.loadingTasks = action.payload.aborted;
 			state.errorLoadingTasks = null;
-			state.tasks = action.payload.aborted ? state.tasks : action.payload;
-			state.allHierarchies = [...state.allHierarchies, ...(action.payload.aborted ? state.tasks.data : action.payload.data)];
-			state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+			if (state.isHierarchy) {
+				state.tasks = action.payload.aborted ? state.tasks : action.payload;
+				state.allHierarchies = [...state.allHierarchies, ...(action.payload.aborted ? state.tasks.data : action.payload.data)];
+				state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+			}
 		},
 		[getHierarchies.pending.type]: (state) => {
 			state.loadingTasks = true;
@@ -522,7 +526,7 @@ const tasksReducer = createSlice({
 			if (state.task.id) {
 				state.task = action.payload;
 			}
-			if (state.isKanban) {
+			if (state.isKanban || state.isHierarchy) {
 				state.changeTask = action?.payload;
 			}
 		},
@@ -640,7 +644,7 @@ const tasksReducer = createSlice({
 		[deleteTask.fulfilled.type]: (state, action: PayloadAction<IDeleteTaskPayload>) => {
 			state.loadingDeletingTask = false;
 			state.errorLoadingDeletingTask = null;
-			if (state.isKanban) {
+			if (state.isKanban || state.isHierarchy) {
 				state.deleteTaskId = +action?.payload?.id;
 			}
 			if (state.isTable) {
@@ -713,7 +717,7 @@ const tasksReducer = createSlice({
 					return task;
 				});
 			}
-			if (state.isKanban) {
+			if (state.isKanban || state.isHierarchy) {
 				state.changeTask = action?.payload;
 			}
 		},
@@ -739,7 +743,7 @@ const tasksReducer = createSlice({
 					return task;
 				});
 			}
-			if (state.isKanban) {
+			if (state.isKanban || state.isHierarchy) {
 				state.changeTask = action?.payload;
 			}
 		},
@@ -765,7 +769,7 @@ const tasksReducer = createSlice({
 					return task;
 				});
 			}
-			if (state.isKanban) {
+			if (state.isKanban || state.isHierarchy) {
 				state.changeTask = action?.payload;
 			}
 		},
@@ -822,7 +826,7 @@ const tasksReducer = createSlice({
 					return task;
 				});
 			}
-			if (state.isKanban) {
+			if (state.isKanban || state.isHierarchy) {
 				state.changeTask = action?.payload;
 			}
 		},
