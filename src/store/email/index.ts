@@ -135,7 +135,7 @@ const emailReducer = createSlice({
 		setEmailTableHeaderType: (state, action: PayloadAction<headerTypes>) => {
 			state.emailTableHeaderType = action.payload;
 		},
-		setSrmConnectStatus: (state, action: PayloadAction<number>) => {
+		setCrmConnectStatus: (state, action: PayloadAction<number>) => {
 			state.emailBox = {
 				...state.emailBox,
 				crm_integration_enabled: action.payload,
@@ -449,7 +449,7 @@ export const {
 	setFilters,
 	setSelectedLetters,
 	setEmailTableHeaderType,
-	setSrmConnectStatus,
+	setCrmConnectStatus,
 	setCrmSetting,
 } = emailReducer.actions;
 export default emailReducer.reducer;
