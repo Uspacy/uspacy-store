@@ -145,7 +145,7 @@ const emailReducer = createSlice({
 				crm_integration_enabled: action.payload,
 			};
 		},
-		setSrmSetting: (state, action: PayloadAction<{ key: ESettingName; value: ICrmSetting['setting_value'] }>) => {
+		setCrmSetting: (state, action: PayloadAction<{ key: ESettingName; value: ICrmSetting['setting_value'] }>) => {
 			const { key, value } = action.payload;
 
 			state.crmSettings = state.crmSettings.map((it) => {
@@ -156,6 +156,9 @@ const emailReducer = createSlice({
 					};
 				return it;
 			});
+		},
+		clearCrmSettings: (state) => {
+			state.crmSettings = initialState.crmSettings;
 		},
 	},
 	extraReducers: {
@@ -451,6 +454,6 @@ export const {
 	setSelectedLetters,
 	setEmailTableHeaderType,
 	setSrmConnectStatus,
-	setSrmSetting,
+	setCrmSetting,
 } = emailReducer.actions;
 export default emailReducer.reducer;
