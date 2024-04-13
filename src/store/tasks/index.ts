@@ -52,7 +52,7 @@ const initialState = {
 	addedToKanbanTask: {},
 	changeTask: {},
 	changeTasks: [],
-	deleteTaskId: 0,
+	deleteTaskId: null,
 	deleteTaskIds: [],
 	deleteAllFromKanban: false,
 	filters: {
@@ -214,6 +214,9 @@ const tasksReducer = createSlice({
 		},
 		clearChangeTask: (state) => {
 			state.changeTask = {} as ITask;
+		},
+		setDeletedTaskId: (state) => {
+			state.deleteTaskId = null;
 		},
 		clearFilter: (state) => {
 			state.filters = { ...initialState.filters };
@@ -868,6 +871,7 @@ export const {
 	clearAddedTaskReducer,
 	clearAddedToKanbanTaskReducer,
 	clearChangeTask,
+	setDeletedTaskId,
 	deleteTaskReducer,
 	changeFilter,
 	changeRegularFilter,
