@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, ICreateWidgetData, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 import { IUser } from '@uspacy/sdk/lib/models/user';
-import { differenceInMinutes } from 'date-fns';
+import differenceInMinutes from 'date-fns/differenceInMinutes';
 
 import {
 	getUniqueItems,
@@ -136,6 +136,7 @@ export const chatSlice = createSlice({
 				}
 				return group;
 			});
+
 			const items = [...state.chats.items].map((chat) => {
 				if (chat.id === chatId) {
 					return {
@@ -143,8 +144,7 @@ export const chatSlice = createSlice({
 						lastMessage: item,
 						timestamp: item.timestamp,
 						originalTimestamp: item.timestamp,
-						unreadCount:
-							item.authorId !== profile.authUserId && state.chats.currentChatId !== chat.id ? chat.unreadCount + 1 : chat.unreadCount,
+						unreadCount: item.authorId !== profile.authUserId ? chat.unreadCount + 1 : chat.unreadCount,
 						// update unreadMentions when we get messages
 						...(item.mentioned.includes(profile.authUserId) && { unreadMentions: [item.id, ...chat.unreadMentions] }),
 					};
