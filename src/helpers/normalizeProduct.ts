@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IProduct, IProducts } from '@uspacy/sdk/lib/models/crm-products';
 import { IFields } from '@uspacy/sdk/lib/models/field';
-import { isEmpty, isObject } from 'lodash';
 import isArray from 'lodash/isArray';
+import isEmpty from 'lodash/isEmpty';
+import isObject from 'lodash/isObject';
 
 import { defaultProductFieldKeys } from './../const';
 import { formatNumber, unFormatNumber } from './formatText';
