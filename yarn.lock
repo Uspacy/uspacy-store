@@ -499,10 +499,17 @@
     "@typescript-eslint/types" "6.3.0"
     eslint-visitor-keys "^3.4.1"
 
+<<<<<<< HEAD
 "@uspacy/sdk@0.0.77-alpha.2":
   version "0.0.77-alpha.2"
   resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.77-alpha.2/39c03a07bf71bf7ecead9bcf29bdeab0ed8ecfe7#39c03a07bf71bf7ecead9bcf29bdeab0ed8ecfe7"
   integrity sha512-z2dJZXLoSl5l7/TCjEB+lEMdHg9pbMzY6If8VIrwSB4e2WopWPePkaXz4U73Em6utfM/9y+SM5cEgrLLk3LF6Q==
+=======
+"@uspacy/sdk@0.0.72-alpha.2":
+  version "0.0.72-alpha.2"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.72-alpha.2/6d6b91dcc279a071666224420340983d7e85187a#6d6b91dcc279a071666224420340983d7e85187a"
+  integrity sha512-VMO/h42ZbkS8t9yBhrLc5dj9eFATZvmyQcbnPkzJ6uhH7E4AdEZ9M9pievJbXijDcwm2X4Sm7PQE7lL5VlVEuQ==
+>>>>>>> feature/2782_table_sort_column_crm
   dependencies:
     axios "1.4.0"
     js-cookie "3.0.5"
