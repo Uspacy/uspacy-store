@@ -215,7 +215,7 @@ const tasksReducer = createSlice({
 		clearChangeTask: (state) => {
 			state.changeTask = {} as ITask;
 		},
-		setDeletedTaskId: (state) => {
+		clearDeletedTaskId: (state) => {
 			state.deleteTaskId = null;
 		},
 		clearFilter: (state) => {
@@ -416,11 +416,12 @@ const tasksReducer = createSlice({
 			state.loadingCreatingTask = false;
 			state.errorLoadingCreatingTask = null;
 			if (action.payload.abilityToAddTask) {
-				if (state.isTable && !state.isHierarchy) {
-					state.tasks.data.unshift(action.payload.task);
+				if (state.isTable || state.isHierarchy) {
 					state.meta.total = state.meta.total + 1;
 				}
-
+				if (state.isTable && !state.isHierarchy) {
+					state.tasks.data.unshift(action.payload.task);
+				}
 				if (state.isKanban) {
 					state.addedToKanbanTask = action.payload.task;
 				}
@@ -497,9 +498,11 @@ const tasksReducer = createSlice({
 			state.loadingCreatingTask = false;
 			state.errorLoadingCreatingTask = null;
 			if (action.payload.abilityToAddTask) {
+				if (state.isTable || state.isHierarchy) {
+					state.meta.total = state.meta.total + 1;
+				}
 				if (state.isTable) {
 					state.tasks.data.unshift(action.payload.task);
-					state.meta.total = state.meta.total + 1;
 				}
 
 				if (state.isKanban) {
@@ -650,10 +653,12 @@ const tasksReducer = createSlice({
 			if (state.isKanban || state.isHierarchy) {
 				state.deleteTaskId = +action?.payload?.id;
 			}
+			if (state.isTable || state.isHierarchy) {
+				state.meta.total = state.meta.total - 1;
+			}
 			if (state.isTable) {
 				if (state.tasksServiceType === action.payload.type) {
 					state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload?.id));
-					state.meta.total = state.meta.total - 1;
 				}
 			}
 		},
@@ -871,7 +876,7 @@ export const {
 	clearAddedTaskReducer,
 	clearAddedToKanbanTaskReducer,
 	clearChangeTask,
-	setDeletedTaskId,
+	clearDeletedTaskId,
 	deleteTaskReducer,
 	changeFilter,
 	changeRegularFilter,
