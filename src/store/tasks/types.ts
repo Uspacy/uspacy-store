@@ -23,7 +23,6 @@ export interface IState {
 	tasks: ITasks;
 	subtasks: ITasks;
 	allSubtasks: ITask[];
-	allHierarchies: ITask[];
 	task: ITask;
 	recurringTemplate: ITask;
 	parentTask: ITask;

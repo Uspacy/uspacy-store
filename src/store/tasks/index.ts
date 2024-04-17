@@ -43,7 +43,6 @@ const initialState = {
 		data: [],
 	},
 	allSubtasks: [],
-	allHierarchies: [],
 	task: {},
 	recurringTemplate: {},
 	parentTask: {},
@@ -154,11 +153,8 @@ const tasksReducer = createSlice({
 	name: 'tasksReducer',
 	initialState,
 	reducers: {
-		setTasksReducer: (state, action: PayloadAction<ITasks>) => {
+		setTasks: (state, action: PayloadAction<ITasks>) => {
 			state.tasks = action.payload;
-		},
-		editTaskReducer: (state, action: PayloadAction<ITask>) => {
-			state.tasks.data = state.allSubtasks.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 		},
 		setTask: (state, action: PayloadAction<ITask>) => {
 			state.task = action.payload;
@@ -172,7 +168,7 @@ const tasksReducer = createSlice({
 		setTaskFromTemplate: (state, action: PayloadAction<ITask>) => {
 			state.taskFromTemplate = action.payload;
 		},
-		editSubTaskReducer: (state, action: PayloadAction<ITask>) => {
+		editSubTask: (state, action: PayloadAction<ITask>) => {
 			state.allSubtasks = state.allSubtasks.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
@@ -199,10 +195,7 @@ const tasksReducer = createSlice({
 		setAllSubtasks: (state, action: PayloadAction<ITask[]>) => {
 			state.allSubtasks = action.payload;
 		},
-		setAllHierarchies: (state, action: PayloadAction<ITask[]>) => {
-			state.allHierarchies = action.payload;
-		},
-		clearSubstasksReducer: (state) => {
+		clearSubstasks: (state) => {
 			state.allSubtasks = [];
 			state.subtasks = {} as ITasks;
 		},
@@ -215,7 +208,7 @@ const tasksReducer = createSlice({
 		clearChangeTask: (state) => {
 			state.changeTask = {} as ITask;
 		},
-		clearDeletedTaskId: (state) => {
+		clearDeleteTaskId: (state) => {
 			state.deleteTaskId = null;
 		},
 		clearFilter: (state) => {
@@ -347,7 +340,6 @@ const tasksReducer = createSlice({
 			state.errorLoadingTasks = null;
 			if (state.isHierarchy) {
 				state.tasks = action.payload.aborted ? state.tasks : action.payload;
-				state.allHierarchies = [...state.allHierarchies, ...(action.payload.aborted ? state.tasks.data : action.payload.data)];
 				state.meta = action.payload.aborted ? state.meta : action.payload.meta;
 			}
 		},
@@ -863,20 +855,18 @@ const tasksReducer = createSlice({
 });
 
 export const {
-	setTasksReducer,
-	editTaskReducer,
+	setTasks,
 	setTask,
 	setTemplate,
 	setParentTask,
 	setTaskFromTemplate,
-	editSubTaskReducer,
+	editSubTask,
 	setAllSubtasks,
-	setAllHierarchies,
-	clearSubstasksReducer,
+	clearSubstasks,
 	clearAddedTaskReducer,
 	clearAddedToKanbanTaskReducer,
 	clearChangeTask,
-	clearDeletedTaskId,
+	clearDeleteTaskId,
 	deleteTaskReducer,
 	changeFilter,
 	changeRegularFilter,
