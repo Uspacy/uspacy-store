@@ -37,8 +37,8 @@ const initialTasks = {
 };
 
 export const initialTaskFilter: ITaskFilters = {
-	page: 0,
-	perPage: 0,
+	page: 1,
+	perPage: 20,
 	status: [],
 	openDatePicker: false,
 	search: '',
