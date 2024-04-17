@@ -1,24 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IStage, IStages } from '@uspacy/sdk/lib/models/tasks-stages';
+import { IStages } from '@uspacy/sdk/lib/models/tasks-stages';
 
-import { fetchStages, moveTask } from './actions';
-import { IDnDItem, IMoveTaskId, IState } from './types';
-
-const initialDnD = {
-	fromColumnId: '',
-	toColumnId: '',
-	cardId: '',
-	item: {},
-};
+import { fetchStages } from './actions';
+import { IState } from './types';
 
 const initialState = {
-	stages: {
-		data: [],
-	},
-	columns: {},
-	moveTask: {},
-	dndItem: initialDnD,
+	stages: { data: [] },
 	loadingStages: false,
 	addingStage: false,
 	editingStage: false,
@@ -38,18 +26,6 @@ const stagesReducer = createSlice({
 		clearStages: (state) => {
 			state.stages = {} as IStages;
 		},
-		deleteStageReducer: (state, action: PayloadAction<string | number>) => {
-			state.stages.data = state.stages.data.filter((stage) => stage?.id !== String(action?.payload));
-		},
-		addStageReducer: (state, action: PayloadAction<IStage>) => {
-			state.stages.data = state.stages.data.concat(action.payload);
-		},
-		moveTaskChangeCardInColumn: (state, action: PayloadAction<IDnDItem>) => {
-			state.dndItem = action.payload;
-		},
-		clearDnDItem: (state) => {
-			state.dndItem = initialDnD;
-		},
 	},
 	extraReducers: {
 		[fetchStages.fulfilled.type]: (state, action: PayloadAction<IStages>) => {
@@ -65,21 +41,8 @@ const stagesReducer = createSlice({
 			state.loadingStages = false;
 			state.errorLoadingStages = action.payload;
 		},
-		[moveTask.fulfilled.type]: (state, action: PayloadAction<IMoveTaskId>) => {
-			state.loadingMoveTask = false;
-			state.errorLoadingMoveTask = '';
-			state.moveTask = action.payload;
-		},
-		[moveTask.pending.type]: (state) => {
-			state.loadingMoveTask = true;
-			state.errorLoadingMoveTask = '';
-		},
-		[moveTask.rejected.type]: (state, action: PayloadAction<string>) => {
-			state.loadingMoveTask = false;
-			state.errorLoadingMoveTask = action.payload;
-		},
 	},
 });
 
-export const { deleteStageReducer, addStageReducer, moveTaskChangeCardInColumn, clearDnDItem, clearStages } = stagesReducer.actions;
+export const { clearStages } = stagesReducer.actions;
 export default stagesReducer.reducer;
