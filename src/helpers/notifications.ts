@@ -57,7 +57,7 @@ export const getNotificationTitle = (message: INotificationMessage, profileId: n
 	if (message.data.entity?.new_kanban_stage_id && message.data.entity?.old_kanban_stage_id) {
 		return `notifications.${service}.${message.data.entity?.table_name || message.type}.${NotificationAction.UPDATE_STAGE}`;
 	}
-	if (mentioned) return `notifications.${service}.${entityType}.${message.type}.mentioned`;
+	if (mentioned) return `notifications.${service}.${entityType}.${message.type}.mentioned.${message.data.action}`;
 	if (service === 'comments') return `notifications.${service}.${entityType}.${message.type}.${message.data.action}`;
 
 	return `notifications.${service}.${message.data.entity?.table_name || message.type}.${message.data.action}`;
