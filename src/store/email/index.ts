@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IEntity } from '@uspacy/sdk/lib/models/crm-entities';
 import { ESettingName, ICrmSetting, IEmailBox, IEmailBoxes, IEmailFilters, IFolder, IFolders, ILetter, ILetters } from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
@@ -84,6 +85,7 @@ const initialState = {
 	},
 	selectedLetters: [],
 	emailTableHeaderType: 'default',
+	crm_entities: [],
 } as IState;
 
 const emailReducer = createSlice({
@@ -155,6 +157,35 @@ const emailReducer = createSlice({
 		},
 		clearCrmSettings: (state) => {
 			state.crmSettings = initialState.crmSettings;
+		},
+		setCrmEntities: (
+			state,
+			action: PayloadAction<{ letterId: ILetter['id']; entities: IEntity[]; type: 'contacts' | 'companies' | 'leads' | 'deals' }>,
+		) => {
+			const { letterId, type, entities } = action.payload;
+			const hasEntity = state.crm_entities.find((it) => it.letterId === letterId);
+
+			if (hasEntity) {
+				state.crm_entities = state.crm_entities.map((it) => {
+					if (it.letterId === letterId)
+						return {
+							...it,
+							entities: {
+								...it.entities,
+								[type]: entities,
+							},
+						};
+
+					return it;
+				});
+			} else {
+				state.crm_entities.push({
+					letterId,
+					entities: {
+						[type]: entities,
+					},
+				});
+			}
 		},
 	},
 	extraReducers: {
@@ -451,5 +482,6 @@ export const {
 	setEmailTableHeaderType,
 	setCrmConnectStatus,
 	setCrmSetting,
+	setCrmEntities,
 } = emailReducer.actions;
 export default emailReducer.reducer;

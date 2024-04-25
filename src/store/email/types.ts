@@ -1,3 +1,4 @@
+import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
 import {
 	ICrmSetting,
 	IEmailBox,
@@ -64,6 +65,15 @@ export interface IState {
 	selectedLetters: ILetter[];
 	emailTableHeaderType: headerTypes;
 	crmSettings: ICrmSetting[];
+	crm_entities: {
+		letterId: ILetter['id'];
+		entities: {
+			contacts?: IEntityData[];
+			companies?: IEntityData[];
+			leads?: IEntityData[];
+			deals?: IEntityData[];
+		};
+	}[];
 }
 
 export interface ILettersParams {
