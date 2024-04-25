@@ -1,4 +1,3 @@
-import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
 import {
 	ICrmSetting,
 	IEmailBox,
@@ -9,6 +8,7 @@ import {
 	IFolders,
 	ILetter,
 	ILetters,
+	ILettersCrmEntities,
 	IThreads,
 } from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
@@ -67,12 +67,7 @@ export interface IState {
 	crmSettings: ICrmSetting[];
 	crm_entities: {
 		letterId: ILetter['id'];
-		entities: {
-			contacts?: IEntityData[];
-			companies?: IEntityData[];
-			leads?: IEntityData[];
-			deals?: IEntityData[];
-		};
+		entities: ILettersCrmEntities;
 	}[];
 }
 
