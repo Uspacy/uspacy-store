@@ -259,6 +259,7 @@ export const companiesReducer = createSlice({
 				state.companyFilters = {
 					...state.companyFields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
 					...OTHER_DEFAULT_FIELDS,
+					sortModel: []
 				};
 			}
 		},
