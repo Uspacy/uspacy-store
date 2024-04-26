@@ -8,6 +8,7 @@ import {
 	IFolders,
 	ILetter,
 	ILetters,
+	ILettersCrmEntities,
 	IThreads,
 } from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
@@ -64,6 +65,10 @@ export interface IState {
 	selectedLetters: ILetter[];
 	emailTableHeaderType: headerTypes;
 	crmSettings: ICrmSetting[];
+	crm_entities: {
+		letterId: ILetter['id'];
+		entities: ILettersCrmEntities;
+	}[];
 }
 
 export interface ILettersParams {
