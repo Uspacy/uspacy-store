@@ -57,6 +57,7 @@ export const initialCompaniesFilter: ICompanyFilters = {
 	perPage: 0,
 	boolean_operator: '',
 	table_fields: [],
+	sortModel: [],
 };
 
 const initialState = {
@@ -109,6 +110,7 @@ export const companiesReducer = createSlice({
 				state.companyFilters = {
 					...state.companyFields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
 					...OTHER_DEFAULT_FIELDS,
+					sortModel: state?.companyFilters?.sortModel || [],
 					table_fields: state?.companyFilters?.table_fields || [],
 					page: 1,
 					perPage: 20,
@@ -258,6 +260,7 @@ export const companiesReducer = createSlice({
 				state.companyFilters = {
 					...state.companyFields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
 					...OTHER_DEFAULT_FIELDS,
+					sortModel: []
 				};
 			}
 		},

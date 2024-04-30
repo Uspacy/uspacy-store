@@ -49,6 +49,7 @@ export const initialTaskFilter: ITaskFilters = {
 	participants: [],
 	boolean_operator: '',
 	task_type: [],
+	sortModel: [],
 };
 
 export const fieldForTasks: IField[] = [
