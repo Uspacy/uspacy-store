@@ -99,7 +99,7 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 
 export const getRead = async (): Promise<string[]> => {
 	try {
-		return (await uspacySdk.notificationsService.storageService.table.getItem<string[]>('read')) || [];
+		return (await uspacySdk.notificationsService.storageService.getItem<string[]>('read')) || [];
 	} catch (_) {
 		return [];
 	}
@@ -107,5 +107,5 @@ export const getRead = async (): Promise<string[]> => {
 
 export const setRead = async (ids: string[]) => {
 	const read = (await getRead()).filter((id) => !ids.includes(id));
-	return uspacySdk.notificationsService.storageService.table.setItem('read', [...read, ...ids]);
+	return uspacySdk.notificationsService.storageService.setItem('read', [...read, ...ids]);
 };
