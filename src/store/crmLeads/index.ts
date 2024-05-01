@@ -69,6 +69,7 @@ export const initialLeadsFilter: ILeadFilters = {
 	perPage: 0,
 	boolean_operator: '',
 	table_fields: [],
+	sortModel: [],
 };
 
 const initialState = {
@@ -129,6 +130,7 @@ const leadsReducer = createSlice({
 				state.leadFilters = {
 					...state.leadFields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
 					...OTHER_DEFAULT_FIELDS,
+					sortModel: state?.leadFilters?.sortModel || [],
 					table_fields: state?.leadFilters?.table_fields || [],
 					page: 1,
 					perPage: 20,
