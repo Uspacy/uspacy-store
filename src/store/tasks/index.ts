@@ -408,7 +408,7 @@ const tasksReducer = createSlice({
 			state.loadingCreatingTask = false;
 			state.errorLoadingCreatingTask = null;
 			if (action.payload.abilityToAddTask) {
-				if (state.isTable || state.isHierarchy) {
+				if (state.isTable) {
 					state.meta.total = state.meta.total + 1;
 				}
 				if (state.isTable && !state.isHierarchy) {
@@ -490,7 +490,7 @@ const tasksReducer = createSlice({
 			state.loadingCreatingTask = false;
 			state.errorLoadingCreatingTask = null;
 			if (action.payload.abilityToAddTask) {
-				if (state.isTable || state.isHierarchy) {
+				if (state.isTable) {
 					state.meta.total = state.meta.total + 1;
 				}
 				if (state.isTable) {
@@ -645,7 +645,7 @@ const tasksReducer = createSlice({
 			if (state.isKanban || state.isHierarchy) {
 				state.deleteTaskId = +action?.payload?.id;
 			}
-			if (state.isTable || state.isHierarchy) {
+			if (state.isTable) {
 				state.meta.total = state.meta.total - 1;
 			}
 			if (state.isTable) {
