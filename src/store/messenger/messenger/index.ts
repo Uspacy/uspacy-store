@@ -445,7 +445,7 @@ export const chatSlice = createSlice({
 				return it;
 			});
 		},
-		readAllMessages(state, action: PayloadAction<{ chatId: IChat['id']; profile: IUser }>) {
+		readAllMessages(state, action: PayloadAction<{ chatId: IChat['id']; profile: IUser; userId?: IUser['authUserId'] }>) {
 			state.chats.items = state.chats.items.map((it) => {
 				if (it.id === action.payload.chatId) {
 					return {
