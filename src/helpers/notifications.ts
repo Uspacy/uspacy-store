@@ -57,7 +57,7 @@ export const getNotificationTitle = (message: INotificationMessage, profileId: n
 	if (message.data.entity?.new_kanban_stage_id && message.data.entity?.old_kanban_stage_id) {
 		return `notifications.${service}.${message.data.entity?.table_name || message.type}.${NotificationAction.UPDATE_STAGE}`;
 	}
-	if (mentioned) return `notifications.${service}.${entityType}.${message.type}.mentioned`;
+	if (mentioned) return `notifications.${service}.${entityType}.${message.type}.mentioned.${message.data.action}`;
 	if (service === 'comments') return `notifications.${service}.${entityType}.${message.type}.${message.data.action}`;
 
 	return `notifications.${service}.${message.data.entity?.table_name || message.type}.${message.data.action}`;
@@ -99,7 +99,7 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 
 export const getRead = async (): Promise<string[]> => {
 	try {
-		return (await uspacySdk.notificationsService.storageService.table.getItem<string[]>('read')) || [];
+		return (await uspacySdk.notificationsService.storageService.getItem<string[]>('read')) || [];
 	} catch (_) {
 		return [];
 	}
@@ -107,5 +107,5 @@ export const getRead = async (): Promise<string[]> => {
 
 export const setRead = async (ids: string[]) => {
 	const read = (await getRead()).filter((id) => !ids.includes(id));
-	return uspacySdk.notificationsService.storageService.table.setItem('read', [...read, ...ids]);
+	return uspacySdk.notificationsService.storageService.setItem('read', [...read, ...ids]);
 };

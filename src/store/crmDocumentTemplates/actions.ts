@@ -49,9 +49,10 @@ export const fetchDocumentTemplatesFields = createAsyncThunk(
 	'documentTemplates/fetchDocumentTemplatesFields',
 	async (data: { params: IDocumentTemplateFieldFilters; signal: AbortSignal }, thunkAPI) => {
 		try {
+			const { search, ...paramsWithoutSearch } = data?.params;
 			const formattedParams = {
-				...data?.params,
-				...(data?.params?.search ? { search: data?.params?.search } : {}),
+				...paramsWithoutSearch,
+				...(!!search ? { search: search } : {}),
 			};
 
 			const res = await uspacySdk?.crmDocumentTemplatesService?.getDocumentTemplatesFields(formattedParams, data?.signal);
