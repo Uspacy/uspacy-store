@@ -8,6 +8,7 @@ const initialState: IState = {
 		type: EMessengerType.INTERNAL_CHAT,
 		data: {
 			chatId: null,
+			letter: null,
 		},
 	},
 };
