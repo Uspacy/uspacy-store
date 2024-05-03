@@ -49,7 +49,7 @@ export const fetchDocumentTemplatesFields = createAsyncThunk(
 	'documentTemplates/fetchDocumentTemplatesFields',
 	async (data: { params: IDocumentTemplateFieldFilters; signal: AbortSignal }, thunkAPI) => {
 		try {
-			const { search, ...paramsWithoutSearch } = data?.params
+			const { search, ...paramsWithoutSearch } = data?.params;
 			const formattedParams = {
 				...paramsWithoutSearch,
 				...(!!search ? { search: search } : {}),
