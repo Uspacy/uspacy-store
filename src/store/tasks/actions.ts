@@ -211,6 +211,18 @@ export const updateSubtask = createAsyncThunk('tasks/updateSubtask', async ({ id
 	}
 });
 
+export const delegationTask = createAsyncThunk(
+	'tasks/delegationTask',
+	async ({ id, user_id }: { id: string; user_id: number }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.tasksService.delegationTask(id, user_id);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
 export const massTasksEditing = createAsyncThunk(
 	'tasks/massTasksEditing',
 	async ({ taskIds, exceptIds, all, params, withoutResponsible, payload, settings, profile, admin }: IMassActions, { rejectWithValue }) => {

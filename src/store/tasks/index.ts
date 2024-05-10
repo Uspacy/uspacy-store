@@ -10,6 +10,7 @@ import {
 	createOneTimeTemplate,
 	createRecurringTemplate,
 	createTask,
+	delegationTask,
 	deleteTask,
 	fetchTaskFields,
 	getHierarchies,
@@ -584,6 +585,27 @@ const tasksReducer = createSlice({
 			state.errorLoadingUpdatingTask = null;
 		},
 		[updateSubtask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = action.payload;
+		},
+		[delegationTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = null;
+			if (state.isTable) {
+				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
+			}
+			if (state.task.id) {
+				state.task = action.payload;
+			}
+			if (state.isKanban) {
+				state.changeTask = action?.payload;
+			}
+		},
+		[delegationTask.pending.type]: (state) => {
+			state.loadingUpdatingTask = true;
+			state.errorLoadingUpdatingTask = null;
+		},
+		[delegationTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingUpdatingTask = false;
 			state.errorLoadingUpdatingTask = action.payload;
 		},
