@@ -9,6 +9,7 @@ export interface INotification {
 	read?: boolean;
 	author?: IUser;
 	mentioned?: boolean;
+	createdAt: number;
 	commentEntityTitle?: string;
 }
 

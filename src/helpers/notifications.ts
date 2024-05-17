@@ -1,4 +1,3 @@
-import { uspacySdk } from '@uspacy/sdk';
 import { INotificationMessage, NotificationAction } from '@uspacy/sdk/lib/models/notifications';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 import { ILinkData, INotification } from 'src/store/notifications/types';
@@ -94,18 +93,7 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 		author: user,
 		mentioned,
 		commentEntityTitle,
+		read: message.read || false,
+		createdAt: message.createdAt,
 	};
-};
-
-export const getRead = async (): Promise<string[]> => {
-	try {
-		return (await uspacySdk.notificationsService.storageService.getItem<string[]>('read')) || [];
-	} catch (_) {
-		return [];
-	}
-};
-
-export const setRead = async (ids: string[]) => {
-	const read = (await getRead()).filter((id) => !ids.includes(id));
-	return uspacySdk.notificationsService.storageService.setItem('read', [...read, ...ids]);
 };
