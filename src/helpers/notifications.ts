@@ -94,5 +94,6 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 		mentioned,
 		commentEntityTitle,
 		read: message.read || false,
+		createdAt: message.createdAt,
 	};
 };
