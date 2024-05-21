@@ -3,7 +3,7 @@ import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IServicesStatus } from '@uspacy/sdk/lib/models/migrations';
 import { ISystemStatus } from '@uspacy/sdk/lib/services/MigrationsService/dto/get-import-migrations-entities.dto';
 
-import { getSystemStatus } from './actions';
+import { getMondayStatus, getSystemStatus } from './actions';
 
 const initialState = {
 	systemStatus: {},
@@ -26,6 +26,19 @@ const systemStatusSlice = createSlice({
 			state.errorLoadingProgress = null;
 		},
 		[getSystemStatus.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingProgress = false;
+			state.errorLoadingProgress = action.payload;
+		},
+		[getMondayStatus.fulfilled.type]: (state, action: PayloadAction<IServicesStatus>) => {
+			state.loadingProgress = false;
+			state.errorLoadingProgress = null;
+			state.systemStatus = action.payload;
+		},
+		[getMondayStatus.pending.type]: (state) => {
+			state.loadingProgress = true;
+			state.errorLoadingProgress = null;
+		},
+		[getMondayStatus.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingProgress = false;
 			state.errorLoadingProgress = action.payload;
 		},
