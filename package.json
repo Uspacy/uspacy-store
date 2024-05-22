@@ -1,6 +1,6 @@
 {
   "name": "@uspacy/store",
-  "version": "0.0.104",
+  "version": "0.0.108",
   "keywords": [],
   "repository": "git@github.com:Uspacy/uspacy-store.git",
   "license": "ISC",
@@ -31,7 +31,7 @@
     "@reduxjs/toolkit": "1.9.5",
     "@typescript-eslint/eslint-plugin": "6.3.0",
     "@typescript-eslint/parser": "6.3.0",
-    "@uspacy/sdk": "0.0.80-alpha.14",
+    "@uspacy/sdk": "0.0.82",
     "cross-env": "7.0.3",
     "dotenv-webpack": "8.0.1",
     "eslint": "8.46.0",

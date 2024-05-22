@@ -10,8 +10,10 @@ import {
 	createOneTimeTemplate,
 	createRecurringTemplate,
 	createTask,
+	delegationTask,
 	deleteTask,
 	fetchTaskFields,
+	getHierarchies,
 	getOneTimeTemplates,
 	getParentTask,
 	getRecurringTemplate,
@@ -50,7 +52,7 @@ const initialState = {
 	addedToKanbanTask: {},
 	changeTask: {},
 	changeTasks: [],
-	deleteTaskId: 0,
+	deleteTaskId: null,
 	deleteTaskIds: [],
 	deleteAllFromKanban: false,
 	filters: {
@@ -140,6 +142,7 @@ const initialState = {
 	isTaskFromTemplate: false,
 	isKanban: false,
 	isTable: false,
+	isHierarchy: false,
 	isEditMode: false,
 	taskStatus: '',
 	isRegularSection: false,
@@ -151,8 +154,8 @@ const tasksReducer = createSlice({
 	name: 'tasksReducer',
 	initialState,
 	reducers: {
-		editTaskReducer: (state, action: PayloadAction<ITask>) => {
-			state.tasks.data = state.allSubtasks.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
+		setTasks: (state, action: PayloadAction<ITasks>) => {
+			state.tasks = action.payload;
 		},
 		setTask: (state, action: PayloadAction<ITask>) => {
 			state.task = action.payload;
@@ -166,12 +169,12 @@ const tasksReducer = createSlice({
 		setTaskFromTemplate: (state, action: PayloadAction<ITask>) => {
 			state.taskFromTemplate = action.payload;
 		},
-		editSubTaskReducer: (state, action: PayloadAction<ITask>) => {
+		editSubTask: (state, action: PayloadAction<ITask>) => {
 			state.allSubtasks = state.allSubtasks.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.isKanban) {
+			if (state.isKanban || state.isHierarchy) {
 				state.changeTask = action?.payload;
 			}
 		},
@@ -190,10 +193,10 @@ const tasksReducer = createSlice({
 		changeItemsFilterRegularTasks: (state, action: PayloadAction<IFilterTasks>) => {
 			state.regularFilter = action.payload;
 		},
-		fillSubtasksReducer: (state, action: PayloadAction<ITask[]>) => {
+		setAllSubtasks: (state, action: PayloadAction<ITask[]>) => {
 			state.allSubtasks = action.payload;
 		},
-		clearSubstasksReducer: (state) => {
+		clearSubstasks: (state) => {
 			state.allSubtasks = [];
 			state.subtasks = {} as ITasks;
 		},
@@ -205,6 +208,9 @@ const tasksReducer = createSlice({
 		},
 		clearChangeTask: (state) => {
 			state.changeTask = {} as ITask;
+		},
+		clearDeleteTaskId: (state) => {
+			state.deleteTaskId = null;
 		},
 		clearFilter: (state) => {
 			state.filters = { ...initialState.filters };
@@ -260,6 +266,9 @@ const tasksReducer = createSlice({
 		setIsTable: (state, action: PayloadAction<boolean>) => {
 			state.isTable = action.payload;
 		},
+		setIsHierarchy: (state, action: PayloadAction<boolean>) => {
+			state.isHierarchy = action.payload;
+		},
 		setStatus: (state, action: PayloadAction<string>) => {
 			state.taskStatus = action.payload;
 		},
@@ -286,8 +295,10 @@ const tasksReducer = createSlice({
 		[getTasks.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
 			state.loadingTasks = action.payload.aborted;
 			state.errorLoadingTasks = null;
-			state.tasks = action.payload.aborted ? state.tasks : action.payload;
-			state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+			if (state.isTable) {
+				state.tasks = action.payload.aborted ? state.tasks : action.payload;
+				state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+			}
 		},
 		[getTasks.pending.type]: (state) => {
 			state.loadingTasks = true;
@@ -322,6 +333,22 @@ const tasksReducer = createSlice({
 			state.errorLoadingTasks = null;
 		},
 		[getOneTimeTemplates.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingTasks = false;
+			state.errorLoadingTasks = action.payload;
+		},
+		[getHierarchies.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
+			state.loadingTasks = action.payload.aborted;
+			state.errorLoadingTasks = null;
+			if (state.isHierarchy) {
+				state.tasks = action.payload.aborted ? state.tasks : action.payload;
+				state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+			}
+		},
+		[getHierarchies.pending.type]: (state) => {
+			state.loadingTasks = true;
+			state.errorLoadingTasks = null;
+		},
+		[getHierarchies.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingTasks = false;
 			state.errorLoadingTasks = action.payload;
 		},
@@ -383,10 +410,11 @@ const tasksReducer = createSlice({
 			state.errorLoadingCreatingTask = null;
 			if (action.payload.abilityToAddTask) {
 				if (state.isTable) {
-					state.tasks.data.unshift(action.payload.task);
 					state.meta.total = state.meta.total + 1;
 				}
-
+				if (state.isTable && !state.isHierarchy) {
+					state.tasks.data.unshift(action.payload.task);
+				}
 				if (state.isKanban) {
 					state.addedToKanbanTask = action.payload.task;
 				}
@@ -464,8 +492,10 @@ const tasksReducer = createSlice({
 			state.errorLoadingCreatingTask = null;
 			if (action.payload.abilityToAddTask) {
 				if (state.isTable) {
-					state.tasks.data.unshift(action.payload.task);
 					state.meta.total = state.meta.total + 1;
+				}
+				if (state.isTable) {
+					state.tasks.data.unshift(action.payload.task);
 				}
 
 				if (state.isKanban) {
@@ -495,7 +525,7 @@ const tasksReducer = createSlice({
 			if (state.task.id) {
 				state.task = action.payload;
 			}
-			if (state.isKanban) {
+			if (state.isKanban || state.isHierarchy) {
 				state.changeTask = action?.payload;
 			}
 		},
@@ -558,6 +588,27 @@ const tasksReducer = createSlice({
 			state.loadingUpdatingTask = false;
 			state.errorLoadingUpdatingTask = action.payload;
 		},
+		[delegationTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = null;
+			if (state.isTable) {
+				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
+			}
+			if (state.task.id) {
+				state.task = action.payload;
+			}
+			if (state.isKanban) {
+				state.changeTask = action?.payload;
+			}
+		},
+		[delegationTask.pending.type]: (state) => {
+			state.loadingUpdatingTask = true;
+			state.errorLoadingUpdatingTask = null;
+		},
+		[delegationTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingTask = false;
+			state.errorLoadingUpdatingTask = action.payload;
+		},
 		[massTasksEditing.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
 			state.loadingUpdatingTask = false;
 			state.errorLoadingUpdatingTask = null;
@@ -613,13 +664,15 @@ const tasksReducer = createSlice({
 		[deleteTask.fulfilled.type]: (state, action: PayloadAction<IDeleteTaskPayload>) => {
 			state.loadingDeletingTask = false;
 			state.errorLoadingDeletingTask = null;
-			if (state.isKanban) {
+			if (state.isKanban || state.isHierarchy) {
 				state.deleteTaskId = +action?.payload?.id;
+			}
+			if (state.isTable) {
+				state.meta.total = state.meta.total - 1;
 			}
 			if (state.isTable) {
 				if (state.tasksServiceType === action.payload.type) {
 					state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload?.id));
-					state.meta.total = state.meta.total - 1;
 				}
 			}
 		},
@@ -686,7 +739,7 @@ const tasksReducer = createSlice({
 					return task;
 				});
 			}
-			if (state.isKanban) {
+			if (state.isKanban || state.isHierarchy) {
 				state.changeTask = action?.payload;
 			}
 		},
@@ -712,7 +765,7 @@ const tasksReducer = createSlice({
 					return task;
 				});
 			}
-			if (state.isKanban) {
+			if (state.isKanban || state.isHierarchy) {
 				state.changeTask = action?.payload;
 			}
 		},
@@ -738,7 +791,7 @@ const tasksReducer = createSlice({
 					return task;
 				});
 			}
-			if (state.isKanban) {
+			if (state.isKanban || state.isHierarchy) {
 				state.changeTask = action?.payload;
 			}
 		},
@@ -795,7 +848,7 @@ const tasksReducer = createSlice({
 					return task;
 				});
 			}
-			if (state.isKanban) {
+			if (state.isKanban || state.isHierarchy) {
 				state.changeTask = action?.payload;
 			}
 		},
@@ -824,17 +877,18 @@ const tasksReducer = createSlice({
 });
 
 export const {
-	editTaskReducer,
+	setTasks,
 	setTask,
 	setTemplate,
 	setParentTask,
 	setTaskFromTemplate,
-	editSubTaskReducer,
-	fillSubtasksReducer,
-	clearSubstasksReducer,
+	editSubTask,
+	setAllSubtasks,
+	clearSubstasks,
 	clearAddedTaskReducer,
 	clearAddedToKanbanTaskReducer,
 	clearChangeTask,
+	clearDeleteTaskId,
 	deleteTaskReducer,
 	changeFilter,
 	changeRegularFilter,
@@ -854,6 +908,7 @@ export const {
 	removeTaskFromNPositionTable,
 	setIsKanban,
 	setIsTable,
+	setIsHierarchy,
 	setStatus,
 	setIsRegularSection,
 	setTotalTasks,
