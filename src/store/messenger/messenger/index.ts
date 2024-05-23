@@ -236,12 +236,15 @@ export const chatSlice = createSlice({
 				return group;
 			});
 		},
-		setParentMessageId(state, action: PayloadAction<string | undefined>) {
+		setParentMessageId(state, action: PayloadAction<{ messageId: string | undefined; externalChatId?: string }>) {
+			const { messageId, externalChatId } = action.payload;
+			const selectedChatId = !!externalChatId ? externalChatId : state.chats.currentChatId;
+
 			state.messages = state.messages.map((group) => {
-				if (group.chatId === state.chats.currentChatId) {
+				if (group.chatId === selectedChatId) {
 					return {
 						...group,
-						parentMessageId: action.payload,
+						parentMessageId: messageId,
 					};
 				}
 				return group;
