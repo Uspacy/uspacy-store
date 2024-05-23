@@ -54,6 +54,7 @@ export const OTHER_DEFAULT_FIELDS = {
 	perPage: 0,
 	boolean_operator: 'AND',
 	table_fields: [],
+	sortModel: [],
 };
 
 export enum EntityIds {

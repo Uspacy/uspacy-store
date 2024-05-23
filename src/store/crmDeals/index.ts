@@ -71,6 +71,7 @@ export const initialDealsFilter: IDealFilters = {
 	select: 0,
 	boolean_operator: '',
 	table_fields: [],
+	sortModel: [],
 };
 
 const initialState = {
@@ -134,6 +135,7 @@ const dealsReducer = createSlice({
 				state.dealFilters = {
 					...state.dealFields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
 					...OTHER_DEFAULT_FIELDS,
+					sortModel: state?.dealFilters?.sortModel || [],
 					table_fields: state?.dealFilters?.table_fields || [],
 					page: 1,
 					perPage: 20,
