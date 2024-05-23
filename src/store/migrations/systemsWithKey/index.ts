@@ -3,7 +3,7 @@ import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IEntity } from '@uspacy/sdk/lib/models/migrations';
 import { IMigrationData } from '@uspacy/sdk/lib/services/MigrationsService/dto/get-import-migrations-entities.dto';
 
-import { fetchMigrationEntity } from './actions';
+import { fetchMigrationEntity, importMigrationEntities } from './actions';
 import { IState } from './types';
 
 const initialState = {
@@ -39,6 +39,18 @@ const systemEntitiesSlice = createSlice({
 		[fetchMigrationEntity.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingSystem = false;
 			state.errorLoadingSystem = action.payload;
+		},
+		[importMigrationEntities.fulfilled.type]: (state) => {
+			state.loadingImportSystem = false;
+			state.errorLoadingImportSystem = null;
+		},
+		[importMigrationEntities.pending.type]: (state) => {
+			state.loadingImportSystem = true;
+			state.errorLoadingImportSystem = null;
+		},
+		[importMigrationEntities.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingImportSystem = false;
+			state.errorLoadingImportSystem = action.payload;
 		},
 	},
 });
