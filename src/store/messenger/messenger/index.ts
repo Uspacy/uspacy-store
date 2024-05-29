@@ -448,24 +448,27 @@ export const chatSlice = createSlice({
 				return it;
 			});
 		},
-		readAllMessages(state, action: PayloadAction<{ chatId: IChat['id']; profile: IUser; userId?: IUser['authUserId'] }>) {
-			state.chats.items = state.chats.items.map((it) => {
-				if (it.id === action.payload.chatId) {
-					return {
-						...it,
-						unreadCount: 0,
-						unreadMentions: [],
-					};
-				}
-				return it;
-			});
+		readAllMessages(state, action: PayloadAction<{ chatId: IChat['id']; profile: IUser; userId: IUser['authUserId'] }>) {
+			const { chatId, profile, userId } = action.payload;
+
+			if (profile.authUserId === userId) {
+				state.chats.items = state.chats.items.map((it) => {
+					if (it.id === chatId) {
+						return {
+							...it,
+							unreadCount: 0,
+							unreadMentions: [],
+						};
+					}
+					return it;
+				});
+			}
+
 			state.messages = state.messages.map((group) => {
-				if (group.chatId === action.payload.chatId) {
+				if (group.chatId === chatId) {
 					return {
 						...group,
-						items: group.items
-							.filter((it) => !it.isFirstUnread)
-							.map((it) => ({ ...it, readBy: [...it.readBy, action.payload.profile.authUserId] })),
+						items: group.items.filter((it) => !it.isFirstUnread).map((it) => ({ ...it, readBy: [...it.readBy, userId] })),
 					};
 				}
 				return group;
