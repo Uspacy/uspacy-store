@@ -16,9 +16,9 @@ export const fetchMigrationEntity = createAsyncThunk(
 
 export const importMigrationEntities = createAsyncThunk(
 	'systemsWithKey/importMigrationEntities',
-	async ({ apiKey, data, systemName }: IImportData, { rejectWithValue }) => {
+	async ({ apiKey, data, systemName, body }: IImportData, { rejectWithValue }) => {
 		try {
-			const res = await uspacySdk.migrationsService.importMigrationEntities(apiKey, data, systemName);
+			const res = await uspacySdk.migrationsService.importMigrationEntities(apiKey, data, systemName, body);
 			return res.data;
 		} catch (e) {
 			return rejectWithValue(e);
