@@ -116,3 +116,5 @@ export enum FieldType {
 	ID_COLUMN = 'id_column',
 	REQUISITE = 'requisite',
 }
+
+export const unreadMessagesValue = 'unreadMessages';
