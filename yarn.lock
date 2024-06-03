@@ -483,12 +483,12 @@
     "@typescript-eslint/types" "6.3.0"
     eslint-visitor-keys "^3.4.1"
 
-"@uspacy/sdk@0.0.83-alpha.17":
-  version "0.0.83-alpha.17"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.83-alpha.17/c46993250ca30904abf194e105fee54d13fcd63d#c46993250ca30904abf194e105fee54d13fcd63d"
-  integrity sha512-omf7DbVqBJAqLGlR51ucSwnmCtVSvcDflmVtWobV+KCAV52vgDaXWk78lZfV/6n+LuyQHFhfI1R51tWvMn9nLg==
+"@uspacy/sdk@0.0.85-alpha.1":
+  version "0.0.85-alpha.1"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.85-alpha.1/f6b366855258027fffaf7f2da57bb72e13858e3e#f6b366855258027fffaf7f2da57bb72e13858e3e"
+  integrity sha512-jKG/P6ThQD/Ec4D7tyVgG/EvbeHEKK0DenDAw3eTqvYXZqOdCYXIgMQISjfMhtzXeAOVCw6R+4pMbUkEPU4N6A==
   dependencies:
-    axios "1.4.0"
+    axios "^1.7.2"
     js-cookie "3.0.5"
     jwt-decode "3.1.2"
     localforage "1.10.0"
@@ -854,12 +854,12 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-axios@1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.4.0.tgz#38a7bf1224cd308de271146038b551d725f0be1f"
-  integrity sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==
+axios@^1.7.2:
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.2.tgz#b625db8a7051fbea61c35a3cbb3a1daa7b9c7621"
+  integrity sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==
   dependencies:
-    follow-redirects "^1.15.0"
+    follow-redirects "^1.15.6"
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
 
@@ -1868,7 +1868,7 @@ flatted@^3.2.9:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.3.1.tgz#21db470729a6734d4997002f439cb308987f567a"
   integrity sha512-X8cqMLLie7KsNUDSdzeN8FYK9rEt4Dt67OsG/DNGnYTSDBG4uFAJFBnUeiV+zCVAvwFy56IjM9sH51jVaEhNxw==
 
-follow-redirects@^1.0.0, follow-redirects@^1.15.0:
+follow-redirects@^1.0.0, follow-redirects@^1.15.6:
   version "1.15.6"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.6.tgz#7f815c0cda4249c74ff09e95ef97c23b5fd0399b"
   integrity sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==

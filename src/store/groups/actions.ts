@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
+import { IThemeSettings } from '@uspacy/sdk/lib/models/groups';
 
 export const fetchGroup = createAsyncThunk('groups/fetchGroup', async (id: string, thunkAPI) => {
 	try {
@@ -42,6 +43,8 @@ export const createGroup = createAsyncThunk(
 			logo,
 			moderatorsIds,
 			usersIds,
+			enableColorTheme,
+			themeSettings,
 		}: {
 			name: string;
 			groupType: string;
@@ -51,12 +54,14 @@ export const createGroup = createAsyncThunk(
 			logo?: File;
 			moderatorsIds?: string[];
 			usersIds?: string[];
+			enableColorTheme: boolean;
+			themeSettings: IThemeSettings;
 		},
 		thunkAPI,
 	) => {
 		try {
 			return await uspacySdk.groupsService
-				.createGroup({ name, groupType, description, groupTheme, ownerId, logo, moderatorsIds, usersIds })
+				.createGroup({ name, groupType, description, groupTheme, ownerId, logo, moderatorsIds, usersIds, enableColorTheme, themeSettings })
 				.then((res) => res.data);
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
@@ -77,6 +82,8 @@ export const editGroup = createAsyncThunk(
 			moderatorsIds,
 			usersIds,
 			archived,
+			enableColorTheme,
+			themeSettings,
 		}: {
 			groupId: string;
 			name: string;
@@ -87,6 +94,8 @@ export const editGroup = createAsyncThunk(
 			moderatorsIds?: string[];
 			usersIds?: string[];
 			archived?: number;
+			enableColorTheme: boolean;
+			themeSettings: IThemeSettings;
 		},
 		thunkAPI,
 	) => {
@@ -102,6 +111,8 @@ export const editGroup = createAsyncThunk(
 					moderatorsIds,
 					usersIds,
 					archived,
+					enableColorTheme,
+					themeSettings,
 				})
 				.then((res) => res.data);
 		} catch (e) {
