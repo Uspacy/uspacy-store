@@ -287,7 +287,7 @@ const tasksReducer = createSlice({
 		},
 		editContactFromCard: (state, action) => {
 			state.tasks.data = state.tasks.data.map((task) => {
-				task.contacts = task?.contacts?.map((contact) => {
+				task.crm_entities.contacts = task?.crm_entities.contacts?.map((contact) => {
 					if (action?.payload?.id === contact?.id) {
 						Object.keys(action.payload).forEach((key) => {
 							if (contact.hasOwnProperty(key)) contact[key] = action.payload[key];
@@ -302,10 +302,11 @@ const tasksReducer = createSlice({
 		},
 		editCompanyFromCard: (state, action) => {
 			state.tasks.data = state.tasks.data.map((task) => {
-				if (task?.company?.id === action?.payload?.id) {
+				if (task?.crm_entities?.companies[0]?.id === action?.payload?.id) {
 					Object.keys(action.payload).forEach((key) => {
-						if (task?.company?.hasOwnProperty(key)) {
-							task.company[key] = action.payload[key];
+						const item = task?.crm_entities?.companies[0];
+						if (item?.hasOwnProperty(key)) {
+							item[key] = action.payload[key];
 						}
 					});
 				}
