@@ -23,7 +23,9 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 	const service = getServiceName(message.data.service);
 	switch (service) {
 		case 'crm':
-			return `/crm/${message.data.entity?.table_name || `${message.type === 'task' ? 'tasks/task' : message.type}`}/${message.data.entity.id}`;
+			return `/crm/${message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'tasks/task' : message.type}`}/${
+				message.data.entity.id
+			}`;
 		case 'comments':
 			if (!message.data.entity?.entity_type) return undefined;
 			const isWithParent = message.data.root_parent && Object.keys(message.data.root_parent).length;
