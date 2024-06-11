@@ -287,7 +287,7 @@ const tasksReducer = createSlice({
 		},
 		editContactFromCard: (state, action) => {
 			state.tasks.data = state.tasks.data.map((task) => {
-				task.crm_entities.contacts = task?.crm_entities.contacts?.map((contact) => {
+				task?.crm_entities?.contacts = task?.crm_entities?.contacts?.map((contact) => {
 					if (action?.payload?.id === contact?.id) {
 						Object.keys(action.payload).forEach((key) => {
 							if (contact.hasOwnProperty(key)) contact[key] = action.payload[key];
