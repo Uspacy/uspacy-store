@@ -5,7 +5,8 @@ import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { ITask, ITasks } from '@uspacy/sdk/lib/models/crm-tasks';
 import { IField } from '@uspacy/sdk/lib/models/field';
 
-import { idColumn } from './../../const';
+import { idColumn, OTHER_DEFAULT_FIELDS } from './../../const';
+import { getField } from '../../helpers/filterFieldsArrs';
 import {
 	createTask,
 	deleteTaskById,
@@ -54,6 +55,57 @@ export const initialTaskFilter: ITaskFilters = {
 
 export const fieldForTasks: IField[] = [
 	idColumn,
+	{
+		name: 'caseType',
+		code: 'type',
+		required: false,
+		editable: false,
+		show: false,
+		hidden: true,
+		multiple: false,
+		type: 'list',
+		field_section_id: '',
+		system_field: true,
+		sort: '',
+		default_value: '',
+		values: [
+			{
+				color: '',
+				selected: false,
+				sort: 0,
+				title: 'task',
+				value: 'task',
+			},
+			{
+				color: '',
+				selected: false,
+				sort: 0,
+				title: 'call',
+				value: 'call',
+			},
+			{
+				color: '',
+				selected: false,
+				sort: 0,
+				title: 'meeting',
+				value: 'meeting',
+			},
+			{
+				color: '',
+				selected: false,
+				sort: 0,
+				title: 'chat',
+				value: 'chat',
+			},
+			{
+				color: '',
+				selected: false,
+				sort: 0,
+				title: 'message',
+				value: 'email',
+			},
+		],
+	},
 	{
 		name: 'taskTitle',
 		code: 'title',
@@ -224,7 +276,7 @@ const initialState = {
 	tasksFields: {
 		data: fieldForTasks,
 	},
-	taskFilter: initialTaskFilter,
+	taskFilter: {},
 	taskFiltersPreset: initialTasksFilterPreset,
 	errorMessage: '',
 	loading: false,
@@ -275,9 +327,6 @@ const tasksReducer = createSlice({
 			state.tasks = initialTasks;
 			state.loadingTaskList = true;
 		},
-		clearTasksFilter: (state) => {
-			state.taskFilter = initialTaskFilter;
-		},
 		chooseTaskId: (state, action: PayloadAction<number>) => {
 			state.clickedTaskId = action.payload;
 		},
@@ -326,6 +375,22 @@ const tasksReducer = createSlice({
 		},
 		setFilterPresets: (state, action: PayloadAction<IFilterPreset[]>) => {
 			state.taskFiltersPreset.filterPresets = action.payload;
+		},
+		clearTasksFilter: (state, action: PayloadAction<IField[]>) => {
+			state.taskFilter = {
+				...fieldForTasks.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+				...action.payload.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+				...OTHER_DEFAULT_FIELDS,
+				page: 1,
+				perPage: 20,
+			};
+		},
+		addItemToTasksFilter: (state,action: PayloadAction<IField[]>) => {
+			state.taskFilter = {
+				...fieldForTasks.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+				...action.payload.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+				...OTHER_DEFAULT_FIELDS,
+			};
 		},
 	},
 	extraReducers: {
@@ -508,6 +573,7 @@ export const {
 	openCompleteTaskModal,
 	clearTasks,
 	clearTasksFilter,
+	addItemToTasksFilter,
 	chooseTaskId,
 	setDeletionModalOpen,
 	editContactFromCard,
