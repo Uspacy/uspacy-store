@@ -262,6 +262,20 @@ export const fieldForTasks: IField[] = [
 		system_field: false,
 		default_value: '',
 	},
+	{
+		name: 'participants',
+		code: 'participants',
+		required: false,
+		editable: false,
+		show: false,
+		hidden: true,
+		multiple: false,
+		type: 'user_id',
+		field_section_id: '',
+		system_field: true,
+		sort: '',
+		default_value: '',
+	},
 ];
 
 const initialState = {
