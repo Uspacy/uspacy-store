@@ -395,6 +395,7 @@ const tasksReducer = createSlice({
 				...fieldForTasks.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
 				...action.payload.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
 				...OTHER_DEFAULT_FIELDS,
+				sortModel: state?.taskFilter?.sortModel || [],
 				page: 1,
 				perPage: 20,
 			};
