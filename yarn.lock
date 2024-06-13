@@ -483,10 +483,10 @@
     "@typescript-eslint/types" "6.3.0"
     eslint-visitor-keys "^3.4.1"
 
-"@uspacy/sdk@0.0.85-alpha.7":
-  version "0.0.85-alpha.7"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.85-alpha.7/304fd1474b9b5ff17295487aa72da0ca45c1f9f1#304fd1474b9b5ff17295487aa72da0ca45c1f9f1"
-  integrity sha512-3oWvIfIrr5IzYAdZ1fY0YV//16gdVqOEwujpcDz2iES6LqQRH5oyI4cS9UkfvSFFmIuhY1r/pZfHqnGeNxEKTg==
+"@uspacy/sdk@0.0.85-alpha.8":
+  version "0.0.85-alpha.8"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.85-alpha.8/f7a92616fc8c9ec82039b5baa05f14a015e58dac#f7a92616fc8c9ec82039b5baa05f14a015e58dac"
+  integrity sha512-gMcodRGkK3CR6AFbnbZJhNQJ6LwkdwqDZdmHOy7smV0QxCVtUraggp4yWbK5yaLDqKo7PH8iJyWUHqN3wVwZ5g==
   dependencies:
     axios "^1.7.2"
     js-cookie "3.0.5"
@@ -1869,6 +1869,11 @@ flatted@^3.2.9:
   integrity sha512-X8cqMLLie7KsNUDSdzeN8FYK9rEt4Dt67OsG/DNGnYTSDBG4uFAJFBnUeiV+zCVAvwFy56IjM9sH51jVaEhNxw==
 
 follow-redirects@^1.0.0, follow-redirects@^1.15.6:
+  version "1.15.6"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.6.tgz#7f815c0cda4249c74ff09e95ef97c23b5fd0399b"
+  integrity sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==
+
+follow-redirects@^1.15.6:
   version "1.15.6"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.6.tgz#7f815c0cda4249c74ff09e95ef97c23b5fd0399b"
   integrity sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==
