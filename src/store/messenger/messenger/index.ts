@@ -129,10 +129,13 @@ export const chatSlice = createSlice({
 			const { chatId, item, profile } = action.payload;
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === chatId) {
+					// const hasNext = !!group.firstTimestamp;
 					const items = prepereMessages([item, ...group.items], profile);
 					return {
 						...group,
 						items,
+						// подібне рішення не до кінця працює, не відправляються повідомлення якщо вручну доскролити вниз, потрібне допрацювання
+						// ...(!hasNext && { items }),
 					};
 				}
 				return group;
