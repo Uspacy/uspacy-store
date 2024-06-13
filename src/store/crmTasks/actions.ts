@@ -32,16 +32,6 @@ export const createTask = createAsyncThunk('tasks/createTask', async (data: any,
 export const fetchTasksWithFilters = createAsyncThunk(
 	'tasks/fetchTasksWithFilters',
 	async (data: { params: Omit<ITaskFilters, 'openDatePicker'>; signal: AbortSignal, fields?: IField[]; }, thunkAPI) => {
-		// const params = {
-		// 	page: data.params.page,
-		// 	list: data.params.perPage,
-		// 	status: data.params.status,
-		// 	type: Array.isArray(data?.params?.task_type) ? data?.params?.task_type : [],
-		// 	participants: data.params.participants,
-		// 	responsible_id: data.params.responsible_id,
-		// 	start_time: data.params.period,
-		// 	...(data.params.search ? { q: data.params.search } : {}),
-		// };
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const filterParam = getFilterParams(data.params as any, data?.fields || []);

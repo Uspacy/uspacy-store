@@ -220,6 +220,10 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 				return { ...acc, [key]: isArray(value) ? value : [value] };
 			}
 
-			return { ...acc, [key]: value };
+			if (!!findField?.type) {
+				return { ...acc, [key]: value };
+			}
+
+			return acc;
 		}, {});
 };
