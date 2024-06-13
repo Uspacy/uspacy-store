@@ -45,10 +45,7 @@ export const fetchTasksWithFilters = createAsyncThunk(
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const filterParam = getFilterParams(data.params as any, data?.fields || []);
-		console.log(filterParam, 'filterParam');
-		console.log(data?.fields, 'data?.fields');
 		const params = makeURIParams(filterParam);
-		console.log(params, 'params');
 		try {
 			const res = await uspacySdk.crmTasksService.getTasksWithFilters(params, data?.signal);
 			return res?.data;
