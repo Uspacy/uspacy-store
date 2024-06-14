@@ -37,9 +37,12 @@ export const fetchTasksWithFilters = createAsyncThunk(
 		const filterParam = getFilterParams(data.params as any, data?.fields || []);
 		const params = makeURIParams(filterParam);
 		try {
+			console.log(params, 'params');
 			const res = await uspacySdk.crmTasksService.getTasksWithFilters(params, data?.signal);
+			console.log(res, 'res');
 			return res?.data;
 		} catch (e) {
+			console.log(e, 'e');
 			if (data.signal.aborted) {
 				return {
 					aborted: true,
