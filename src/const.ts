@@ -115,6 +115,7 @@ export enum FieldType {
 	TASKS_FILTER = 'tasks_filter',
 	ID_COLUMN = 'id_column',
 	REQUISITE = 'requisite',
+	PRIORITY = 'priority',
 }
 
 export const unreadMessagesValue = 'unreadMessages';
