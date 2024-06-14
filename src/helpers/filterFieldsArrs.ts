@@ -137,21 +137,23 @@ export const getField = (field: IField) => {
 };
 
 export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = false) => {
+	console.log(filters, 'filters');
+	console.log(fields, 'fields');
 	return Object?.entries(filters)
 		?.filter(([key, value]) => {
 			if (
-				key.includes('certainDateOrPeriod_') ||
-				key.includes('time_label_') ||
-				key.includes('openDatePicker') ||
-				key.includes('View') ||
-				key.includes('entityCode')
+				key?.includes('certainDateOrPeriod_') ||
+				key?.includes('time_label_') ||
+				key?.includes('openDatePicker') ||
+				key?.includes('View') ||
+				key?.includes('entityCode')
 			) {
 				return false;
 			}
 			if (isKanban && ['select', 'page', 'perPage', 'table_fields', 'entityCode', 'sortModel'].includes(key)) {
 				return false;
 			}
-			if (key.includes('select')) {
+			if (key?.includes('select')) {
 				return value > 0;
 			}
 
@@ -167,7 +169,7 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			return true;
 		})
 		.reduce((acc, [key, value]) => {
-			const findField = fields?.find((it) => it.code === key);
+			const findField = fields?.find((it) => it?.code === key);
 			if (key === 'search') {
 				return { ...acc, q: value };
 			}
@@ -194,12 +196,12 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			if (['sortModel'].includes(key)) {
 				const array = isArray(value) ? value : [value];
 				if (array.length === 0) return acc;
-				const [field, sort] = Object.entries(array[0])[0];
+				const [field, sort] = Object?.entries(array[0])[0];
 				const checkField = field === 'id_column' ? 'id' : field;
 				return { ...acc, [`sort_by[${checkField}]`]: sort };
 			}
 
-			if (key.startsWith('from_') || key.startsWith('to_') || key.startsWith('currency_')) {
+			if (key?.startsWith('from_') || key?.startsWith('to_') || key?.startsWith('currency_')) {
 				const fieldCode = key.replace(/^(from_|to_|currency_)/, '');
 				const fieldType = key.split('_')[0];
 				if (isNull(value)) {
@@ -212,7 +214,7 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 				};
 			}
 
-			if ([FieldType.SOCIAL].includes(findField?.type as FieldType) && (value.startsWith('@') || value.startsWith('+'))) {
+			if ([FieldType.SOCIAL].includes(findField?.type as FieldType) && (value?.startsWith('@') || value?.startsWith('+'))) {
 				return { ...acc, [key]: value.substring(1) };
 			}
 
