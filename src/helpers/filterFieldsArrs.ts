@@ -137,8 +137,6 @@ export const getField = (field: IField) => {
 };
 
 export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = false) => {
-	console.log(filters, 'filters');
-	console.log(fields, 'fields');
 	return Object?.entries(filters)
 		?.filter(([key, value]) => {
 			if (
@@ -179,8 +177,11 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			if (key === 'select') {
 				return { ...acc, ['funnel_id']: value };
 			}
-			if (key === 'deals') {
+			if (key === 'deals' && findField?.type !== 'customLink') {
 				return { ...acc, deals: value?.filter((el) => el !== 'NO_DEALS') };
+			}
+			if (key === 'company' && findField?.type === 'customLink') {
+				return { ...acc, companies: value };
 			}
 			if (['kanban_status', 'kanban_reason_id'].includes(key)) {
 				return { ...acc, [key]: isArray(value) ? value : [value] };
@@ -218,7 +219,7 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 				return { ...acc, [key]: value.substring(1) };
 			}
 
-			if ([FieldType.STAGE, FieldType.LIST, FieldType.LABEL].includes(findField?.type as FieldType)) {
+			if ([FieldType.STAGE, FieldType.LIST, FieldType.LABEL, FieldType.PRIORITY].includes(findField?.type as FieldType)) {
 				return { ...acc, [key]: isArray(value) ? value : [value] };
 			}
 

@@ -32,19 +32,13 @@ export const createTask = createAsyncThunk('tasks/createTask', async (data: any,
 export const fetchTasksWithFilters = createAsyncThunk(
 	'tasks/fetchTasksWithFilters',
 	async (data: { params: Omit<ITaskFilters, 'openDatePicker'>; signal: AbortSignal, fields?: IField[]; }, thunkAPI) => {
-		console.log(data?.fields , 'data?.fields ');
-
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const filterParam = getFilterParams(data.params as any, data?.fields || []);
-		console.log(filterParam, 'filterParam');
 		const params = makeURIParams(filterParam);
-		console.log(params, 'params');
 		try {
 			const res = await uspacySdk.crmTasksService.getTasksWithFilters(params, data?.signal);
-			console.log(res, 'res');
 			return res?.data;
 		} catch (e) {
-			console.log(e, 'e');
 			if (data.signal.aborted) {
 				return {
 					aborted: true,
