@@ -300,15 +300,15 @@ const tasksReducer = createSlice({
 		},
 		editCompanyFromCard: (state, action) => {
 			state.tasks.data = state.tasks.data.map((task) => {
-				if (task?.crm_entities?.companies[0]?.id === action?.payload?.id) {
-					Object.keys(action.payload).forEach((key) => {
-						const item = task?.crm_entities?.companies[0];
-						if (item?.hasOwnProperty(key)) {
-							item[key] = action.payload[key];
-						}
-					});
-				}
-				return task;
+				return { ...task, crm_entities: {...task?.crm_entities, companies: task?.crm_entities?.companies?.map((company) => {
+							if (action?.payload?.id === company?.id) {
+								Object.keys(action.payload).forEach((key) => {
+									if (company.hasOwnProperty(key)) company[key] = action.payload[key];
+								});
+							}
+
+							return company;
+						})}};
 			});
 		},
 		setDeleteAllFromKanban: (state, action: PayloadAction<boolean>) => {
