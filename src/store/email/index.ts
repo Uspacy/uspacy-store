@@ -221,10 +221,10 @@ const emailReducer = createSlice({
 			state.loadingUpdateEmailBox = false;
 			state.errorLoadingUpdateEmailBox = action.payload;
 		},
-		[redirectToOauthLink.fulfilled.type]: (state, action: PayloadAction<string>) => {
+		[redirectToOauthLink.fulfilled.type]: (state, action: PayloadAction<{ url: string }>) => {
 			state.loadingOAuthRedirect = false;
 			state.errorLoadingOAuthRedirect = null;
-			state.oAuthUrl = action.payload;
+			state.oAuthUrl = action.payload.url;
 		},
 		[redirectToOauthLink.pending.type]: (state) => {
 			state.loadingOAuthRedirect = true;
