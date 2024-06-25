@@ -85,6 +85,8 @@ const initialState = {
 	},
 	selectedLetters: [],
 	emailTableHeaderType: 'default',
+	oAuthUrl: '',
+	oAuthCode: '',
 } as IState;
 
 const emailReducer = createSlice({
@@ -138,6 +140,9 @@ const emailReducer = createSlice({
 		},
 		setOAuthUrl: (state, action: PayloadAction<string>) => {
 			state.oAuthUrl = action.payload;
+		},
+		setOAuthCode: (state, action: PayloadAction<string>) => {
+			state.oAuthCode = action.payload;
 		},
 	},
 	extraReducers: {
@@ -457,5 +462,6 @@ export const {
 	setSelectedLetters,
 	setEmailTableHeaderType,
 	setOAuthUrl,
+	setOAuthCode,
 } = emailReducer.actions;
 export default emailReducer.reducer;

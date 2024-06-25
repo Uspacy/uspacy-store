@@ -24,7 +24,6 @@ export interface IState {
 	letter: ILetter;
 	createdLetter: ILetter;
 	removedLetterIds: number[];
-	oAuthUrl: string;
 	loadingEmailBoxes: boolean;
 	loadingEmailBox: boolean;
 	loadingConnectEmailBox: boolean;
@@ -65,6 +64,8 @@ export interface IState {
 	filters: IEmailFilters;
 	selectedLetters: ILetter[];
 	emailTableHeaderType: headerTypes;
+	oAuthUrl: string;
+	oAuthCode: string;
 }
 
 export interface ILettersParams {
