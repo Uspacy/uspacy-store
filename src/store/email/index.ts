@@ -105,6 +105,8 @@ const initialState = {
 	selectedLetters: [],
 	emailTableHeaderType: 'default',
 	crm_entities: [],
+	oAuthUrl: '',
+	oAuthCode: '',
 } as IState;
 
 const emailReducer = createSlice({
@@ -231,6 +233,9 @@ const emailReducer = createSlice({
 		},
 		setOAuthUrl: (state, action: PayloadAction<string>) => {
 			state.oAuthUrl = action.payload;
+		},
+		setOAuthCode: (state, action: PayloadAction<string>) => {
+			state.oAuthCode = action.payload;
 		},
 	},
 	extraReducers: {
@@ -557,5 +562,6 @@ export const {
 	setCrmEntities,
 	generalUpdateLettersCrmEntities,
 	setOAuthUrl,
+	setOAuthCode,
 } = emailReducer.actions;
 export default emailReducer.reducer;

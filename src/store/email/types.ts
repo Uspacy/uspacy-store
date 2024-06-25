@@ -26,7 +26,6 @@ export interface IState {
 	letter: ILetter;
 	createdLetter: ILetter;
 	removedLetterIds: number[];
-	oAuthUrl: string;
 	loadingEmailBoxes: boolean;
 	loadingEmailBox: boolean;
 	loadingConnectEmailBox: boolean;
@@ -72,6 +71,8 @@ export interface IState {
 		letterId: ILetter['id'];
 		entities: ILettersCrmEntities;
 	}[];
+	oAuthUrl: string;
+	oAuthCode: string;
 }
 
 export interface ILettersParams {
