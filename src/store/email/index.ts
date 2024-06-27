@@ -237,6 +237,9 @@ const emailReducer = createSlice({
 		setOAuthCode: (state, action: PayloadAction<string>) => {
 			state.oAuthCode = action.payload;
 		},
+		setErrorLoadingConnectEmailBox: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.errorLoadingConnectEmailBox = action.payload;
+		},
 	},
 	extraReducers: {
 		[getEmailsBoxes.fulfilled.type]: (state, action: PayloadAction<IEmailBoxes>) => {
@@ -563,5 +566,6 @@ export const {
 	generalUpdateLettersCrmEntities,
 	setOAuthUrl,
 	setOAuthCode,
+	setErrorLoadingConnectEmailBox,
 } = emailReducer.actions;
 export default emailReducer.reducer;
