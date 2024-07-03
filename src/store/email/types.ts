@@ -14,7 +14,7 @@ import {
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IUpdateEmailBox } from '@uspacy/sdk/lib/services/EmailService/connect-email-box.dto';
 
-export type createNewLetterModeType = 'window' | 'fullScreen' | 'fromLetter';
+export type createNewLetterModeType = 'window' | 'fullScreen' | 'fromLetter' | 'fromCRM';
 export interface IState {
 	emailBoxes: IEmailBoxes;
 	emailBox: IEmailBox;
