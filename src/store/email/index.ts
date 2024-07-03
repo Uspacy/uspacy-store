@@ -1,5 +1,18 @@
+/* eslint-disable no-console */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IEmailBox, IEmailBoxes, IEmailFilters, IFolder, IFolders, ILetter, ILetters } from '@uspacy/sdk/lib/models/email';
+import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
+import {
+	ESettingName,
+	ICrmSetting,
+	IEmailBox,
+	IEmailBoxes,
+	IEmailFilters,
+	IFolder,
+	IFolders,
+	ILetter,
+	ILetters,
+	ILettersCrmEntities,
+} from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
 import {
@@ -10,6 +23,7 @@ import {
 	getEmailLetter,
 	getEmailLetters,
 	getEmailsBoxes,
+	getIntgrWithCrmSettings,
 	moveLetters,
 	readEmailLetters,
 	receiveToOauthLink,
@@ -26,15 +40,20 @@ import {
 import { createNewLetterModeType, headerTypes, IEmailMassActionsResponse, IState } from './types';
 
 const initialState = {
-	emailBoxes: {},
+	emailBoxes: {
+		data: [],
+	},
 	emailBox: {},
 	connectedEmailBox: {},
-	folders: {},
+	folders: {
+		data: [],
+	},
 	folder: {},
 	letters: {},
 	chainLetters: {},
 	letter: {},
 	createdLetter: {},
+	crmSettings: [],
 	removedLetterIds: null,
 	loadingEmailBoxes: false,
 	loadingEmailBox: false,
@@ -85,6 +104,7 @@ const initialState = {
 	},
 	selectedLetters: [],
 	emailTableHeaderType: 'default',
+	crm_entities: [],
 	oAuthUrl: '',
 	oAuthCode: '',
 } as IState;
@@ -137,6 +157,79 @@ const emailReducer = createSlice({
 		},
 		setEmailTableHeaderType: (state, action: PayloadAction<headerTypes>) => {
 			state.emailTableHeaderType = action.payload;
+		},
+		setCrmConnectStatus: (state, action: PayloadAction<number>) => {
+			state.emailBox = {
+				...state.emailBox,
+				crm_integration_enabled: action.payload,
+			};
+		},
+		setCrmSetting: (state, action: PayloadAction<{ key: ESettingName; value: ICrmSetting['setting_value'] }>) => {
+			const { key, value } = action.payload;
+
+			state.crmSettings = state.crmSettings.map((it) => {
+				if (it.setting_name === key)
+					return {
+						...it,
+						setting_value: value,
+					};
+				return it;
+			});
+		},
+		clearCrmSettings: (state) => {
+			state.crmSettings = initialState.crmSettings;
+		},
+		setCrmEntities: (
+			state,
+			action: PayloadAction<{
+				letterId: ILetter['id'];
+				entities: IEntityData[];
+				type: 'contacts' | 'companies' | 'leads' | 'deals';
+			}>,
+		) => {
+			const { letterId, type, entities } = action.payload;
+			const hasEntity = state.crm_entities.find((it) => it.letterId === letterId);
+
+			if (hasEntity) {
+				state.crm_entities = state.crm_entities.map((it) => {
+					if (it.letterId === letterId)
+						return {
+							...it,
+							entities: {
+								...it.entities,
+								[type]: entities,
+							},
+						};
+
+					return it;
+				});
+			} else {
+				state.crm_entities.push({
+					letterId,
+					entities: {
+						[type]: entities,
+					},
+				});
+			}
+		},
+		generalUpdateLettersCrmEntities: (
+			state,
+			action: PayloadAction<{
+				letterId: ILetter['id'];
+				entities: ILettersCrmEntities;
+			}>,
+		) => {
+			const { letterId, entities } = action.payload;
+
+			state.crm_entities = state.crm_entities.map((it) => {
+				if (it.letterId === letterId)
+					return {
+						...it,
+						entities,
+					};
+
+				return it;
+			});
 		},
 		setOAuthUrl: (state, action: PayloadAction<string>) => {
 			state.oAuthUrl = action.payload;
@@ -445,6 +538,9 @@ const emailReducer = createSlice({
 			state.loadingMoveLetter = false;
 			state.errorLoadingMoveLetter = action.payload;
 		},
+		[getIntgrWithCrmSettings.fulfilled.type]: (state, action: PayloadAction<{ data: ICrmSetting[] }>) => {
+			state.crmSettings = action.payload.data;
+		},
 	},
 });
 
@@ -464,6 +560,10 @@ export const {
 	setFilters,
 	setSelectedLetters,
 	setEmailTableHeaderType,
+	setCrmConnectStatus,
+	setCrmSetting,
+	setCrmEntities,
+	generalUpdateLettersCrmEntities,
 	setOAuthUrl,
 	setOAuthCode,
 	setErrorLoadingConnectEmailBox,

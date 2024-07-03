@@ -177,6 +177,15 @@ export const moveLetters = createAsyncThunk(
 	},
 );
 
+export const getIntgrWithCrmSettings = createAsyncThunk('email/getIntgrWithCrmSettings', async (id: number, thunkAPI) => {
+	try {
+		const res = await uspacySdk.emailService.getIntgrWithCrmSettings(id);
+		return res.data;
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
+	}
+});
+
 export const redirectToOauthLink = createAsyncThunk(
 	'email/redirectToOauthLink',
 	async ({ url, service }: { url: string; service: string }, thunkAPI) => {

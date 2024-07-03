@@ -287,7 +287,11 @@ const tasksReducer = createSlice({
 		},
 		editContactFromCard: (state, action) => {
 			state.tasks.data = state.tasks.data.map((task) => {
-				return { ...task, crm_entities: {...task?.crm_entities, contacts: task?.crm_entities?.contacts?.map((contact) => {
+				return {
+					...task,
+					crm_entities: {
+						...task?.crm_entities,
+						contacts: task?.crm_entities?.contacts?.map((contact) => {
 							if (action?.payload?.id === contact?.id) {
 								Object.keys(action.payload).forEach((key) => {
 									if (contact.hasOwnProperty(key)) contact[key] = action.payload[key];
@@ -295,12 +299,18 @@ const tasksReducer = createSlice({
 							}
 
 							return contact;
-						})}};
+						}),
+					},
+				};
 			});
 		},
 		editCompanyFromCard: (state, action) => {
 			state.tasks.data = state.tasks.data.map((task) => {
-				return { ...task, crm_entities: {...task?.crm_entities, companies: task?.crm_entities?.companies?.map((company) => {
+				return {
+					...task,
+					crm_entities: {
+						...task?.crm_entities,
+						companies: task?.crm_entities?.companies?.map((company) => {
 							if (action?.payload?.id === company?.id) {
 								Object.keys(action.payload).forEach((key) => {
 									if (company.hasOwnProperty(key)) company[key] = action.payload[key];
@@ -308,7 +318,9 @@ const tasksReducer = createSlice({
 							}
 
 							return company;
-						})}};
+						}),
+					},
+				};
 			});
 		},
 		setDeleteAllFromKanban: (state, action: PayloadAction<boolean>) => {
