@@ -26,6 +26,8 @@ import {
 	getIntgrWithCrmSettings,
 	moveLetters,
 	readEmailLetters,
+	receiveToOauthLink,
+	redirectToOauthLink,
 	removeEmailBox,
 	removeEmailLetter,
 	removeEmailLetters,
@@ -69,6 +71,7 @@ const initialState = {
 	loadingDeletingLetters: false,
 	loadingIsReadStatus: false,
 	loadingMoveLetter: false,
+	loadingOAuthRedirect: false,
 	errorLoadingEmailBoxes: null,
 	errorLoadingEmailBox: null,
 	errorLoadingConnectEmailBox: null,
@@ -85,6 +88,7 @@ const initialState = {
 	errorLoadingDeletingLetters: null,
 	errorLoadingIsReadStatus: null,
 	errorLoadingMoveLetter: null,
+	errorLoadingOAuthRedirect: null,
 	openLetter: false,
 	isCreateNewLetter: false,
 	createNewLetterMode: 'window',
@@ -101,6 +105,8 @@ const initialState = {
 	selectedLetters: [],
 	emailTableHeaderType: 'default',
 	crm_entities: [],
+	oAuthUrl: '',
+	oAuthCode: '',
 } as IState;
 
 const emailReducer = createSlice({
@@ -225,6 +231,15 @@ const emailReducer = createSlice({
 				return it;
 			});
 		},
+		setOAuthUrl: (state, action: PayloadAction<string>) => {
+			state.oAuthUrl = action.payload;
+		},
+		setOAuthCode: (state, action: PayloadAction<string>) => {
+			state.oAuthCode = action.payload;
+		},
+		setErrorLoadingConnectEmailBox: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.errorLoadingConnectEmailBox = action.payload;
+		},
 	},
 	extraReducers: {
 		[getEmailsBoxes.fulfilled.type]: (state, action: PayloadAction<IEmailBoxes>) => {
@@ -306,6 +321,33 @@ const emailReducer = createSlice({
 		[updateEmailBox.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingUpdateEmailBox = false;
 			state.errorLoadingUpdateEmailBox = action.payload;
+		},
+		[redirectToOauthLink.fulfilled.type]: (state, action: PayloadAction<{ url: string }>) => {
+			state.loadingOAuthRedirect = false;
+			state.errorLoadingOAuthRedirect = null;
+			state.oAuthUrl = action.payload.url;
+		},
+		[redirectToOauthLink.pending.type]: (state) => {
+			state.loadingOAuthRedirect = true;
+			state.errorLoadingOAuthRedirect = null;
+		},
+		[redirectToOauthLink.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingOAuthRedirect = false;
+			state.errorLoadingOAuthRedirect = action.payload;
+		},
+		[receiveToOauthLink.fulfilled.type]: (state, action: PayloadAction<IEmailBox>) => {
+			state.loadingConnectEmailBox = false;
+			state.errorLoadingConnectEmailBox = null;
+			state.connectedEmailBox = action.payload;
+			state.emailBoxes.data = [...state.emailBoxes.data, action.payload];
+		},
+		[receiveToOauthLink.pending.type]: (state) => {
+			state.loadingConnectEmailBox = true;
+			state.errorLoadingConnectEmailBox = null;
+		},
+		[receiveToOauthLink.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingConnectEmailBox = false;
+			state.errorLoadingConnectEmailBox = action.payload;
 		},
 		[removeEmailBox.fulfilled.type]: (state, action: PayloadAction<number>) => {
 			state.loadingDeletingLetter = false;
@@ -522,5 +564,8 @@ export const {
 	setCrmSetting,
 	setCrmEntities,
 	generalUpdateLettersCrmEntities,
+	setOAuthUrl,
+	setOAuthCode,
+	setErrorLoadingConnectEmailBox,
 } = emailReducer.actions;
 export default emailReducer.reducer;

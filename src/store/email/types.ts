@@ -42,6 +42,7 @@ export interface IState {
 	loadingDeletingLetters: boolean;
 	loadingIsReadStatus: boolean;
 	loadingMoveLetter: boolean;
+	loadingOAuthRedirect: boolean;
 	errorLoadingEmailBoxes: IErrorsAxiosResponse;
 	errorLoadingEmailBox: IErrorsAxiosResponse;
 	errorLoadingConnectEmailBox: IErrorsAxiosResponse;
@@ -58,6 +59,7 @@ export interface IState {
 	errorLoadingDeletingLetters: IErrorsAxiosResponse;
 	errorLoadingIsReadStatus: IErrorsAxiosResponse;
 	errorLoadingMoveLetter: IErrorsAxiosResponse;
+	errorLoadingOAuthRedirect: IErrorsAxiosResponse;
 	openLetter: boolean;
 	isCreateNewLetter: boolean;
 	createNewLetterMode: createNewLetterModeType;
@@ -69,6 +71,8 @@ export interface IState {
 		letterId: ILetter['id'];
 		entities: ILettersCrmEntities;
 	}[];
+	oAuthUrl: string;
+	oAuthCode: string;
 }
 
 export interface ILettersParams {
