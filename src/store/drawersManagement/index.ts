@@ -9,6 +9,7 @@ const initialState: IState = {
 		data: {
 			chatId: null,
 			letter: null,
+			crmEntities: null,
 		},
 	},
 };
