@@ -5,8 +5,8 @@ import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { ITask, ITasks } from '@uspacy/sdk/lib/models/crm-tasks';
 import { IField } from '@uspacy/sdk/lib/models/field';
 
-import { idColumn, OTHER_DEFAULT_FIELDS } from './../../const';
 import { getField } from '../../helpers/filterFieldsArrs';
+import { idColumn, OTHER_DEFAULT_FIELDS } from './../../const';
 import {
 	createTask,
 	deleteTaskById,
@@ -350,19 +350,29 @@ const tasksReducer = createSlice({
 		},
 		editContactFromCard: (state, action) => {
 			state.tasks.data = state.tasks.data.map((task) => {
-				return { ...task, crm_entities: {...task?.crm_entities, contacts: task?.crm_entities?.contacts?.map((contact) => {
+				return {
+					...task,
+					crm_entities: {
+						...task?.crm_entities,
+						contacts: task?.crm_entities?.contacts?.map((contact) => {
 							if (action?.payload?.id === contact?.id) {
 								Object.keys(action.payload).forEach((key) => {
 									if (contact.hasOwnProperty(key)) contact[key] = action.payload[key];
 								});
 							}
 							return contact;
-						})}};
+						}),
+					},
+				};
 			});
 		},
 		editCompanyFromCard: (state, action) => {
 			state.tasks.data = state.tasks.data.map((task) => {
-				return { ...task, crm_entities: {...task?.crm_entities, companies: task?.crm_entities?.companies?.map((company) => {
+				return {
+					...task,
+					crm_entities: {
+						...task?.crm_entities,
+						companies: task?.crm_entities?.companies?.map((company) => {
 							if (action?.payload?.id === company?.id) {
 								Object.keys(action.payload).forEach((key) => {
 									if (company.hasOwnProperty(key)) company[key] = action.payload[key];
@@ -370,7 +380,9 @@ const tasksReducer = createSlice({
 							}
 
 							return company;
-						})}};
+						}),
+					},
+				};
 			});
 		},
 		setDeleteAllFromKanban: (state, action: PayloadAction<boolean>) => {
@@ -398,7 +410,7 @@ const tasksReducer = createSlice({
 				perPage: 20,
 			};
 		},
-		addItemToTasksFilter: (state,action: PayloadAction<IField[]>) => {
+		addItemToTasksFilter: (state, action: PayloadAction<IField[]>) => {
 			state.taskFilter = {
 				...fieldForTasks.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
 				...action.payload.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
