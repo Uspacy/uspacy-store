@@ -482,7 +482,9 @@ export const chatSlice = createSlice({
 				if (group.chatId === chatId) {
 					return {
 						...group,
-						items: group.items.filter((it) => !it.isFirstUnread).map((it) => ({ ...it, readBy: [...it.readBy, userId] })),
+						items: group.items
+							.filter((it) => !it.isFirstUnread)
+							.map((it) => ({ ...it, readBy: !it.readBy.includes(userId) ? [...it.readBy, userId] : it.readBy })),
 					};
 				}
 				return group;
