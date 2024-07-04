@@ -180,8 +180,9 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			if (key === 'deals' && findField?.type !== 'customLink') {
 				return { ...acc, deals: value?.filter((el) => el !== 'NO_DEALS') };
 			}
-			if (key === 'company' && findField?.type === 'customLink') {
-				return { ...acc, companies: value };
+			if (findField?.type === 'customLink') {
+				const checkCompany = key === 'company' ? 'companies': key;
+				return { ...acc, [`${checkCompany}[title]`]: value };
 			}
 			if (['kanban_status', 'kanban_reason_id'].includes(key)) {
 				return { ...acc, [key]: isArray(value) ? value : [value] };
