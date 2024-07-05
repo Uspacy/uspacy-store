@@ -489,6 +489,23 @@ export const chatSlice = createSlice({
 				}
 				return group;
 			});
+
+			if (userId !== profile.authUserId) {
+				state.chats.items = state.chats.items.map((chat) => {
+					if (chat.id === chatId) {
+						const { lastMessage } = chat;
+						return {
+							...chat,
+							lastMessage: {
+								...lastMessage,
+								readBy: !lastMessage.readBy.includes(userId) ? [...lastMessage.readBy, userId] : lastMessage.readBy,
+							},
+						};
+					}
+
+					return chat;
+				});
+			}
 		},
 		resetMessages(state) {
 			state.messages = [];
