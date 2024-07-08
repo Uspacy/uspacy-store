@@ -120,7 +120,7 @@ export const fieldForTasks: IField[] = [
 		default_value: '',
 	},
 	{
-		name: 'startTime',
+		name: 'eventStartDate',
 		code: 'start_time',
 		required: false,
 		editable: false,
@@ -133,7 +133,7 @@ export const fieldForTasks: IField[] = [
 		default_value: '',
 	},
 	{
-		name: 'dateOfEnding',
+		name: 'eventEndDate',
 		code: 'end_time',
 		required: false,
 		editable: false,
