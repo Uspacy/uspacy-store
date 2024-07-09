@@ -1,5 +1,6 @@
 import { INotificationMessage, NotificationAction } from '@uspacy/sdk/lib/models/notifications';
 import { IUser } from '@uspacy/sdk/lib/models/user';
+import { AVAILABLE_ENTITY_TYPES } from 'src/const';
 import { ILinkData, INotification } from 'src/store/notifications/types';
 
 export const getServiceName = (serviceName: string) => {
@@ -43,12 +44,16 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 	}
 };
 
+const checkIfSmartObject = (type: string) => {
+	return !AVAILABLE_ENTITY_TYPES.includes(type) ? 'crm_activity' : type;
+};
+
 const getEntityType = (message: INotificationMessage) => {
-	const rootParentEntityType = message.data?.root_parent?.type;
-	const parentEntityType = message.data?.entity?.parent?.entity_type;
+	const rootParentEntityType = checkIfSmartObject(message.data?.root_parent?.type);
+	const parentEntityType = checkIfSmartObject(message.data?.entity?.parent?.entity_type);
 	if (message.data.root_parent && Object.keys(message.data.root_parent).length) return rootParentEntityType;
 	if (parentEntityType) return parentEntityType;
-	return message.data.entity?.entity_type;
+	return checkIfSmartObject(message.data.entity?.entity_type);
 };
 
 export const getNotificationTitle = (message: INotificationMessage, profileId: number): string | undefined => {
