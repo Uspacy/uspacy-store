@@ -46,7 +46,7 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 };
 
 const checkIfSmartObject = (type: string) => {
-	return !AVAILABLE_ENTITY_TYPES.includes(type) ? 'crm_activity' : type;
+	return !AVAILABLE_ENTITY_TYPES.includes(type) ? 'crm.activity' : type;
 };
 
 const getEntityType = (message: INotificationMessage) => {
