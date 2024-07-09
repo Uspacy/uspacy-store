@@ -1,7 +1,8 @@
 import { INotificationMessage, NotificationAction } from '@uspacy/sdk/lib/models/notifications';
 import { IUser } from '@uspacy/sdk/lib/models/user';
-import { AVAILABLE_ENTITY_TYPES } from 'src/const';
 import { ILinkData, INotification } from 'src/store/notifications/types';
+
+import { AVAILABLE_ENTITY_TYPES } from '../const';
 
 export const getServiceName = (serviceName: string) => {
 	const [service] = serviceName.split('-');
