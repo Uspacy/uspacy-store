@@ -269,7 +269,7 @@ export const fieldForTasks: IField[] = [
 		editable: false,
 		show: true,
 		hidden: false,
-		multiple: false,
+		multiple: true,
 		type: 'user_id',
 		field_section_id: '',
 		system_field: false,
