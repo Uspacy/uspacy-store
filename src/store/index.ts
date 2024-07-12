@@ -23,6 +23,7 @@ import crmProductsUnit from './crmProductsUnit';
 import crmRequisite from './crmRequisite';
 import crmTasks from './crmTasks';
 import departments from './departments';
+import drawersManagement from './drawersManagement';
 import email from './email';
 import files from './files';
 import groups from './groups';
@@ -66,6 +67,7 @@ const rootReducer = combineReducers({
 	migrationsReducer,
 	messengerReducer,
 	automations,
+	drawersManagement,
 	crmEntities,
 	crmCalls,
 	crmCompanies,

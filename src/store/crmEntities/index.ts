@@ -74,6 +74,7 @@ export const initialEntityItemFilter: IEntityFilters = {
 	stages: [],
 	openDatePicker: false,
 	table_fields: [],
+	sortModel: [],
 };
 
 const stage = {
@@ -147,6 +148,7 @@ const entitiesReducer = createSlice({
 						...state.entityFilters[action.payload.tableCode],
 						...fields?.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
 						...OTHER_DEFAULT_FIELDS,
+						sortModel: state?.entityFilters[action.payload.tableCode]?.sortModel || [],
 						table_fields: state.entityFilters[action.payload.tableCode]?.table_fields || [],
 						page: 1,
 						perPage: 20,

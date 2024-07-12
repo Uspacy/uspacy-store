@@ -1,4 +1,3 @@
-import { uspacySdk } from '@uspacy/sdk';
 import { INotificationMessage, NotificationAction } from '@uspacy/sdk/lib/models/notifications';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 import { ILinkData, INotification } from 'src/store/notifications/types';
@@ -24,7 +23,9 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 	const service = getServiceName(message.data.service);
 	switch (service) {
 		case 'crm':
-			return `/crm/${message.data.entity?.table_name || `${message.type === 'task' ? 'tasks/task' : message.type}`}/${message.data.entity.id}`;
+			return `/crm/${message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'tasks/task' : message.type}`}/${
+				message.data.entity.id
+			}`;
 		case 'comments':
 			if (!message.data.entity?.entity_type) return undefined;
 			const isWithParent = message.data.root_parent && Object.keys(message.data.root_parent).length;
@@ -57,7 +58,7 @@ export const getNotificationTitle = (message: INotificationMessage, profileId: n
 	if (message.data.entity?.new_kanban_stage_id && message.data.entity?.old_kanban_stage_id) {
 		return `notifications.${service}.${message.data.entity?.table_name || message.type}.${NotificationAction.UPDATE_STAGE}`;
 	}
-	if (mentioned) return `notifications.${service}.${entityType}.${message.type}.mentioned`;
+	if (mentioned) return `notifications.${service}.${entityType}.${message.type}.mentioned.${message.data.action}`;
 	if (service === 'comments') return `notifications.${service}.${entityType}.${message.type}.${message.data.action}`;
 
 	return `notifications.${service}.${message.data.entity?.table_name || message.type}.${message.data.action}`;
@@ -94,18 +95,7 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 		author: user,
 		mentioned,
 		commentEntityTitle,
+		read: message.read || false,
+		createdAt: message.createdAt,
 	};
-};
-
-export const getRead = async (): Promise<string[]> => {
-	try {
-		return (await uspacySdk.notificationsService.storageService.table.getItem<string[]>('read')) || [];
-	} catch (_) {
-		return [];
-	}
-};
-
-export const setRead = async (ids: string[]) => {
-	const read = (await getRead()).filter((id) => !ids.includes(id));
-	return uspacySdk.notificationsService.storageService.table.setItem('read', [...read, ...ids]);
 };

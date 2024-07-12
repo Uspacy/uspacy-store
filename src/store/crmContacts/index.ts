@@ -57,6 +57,7 @@ export const initialContactsFilters: IContactFilters = {
 	perPage: 0,
 	boolean_operator: '',
 	table_fields: [],
+	sortModel: [],
 };
 
 const initialState = {
@@ -110,6 +111,7 @@ export const contactsReducer = createSlice({
 				state.contactFilters = {
 					...state.contactFields.data.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
 					...OTHER_DEFAULT_FIELDS,
+					sortModel: state?.contactFilters?.sortModel || [],
 					table_fields: state?.contactFilters?.table_fields || [],
 					page: 1,
 					perPage: 20,

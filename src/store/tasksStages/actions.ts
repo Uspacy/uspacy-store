@@ -9,11 +9,3 @@ export const fetchStages = createAsyncThunk('stages/fetchStages', async (groupId
 		return thunkAPI.rejectWithValue('Failure');
 	}
 });
-
-export const moveTask = createAsyncThunk('stages/moveTask', async ({ cardId, stageId }: { cardId: string; stageId: string }, thunkAPI) => {
-	try {
-		return await uspacySdk.tasksStagesService.moveTask(cardId, stageId);
-	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
-	}
-});

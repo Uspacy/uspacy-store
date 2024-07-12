@@ -1,4 +1,5 @@
 import {
+	ICrmSetting,
 	IEmailBox,
 	IEmailBoxes,
 	IEmailFilters,
@@ -7,12 +8,13 @@ import {
 	IFolders,
 	ILetter,
 	ILetters,
+	ILettersCrmEntities,
 	IThreads,
 } from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IUpdateEmailBox } from '@uspacy/sdk/lib/services/EmailService/connect-email-box.dto';
 
-export type createNewLetterModeType = 'window' | 'fullScreen' | 'fromLetter';
+export type createNewLetterModeType = 'window' | 'fullScreen' | 'fromLetter' | 'fromCRM';
 export interface IState {
 	emailBoxes: IEmailBoxes;
 	emailBox: IEmailBox;
@@ -40,6 +42,7 @@ export interface IState {
 	loadingDeletingLetters: boolean;
 	loadingIsReadStatus: boolean;
 	loadingMoveLetter: boolean;
+	loadingOAuthRedirect: boolean;
 	errorLoadingEmailBoxes: IErrorsAxiosResponse;
 	errorLoadingEmailBox: IErrorsAxiosResponse;
 	errorLoadingConnectEmailBox: IErrorsAxiosResponse;
@@ -56,12 +59,20 @@ export interface IState {
 	errorLoadingDeletingLetters: IErrorsAxiosResponse;
 	errorLoadingIsReadStatus: IErrorsAxiosResponse;
 	errorLoadingMoveLetter: IErrorsAxiosResponse;
+	errorLoadingOAuthRedirect: IErrorsAxiosResponse;
 	openLetter: boolean;
 	isCreateNewLetter: boolean;
 	createNewLetterMode: createNewLetterModeType;
 	filters: IEmailFilters;
 	selectedLetters: ILetter[];
 	emailTableHeaderType: headerTypes;
+	crmSettings: ICrmSetting[];
+	crm_entities: {
+		letterId: ILetter['id'];
+		entities: ILettersCrmEntities;
+	}[];
+	oAuthUrl: string;
+	oAuthCode: string;
 }
 
 export interface ILettersParams {

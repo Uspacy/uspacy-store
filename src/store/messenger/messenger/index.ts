@@ -2,8 +2,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, ICreateWidgetData, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 import { IUser } from '@uspacy/sdk/lib/models/user';
-import { differenceInMinutes } from 'date-fns';
+import differenceInMinutes from 'date-fns/differenceInMinutes';
 
+import { unreadMessagesValue } from '../../../const';
 import {
 	getUniqueItems,
 	onlyUnique,
@@ -69,7 +70,7 @@ const prepereMessages = (items: IPreperedMessage[], profile: IUser) => {
 				{
 					...message,
 					id: `${message.id}-unreadMessage`,
-					message: 'unreadMessages',
+					message: unreadMessagesValue,
 					isFirstUnread,
 				},
 			];
@@ -136,6 +137,7 @@ export const chatSlice = createSlice({
 				}
 				return group;
 			});
+
 			const items = [...state.chats.items].map((chat) => {
 				if (chat.id === chatId) {
 					return {
@@ -143,8 +145,7 @@ export const chatSlice = createSlice({
 						lastMessage: item,
 						timestamp: item.timestamp,
 						originalTimestamp: item.timestamp,
-						unreadCount:
-							item.authorId !== profile.authUserId && state.chats.currentChatId !== chat.id ? chat.unreadCount + 1 : chat.unreadCount,
+						unreadCount: item.authorId !== profile.authUserId ? chat.unreadCount + 1 : chat.unreadCount,
 						// update unreadMentions when we get messages
 						...(item.mentioned.includes(profile.authUserId) && { unreadMentions: [item.id, ...chat.unreadMentions] }),
 					};
@@ -198,10 +199,20 @@ export const chatSlice = createSlice({
 				return chat;
 			});
 		},
-		removeMessage(state, action: PayloadAction<string>) {
+		removeMessage(state, action: PayloadAction<{ removedMessageId: string; profileId: IUser['authUserId'] }>) {
+			const { removedMessageId, profileId } = action.payload;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			let removedMessageBody: any = {};
 			state.messages = state.messages.map((group) => {
-				if (group.items.find(({ id }) => id === action.payload)) {
-					const items = group.items.filter(({ id }) => id !== action.payload);
+				if (group.items.find(({ id }) => id === removedMessageId)) {
+					const items = group.items.reduce((acc, message) => {
+						if (message.id !== removedMessageId) {
+							acc.push(message);
+						} else {
+							removedMessageBody = message;
+						}
+						return acc;
+					}, []);
 					return {
 						...group,
 						items,
@@ -210,13 +221,16 @@ export const chatSlice = createSlice({
 				return group;
 			});
 			state.chats.items = state.chats.items.map((chat) => {
-				if (chat.lastMessage?.id === action.payload) {
+				if (chat.lastMessage?.id === removedMessageId) {
 					const messages = state.messages.find(({ chatId }) => chatId === chat.id);
 					if (!messages) return chat;
-					const [lastMessage] = messages.items;
+					const [lastMessage, messageBeforeAfter] = messages.items;
+					// last message is not my and i dont was read his
+					const LMinMaIdrH = removedMessageBody.authorId !== profileId && !removedMessageBody.readBy.includes(profileId);
 					return {
 						...chat,
-						lastMessage,
+						lastMessage: lastMessage.message !== unreadMessagesValue ? lastMessage : messageBeforeAfter,
+						...(LMinMaIdrH && { unreadCount: chat.unreadCount - 1 }),
 					};
 				}
 				return chat;
@@ -236,12 +250,15 @@ export const chatSlice = createSlice({
 				return group;
 			});
 		},
-		setParentMessageId(state, action: PayloadAction<string | undefined>) {
+		setParentMessageId(state, action: PayloadAction<{ messageId: string | undefined; externalChatId?: string }>) {
+			const { messageId, externalChatId } = action.payload;
+			const selectedChatId = !!externalChatId ? externalChatId : state.chats.currentChatId;
+
 			state.messages = state.messages.map((group) => {
-				if (group.chatId === state.chats.currentChatId) {
+				if (group.chatId === selectedChatId) {
 					return {
 						...group,
-						parentMessageId: action.payload,
+						parentMessageId: messageId,
 					};
 				}
 				return group;
@@ -445,24 +462,27 @@ export const chatSlice = createSlice({
 				return it;
 			});
 		},
-		readAllMessages(state, action: PayloadAction<{ chatId: IChat['id']; profile: IUser }>) {
-			state.chats.items = state.chats.items.map((it) => {
-				if (it.id === action.payload.chatId) {
-					return {
-						...it,
-						unreadCount: 0,
-						unreadMentions: [],
-					};
-				}
-				return it;
-			});
+		readAllMessages(state, action: PayloadAction<{ chatId: IChat['id']; profile: IUser; userId: IUser['authUserId'] }>) {
+			const { chatId, profile, userId } = action.payload;
+
+			if (profile.authUserId === userId) {
+				state.chats.items = state.chats.items.map((it) => {
+					if (it.id === chatId) {
+						return {
+							...it,
+							unreadCount: 0,
+							unreadMentions: [],
+						};
+					}
+					return it;
+				});
+			}
+
 			state.messages = state.messages.map((group) => {
-				if (group.chatId === action.payload.chatId) {
+				if (group.chatId === chatId) {
 					return {
 						...group,
-						items: group.items
-							.filter((it) => !it.isFirstUnread)
-							.map((it) => ({ ...it, readBy: [...it.readBy, action.payload.profile.authUserId] })),
+						items: group.items.filter((it) => !it.isFirstUnread).map((it) => ({ ...it, readBy: [...it.readBy, userId] })),
 					};
 				}
 				return group;

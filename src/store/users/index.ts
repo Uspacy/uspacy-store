@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 import {
@@ -18,6 +19,8 @@ import { IState } from './types';
 const initialState: IState = {
 	data: [],
 	loading: true,
+	loadingUpdatingUser: false,
+	errorLoadingUpdatingUser: null,
 };
 
 export const usersSlice = createSlice({
@@ -61,130 +64,130 @@ export const usersSlice = createSlice({
 			state.errorLoading = action.payload;
 		},
 		[updateUser.fulfilled.type]: (state, action: PayloadAction<IUser>) => {
-			state.loading = false;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[updateUser.pending.type]: (state) => {
-			state.loading = true;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = true;
+			state.errorLoadingUpdatingUser = null;
 		},
-		[updateUser.rejected.type]: (state, action: PayloadAction<string>) => {
-			state.loading = false;
-			state.errorLoading = action.payload;
+		[updateUser.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = action.payload;
 		},
 		[updateUserPosition.fulfilled.type]: (state, action: PayloadAction<IUser>) => {
-			state.loading = false;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[updateUserPosition.pending.type]: (state) => {
-			state.loading = true;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = true;
+			state.errorLoadingUpdatingUser = null;
 		},
-		[updateUserPosition.rejected.type]: (state, action: PayloadAction<string>) => {
-			state.loading = false;
-			state.errorLoading = action.payload;
+		[updateUserPosition.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = action.payload;
 		},
 		[updateUserRoles.fulfilled.type]: (state, action: PayloadAction<IUser>) => {
-			state.loading = false;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[updateUserRoles.pending.type]: (state) => {
-			state.loading = true;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = true;
+			state.errorLoadingUpdatingUser = null;
 		},
-		[updateUserRoles.rejected.type]: (state, action: PayloadAction<string>) => {
-			state.loading = false;
-			state.errorLoading = action.payload;
+		[updateUserRoles.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = action.payload;
 		},
 		[deactivateUser.fulfilled.type]: (state, action: PayloadAction<IUser>) => {
-			state.loading = false;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[deactivateUser.pending.type]: (state) => {
-			state.loading = true;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = true;
+			state.errorLoadingUpdatingUser = null;
 		},
-		[deactivateUser.rejected.type]: (state, action: PayloadAction<string>) => {
-			state.loading = false;
-			state.errorLoading = action.payload;
+		[deactivateUser.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = action.payload;
 		},
 		[activateUser.fulfilled.type]: (state, action: PayloadAction<IUser>) => {
-			state.loading = false;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[activateUser.pending.type]: (state) => {
-			state.loading = true;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = true;
+			state.errorLoadingUpdatingUser = null;
 		},
-		[activateUser.rejected.type]: (state, action: PayloadAction<string>) => {
-			state.loading = false;
-			state.errorLoading = action.payload;
+		[activateUser.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = action.payload;
 		},
 		[sendUserInvites.fulfilled.type]: (state) => {
-			state.loading = false;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = null;
 		},
 		[sendUserInvites.pending.type]: (state) => {
-			state.loading = true;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = true;
+			state.errorLoadingUpdatingUser = null;
 		},
-		[sendUserInvites.rejected.type]: (state, action: PayloadAction<string>) => {
-			state.loading = false;
-			state.errorLoading = action.payload;
+		[sendUserInvites.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = action.payload;
 		},
 		[repeatInvitation.fulfilled.type]: (state, action: PayloadAction<string>) => {
-			state.loading = false;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) =>
 				user.id.toString() === action.payload.toString() ? { ...user, dateOfInvitation: new Date().getTime() / 1000 } : user,
 			);
 			// UsersCache.setData(state.data);
 		},
 		[repeatInvitation.pending.type]: (state) => {
-			state.loading = true;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = true;
+			state.errorLoadingUpdatingUser = null;
 		},
-		[repeatInvitation.rejected.type]: (state, action: PayloadAction<string>) => {
-			state.loading = false;
-			state.errorLoading = action.payload;
+		[repeatInvitation.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = action.payload;
 		},
 		[deleteInvitation.fulfilled.type]: (state, action: PayloadAction<string>) => {
-			state.loading = false;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.filter((user) => user.id.toString() !== action.payload.toString());
 			// UsersCache.setData(state.data);
 		},
 		[deleteInvitation.pending.type]: (state) => {
-			state.loading = true;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = true;
+			state.errorLoadingUpdatingUser = null;
 		},
-		[deleteInvitation.rejected.type]: (state, action: PayloadAction<string>) => {
-			state.loading = false;
-			state.errorLoading = action.payload;
+		[deleteInvitation.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = action.payload;
 		},
 		[uploadAvatar.fulfilled.type]: (state, action: PayloadAction<IUser>) => {
-			state.loading = false;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[uploadAvatar.pending.type]: (state) => {
-			state.loading = true;
-			state.errorLoading = '';
+			state.loadingUpdatingUser = true;
+			state.errorLoadingUpdatingUser = null;
 		},
-		[uploadAvatar.rejected.type]: (state, action: PayloadAction<string>) => {
-			state.loading = false;
-			state.errorLoading = action.payload;
+		[uploadAvatar.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingUser = false;
+			state.errorLoadingUpdatingUser = action.payload;
 		},
 	},
 });
