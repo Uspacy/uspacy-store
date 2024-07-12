@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, ICreateWidgetData, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
@@ -199,20 +200,14 @@ export const chatSlice = createSlice({
 				return chat;
 			});
 		},
-		removeMessage(state, action: PayloadAction<{ removedMessageId: string; profileId: IUser['authUserId'] }>) {
-			const { removedMessageId, profileId } = action.payload;
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			let removedMessageBody: any = {};
+		removeMessage(
+			state,
+			action: PayloadAction<{ removedMessageId: string; profileId: IUser['authUserId']; removedMessage?: IMessage; previewText?: string }>,
+		) {
+			const { removedMessageId, profileId, removedMessage, previewText = '' } = action.payload;
 			state.messages = state.messages.map((group) => {
 				if (group.items.find(({ id }) => id === removedMessageId)) {
-					const items = group.items.reduce((acc, message) => {
-						if (message.id !== removedMessageId) {
-							acc.push(message);
-						} else {
-							removedMessageBody = message;
-						}
-						return acc;
-					}, []);
+					const items = group.items.filter(({ id }) => id !== removedMessageId);
 					return {
 						...group,
 						items,
@@ -223,10 +218,22 @@ export const chatSlice = createSlice({
 			state.chats.items = state.chats.items.map((chat) => {
 				if (chat.lastMessage?.id === removedMessageId) {
 					const messages = state.messages.find(({ chatId }) => chatId === chat.id);
-					if (!messages) return chat;
+
+					// if we have not yet opened the chat from which the message is being deleted
+					if (!messages) {
+						return {
+							...chat,
+							lastMessage: {
+								...chat.lastMessage,
+								message: previewText,
+							},
+							...(!removedMessage.readBy.includes(profileId) && { unreadCount: chat.unreadCount - 1 }),
+						};
+					}
+
 					const [lastMessage, messageBeforeAfter] = messages.items;
 					// last message is not my and i dont was read his
-					const LMinMaIdrH = removedMessageBody.authorId !== profileId && !removedMessageBody.readBy.includes(profileId);
+					const LMinMaIdrH = removedMessage.authorId !== profileId && !removedMessage.readBy.includes(profileId);
 					return {
 						...chat,
 						lastMessage: lastMessage.message !== unreadMessagesValue ? lastMessage : messageBeforeAfter,
