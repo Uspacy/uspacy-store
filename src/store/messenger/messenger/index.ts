@@ -201,12 +201,22 @@ export const chatSlice = createSlice({
 		},
 		removeMessage(
 			state,
-			action: PayloadAction<{ removedMessageId: string; profileId: IUser['authUserId']; removedMessage?: IMessage; previewText?: string }>,
+			action: PayloadAction<{ removedMessageId: string; profileId: IUser['authUserId']; forceRemovedMessage?: IMessage; previewText?: string }>,
 		) {
-			const { removedMessageId, profileId, removedMessage, previewText = '' } = action.payload;
+			const { removedMessageId, profileId, forceRemovedMessage, previewText = '' } = action.payload;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			let removedMessageBody: any = {};
+
 			state.messages = state.messages.map((group) => {
 				if (group.items.find(({ id }) => id === removedMessageId)) {
-					const items = group.items.filter(({ id }) => id !== removedMessageId);
+					const items = group.items.reduce((acc, message) => {
+						if (message.id !== removedMessageId) {
+							acc.push(message);
+						} else {
+							removedMessageBody = message;
+						}
+						return acc;
+					}, []);
 					return {
 						...group,
 						items,
@@ -214,14 +224,17 @@ export const chatSlice = createSlice({
 				}
 				return group;
 			});
-			state.chats.items = state.chats.items.map((chat) => {
-				if (chat.lastMessage?.id === removedMessageId) {
-					const messages = state.messages.find(({ chatId }) => chatId === chat.id);
 
+			const removedMessage = forceRemovedMessage || removedMessageBody;
+			state.chats.items = state.chats.items.map((chat) => {
+				if (chat.id === removedMessage.chatId) {
+					const messages = state.messages.find(({ chatId }) => chatId === chat.id);
+					const unreadMentions = chat.unreadMentions.filter((it) => it !== removedMessage.id);
 					// if we have not yet opened the chat from which the message is being deleted
 					if (!messages) {
 						return {
 							...chat,
+							unreadMentions,
 							lastMessage: {
 								...chat.lastMessage,
 								message: previewText,
@@ -235,6 +248,7 @@ export const chatSlice = createSlice({
 					const LMinMaIdrH = removedMessage.authorId !== profileId && !removedMessage.readBy.includes(profileId);
 					return {
 						...chat,
+						unreadMentions,
 						lastMessage: lastMessage.message !== unreadMessagesValue ? lastMessage : messageBeforeAfter,
 						...(LMinMaIdrH && { unreadCount: chat.unreadCount - 1 }),
 					};
