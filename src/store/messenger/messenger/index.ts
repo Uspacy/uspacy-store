@@ -482,11 +482,30 @@ export const chatSlice = createSlice({
 				if (group.chatId === chatId) {
 					return {
 						...group,
-						items: group.items.filter((it) => !it.isFirstUnread).map((it) => ({ ...it, readBy: [...it.readBy, userId] })),
+						items: group.items
+							.filter((it) => !it.isFirstUnread)
+							.map((it) => ({ ...it, readBy: !it.readBy.includes(userId) ? [...it.readBy, userId] : it.readBy })),
 					};
 				}
 				return group;
 			});
+
+			if (userId !== profile.authUserId) {
+				state.chats.items = state.chats.items.map((chat) => {
+					if (chat.id === chatId) {
+						const { lastMessage } = chat;
+						return {
+							...chat,
+							lastMessage: {
+								...lastMessage,
+								readBy: !lastMessage.readBy.includes(userId) ? [...lastMessage.readBy, userId] : lastMessage.readBy,
+							},
+						};
+					}
+
+					return chat;
+				});
+			}
 		},
 		resetMessages(state) {
 			state.messages = [];
