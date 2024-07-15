@@ -48,7 +48,7 @@ const automationsReducer = createSlice({
 		[deleteAutomation.fulfilled.type]: (state, action: PayloadAction<number>) => {
 			state.loadingAutomations = false;
 			state.errorLoadingAutomations = null;
-			state.automations.data = state.automations.data.filter((el) => el.id !== action.payload);
+			state.automations.data = state.automations.data.filter((el) => el.portal_id !== action.payload);
 			state.automations.meta.total = state.automations.meta.total - 1;
 		},
 		[deleteAutomation.pending.type]: (state) => {
