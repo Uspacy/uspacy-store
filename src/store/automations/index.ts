@@ -23,7 +23,7 @@ const automationsReducer = createSlice({
 			state.automations.data.push(action.payload);
 		},
 		toggleActiveAutomation: (state, action: PayloadAction<number>) => {
-			state.automations.data = state.automations.data.map((it) => (it.id === action.payload ? { ...it, active: !it.active } : it));
+			state.automations.data = state.automations.data.map((it) => (it.portal_id === action.payload ? { ...it, active: !it.active } : it));
 		},
 		addAutomationToStartTable: (state, action: PayloadAction<IAutomation>) => {
 			state.automations.data = [action.payload, ...state.automations.data];
