@@ -400,7 +400,7 @@ const tasksReducer = createSlice({
 				perPage: 20,
 			};
 		},
-		addItemToTasksFilter: (state,action: PayloadAction<IField[]>) => {
+		addItemToTasksFilter: (state, action: PayloadAction<IField[]>) => {
 			state.taskFilter = {
 				...fieldForTasks.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
 				...action.payload.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
@@ -505,7 +505,6 @@ const tasksReducer = createSlice({
 		},
 		[massTasksDeletion.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
 			state.loading = false;
-			state.loadingTaskList = false;
 			state.errorMessage = '';
 			state.tasks.data = state.tasks.data.filter((item) => !action.payload.entityIds.includes(item?.id));
 
