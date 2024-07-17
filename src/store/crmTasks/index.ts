@@ -515,7 +515,6 @@ const tasksReducer = createSlice({
 		},
 		[massTasksDeletion.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
 			state.loading = false;
-			state.loadingTaskList = false;
 			state.errorMessage = '';
 			state.tasks.data = state.tasks.data.filter((item) => !action.payload.entityIds.includes(item?.id));
 
