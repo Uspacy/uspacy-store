@@ -139,19 +139,22 @@ export const getField = (field: IField) => {
 export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = false) => {
 	return Object?.entries(filters)
 		?.filter(([key, value]) => {
+			if (key === 'time_label_start_time' && value.includes('expiredtask')) {
+				return true;
+			}
 			if (
-				key.includes('certainDateOrPeriod_') ||
-				key.includes('time_label_') ||
-				key.includes('openDatePicker') ||
-				key.includes('View') ||
-				key.includes('entityCode')
+				key?.includes('certainDateOrPeriod_') ||
+				key?.includes('time_label_') ||
+				key?.includes('openDatePicker') ||
+				key?.includes('View') ||
+				key?.includes('entityCode')
 			) {
 				return false;
 			}
 			if (isKanban && ['select', 'page', 'perPage', 'table_fields', 'entityCode', 'sortModel'].includes(key)) {
 				return false;
 			}
-			if (key.includes('select')) {
+			if (key?.includes('select')) {
 				return value > 0;
 			}
 
@@ -167,18 +170,25 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			return true;
 		})
 		.reduce((acc, [key, value]) => {
-			const findField = fields?.find((it) => it.code === key);
+			const findField = fields?.find((it) => it?.code === key);
 			if (key === 'search') {
 				return { ...acc, q: value };
 			}
 			if (key === 'perPage') {
 				return { ...acc, list: value };
 			}
+			if (key === 'time_label_start_time' && value?.includes('expiredtask')) {
+				return { ...acc, expired: Math.floor(new Date().getTime() / 1000) };
+			}
 			if (key === 'select') {
 				return { ...acc, ['funnel_id']: value };
 			}
-			if (key === 'deals') {
+			if (key === 'deals' && findField?.type !== 'customLink') {
 				return { ...acc, deals: value?.filter((el) => el !== 'NO_DEALS') };
+			}
+			if (findField?.type === 'customLink') {
+				const checkCompany = key === 'company' ? 'companies': key;
+				return { ...acc, [`${checkCompany}[title]`]: value };
 			}
 			if (['kanban_status', 'kanban_reason_id'].includes(key)) {
 				return { ...acc, [key]: isArray(value) ? value : [value] };
@@ -194,12 +204,12 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			if (['sortModel'].includes(key)) {
 				const array = isArray(value) ? value : [value];
 				if (array.length === 0) return acc;
-				const [field, sort] = Object.entries(array[0])[0];
+				const [field, sort] = Object?.entries(array[0])[0];
 				const checkField = field === 'id_column' ? 'id' : field;
 				return { ...acc, [`sort_by[${checkField}]`]: sort };
 			}
 
-			if (key.startsWith('from_') || key.startsWith('to_') || key.startsWith('currency_')) {
+			if (key?.startsWith('from_') || key?.startsWith('to_') || key?.startsWith('currency_')) {
 				const fieldCode = key.replace(/^(from_|to_|currency_)/, '');
 				const fieldType = key.split('_')[0];
 				if (isNull(value)) {
@@ -212,11 +222,11 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 				};
 			}
 
-			if ([FieldType.SOCIAL].includes(findField?.type as FieldType) && (value.startsWith('@') || value.startsWith('+'))) {
+			if ([FieldType.SOCIAL].includes(findField?.type as FieldType) && (value?.startsWith('@') || value?.startsWith('+'))) {
 				return { ...acc, [key]: value.substring(1) };
 			}
 
-			if ([FieldType.STAGE, FieldType.LIST, FieldType.LABEL].includes(findField?.type as FieldType)) {
+			if ([FieldType.STAGE, FieldType.LIST, FieldType.LABEL, FieldType.PRIORITY].includes(findField?.type as FieldType)) {
 				return { ...acc, [key]: isArray(value) ? value : [value] };
 			}
 
