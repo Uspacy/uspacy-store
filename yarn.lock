@@ -510,7 +510,6 @@
   version "0.0.87-alpha.6"
   resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.87-alpha.6/db87455f5827935eaf81bc61b8983920199ed996#db87455f5827935eaf81bc61b8983920199ed996"
   integrity sha512-T3H2itll6wvCiMRE2ziQUrX88A1HrjGevTQvwDYqqwefp3sxR2/FvTyV+VgfqZVAXjICIl4aFWcR5HumkiOhsQ==
-  dependencies:
     axios "^1.7.2"
     js-cookie "3.0.5"
     jwt-decode "3.1.2"

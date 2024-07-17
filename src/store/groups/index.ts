@@ -119,6 +119,9 @@ const groupsReducer = createSlice({
 		addGroupToEndTable: (state, action: PayloadAction<IGroup>) => {
 			state.allGroups.push(action.payload);
 		},
+		deleteLastElementTable: (state) => {
+			state.allGroups = state.allGroups.slice(0, -1);
+		},
 	},
 	extraReducers: {
 		[fetchGroups.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<IGroup>>) => {
@@ -126,7 +129,9 @@ const groupsReducer = createSlice({
 			state.errorLoadingGroups = null;
 			state.groups.data = action.payload.data;
 			state.groups.meta = action.payload.meta;
-			state.allGroups = state.allGroups.concat(action.payload.data);
+			const includedGroup = state.allGroups.find((el) => action.payload.data.some((grp) => grp.name === el.name));
+			const filteredGroups = !!includedGroup ? state.allGroups.filter((el) => el.name !== includedGroup.name) : state.allGroups;
+			state.allGroups = !!state.allGroups.length ? filteredGroups.concat(action.payload.data) : state.allGroups.concat(action.payload.data);
 		},
 		[fetchGroups.pending.type]: (state) => {
 			state.loadingGroups = true;
@@ -170,7 +175,6 @@ const groupsReducer = createSlice({
 			state.allGroups.unshift(action.payload);
 			state.isLoaded = false;
 			state.groups.meta.total = state.groups.meta.total + 1;
-			state.allGroups = state.allGroups.slice(0, -1);
 		},
 		[createGroup.pending.type]: (state) => {
 			state.loadingGroups = true;
@@ -330,5 +334,6 @@ export const {
 	resetInviteError,
 	userJoinGroup,
 	addGroupToEndTable,
+	deleteLastElementTable,
 } = groupsReducer.actions;
 export default groupsReducer.reducer;

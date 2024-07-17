@@ -199,10 +199,14 @@ export const chatSlice = createSlice({
 				return chat;
 			});
 		},
-		removeMessage(state, action: PayloadAction<{ removedMessageId: string; profileId: IUser['authUserId'] }>) {
-			const { removedMessageId, profileId } = action.payload;
+		removeMessage(
+			state,
+			action: PayloadAction<{ removedMessageId: string; profileId: IUser['authUserId']; forceRemovedMessage?: IMessage; previewText?: string }>,
+		) {
+			const { removedMessageId, profileId, forceRemovedMessage, previewText = '' } = action.payload;
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			let removedMessageBody: any = {};
+
 			state.messages = state.messages.map((group) => {
 				if (group.items.find(({ id }) => id === removedMessageId)) {
 					const items = group.items.reduce((acc, message) => {
@@ -220,15 +224,31 @@ export const chatSlice = createSlice({
 				}
 				return group;
 			});
+
+			const removedMessage = forceRemovedMessage || removedMessageBody;
 			state.chats.items = state.chats.items.map((chat) => {
-				if (chat.lastMessage?.id === removedMessageId) {
+				if (chat.id === removedMessage.chatId) {
 					const messages = state.messages.find(({ chatId }) => chatId === chat.id);
-					if (!messages) return chat;
+					const unreadMentions = chat.unreadMentions.filter((it) => it !== removedMessage.id);
+					// if we have not yet opened the chat from which the message is being deleted
+					if (!messages) {
+						return {
+							...chat,
+							unreadMentions,
+							lastMessage: {
+								...chat.lastMessage,
+								message: previewText,
+							},
+							...(!removedMessage.readBy.includes(profileId) && { unreadCount: chat.unreadCount - 1 }),
+						};
+					}
+
 					const [lastMessage, messageBeforeAfter] = messages.items;
 					// last message is not my and i dont was read his
-					const LMinMaIdrH = removedMessageBody.authorId !== profileId && !removedMessageBody.readBy.includes(profileId);
+					const LMinMaIdrH = removedMessage.authorId !== profileId && !removedMessage.readBy.includes(profileId);
 					return {
 						...chat,
+						unreadMentions,
 						lastMessage: lastMessage.message !== unreadMessagesValue ? lastMessage : messageBeforeAfter,
 						...(LMinMaIdrH && { unreadCount: chat.unreadCount - 1 }),
 					};
@@ -482,11 +502,30 @@ export const chatSlice = createSlice({
 				if (group.chatId === chatId) {
 					return {
 						...group,
-						items: group.items.filter((it) => !it.isFirstUnread).map((it) => ({ ...it, readBy: [...it.readBy, userId] })),
+						items: group.items
+							.filter((it) => !it.isFirstUnread)
+							.map((it) => ({ ...it, readBy: !it.readBy.includes(userId) ? [...it.readBy, userId] : it.readBy })),
 					};
 				}
 				return group;
 			});
+
+			if (userId !== profile.authUserId) {
+				state.chats.items = state.chats.items.map((chat) => {
+					if (chat.id === chatId) {
+						const { lastMessage } = chat;
+						return {
+							...chat,
+							lastMessage: {
+								...lastMessage,
+								readBy: !lastMessage.readBy.includes(userId) ? [...lastMessage.readBy, userId] : lastMessage.readBy,
+							},
+						};
+					}
+
+					return chat;
+				});
+			}
 		},
 		resetMessages(state) {
 			state.messages = [];
