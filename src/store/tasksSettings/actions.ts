@@ -25,7 +25,8 @@ export const updateTasksSettings = createAsyncThunk(
 	async ({ id, rev, body }: { id: string; rev: string; body: ITableSettings }, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.updateTasksSettings(id, rev, body);
-			return res?.data;
+			// @ts-ignore, temporary ignore
+			return { _id: res?.data?.id, _rev: res?.data?.rev, ...body };
 		} catch (e) {
 			return rejectWithValue(e);
 		}
