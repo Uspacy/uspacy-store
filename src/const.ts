@@ -118,3 +118,19 @@ export enum FieldType {
 }
 
 export const unreadMessagesValue = 'unreadMessages';
+
+export const AVAILABLE_ENTITY_TYPES = [
+	'tasks',
+	'comment',
+	'crm',
+	'company',
+	'contact',
+	'deal',
+	'lead',
+	'post',
+	'task',
+	'companies',
+	'contacts',
+	'deals',
+	'leads',
+];
