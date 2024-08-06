@@ -16,6 +16,7 @@ const getEntityBase = (linkData: ILinkData) => {
 		case 'post':
 			return 'newsfeed';
 		default:
+			if (linkData.type === 'entity_crm') return `${linkData.service}/${linkData.table_name}`;
 			return linkData.type ? `${linkData.type}s` : `${linkData.entity_type}s`;
 	}
 };
