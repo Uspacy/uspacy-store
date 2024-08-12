@@ -53,6 +53,7 @@ const checkIfSmartObject = (type: string) => {
 const getEntityType = (message: INotificationMessage) => {
 	const rootParentEntityType = message.data?.root_parent?.type;
 	const parentEntityType = message.data?.entity?.parent?.entity_type;
+	if (rootParentEntityType === 'entity_crm') return message.data?.entity.entity_type;
 	if (message.data.root_parent && Object.keys(message.data.root_parent).length) return rootParentEntityType;
 	if (parentEntityType) return parentEntityType;
 	return checkIfSmartObject(message.data.entity?.entity_type);
