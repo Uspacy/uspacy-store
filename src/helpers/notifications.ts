@@ -10,6 +10,8 @@ export const getServiceName = (serviceName: string) => {
 };
 
 const getEntityBase = (linkData: ILinkData) => {
+	if (linkData.type === 'post') return 'newsfeed';
+
 	switch (linkData.entity_type) {
 		case 'company':
 			return 'companies';
