@@ -39,6 +39,7 @@ export const fetchTasksWithFilters = createAsyncThunk(
 			...(data.params.search ? { q: data.params.search } : {}),
 		};
 		try {
+			// @ts-ignore, temporary!
 			const res = await uspacySdk.crmTasksService.getTasksWithFilters(params, data?.signal);
 			return res?.data;
 		} catch (e) {
@@ -117,3 +118,30 @@ export const massTasksEditing = createAsyncThunk(
 		}
 	},
 );
+
+export const getOAuth2CalendarRedirectUrl = createAsyncThunk('crmTasks/getOAuth2CalendarRedirectUrl', async (_, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk?.crmTasksService?.getOAuth2CalendarRedirectUrl();
+		return res?.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const getCalendarsAccounts = createAsyncThunk('crmTasks/getCalendarsAccounts', async (_, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk?.crmTasksService?.getCalendarsAccounts();
+		return res?.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const getGoogleCalendars = createAsyncThunk('crmTasks/getGoogleCalendars', async (_, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk?.crmTasksService?.getGoogleCalendars();
+		return res?.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});

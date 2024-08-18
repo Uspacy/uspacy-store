@@ -1,8 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { ICalendar, ICalendarsAccount } from '@uspacy/sdk/lib/models/calendars';
 import { IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { IFilter, ITaskFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { ITask, ITasks } from '@uspacy/sdk/lib/models/crm-tasks';
+import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IField } from '@uspacy/sdk/lib/models/field';
 
 import { idColumn } from './../../const';
@@ -13,6 +15,9 @@ import {
 	fetchTaskById,
 	fetchTasks,
 	fetchTasksWithFilters,
+	getCalendarsAccounts,
+	getGoogleCalendars,
+	getOAuth2CalendarRedirectUrl,
 	massTasksDeletion,
 	massTasksEditing,
 } from './actions';
@@ -226,9 +231,18 @@ const initialState = {
 	},
 	taskFilter: initialTaskFilter,
 	taskFiltersPreset: initialTasksFilterPreset,
+	redirectGoogleOauthUrl: '',
+	calendarsAccounts: [],
+	calendars: [],
 	errorMessage: '',
+	errorLoadingGoogleOauthRedirectUrl: null,
+	errorLoadingCalendarsAccounts: null,
+	errorLoadingCalendars: null,
 	loading: false,
 	loadingTaskList: true,
+	loadingGoogleOauthRedirectUrl: false,
+	loadingCalendarsAccounts: false,
+	loadingCalendars: false,
 	isCreateTaskModalOpened: false,
 	isTaskViewModalOpened: false,
 	isCopy: false,
@@ -337,6 +351,9 @@ const tasksReducer = createSlice({
 		},
 		setFilterPresets: (state, action: PayloadAction<IFilterPreset[]>) => {
 			state.taskFiltersPreset.filterPresets = action.payload;
+		},
+		setRedirectGoogleOauthUrl: (state, action: PayloadAction<string>) => {
+			state.redirectGoogleOauthUrl = action.payload;
 		},
 	},
 	extraReducers: {
@@ -503,6 +520,45 @@ const tasksReducer = createSlice({
 			state.loadingTaskList = false;
 			state.errorMessage = action.payload;
 		},
+		[getOAuth2CalendarRedirectUrl.fulfilled.type]: (state, action: PayloadAction<{ url: string }>) => {
+			state.loadingGoogleOauthRedirectUrl = false;
+			state.errorLoadingGoogleOauthRedirectUrl = null;
+			state.redirectGoogleOauthUrl = action.payload.url;
+		},
+		[getOAuth2CalendarRedirectUrl.pending.type]: (state) => {
+			state.loadingGoogleOauthRedirectUrl = true;
+			state.errorLoadingGoogleOauthRedirectUrl = null;
+		},
+		[getOAuth2CalendarRedirectUrl.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingGoogleOauthRedirectUrl = false;
+			state.errorLoadingGoogleOauthRedirectUrl = action.payload;
+		},
+		[getCalendarsAccounts.fulfilled.type]: (state, action: PayloadAction<ICalendarsAccount[]>) => {
+			state.loadingCalendarsAccounts = false;
+			state.errorLoadingCalendarsAccounts = null;
+			state.calendarsAccounts = action.payload;
+		},
+		[getCalendarsAccounts.pending.type]: (state) => {
+			state.loadingCalendarsAccounts = true;
+			state.errorLoadingCalendarsAccounts = null;
+		},
+		[getCalendarsAccounts.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCalendarsAccounts = false;
+			state.errorLoadingCalendarsAccounts = action.payload;
+		},
+		[getGoogleCalendars.fulfilled.type]: (state, action: PayloadAction<ICalendar[]>) => {
+			state.loadingCalendars = false;
+			state.errorLoadingCalendars = null;
+			state.calendars = action.payload;
+		},
+		[getGoogleCalendars.pending.type]: (state) => {
+			state.loadingCalendars = true;
+			state.errorLoadingCalendars = null;
+		},
+		[getGoogleCalendars.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCalendars = false;
+			state.errorLoadingCalendars = action.payload;
+		},
 	},
 });
 
@@ -528,5 +584,6 @@ export const {
 	setCurrentPreset,
 	setStandardPreset,
 	setFilterPresets,
+	setRedirectGoogleOauthUrl,
 } = tasksReducer.actions;
 export default tasksReducer.reducer;

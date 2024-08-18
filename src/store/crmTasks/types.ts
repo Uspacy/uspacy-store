@@ -1,6 +1,8 @@
+import { ICalendar, ICalendarsAccount } from '@uspacy/sdk/lib/models/calendars';
 import { IFiltersPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { ITaskFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { ITask, ITasks } from '@uspacy/sdk/lib/models/crm-tasks';
+import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFields } from '@uspacy/sdk/lib/models/field';
 
 export interface IErrors {
@@ -20,9 +22,18 @@ export interface IState {
 	tasksFields: IFields;
 	taskFilter: ITaskFilters;
 	taskFiltersPreset: IFiltersPreset;
+	redirectGoogleOauthUrl: string;
+	calendarsAccounts: ICalendarsAccount[];
+	calendars: ICalendar[];
 	loading: boolean;
 	loadingTaskList: boolean;
+	loadingGoogleOauthRedirectUrl: boolean;
+	loadingCalendarsAccounts: boolean;
+	loadingCalendars: boolean;
 	errorMessage: string;
+	errorLoadingGoogleOauthRedirectUrl: IErrorsAxiosResponse;
+	errorLoadingCalendarsAccounts: IErrorsAxiosResponse;
+	errorLoadingCalendars: IErrorsAxiosResponse;
 	isCreateTaskModalOpened: boolean;
 	isTaskViewModalOpened: boolean;
 	isCopy: boolean;
