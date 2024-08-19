@@ -3,6 +3,7 @@ import { uspacySdk } from '@uspacy/sdk';
 import { ITaskFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { ITask } from '@uspacy/sdk/lib/models/crm-tasks';
+import { ICalendarSettings, ISyncSettings } from '@uspacy/sdk/lib/services/CrmTasksService/calendars-settings.dto';
 
 export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async (_, thunkAPI) => {
 	try {
@@ -137,9 +138,48 @@ export const getCalendarsAccounts = createAsyncThunk('crmTasks/getCalendarsAccou
 	}
 });
 
+export const deleteCalendarsAccount = createAsyncThunk('crmTasks/deleteCalendarsAccount', async (email: string, { rejectWithValue }) => {
+	try {
+		await uspacySdk?.crmTasksService?.deleteCalendarsAccount(email);
+		return email;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
 export const getGoogleCalendars = createAsyncThunk('crmTasks/getGoogleCalendars', async (_, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk?.crmTasksService?.getGoogleCalendars();
+		return res?.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const saveCalendarSettings = createAsyncThunk('crmTasks/saveCalendarSettings', async (body: ICalendarSettings, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk?.crmTasksService?.saveCalendarSettings(body);
+		return res?.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const startInitialGoogleCalendarsSync = createAsyncThunk(
+	'crmTasks/startInitialGoogleCalendarsSync',
+	async (body: ISyncSettings, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk?.crmTasksService?.startInitialGoogleCalendarsSync(body);
+			return res?.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const startGoogleCalendarsSync = createAsyncThunk('crmTasks/startGoogleCalendarsSync', async (_, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk?.crmTasksService?.startGoogleCalendarsSync();
 		return res?.data;
 	} catch (e) {
 		return rejectWithValue(e);
