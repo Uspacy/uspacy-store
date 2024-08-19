@@ -7,7 +7,8 @@ import { ITask, ITasks } from '@uspacy/sdk/lib/models/crm-tasks';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IField } from '@uspacy/sdk/lib/models/field';
 
-import { idColumn } from './../../const';
+import { getField } from '../../helpers/filterFieldsArrs';
+import { idColumn, OTHER_DEFAULT_FIELDS } from './../../const';
 import {
 	createTask,
 	deleteCalendarsAccount,
@@ -22,7 +23,7 @@ import {
 	massTasksDeletion,
 	massTasksEditing,
 	saveCalendarSettings,
-	startGoogleCalendarsSync,
+	startCalendarsSync,
 	startInitialGoogleCalendarsSync,
 } from './actions';
 import { IState } from './types';
@@ -64,6 +65,57 @@ export const initialTaskFilter: ITaskFilters = {
 export const fieldForTasks: IField[] = [
 	idColumn,
 	{
+		name: 'caseType',
+		code: 'type',
+		required: false,
+		editable: false,
+		show: false,
+		hidden: true,
+		multiple: false,
+		type: 'list',
+		field_section_id: '',
+		system_field: true,
+		sort: '',
+		default_value: '',
+		values: [
+			{
+				color: '',
+				selected: false,
+				sort: 0,
+				title: 'task',
+				value: 'task',
+			},
+			{
+				color: '',
+				selected: false,
+				sort: 0,
+				title: 'call',
+				value: 'call',
+			},
+			{
+				color: '',
+				selected: false,
+				sort: 0,
+				title: 'meeting',
+				value: 'meeting',
+			},
+			{
+				color: '',
+				selected: false,
+				sort: 0,
+				title: 'chat',
+				value: 'chat',
+			},
+			{
+				color: '',
+				selected: false,
+				sort: 0,
+				title: 'message',
+				value: 'email',
+			},
+		],
+	},
+	{
 		name: 'taskTitle',
 		code: 'title',
 		required: false,
@@ -77,7 +129,7 @@ export const fieldForTasks: IField[] = [
 		default_value: '',
 	},
 	{
-		name: 'startTime',
+		name: 'eventStartDate',
 		code: 'start_time',
 		required: false,
 		editable: false,
@@ -90,7 +142,7 @@ export const fieldForTasks: IField[] = [
 		default_value: '',
 	},
 	{
-		name: 'dateOfEnding',
+		name: 'eventEndDate',
 		code: 'end_time',
 		required: false,
 		editable: false,
@@ -219,6 +271,20 @@ export const fieldForTasks: IField[] = [
 		system_field: false,
 		default_value: '',
 	},
+	{
+		name: 'participants',
+		code: 'participants',
+		required: false,
+		editable: false,
+		show: true,
+		hidden: false,
+		multiple: true,
+		type: 'user_id',
+		field_section_id: '',
+		system_field: false,
+		sort: '',
+		default_value: '',
+	},
 ];
 
 const initialState = {
@@ -233,7 +299,7 @@ const initialState = {
 	tasksFields: {
 		data: fieldForTasks,
 	},
-	taskFilter: initialTaskFilter,
+	taskFilter: {},
 	taskFiltersPreset: initialTasksFilterPreset,
 	redirectGoogleOauthUrl: '',
 	calendarsAccounts: [],
@@ -296,9 +362,6 @@ const tasksReducer = createSlice({
 			state.tasks = initialTasks;
 			state.loadingTaskList = true;
 		},
-		clearTasksFilter: (state) => {
-			state.taskFilter = initialTaskFilter;
-		},
 		chooseTaskId: (state, action: PayloadAction<number>) => {
 			state.clickedTaskId = action.payload;
 		},
@@ -318,7 +381,6 @@ const tasksReducer = createSlice({
 									if (contact.hasOwnProperty(key)) contact[key] = action.payload[key];
 								});
 							}
-
 							return contact;
 						}),
 					},
@@ -358,6 +420,23 @@ const tasksReducer = createSlice({
 		},
 		setFilterPresets: (state, action: PayloadAction<IFilterPreset[]>) => {
 			state.taskFiltersPreset.filterPresets = action.payload;
+		},
+		clearTasksFilter: (state, action: PayloadAction<IField[]>) => {
+			state.taskFilter = {
+				...fieldForTasks.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+				...action.payload.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+				...OTHER_DEFAULT_FIELDS,
+				sortModel: state?.taskFilter?.sortModel || [],
+				page: 1,
+				perPage: 20,
+			};
+		},
+		addItemToTasksFilter: (state, action: PayloadAction<IField[]>) => {
+			state.taskFilter = {
+				...fieldForTasks.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+				...action.payload.reduce((acc, it) => ({ ...acc, ...getField(it) }), {}),
+				...OTHER_DEFAULT_FIELDS,
+			};
 		},
 		setRedirectGoogleOauthUrl: (state, action: PayloadAction<string>) => {
 			state.redirectGoogleOauthUrl = action.payload;
@@ -463,7 +542,6 @@ const tasksReducer = createSlice({
 		},
 		[massTasksDeletion.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
 			state.loading = false;
-			state.loadingTaskList = false;
 			state.errorMessage = '';
 			state.tasks.data = state.tasks.data.filter((item) => !action.payload.entityIds.includes(item?.id));
 
@@ -613,16 +691,16 @@ const tasksReducer = createSlice({
 			state.loadingCalendarSync = false;
 			state.errorLoadingCalendarSync = action.payload;
 		},
-		[startGoogleCalendarsSync.fulfilled.type]: (state, action: PayloadAction<ICalendarsSuccessResponse>) => {
+		[startCalendarsSync.fulfilled.type]: (state, action: PayloadAction<ICalendarsSuccessResponse>) => {
 			state.loadingCalendarSync = false;
 			state.errorLoadingCalendarSync = null;
 			state.isSuccessCalendarSync = action.payload.status;
 		},
-		[startGoogleCalendarsSync.pending.type]: (state) => {
+		[startCalendarsSync.pending.type]: (state) => {
 			state.loadingCalendarSync = true;
 			state.errorLoadingCalendarSync = null;
 		},
-		[startGoogleCalendarsSync.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[startCalendarsSync.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingCalendarSync = false;
 			state.errorLoadingCalendarSync = action.payload;
 		},
@@ -642,6 +720,7 @@ export const {
 	openCompleteTaskModal,
 	clearTasks,
 	clearTasksFilter,
+	addItemToTasksFilter,
 	chooseTaskId,
 	setDeletionModalOpen,
 	editContactFromCard,
