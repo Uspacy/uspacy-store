@@ -1,4 +1,4 @@
-import { ICalendar, ICalendarsAccount } from '@uspacy/sdk/lib/models/calendars';
+import { ICalendar, ICalendarsAccounts } from '@uspacy/sdk/lib/models/calendars';
 import { IFiltersPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { ITaskFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { ITask, ITasks } from '@uspacy/sdk/lib/models/crm-tasks';
@@ -23,7 +23,7 @@ export interface IState {
 	taskFilter: ITaskFilters;
 	taskFiltersPreset: IFiltersPreset;
 	redirectGoogleOauthUrl: string;
-	calendarsAccounts: ICalendarsAccount[];
+	calendarsAccounts: ICalendarsAccounts;
 	calendars: ICalendar[];
 	isSuccessCalendarSync: boolean;
 	loading: boolean;

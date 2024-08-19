@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ICalendar, ICalendarsAccount, ICalendarsSuccessResponse } from '@uspacy/sdk/lib/models/calendars';
+import { ICalendar, ICalendarsAccount, ICalendarsAccounts, ICalendarsSuccessResponse } from '@uspacy/sdk/lib/models/calendars';
 import { IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { IFilter, ITaskFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
@@ -302,7 +302,7 @@ const initialState = {
 	taskFilter: {},
 	taskFiltersPreset: initialTasksFilterPreset,
 	redirectGoogleOauthUrl: '',
-	calendarsAccounts: [],
+	calendarsAccounts: {},
 	calendars: [],
 	isSuccessCalendarSync: false,
 	errorMessage: '',
@@ -621,7 +621,7 @@ const tasksReducer = createSlice({
 			state.loadingGoogleOauthRedirectUrl = false;
 			state.errorLoadingGoogleOauthRedirectUrl = action.payload;
 		},
-		[getCalendarsAccounts.fulfilled.type]: (state, action: PayloadAction<ICalendarsAccount[]>) => {
+		[getCalendarsAccounts.fulfilled.type]: (state, action: PayloadAction<ICalendarsAccounts>) => {
 			state.loadingCalendarsAccounts = false;
 			state.errorLoadingCalendarsAccounts = null;
 			state.calendarsAccounts = action.payload;
@@ -637,7 +637,7 @@ const tasksReducer = createSlice({
 		[deleteCalendarsAccount.fulfilled.type]: (state, action: PayloadAction<string>) => {
 			state.loadingDeleteCalendarsAccounts = false;
 			state.errorLoadingDeleteCalendarsAccounts = null;
-			state.calendarsAccounts = state.calendarsAccounts.filter((item) => item.email !== action.payload);
+			state.calendarsAccounts.data = state.calendarsAccounts.data.filter((item) => item.email !== action.payload);
 		},
 		[deleteCalendarsAccount.pending.type]: (state) => {
 			state.loadingDeleteCalendarsAccounts = true;
@@ -663,7 +663,7 @@ const tasksReducer = createSlice({
 		[saveCalendarSettings.fulfilled.type]: (state, action: PayloadAction<ICalendarsAccount>) => {
 			state.loadingSaveCalendarSettings = false;
 			state.errorLoadingSaveCalendarSettings = null;
-			state.calendarsAccounts = state.calendarsAccounts.map((calendarAccount) => {
+			state.calendarsAccounts.data = state.calendarsAccounts.data.map((calendarAccount) => {
 				if (calendarAccount.remote_calendar_id === action.payload.remote_calendar_id) {
 					return { ...calendarAccount, ...action.payload };
 				}
