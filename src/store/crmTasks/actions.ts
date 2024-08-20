@@ -135,10 +135,10 @@ export const getCalendarsAccounts = createAsyncThunk('crmTasks/getCalendarsAccou
 	}
 });
 
-export const deleteCalendarsAccount = createAsyncThunk('crmTasks/deleteCalendarsAccount', async (email: string, { rejectWithValue }) => {
+export const deleteCalendarsAccount = createAsyncThunk('crmTasks/deleteCalendarsAccount', async (id: number, { rejectWithValue }) => {
 	try {
-		await uspacySdk?.crmTasksService?.deleteCalendarsAccount(email);
-		return email;
+		await uspacySdk?.crmTasksService?.deleteCalendarsAccount();
+		return id;
 	} catch (e) {
 		return rejectWithValue(e);
 	}
@@ -177,6 +177,24 @@ export const startInitialGoogleCalendarsSync = createAsyncThunk(
 export const startCalendarsSync = createAsyncThunk('crmTasks/startCalendarsSync', async (_, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk?.crmTasksService?.startCalendarsSync();
+		return res?.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const stopGoogleCalendarsSync = createAsyncThunk('crmTasks/stopGoogleCalendarsSync', async (_, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk?.crmTasksService?.stopGoogleCalendarsSync();
+		return res?.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const activateGoogleCalendarsSync = createAsyncThunk('crmTasks/activateGoogleCalendarsSync', async (id: number, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk?.crmTasksService?.activateGoogleCalendarsSync(id);
 		return res?.data;
 	} catch (e) {
 		return rejectWithValue(e);

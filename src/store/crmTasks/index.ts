@@ -10,6 +10,7 @@ import { IField } from '@uspacy/sdk/lib/models/field';
 import { getField } from '../../helpers/filterFieldsArrs';
 import { idColumn, OTHER_DEFAULT_FIELDS } from './../../const';
 import {
+	activateGoogleCalendarsSync,
 	createTask,
 	deleteCalendarsAccount,
 	deleteTaskById,
@@ -25,6 +26,7 @@ import {
 	saveCalendarSettings,
 	startCalendarsSync,
 	startInitialGoogleCalendarsSync,
+	stopGoogleCalendarsSync,
 } from './actions';
 import { IState } from './types';
 
@@ -634,10 +636,10 @@ const tasksReducer = createSlice({
 			state.loadingCalendarsAccounts = false;
 			state.errorLoadingCalendarsAccounts = action.payload;
 		},
-		[deleteCalendarsAccount.fulfilled.type]: (state, action: PayloadAction<string>) => {
+		[deleteCalendarsAccount.fulfilled.type]: (state, action: PayloadAction<number>) => {
 			state.loadingDeleteCalendarsAccounts = false;
 			state.errorLoadingDeleteCalendarsAccounts = null;
-			state.calendarsAccounts.data = state.calendarsAccounts.data.filter((item) => item.email !== action.payload);
+			state.calendarsAccounts.data = state.calendarsAccounts.data.filter((item) => item.id !== action.payload);
 		},
 		[deleteCalendarsAccount.pending.type]: (state) => {
 			state.loadingDeleteCalendarsAccounts = true;
@@ -664,8 +666,8 @@ const tasksReducer = createSlice({
 			state.loadingSaveCalendarSettings = false;
 			state.errorLoadingSaveCalendarSettings = null;
 			state.calendarsAccounts.data = state.calendarsAccounts.data.map((calendarAccount) => {
-				if (calendarAccount.remote_calendar_id === action.payload.remote_calendar_id) {
-					return { ...calendarAccount, ...action.payload };
+				if (calendarAccount.id === action.payload.id) {
+					return action.payload;
 				}
 				return calendarAccount;
 			});
@@ -701,6 +703,32 @@ const tasksReducer = createSlice({
 			state.errorLoadingCalendarSync = null;
 		},
 		[startCalendarsSync.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCalendarSync = false;
+			state.errorLoadingCalendarSync = action.payload;
+		},
+		[stopGoogleCalendarsSync.fulfilled.type]: (state) => {
+			state.loadingCalendarSync = false;
+			state.errorLoadingCalendarSync = null;
+			state.isSuccessCalendarSync = false;
+		},
+		[stopGoogleCalendarsSync.pending.type]: (state) => {
+			state.loadingCalendarSync = true;
+			state.errorLoadingCalendarSync = null;
+		},
+		[stopGoogleCalendarsSync.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCalendarSync = false;
+			state.errorLoadingCalendarSync = action.payload;
+		},
+		[activateGoogleCalendarsSync.fulfilled.type]: (state, action: PayloadAction<ICalendarsSuccessResponse>) => {
+			state.loadingCalendarSync = false;
+			state.errorLoadingCalendarSync = null;
+			state.isSuccessCalendarSync = action.payload.status;
+		},
+		[activateGoogleCalendarsSync.pending.type]: (state) => {
+			state.loadingCalendarSync = true;
+			state.errorLoadingCalendarSync = null;
+		},
+		[activateGoogleCalendarsSync.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingCalendarSync = false;
 			state.errorLoadingCalendarSync = action.payload;
 		},
