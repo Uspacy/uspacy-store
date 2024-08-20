@@ -183,10 +183,10 @@ export const startCalendarsSync = createAsyncThunk('crmTasks/startCalendarsSync'
 	}
 });
 
-export const stopGoogleCalendarsSync = createAsyncThunk('crmTasks/stopGoogleCalendarsSync', async (_, { rejectWithValue }) => {
+export const stopGoogleCalendarsSync = createAsyncThunk('crmTasks/stopGoogleCalendarsSync', async (id: number, { rejectWithValue }) => {
 	try {
-		const res = await uspacySdk?.crmTasksService?.stopGoogleCalendarsSync();
-		return res?.data;
+		await uspacySdk?.crmTasksService?.stopGoogleCalendarsSync();
+		return id;
 	} catch (e) {
 		return rejectWithValue(e);
 	}
@@ -194,8 +194,8 @@ export const stopGoogleCalendarsSync = createAsyncThunk('crmTasks/stopGoogleCale
 
 export const activateGoogleCalendarsSync = createAsyncThunk('crmTasks/activateGoogleCalendarsSync', async (id: number, { rejectWithValue }) => {
 	try {
-		const res = await uspacySdk?.crmTasksService?.activateGoogleCalendarsSync(id);
-		return res?.data;
+		await uspacySdk?.crmTasksService?.activateGoogleCalendarsSync(id);
+		return id;
 	} catch (e) {
 		return rejectWithValue(e);
 	}

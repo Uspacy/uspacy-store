@@ -667,7 +667,7 @@ const tasksReducer = createSlice({
 			state.errorLoadingSaveCalendarSettings = null;
 			state.calendarsAccounts.data = state.calendarsAccounts.data.map((calendarAccount) => {
 				if (calendarAccount.id === action.payload.id) {
-					return action.payload;
+					return { ...calendarAccount, ...action.payload };
 				}
 				return calendarAccount;
 			});
@@ -706,10 +706,15 @@ const tasksReducer = createSlice({
 			state.loadingCalendarSync = false;
 			state.errorLoadingCalendarSync = action.payload;
 		},
-		[stopGoogleCalendarsSync.fulfilled.type]: (state) => {
+		[stopGoogleCalendarsSync.fulfilled.type]: (state, action: PayloadAction<number>) => {
 			state.loadingCalendarSync = false;
 			state.errorLoadingCalendarSync = null;
-			state.isSuccessCalendarSync = false;
+			state.calendarsAccounts.data = state.calendarsAccounts.data.map((calendarAccount) => {
+				if (calendarAccount.id === action.payload) {
+					return { ...calendarAccount, active: false };
+				}
+				return calendarAccount;
+			});
 		},
 		[stopGoogleCalendarsSync.pending.type]: (state) => {
 			state.loadingCalendarSync = true;
@@ -719,10 +724,15 @@ const tasksReducer = createSlice({
 			state.loadingCalendarSync = false;
 			state.errorLoadingCalendarSync = action.payload;
 		},
-		[activateGoogleCalendarsSync.fulfilled.type]: (state, action: PayloadAction<ICalendarsSuccessResponse>) => {
+		[activateGoogleCalendarsSync.fulfilled.type]: (state, action: PayloadAction<number>) => {
 			state.loadingCalendarSync = false;
 			state.errorLoadingCalendarSync = null;
-			state.isSuccessCalendarSync = action.payload.status;
+			state.calendarsAccounts.data = state.calendarsAccounts.data.map((calendarAccount) => {
+				if (calendarAccount.id === action.payload) {
+					return { ...calendarAccount, active: true };
+				}
+				return calendarAccount;
+			});
 		},
 		[activateGoogleCalendarsSync.pending.type]: (state) => {
 			state.loadingCalendarSync = true;
