@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ICalendar, ICalendarsAccount, ICalendarsAccounts, ICalendarsSuccessResponse } from '@uspacy/sdk/lib/models/calendars';
+import { ECalendarAccountStatuses, ICalendar, ICalendarsAccount, ICalendarsAccounts } from '@uspacy/sdk/lib/models/calendars';
 import { IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { IFilter, ITaskFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
@@ -680,10 +680,16 @@ const tasksReducer = createSlice({
 			state.loadingSaveCalendarSettings = false;
 			state.errorLoadingSaveCalendarSettings = action.payload;
 		},
-		[startInitialGoogleCalendarsSync.fulfilled.type]: (state, action: PayloadAction<ICalendarsSuccessResponse>) => {
+		[startInitialGoogleCalendarsSync.fulfilled.type]: (state, action: PayloadAction<number>) => {
 			state.loadingCalendarSync = false;
 			state.errorLoadingCalendarSync = null;
-			state.isSuccessCalendarSync = action.payload.status;
+			state.isSuccessCalendarSync = true;
+			state.calendarsAccounts.data = state.calendarsAccounts.data.map((calendarAccount) => {
+				if (calendarAccount.id === action.payload) {
+					return { ...calendarAccount, status: ECalendarAccountStatuses.RUN };
+				}
+				return calendarAccount;
+			});
 		},
 		[startInitialGoogleCalendarsSync.pending.type]: (state) => {
 			state.loadingCalendarSync = true;
@@ -693,10 +699,16 @@ const tasksReducer = createSlice({
 			state.loadingCalendarSync = false;
 			state.errorLoadingCalendarSync = action.payload;
 		},
-		[startCalendarsSync.fulfilled.type]: (state, action: PayloadAction<ICalendarsSuccessResponse>) => {
+		[startCalendarsSync.fulfilled.type]: (state, action: PayloadAction<number>) => {
 			state.loadingCalendarSync = false;
 			state.errorLoadingCalendarSync = null;
-			state.isSuccessCalendarSync = action.payload.status;
+			state.isSuccessCalendarSync = true;
+			state.calendarsAccounts.data = state.calendarsAccounts.data.map((calendarAccount) => {
+				if (calendarAccount.id === action.payload) {
+					return { ...calendarAccount, status: ECalendarAccountStatuses.RUN };
+				}
+				return calendarAccount;
+			});
 		},
 		[startCalendarsSync.pending.type]: (state) => {
 			state.loadingCalendarSync = true;
@@ -711,7 +723,7 @@ const tasksReducer = createSlice({
 			state.errorLoadingCalendarSync = null;
 			state.calendarsAccounts.data = state.calendarsAccounts.data.map((calendarAccount) => {
 				if (calendarAccount.id === action.payload) {
-					return { ...calendarAccount, active: false };
+					return { ...calendarAccount, active: false, status: ECalendarAccountStatuses.STOPPED };
 				}
 				return calendarAccount;
 			});
@@ -729,7 +741,7 @@ const tasksReducer = createSlice({
 			state.errorLoadingCalendarSync = null;
 			state.calendarsAccounts.data = state.calendarsAccounts.data.map((calendarAccount) => {
 				if (calendarAccount.id === action.payload) {
-					return { ...calendarAccount, active: true };
+					return { ...calendarAccount, active: true, status: ECalendarAccountStatuses.STARTED };
 				}
 				return calendarAccount;
 			});

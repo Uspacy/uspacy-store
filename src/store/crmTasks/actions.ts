@@ -164,20 +164,20 @@ export const saveCalendarSettings = createAsyncThunk('crmTasks/saveCalendarSetti
 
 export const startInitialGoogleCalendarsSync = createAsyncThunk(
 	'crmTasks/startInitialGoogleCalendarsSync',
-	async (body: ISyncSettings, { rejectWithValue }) => {
+	async ({ body, id }: { body: ISyncSettings; id: number }, { rejectWithValue }) => {
 		try {
-			const res = await uspacySdk?.crmTasksService?.startInitialGoogleCalendarsSync(body);
-			return res?.data;
+			await uspacySdk?.crmTasksService?.startInitialGoogleCalendarsSync(body);
+			return id;
 		} catch (e) {
 			return rejectWithValue(e);
 		}
 	},
 );
 
-export const startCalendarsSync = createAsyncThunk('crmTasks/startCalendarsSync', async (_, { rejectWithValue }) => {
+export const startCalendarsSync = createAsyncThunk('crmTasks/startCalendarsSync', async (id: number, { rejectWithValue }) => {
 	try {
-		const res = await uspacySdk?.crmTasksService?.startCalendarsSync();
-		return res?.data;
+		await uspacySdk?.crmTasksService?.startCalendarsSync();
+		return id;
 	} catch (e) {
 		return rejectWithValue(e);
 	}
