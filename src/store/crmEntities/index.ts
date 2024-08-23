@@ -944,12 +944,16 @@ const entitiesReducer = createSlice({
 		[createUniversalEntityItemFromKanban.fulfilled.type]: (state, action: PayloadAction<{ response: IEntityData; entityCode: string }>) => {
 			state.loading = false;
 			state.errorMessage = null;
+			console.log(state.entities.data, 'state.entities.data');
 			state.entities.data = state?.entities?.data?.map((entity) => {
 				if (entity?.table_name === action?.payload?.entityCode) {
+					console.log('entityCode', action?.payload?.entityCode);
+					console.log(entity, 'entity');
+					console.log(action?.payload?.response, 'action?.payload?.response');
 					return {
 						...entity,
 						items: {
-							...entity.items,
+							...entity?.items,
 							data: [action?.payload?.response, ...entity?.items?.data],
 						},
 					};
