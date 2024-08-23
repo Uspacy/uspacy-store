@@ -945,10 +945,14 @@ const entitiesReducer = createSlice({
 			state.loading = false;
 			state.errorMessage = null;
 			state.entities.data = state?.entities?.data?.map((entity) => {
-				if (entity?.table_name === action?.payload?.entityCode) {
-					if (Array.isArray(entity.items?.data)) {
-						entity.items.data.unshift(action.payload.response);
-					}
+				if (entity?.table_name === action?.payload?.entityCode && Array.isArray(entity.items?.data)) {
+					return {
+						...entity,
+						items: {
+							...entity.items,
+							data: [action?.payload?.response, ...entity?.items?.data],
+						},
+					};
 				}
 				return entity;
 			});
