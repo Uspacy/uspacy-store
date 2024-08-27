@@ -66,7 +66,7 @@ const defaultProduct: IProduct = {
 };
 
 const defaultDataColumns = [
-	{ ...defColumn, name: 'product/service', code: 'title', type: 'productTitle', required: true, },
+	{ ...defColumn, name: 'product/service', code: 'title', type: 'productTitle', required: true },
 	{ ...defColumn, name: 'category', code: 'product_category_id', type: 'productCategory' },
 	{ ...defColumn, name: 'productType', code: 'type', type: 'productType' },
 	{ ...defColumn, name: 'article', code: 'article', type: 'productArticle' },
