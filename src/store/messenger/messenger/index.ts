@@ -487,7 +487,7 @@ export const chatSlice = createSlice({
 
 			if (profile.authUserId === userId) {
 				state.chats.items = state.chats.items.map((it) => {
-					if (it.id === chatId) {
+					if (it.id === chatId && it.unreadCount) {
 						return {
 							...it,
 							unreadCount: 0,
@@ -504,7 +504,10 @@ export const chatSlice = createSlice({
 						...group,
 						items: group.items
 							.filter((it) => !it.isFirstUnread)
-							.map((it) => ({ ...it, readBy: !it.readBy.includes(userId) ? [...it.readBy, userId] : it.readBy })),
+							.map((it) => ({
+								...it,
+								readBy: it.authorId !== userId && !it.readBy.includes(userId) ? [...it.readBy, userId] : it.readBy,
+							})),
 					};
 				}
 				return group;
@@ -512,7 +515,7 @@ export const chatSlice = createSlice({
 
 			if (userId !== profile.authUserId) {
 				state.chats.items = state.chats.items.map((chat) => {
-					if (chat.id === chatId) {
+					if (chat.id === chatId && chat.lastMessage?.authorId !== userId) {
 						const { lastMessage } = chat;
 						return {
 							...chat,

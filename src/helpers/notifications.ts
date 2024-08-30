@@ -2,18 +2,23 @@ import { INotificationMessage, NotificationAction } from '@uspacy/sdk/lib/models
 import { IUser } from '@uspacy/sdk/lib/models/user';
 import { ILinkData, INotification } from 'src/store/notifications/types';
 
+import { AVAILABLE_ENTITY_TYPES } from '../const';
+
 export const getServiceName = (serviceName: string) => {
 	const [service] = serviceName.split('-');
 	return service.replace('news_feed', 'newsfeed');
 };
 
 const getEntityBase = (linkData: ILinkData) => {
+	if (linkData.type === 'post') return 'newsfeed';
+
 	switch (linkData.entity_type) {
 		case 'company':
 			return 'companies';
 		case 'post':
 			return 'newsfeed';
 		default:
+			if (linkData.type === 'entity_crm') return `${linkData.service}/${linkData.table_name}`;
 			return linkData.type ? `${linkData.type}s` : `${linkData.entity_type}s`;
 	}
 };
@@ -43,12 +48,17 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 	}
 };
 
+const checkIfSmartObject = (type: string) => {
+	return !AVAILABLE_ENTITY_TYPES.includes(type) ? 'crm.activity' : type;
+};
+
 const getEntityType = (message: INotificationMessage) => {
 	const rootParentEntityType = message.data?.root_parent?.type;
 	const parentEntityType = message.data?.entity?.parent?.entity_type;
+	if (rootParentEntityType === 'entity_crm') return message.data?.entity.entity_type;
 	if (message.data.root_parent && Object.keys(message.data.root_parent).length) return rootParentEntityType;
 	if (parentEntityType) return parentEntityType;
-	return message.data.entity?.entity_type;
+	return checkIfSmartObject(message.data.entity?.entity_type);
 };
 
 export const getNotificationTitle = (message: INotificationMessage, profileId: number): string | undefined => {
