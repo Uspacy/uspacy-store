@@ -1,6 +1,7 @@
 import { IField } from '@uspacy/sdk/lib/models/field';
 
 export const API_PREFIX_FILES = '/files/v1';
+export const API_PREFIX_SETTINGS = '/settings/v1';
 
 export const idColumn: IField = {
 	name: 'number_',
