@@ -10,6 +10,7 @@ import {
 	sortChats,
 	updateExternalChat,
 	updateLastMessageInExternalChat,
+	updateUnreadCountAndMentionedByChatId,
 } from '../../../helpers/messenger';
 import { fetchExternalChats } from './actions';
 import { IState } from './types';
@@ -97,7 +98,12 @@ export const externalChatSlice = createSlice({
 		},
 		readLastMessageInExternalChat(state, action: PayloadAction<{ message: IMessage; userId: number }>) {
 			const { message, userId } = action.payload;
-			state.externalChats.items.active = readLastMessageInChat(state.externalChats.items.active, message, userId);
+			state.externalChats.items.active = updateUnreadCountAndMentionedByChatId(
+				readLastMessageInChat(state.externalChats.items.active, message, userId),
+				message.chatId,
+				userId,
+				message,
+			);
 		},
 		readExtMessagesAction(state, action: PayloadAction<{ items: { id: string; readBy: number[] }[]; chatId: string; profile: IUser }>) {
 			const { items, chatId, profile } = action.payload;
