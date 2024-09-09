@@ -3,6 +3,10 @@ import { uspacySdk } from '@uspacy/sdk';
 import { ITaskFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { ITask } from '@uspacy/sdk/lib/models/crm-tasks';
+import { IField } from '@uspacy/sdk/lib/models/field';
+
+import { getFilterParams } from './../../helpers/filterFieldsArrs';
+import { makeURIParams } from './../../helpers/makeURIParams';
 
 export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async (_, thunkAPI) => {
 	try {
@@ -27,17 +31,10 @@ export const createTask = createAsyncThunk('tasks/createTask', async (data: any,
 
 export const fetchTasksWithFilters = createAsyncThunk(
 	'tasks/fetchTasksWithFilters',
-	async (data: { params: Omit<ITaskFilters, 'openDatePicker'>; signal: AbortSignal }, thunkAPI) => {
-		const params = {
-			page: data.params.page,
-			list: data.params.perPage,
-			status: data.params.status,
-			type: Array.isArray(data?.params?.task_type) ? data?.params?.task_type : [],
-			participants: data.params.participants,
-			responsible_id: data.params.responsible_id,
-			start_time: data.params.period,
-			...(data.params.search ? { q: data.params.search } : {}),
-		};
+	async (data: { params: Omit<ITaskFilters, 'openDatePicker'>; signal: AbortSignal; fields?: IField[] }, thunkAPI) => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const filterParam = getFilterParams(data.params as any, data?.fields || []);
+		const params = makeURIParams(filterParam);
 		try {
 			const res = await uspacySdk.crmTasksService.getTasksWithFilters(params, data?.signal);
 			return res?.data;
