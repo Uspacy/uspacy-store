@@ -9,7 +9,7 @@ import { ICalendarSettings, ISyncSettings } from '@uspacy/sdk/lib/services/CrmTa
 import { getFilterParams } from './../../helpers/filterFieldsArrs';
 import { makeURIParams } from './../../helpers/makeURIParams';
 
-export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async (_, thunkAPI) => {
+export const fetchTasks = createAsyncThunk('crmTasks/fetchTasks', async (_, thunkAPI) => {
 	try {
 		const res = await uspacySdk?.crmTasksService?.getTasks();
 		return res?.data;
@@ -19,7 +19,7 @@ export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async (_, thunkAP
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const createTask = createAsyncThunk('tasks/createTask', async (data: any, thunkAPI) => {
+export const createTask = createAsyncThunk('crmTasks/createTask', async (data: any, thunkAPI) => {
 	try {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { id, ...rest } = data;
@@ -31,7 +31,7 @@ export const createTask = createAsyncThunk('tasks/createTask', async (data: any,
 });
 
 export const fetchTasksWithFilters = createAsyncThunk(
-	'tasks/fetchTasksWithFilters',
+	'crmTasks/fetchTasksWithFilters',
 	async (data: { params: Omit<ITaskFilters, 'openDatePicker'>; signal: AbortSignal; fields?: IField[] }, thunkAPI) => {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const filterParam = getFilterParams(data.params as any, data?.fields || []);
@@ -52,7 +52,7 @@ export const fetchTasksWithFilters = createAsyncThunk(
 	},
 );
 
-export const editTask = createAsyncThunk('tasks/edit', async ({ id, data }: { id: number; data: Partial<ITask> }, thunkAPI) => {
+export const editTask = createAsyncThunk('crmTasks/edit', async ({ id, data }: { id: number; data: Partial<ITask> }, thunkAPI) => {
 	try {
 		const res = await uspacySdk.crmTasksService.updateTask(id, data);
 		return res?.data;
@@ -61,7 +61,7 @@ export const editTask = createAsyncThunk('tasks/edit', async ({ id, data }: { id
 	}
 });
 
-export const fetchTaskById = createAsyncThunk('tasks/fetchTaskById', async (id: string, thunkAPI) => {
+export const fetchTaskById = createAsyncThunk('crmTasks/fetchTaskById', async (id: string, thunkAPI) => {
 	try {
 		const res = await uspacySdk.crmTasksService.getTask(id);
 		return res?.data;
@@ -70,7 +70,7 @@ export const fetchTaskById = createAsyncThunk('tasks/fetchTaskById', async (id: 
 	}
 });
 
-export const deleteTaskById = createAsyncThunk('tasks/deleteTaskById', async (id: number, thunkAPI) => {
+export const deleteTaskById = createAsyncThunk('crmTasks/deleteTaskById', async (id: number, thunkAPI) => {
 	try {
 		await uspacySdk.crmTasksService.deleteTask(id);
 		return id;

@@ -326,8 +326,8 @@ const initialState = {
 	deletionModalOpen: { action: false, id: null },
 } as IState;
 
-const tasksReducer = createSlice({
-	name: 'tasks',
+const crmTasksReducer = createSlice({
+	name: 'crmTasks',
 	initialState,
 	reducers: {
 		openCreateTaskModal: (state, action) => {
@@ -782,5 +782,5 @@ export const {
 	setFilterPresets,
 	setRedirectGoogleOauthUrl,
 	setIsSuccessCalendarSync,
-} = tasksReducer.actions;
-export default tasksReducer.reducer;
+} = crmTasksReducer.actions;
+export default crmTasksReducer.reducer;
