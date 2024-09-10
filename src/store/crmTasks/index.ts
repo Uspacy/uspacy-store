@@ -5,8 +5,8 @@ import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { ITask, ITasks } from '@uspacy/sdk/lib/models/crm-tasks';
 import { IField } from '@uspacy/sdk/lib/models/field';
 
-import { idColumn, OTHER_DEFAULT_FIELDS } from './../../const';
 import { getField } from '../../helpers/filterFieldsArrs';
+import { idColumn, OTHER_DEFAULT_FIELDS } from './../../const';
 import {
 	createTask,
 	deleteTaskById,
@@ -303,8 +303,8 @@ const initialState = {
 	deletionModalOpen: { action: false, id: null },
 } as IState;
 
-const tasksReducer = createSlice({
-	name: 'tasks',
+const crmTasksReducer = createSlice({
+	name: 'crmTasks',
 	initialState,
 	reducers: {
 		openCreateTaskModal: (state, action) => {
@@ -608,5 +608,5 @@ export const {
 	setCurrentPreset,
 	setStandardPreset,
 	setFilterPresets,
-} = tasksReducer.actions;
-export default tasksReducer.reducer;
+} = crmTasksReducer.actions;
+export default crmTasksReducer.reducer;
