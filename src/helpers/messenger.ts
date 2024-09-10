@@ -168,7 +168,7 @@ export const updateLastMessageInExternalChat = (
 	message: IMessage,
 	profile?: IUser,
 ): IExternalChatsItems => {
-	const isNotMy = message.authorId !== profile?.authUserId;
+	const isNotMy = message.authorId !== profile?.authUserId || message.externalAuthorId;
 	return {
 		active: chats.active.map((chat) => changeLastMessageByChatId(chat, chatId, message, isNotMy)).sort((a, b) => b.timestamp - a.timestamp),
 		undistributed: chats.undistributed
