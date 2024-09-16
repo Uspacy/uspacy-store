@@ -313,6 +313,7 @@ export const {
 	setActiveModalType,
 	allowAllPermissions,
 	addPermissionsForColAction,
+	mergeCreatePermissions,
 } = rolesReducer.actions;
 
 export default rolesReducer.reducer;
