@@ -188,7 +188,7 @@ const rolesReducer = createSlice({
 				view: [...state[action.payload.key].view, ...action.payload.universal.view],
 				delete: [...state[action.payload.key].delete, ...action.payload.universal.delete],
 			};
-			state.createPermissions = merged;
+			state[action.payload.key] = merged;
 		},
 	},
 	extraReducers: {
