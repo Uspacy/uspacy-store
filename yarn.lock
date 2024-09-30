@@ -509,7 +509,7 @@
     "@typescript-eslint/types" "6.3.0"
     eslint-visitor-keys "^3.4.1"
 
-"@uspacy/sdk@0.0.101":
+"@uspacy/sdk@^0.0.101":
   version "0.0.101"
   resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.101/4c630f37d3e3ad8d9f744c1c3321e22444f48e0e#4c630f37d3e3ad8d9f744c1c3321e22444f48e0e"
   integrity sha512-wQv8gx8Tk6GOmoSbpoBoPQJsVCACbcw+bvxAEPKE4RfyTMbXhBhQrvIs4V4JVc09ZGkikOYeD3xg0CY1MdO82w==
