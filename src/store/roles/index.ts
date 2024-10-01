@@ -181,6 +181,15 @@ const rolesReducer = createSlice({
 				state.permissions = newPermissions;
 			}
 		},
+		mergeCreatePermissions(state, action) {
+			const merged = {
+				create: [...state[action.payload.key].create, ...action.payload.universal.create],
+				edit: [...state[action.payload.key].edit, ...action.payload.universal.edit],
+				view: [...state[action.payload.key].view, ...action.payload.universal.view],
+				delete: [...state[action.payload.key].delete, ...action.payload.universal.delete],
+			};
+			state[action.payload.key] = merged;
+		},
 	},
 	extraReducers: {
 		[fetchPermissions.fulfilled.type]: (state, action: PayloadAction<IPermissions>) => {
@@ -304,6 +313,7 @@ export const {
 	setActiveModalType,
 	allowAllPermissions,
 	addPermissionsForColAction,
+	mergeCreatePermissions,
 } = rolesReducer.actions;
 
 export default rolesReducer.reducer;
