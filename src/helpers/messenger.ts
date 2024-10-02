@@ -19,6 +19,8 @@ export const getChatName = (chat: IChat, users: IUser[], profile: IUser, formatt
 };
 
 export const getChatPictureUrl = (chat: IChat, users: IUser[], profile: IUser) => {
+	if (!chat) return '';
+
 	switch (chat.type) {
 		case ChatType.DIRECT: {
 			const withSelf = chat.members.length === 1 && chat.members.includes(profile.authUserId);
