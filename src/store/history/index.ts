@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IHistoryResponse } from '@uspacy/sdk/lib/models/history';
+import { IHistoryChange, IHistoryResponse } from '@uspacy/sdk/lib/models/history';
 
 import { fetchChangesHistory } from './actions';
 import { IState } from './types';
@@ -14,7 +14,11 @@ const initialState = {
 const historyReducer = createSlice({
 	name: 'historyReducer',
 	initialState,
-	reducers: {},
+	reducers: {
+		addNewHistory: (state, action: PayloadAction<IHistoryChange>) => {
+			state.history.data = [action.payload, ...state.history.data];
+		},
+	},
 	extraReducers: {
 		[fetchChangesHistory.fulfilled.type]: (state, action: PayloadAction<IHistoryResponse>) => {
 			state.loadingHistory = false;
@@ -32,5 +36,7 @@ const historyReducer = createSlice({
 		},
 	},
 });
+
+export const { addNewHistory } = historyReducer.actions;
 
 export default historyReducer.reducer;
