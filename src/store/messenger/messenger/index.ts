@@ -145,7 +145,7 @@ export const chatSlice = createSlice({
 						lastMessage: item,
 						timestamp: item.timestamp,
 						originalTimestamp: item.timestamp,
-						unreadCount: item.authorId !== profile.authUserId ? chat.unreadCount + 1 : chat.unreadCount,
+						unreadCount: item.authorId !== profile.authUserId || item.externalAuthorId ? chat.unreadCount + 1 : chat.unreadCount,
 						// update unreadMentions when we get messages
 						...(item.mentioned.includes(profile.authUserId) && { unreadMentions: [item.id, ...chat.unreadMentions] }),
 					};
