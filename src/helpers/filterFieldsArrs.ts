@@ -187,7 +187,7 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 				return { ...acc, deals: value?.filter((el) => el !== 'NO_DEALS') };
 			}
 			if (findField?.type === 'customLink') {
-				const checkCompany = key === 'company' ? 'companies': key;
+				const checkCompany = key === 'company' ? 'companies' : key;
 				return { ...acc, [`${checkCompany}[title]`]: value };
 			}
 			if (['kanban_status', 'kanban_reason_id'].includes(key)) {
