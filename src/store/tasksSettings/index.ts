@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ICouchItemData } from '@uspacy/sdk/lib/models/couchdb';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { ITableSettings } from '@uspacy/sdk/lib/models/task-settings';
+import { ITasksColumnSettings } from '@uspacy/sdk/lib/models/tasks-settings';
 
 import { createSettings, getTasksSettings, updateTasksSettings } from './actions';
 import { IState } from './types';
@@ -24,7 +24,7 @@ const tasksSettingsReducer = createSlice({
 	initialState,
 	reducers: {},
 	extraReducers: {
-		[getTasksSettings.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<ITableSettings>>) => {
+		[getTasksSettings.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<ITasksColumnSettings>>) => {
 			state.loadingTasksSettings = false;
 			state.errorLoadingTasksSettings = null;
 			state.tasksSettings = action.payload;
@@ -37,7 +37,7 @@ const tasksSettingsReducer = createSlice({
 			state.loadingTasksSettings = false;
 			state.errorLoadingTasksSettings = action.payload;
 		},
-		[createSettings.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<ITableSettings>>) => {
+		[createSettings.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<ITasksColumnSettings>>) => {
 			state.loadingCreateTasksSettings = false;
 			state.errorLoadingCreateTasksSettings = null;
 			state.tasksSettings = action.payload;
@@ -50,7 +50,7 @@ const tasksSettingsReducer = createSlice({
 			state.loadingCreateTasksSettings = false;
 			state.errorLoadingCreateTasksSettings = action.payload;
 		},
-		[updateTasksSettings.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<ITableSettings>>) => {
+		[updateTasksSettings.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<ITasksColumnSettings>>) => {
 			state.loadingUpdateTasksSettings = false;
 			state.errorLoadingUpdateTasksSettings = null;
 			state.tasksSettings = action.payload;

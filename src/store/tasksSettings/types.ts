@@ -1,9 +1,9 @@
 import { ICouchItemData } from '@uspacy/sdk/lib/models/couchdb';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { ITableSettings } from '@uspacy/sdk/lib/models/task-settings';
+import { ITasksColumnSettings } from '@uspacy/sdk/lib/models/tasks-settings';
 
 export interface IState {
-	tasksSettings: ICouchItemData<ITableSettings>;
+	tasksSettings: ICouchItemData<ITasksColumnSettings>;
 	loadingTasksSettings: boolean;
 	loadingCreateTasksSettings: boolean;
 	loadingUpdateTasksSettings: boolean;

@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
-import { ITableSettings } from '@uspacy/sdk/lib/models/task-settings';
+import { ITasksColumnSettings } from '@uspacy/sdk/lib/models/tasks-settings';
 
 export const getTasksSettings = createAsyncThunk('tasksSettings/getTasksSettings', async (_, { rejectWithValue }) => {
 	try {
@@ -11,7 +11,7 @@ export const getTasksSettings = createAsyncThunk('tasksSettings/getTasksSettings
 	}
 });
 
-export const createSettings = createAsyncThunk('tasksSettings/createSettings', async (body: ITableSettings, { rejectWithValue }) => {
+export const createSettings = createAsyncThunk('tasksSettings/createSettings', async (body: ITasksColumnSettings, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk.tasksService.createSettings(body);
 		return res.data;
@@ -22,7 +22,7 @@ export const createSettings = createAsyncThunk('tasksSettings/createSettings', a
 
 export const updateTasksSettings = createAsyncThunk(
 	'tasksSettings/updateTasksSettings',
-	async ({ id, rev, body }: { id: string; rev: string; body: ITableSettings }, { rejectWithValue }) => {
+	async ({ id, rev, body }: { id: string; rev: string; body: ITasksColumnSettings }, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.updateTasksSettings(id, rev, body);
 			// @ts-ignore, temporary ignore
