@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ICouchItemData } from '@uspacy/sdk/lib/models/couchdb';
+import { ICouchQueryResponse } from '@uspacy/sdk/lib/models/couchdb';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { ITasksColumnSettings } from '@uspacy/sdk/lib/models/tasks-settings';
 
@@ -8,8 +8,7 @@ import { IState } from './types';
 
 const initialState = {
 	tasksSettings: {
-		_id: '',
-		_rev: '',
+		docs: [],
 	},
 	loadingTasksSettings: false,
 	loadingCreateTasksSettings: false,
@@ -22,9 +21,13 @@ const initialState = {
 const tasksSettingsReducer = createSlice({
 	name: 'tasksSettingsReducer',
 	initialState,
-	reducers: {},
+	reducers: {
+		setTasksSettings: (state, action: PayloadAction<ICouchQueryResponse<ITasksColumnSettings>>) => {
+			state.tasksSettings = action.payload;
+		},
+	},
 	extraReducers: {
-		[getTasksSettings.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<ITasksColumnSettings>>) => {
+		[getTasksSettings.fulfilled.type]: (state, action: PayloadAction<ICouchQueryResponse<ITasksColumnSettings>>) => {
 			state.loadingTasksSettings = false;
 			state.errorLoadingTasksSettings = null;
 			state.tasksSettings = action.payload;
@@ -37,10 +40,9 @@ const tasksSettingsReducer = createSlice({
 			state.loadingTasksSettings = false;
 			state.errorLoadingTasksSettings = action.payload;
 		},
-		[createSettings.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<ITasksColumnSettings>>) => {
+		[createSettings.fulfilled.type]: (state) => {
 			state.loadingCreateTasksSettings = false;
 			state.errorLoadingCreateTasksSettings = null;
-			state.tasksSettings = action.payload;
 		},
 		[createSettings.pending.type]: (state) => {
 			state.loadingCreateTasksSettings = true;
@@ -50,10 +52,10 @@ const tasksSettingsReducer = createSlice({
 			state.loadingCreateTasksSettings = false;
 			state.errorLoadingCreateTasksSettings = action.payload;
 		},
-		[updateTasksSettings.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<ITasksColumnSettings>>) => {
+		[updateTasksSettings.fulfilled.type]: (state, action: PayloadAction<ITasksColumnSettings>) => {
 			state.loadingUpdateTasksSettings = false;
 			state.errorLoadingUpdateTasksSettings = null;
-			state.tasksSettings = action.payload;
+			state.tasksSettings.docs = state.tasksSettings.docs.map((item) => (item._id === action.payload._id ? action.payload : item));
 		},
 		[updateTasksSettings.pending.type]: (state) => {
 			state.loadingUpdateTasksSettings = true;
@@ -66,4 +68,5 @@ const tasksSettingsReducer = createSlice({
 	},
 });
 
+export const { setTasksSettings } = tasksSettingsReducer.actions;
 export default tasksSettingsReducer.reducer;

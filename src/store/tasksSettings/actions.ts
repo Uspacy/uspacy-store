@@ -2,9 +2,15 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { ITasksColumnSettings } from '@uspacy/sdk/lib/models/tasks-settings';
 
-export const getTasksSettings = createAsyncThunk('tasksSettings/getTasksSettings', async (_, { rejectWithValue }) => {
+export const getTasksSettings = createAsyncThunk('tasksSettings/getTasksSettings', async (type: string, { rejectWithValue }) => {
 	try {
-		const res = await uspacySdk.tasksService.getTasksSettings();
+		const domain = (async () => {
+			const docodedToken = await uspacySdk.tokensService.decodeToken();
+			return `${docodedToken.domain}-${docodedToken.id}`;
+		})();
+		const domainKey = await domain;
+
+		const res = await uspacySdk.tasksService.getTasksSettings(domainKey, type);
 		return res.data;
 	} catch (e) {
 		return rejectWithValue(e);
@@ -25,7 +31,6 @@ export const updateTasksSettings = createAsyncThunk(
 	async ({ id, rev, body }: { id: string; rev: string; body: ITasksColumnSettings }, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.updateTasksSettings(id, rev, body);
-			// @ts-ignore, temporary ignore
 			return { _id: res?.data?.id, _rev: res?.data?.rev, ...body };
 		} catch (e) {
 			return rejectWithValue(e);
