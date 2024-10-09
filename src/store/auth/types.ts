@@ -1,3 +1,4 @@
+import { IAfterGoogleOauthResponse } from '@uspacy/sdk/lib/models/calendars';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { ICoupon, IIntent, IInvoiceData, IInvoices, IRatesList, ISubscription } from '@uspacy/sdk/lib/models/tariffs';
 
@@ -9,6 +10,7 @@ export interface IState {
 	activeSubscription?: ISubscription;
 	coupon: ICoupon;
 	intent: IIntent;
+	afterGoogleOAuthData: IAfterGoogleOauthResponse;
 	downloadPdfLink: string;
 	loadingInvoices: boolean;
 	loadingPdfLink: boolean;
@@ -21,6 +23,7 @@ export interface IState {
 	loadingSubscriptionRenewal: boolean;
 	loadingActivateDemo: boolean;
 	loadingDowngrade: boolean;
+	loadingAfterGoogleOAuth: boolean;
 	errorLoadingInvoices: IErrorsAxiosResponse;
 	errorLoadingPdfLink: IErrorsAxiosResponse;
 	errorLoadingRatesList: IErrorsAxiosResponse;
@@ -32,4 +35,5 @@ export interface IState {
 	errorActivateDemo: IErrorsAxiosResponse;
 	errorLoadingDowngrade: IErrorsAxiosResponse;
 	errorLoadingUsingPaymentIntent: IErrorsAxiosResponse;
+	errorLoadingAfterGoogleOAuth: IErrorsAxiosResponse;
 }

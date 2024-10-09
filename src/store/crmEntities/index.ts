@@ -945,7 +945,7 @@ const entitiesReducer = createSlice({
 			state.loading = false;
 			state.errorMessage = null;
 			state.entities.data = state?.entities?.data?.map((entity) => {
-				if (entity?.table_name === action?.payload?.entityCode) {
+				if (entity?.table_name === action?.payload?.entityCode && Array.isArray(entity.items?.data)) {
 					return {
 						...entity,
 						items: {
