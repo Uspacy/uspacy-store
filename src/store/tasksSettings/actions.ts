@@ -4,13 +4,7 @@ import { ITasksColumnSettings } from '@uspacy/sdk/lib/models/tasks-settings';
 
 export const getTasksSettings = createAsyncThunk('tasksSettings/getTasksSettings', async (type: string, { rejectWithValue }) => {
 	try {
-		const domain = (async () => {
-			const docodedToken = await uspacySdk.tokensService.decodeToken();
-			return `${docodedToken.domain}-${docodedToken.id}`;
-		})();
-		const domainKey = await domain;
-
-		const res = await uspacySdk.tasksService.getTasksSettings(domainKey, type);
+		const res = await uspacySdk.tasksService.getTasksSettings(type);
 		return res.data;
 	} catch (e) {
 		return rejectWithValue(e);
