@@ -1,6 +1,8 @@
+import { ICalendar, ICalendarsAccounts } from '@uspacy/sdk/lib/models/calendars';
 import { IFiltersPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
-import { ITaskFilters } from '@uspacy/sdk/lib/models/crm-filters';
+import { IFilter } from '@uspacy/sdk/lib/models/crm-filters';
 import { ITask, ITasks } from '@uspacy/sdk/lib/models/crm-tasks';
+import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFields } from '@uspacy/sdk/lib/models/field';
 
 export interface IErrors {
@@ -18,11 +20,27 @@ export interface IState {
 	changeTasks: ITask[];
 	taskCopy: ITask;
 	tasksFields: IFields;
-	taskFilter: ITaskFilters;
+	taskFilter: IFilter;
 	taskFiltersPreset: IFiltersPreset;
+	redirectGoogleOauthUrl: string;
+	calendarsAccounts: ICalendarsAccounts;
+	calendars: ICalendar[];
+	isSuccessCalendarSync: boolean;
 	loading: boolean;
 	loadingTaskList: boolean;
+	loadingGoogleOauthRedirectUrl: boolean;
+	loadingCalendarsAccounts: boolean;
+	loadingDeleteCalendarsAccounts: boolean;
+	loadingCalendars: boolean;
+	loadingSaveCalendarSettings: boolean;
+	loadingCalendarSync: boolean;
 	errorMessage: string;
+	errorLoadingGoogleOauthRedirectUrl: IErrorsAxiosResponse;
+	errorLoadingCalendarsAccounts: IErrorsAxiosResponse;
+	errorLoadingCalendars: IErrorsAxiosResponse;
+	errorLoadingSaveCalendarSettings: IErrorsAxiosResponse;
+	errorLoadingCalendarSync: IErrorsAxiosResponse;
+	errorLoadingDeleteCalendarsAccounts: IErrorsAxiosResponse;
 	isCreateTaskModalOpened: boolean;
 	isTaskViewModalOpened: boolean;
 	isCopy: boolean;

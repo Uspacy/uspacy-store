@@ -21,4 +21,6 @@ export interface IState {
 export interface ILinkData {
 	entity_type?: string;
 	type?: string;
+	service: string;
+	table_name: string;
 }
