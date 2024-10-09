@@ -34,6 +34,7 @@ import notifications from './notifications';
 import payments from './payments';
 import profile from './profile';
 import roles from './roles';
+import settings from './settings';
 import tasks from './tasks';
 import tasksFilters from './tasksFilters';
 import tasksStages from './tasksStages';
@@ -82,11 +83,16 @@ const rootReducer = combineReducers({
 	crmProductsUnit,
 	crmDocumentTemplates,
 	crmRequisite,
+	settings,
 });
 
 export const setupStore = () => {
 	return configureStore({
 		reducer: rootReducer,
+		middleware: (getDefaultMiddleware) =>
+			getDefaultMiddleware({
+				serializableCheck: false,
+			}),
 	});
 };
 

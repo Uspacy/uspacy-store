@@ -2,7 +2,9 @@ import { ChatType, EActiveEntity, IChat, IExternalChatsItems, IMessage } from '@
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 export const getChatName = (chat: IChat, users: IUser[], profile: IUser, formattedUserName: (u: IUser) => string) => {
-	switch (chat.type) {
+	if (!chat) return '';
+
+	switch (chat?.type) {
 		case ChatType.DIRECT: {
 			const withSelf = chat.members.length === 1 && chat.members.includes(profile.authUserId);
 			if (withSelf) return formattedUserName(profile);
@@ -17,6 +19,8 @@ export const getChatName = (chat: IChat, users: IUser[], profile: IUser, formatt
 };
 
 export const getChatPictureUrl = (chat: IChat, users: IUser[], profile: IUser) => {
+	if (!chat) return '';
+
 	switch (chat.type) {
 		case ChatType.DIRECT: {
 			const withSelf = chat.members.length === 1 && chat.members.includes(profile.authUserId);
@@ -168,7 +172,7 @@ export const updateLastMessageInExternalChat = (
 	message: IMessage,
 	profile?: IUser,
 ): IExternalChatsItems => {
-	const isNotMy = message.authorId !== profile?.authUserId;
+	const isNotMy = message.authorId !== profile?.authUserId || message.externalAuthorId;
 	return {
 		active: chats.active.map((chat) => changeLastMessageByChatId(chat, chatId, message, isNotMy)).sort((a, b) => b.timestamp - a.timestamp),
 		undistributed: chats.undistributed

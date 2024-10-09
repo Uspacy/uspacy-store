@@ -1,6 +1,7 @@
 import { IField } from '@uspacy/sdk/lib/models/field';
 
 export const API_PREFIX_FILES = '/files/v1';
+export const API_PREFIX_SETTINGS = '/settings/v1';
 
 export const idColumn: IField = {
 	name: 'number_',
@@ -115,6 +116,7 @@ export enum FieldType {
 	TASKS_FILTER = 'tasks_filter',
 	ID_COLUMN = 'id_column',
 	REQUISITE = 'requisite',
+	PRIORITY = 'priority',
 }
 
 export const unreadMessagesValue = 'unreadMessages';
