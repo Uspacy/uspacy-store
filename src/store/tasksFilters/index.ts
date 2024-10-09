@@ -46,6 +46,7 @@ const tasksFilters = createSlice({
 			state.loadingPresets = false;
 			state.errorLoadingPresets = action.payload;
 		},
+
 		[getFiltersPreset.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<IFilterPreset<IFilterTasks>>>) => {
 			state.preset = action.payload;
 			state.loadingPreset = false;
@@ -59,6 +60,7 @@ const tasksFilters = createSlice({
 			state.loadingPreset = false;
 			state.errorLoadingPreset = action.payload;
 		},
+
 		[createFilterPreset.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<IFilterPreset<IFilterTasks>>>) => {
 			state.presets.docs.unshift(action.payload);
 			state.loadingCreatePreset = false;
@@ -72,6 +74,7 @@ const tasksFilters = createSlice({
 			state.loadingCreatePreset = false;
 			state.errorLoadingCreatePreset = action.payload;
 		},
+
 		[updateFilterPreset.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<IFilterPreset<IFilterTasks>>>) => {
 			state.presets.docs = state.presets.docs.map((preset) => (preset._id === action.payload._id ? action.payload : preset));
 			state.loadingUpdatePreset = false;
@@ -85,6 +88,7 @@ const tasksFilters = createSlice({
 			state.loadingUpdatePreset = false;
 			state.errorLoadingUpdatePreset = action.payload;
 		},
+
 		[bulkUpdateFiltersPresets.fulfilled.type]: (state, action: PayloadAction<IBulkUpdateResponse>) => {
 			state.presets.docs = state.presets.docs.map((preset) => {
 				const responseItem = action.payload.res.find((res) => res.id === preset._id);
@@ -112,6 +116,7 @@ const tasksFilters = createSlice({
 			state.loadingUpdatePreset = false;
 			state.errorLoadingUpdatePreset = action.payload;
 		},
+
 		[deleteFilterPreset.fulfilled.type]: (state, action: PayloadAction<string>) => {
 			state.presets.docs = state.presets.docs.filter((preset) => preset._id !== action.payload);
 			state.loadingDeletePreset = false;
