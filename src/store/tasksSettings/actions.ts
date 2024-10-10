@@ -11,14 +11,17 @@ export const getTasksSettings = createAsyncThunk('tasksSettings/getTasksSettings
 	}
 });
 
-export const createSettings = createAsyncThunk('tasksSettings/createSettings', async (body: ITasksColumnSettings, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.createSettings(body);
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
+export const createSettings = createAsyncThunk(
+	'tasksSettings/createSettings',
+	async ({ body, type }: { body: ITasksColumnSettings; type: string }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.tasksService.createSettings(body, type);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
 
 export const updateTasksSettings = createAsyncThunk(
 	'tasksSettings/updateTasksSettings',
