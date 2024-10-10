@@ -24,9 +24,9 @@ export const getFiltersPreset = createAsyncThunk('tasksFilters/getFiltersPreset'
 
 export const createFilterPreset = createAsyncThunk(
 	'tasksFilters/createFilterPreset',
-	async (body: ICouchItemData<IFilterPreset<IFilterTasks>>, { rejectWithValue }) => {
+	async ({ body, type }: { body: ICouchItemData<IFilterPreset<IFilterTasks>>; type: string }, { rejectWithValue }) => {
 		try {
-			const res = await uspacySdk.tasksService.createFilterPreset(body);
+			const res = await uspacySdk.tasksService.createFilterPreset(body, type);
 			return { _id: res.data.id, _rev: res.data.rev, ...body };
 		} catch (e) {
 			return rejectWithValue(e);
