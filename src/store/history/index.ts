@@ -6,7 +6,10 @@ import { fetchChangesHistory } from './actions';
 import { IState } from './types';
 
 const initialState = {
-	history: {},
+	history: {
+		data: [],
+		meta: {},
+	},
 	loadingHistory: false,
 	errorLoadingErrors: null,
 } as IState;
