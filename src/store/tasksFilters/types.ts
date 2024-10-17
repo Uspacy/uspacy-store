@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ICouchItemData, ICouchQueryResponse, ICreateCouchItemResponse } from '@uspacy/sdk/lib/models/couchdb';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFilterPreset } from '@uspacy/sdk/lib/models/filter-preset';
@@ -17,6 +18,14 @@ export interface IState {
 	errorLoadingCreatePreset: IErrorsAxiosResponse;
 	errorLoadingUpdatePreset: IErrorsAxiosResponse;
 	errorLoadingDeletePreset: IErrorsAxiosResponse;
+
+	// ! TEMPORARY, ONLY FOR STAGE
+	currentPreset: any;
+	currentPresetRegular: any;
+	standardPreset: any;
+	standardPresetRegular: any;
+	filterPresets: any;
+	filterPresetsRegular: any;
 }
 
 export interface IBulkUpdateResponse {

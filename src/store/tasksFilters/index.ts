@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ICouchItemData, ICouchQueryResponse } from '@uspacy/sdk/lib/models/couchdb';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
@@ -19,6 +20,14 @@ const initialState = {
 	errorLoadingCreatePreset: null,
 	errorLoadingUpdatePreset: null,
 	errorLoadingDeletePreset: null,
+
+	// ! TEMPORARY, ONLY FOR STAGE
+	currentPreset: {},
+	currentPresetRegular: {},
+	standardPreset: {},
+	standardPresetRegular: {},
+	filterPresets: [],
+	filterPresetsRegular: [],
 } as IState;
 
 const tasksFilters = createSlice({
@@ -30,6 +39,26 @@ const tasksFilters = createSlice({
 		},
 		setPresets: (state, action: PayloadAction<ICouchQueryResponse<IFilterPreset<IFilterTasks>>>) => {
 			state.presets = action.payload;
+		},
+
+		// ! TEMPORARY, ONLY FOR STAGE
+		setCurrentPreset: (state, action: PayloadAction<any>) => {
+			state.currentPreset = action.payload;
+		},
+		setCurrentPresetRegular: (state, action: PayloadAction<any>) => {
+			state.currentPresetRegular = action.payload;
+		},
+		setStandardPreset: (state, action: PayloadAction<any>) => {
+			state.standardPreset = action.payload;
+		},
+		setStandardPresetRegular: (state, action: PayloadAction<any>) => {
+			state.standardPresetRegular = action.payload;
+		},
+		setFilterPresets: (state, action: PayloadAction<any>) => {
+			state.filterPresets = action.payload;
+		},
+		setFilterPresetsRegular: (state, action: PayloadAction<any>) => {
+			state.filterPresetsRegular = action.payload;
 		},
 	},
 	extraReducers: {
@@ -133,5 +162,16 @@ const tasksFilters = createSlice({
 	},
 });
 
-export const { setIsNewPreset, setPresets } = tasksFilters.actions;
+export const {
+	setIsNewPreset,
+	setPresets,
+
+	// ! TEMPORARY, ONLY FOR STAGE
+	setCurrentPreset,
+	setCurrentPresetRegular,
+	setStandardPreset,
+	setStandardPresetRegular,
+	setFilterPresets,
+	setFilterPresetsRegular,
+} = tasksFilters.actions;
 export default tasksFilters.reducer;
