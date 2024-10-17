@@ -27,6 +27,7 @@ import drawersManagement from './drawersManagement';
 import email from './email';
 import files from './files';
 import groups from './groups';
+import history from './history';
 import messengerReducer from './messenger';
 import migrationsReducer from './migrations';
 import newsfeed from './newsfeed';
@@ -85,6 +86,7 @@ const rootReducer = combineReducers({
 	crmProductsUnit,
 	crmDocumentTemplates,
 	crmRequisite,
+	history,
 	settings,
 });
 
