@@ -1,53 +1,137 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IFilterPreset } from '@uspacy/sdk/lib/models/filters-presets';
+import { ICouchItemData, ICouchQueryResponse } from '@uspacy/sdk/lib/models/couchdb';
+import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
+import { IFilterPreset } from '@uspacy/sdk/lib/models/filter-preset';
+import { IFilterTasks } from '@uspacy/sdk/lib/models/tasks';
 
-import { IState } from './types';
+import { bulkUpdateFiltersPresets, createFilterPreset, deleteFilterPreset, getFiltersPreset, getFiltersPresets, updateFilterPreset } from './actions';
+import { IBulkUpdateResponse, IState } from './types';
 
 const initialState = {
 	isNewPreset: false,
-	currentPreset: {},
-	currentPresetRegular: {},
-	standardPreset: {},
-	standardPresetRegular: {},
-	filterPresets: [],
-	filterPresetsRegular: [],
+	presets: {},
+	preset: {},
+	loadingPresets: false,
+	loadingCreatePreset: false,
+	loadingUpdatePreset: false,
+	loadingDeletePreset: false,
+	errorLoadingPresets: null,
+	errorLoadingCreatePreset: null,
+	errorLoadingUpdatePreset: null,
+	errorLoadingDeletePreset: null,
 } as IState;
 
-const stagesReducer = createSlice({
+const tasksFilters = createSlice({
 	name: 'tasksFilters',
 	initialState,
 	reducers: {
 		setIsNewPreset: (state, action: PayloadAction<boolean>) => {
 			state.isNewPreset = action.payload;
 		},
-		setCurrentPreset: (state, action: PayloadAction<IFilterPreset>) => {
-			state.currentPreset = action.payload;
+		setPresets: (state, action: PayloadAction<ICouchQueryResponse<IFilterPreset<IFilterTasks>>>) => {
+			state.presets = action.payload;
 		},
-		setCurrentPresetRegular: (state, action: PayloadAction<IFilterPreset>) => {
-			state.currentPresetRegular = action.payload;
+	},
+	extraReducers: {
+		[getFiltersPresets.fulfilled.type]: (state, action: PayloadAction<ICouchQueryResponse<IFilterPreset<IFilterTasks>>>) => {
+			state.presets = action.payload;
+			state.loadingPresets = false;
+			state.errorLoadingPresets = null;
 		},
-		setStandardPreset: (state, action: PayloadAction<IFilterPreset>) => {
-			state.standardPreset = action.payload;
+		[getFiltersPresets.pending.type]: (state) => {
+			state.loadingPresets = true;
+			state.errorLoadingPresets = null;
 		},
-		setStandardPresetRegular: (state, action: PayloadAction<IFilterPreset>) => {
-			state.standardPresetRegular = action.payload;
+		[getFiltersPresets.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingPresets = false;
+			state.errorLoadingPresets = action.payload;
 		},
-		setFilterPresets: (state, action: PayloadAction<IFilterPreset[]>) => {
-			state.filterPresets = action.payload;
+
+		[getFiltersPreset.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<IFilterPreset<IFilterTasks>>>) => {
+			state.preset = action.payload;
+			state.loadingPreset = false;
+			state.errorLoadingPreset = null;
 		},
-		setFilterPresetsRegular: (state, action: PayloadAction<IFilterPreset[]>) => {
-			state.filterPresetsRegular = action.payload;
+		[getFiltersPreset.pending.type]: (state) => {
+			state.loadingPreset = true;
+			state.errorLoadingPreset = null;
+		},
+		[getFiltersPreset.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingPreset = false;
+			state.errorLoadingPreset = action.payload;
+		},
+
+		[createFilterPreset.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<IFilterPreset<IFilterTasks>>>) => {
+			state.presets.docs.unshift(action.payload);
+			state.loadingCreatePreset = false;
+			state.errorLoadingCreatePreset = null;
+		},
+		[createFilterPreset.pending.type]: (state) => {
+			state.loadingCreatePreset = true;
+			state.errorLoadingCreatePreset = null;
+		},
+		[createFilterPreset.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreatePreset = false;
+			state.errorLoadingCreatePreset = action.payload;
+		},
+
+		[updateFilterPreset.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<IFilterPreset<IFilterTasks>>>) => {
+			state.presets.docs = state.presets.docs.map((preset) => (preset._id === action.payload._id ? action.payload : preset));
+			state.loadingUpdatePreset = false;
+			state.errorLoadingUpdatePreset = null;
+		},
+		[updateFilterPreset.pending.type]: (state) => {
+			state.loadingUpdatePreset = true;
+			state.errorLoadingUpdatePreset = null;
+		},
+		[updateFilterPreset.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatePreset = false;
+			state.errorLoadingUpdatePreset = action.payload;
+		},
+
+		[bulkUpdateFiltersPresets.fulfilled.type]: (state, action: PayloadAction<IBulkUpdateResponse>) => {
+			state.presets.docs = state.presets.docs.map((preset) => {
+				const responseItem = action.payload.res.find((res) => res.id === preset._id);
+				const bodyItem = action.payload.body.find((body) => body._id === preset._id);
+
+				if (responseItem?.id) {
+					const updatedPreset = { ...preset, ...bodyItem };
+
+					updatedPreset._rev = responseItem.rev;
+
+					return updatedPreset;
+				}
+
+				return preset;
+			});
+
+			state.loadingUpdatePreset = false;
+			state.errorLoadingUpdatePreset = null;
+		},
+		[bulkUpdateFiltersPresets.pending.type]: (state) => {
+			state.loadingUpdatePreset = true;
+			state.errorLoadingUpdatePreset = null;
+		},
+		[bulkUpdateFiltersPresets.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatePreset = false;
+			state.errorLoadingUpdatePreset = action.payload;
+		},
+
+		[deleteFilterPreset.fulfilled.type]: (state, action: PayloadAction<string>) => {
+			state.presets.docs = state.presets.docs.filter((preset) => preset._id !== action.payload);
+			state.loadingDeletePreset = false;
+			state.errorLoadingDeletePreset = null;
+		},
+		[deleteFilterPreset.pending.type]: (state) => {
+			state.loadingDeletePreset = true;
+			state.errorLoadingDeletePreset = null;
+		},
+		[deleteFilterPreset.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.errorLoadingDeletePreset = action.payload;
+			state.loadingDeletePreset = false;
 		},
 	},
 });
 
-export const {
-	setIsNewPreset,
-	setCurrentPreset,
-	setCurrentPresetRegular,
-	setStandardPreset,
-	setStandardPresetRegular,
-	setFilterPresets,
-	setFilterPresetsRegular,
-} = stagesReducer.actions;
-export default stagesReducer.reducer;
+export const { setIsNewPreset, setPresets } = tasksFilters.actions;
+export default tasksFilters.reducer;
