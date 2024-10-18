@@ -26,7 +26,7 @@ const historyReducer = createSlice({
 		[fetchChangesHistory.fulfilled.type]: (state, action: PayloadAction<IHistoryResponse>) => {
 			state.loadingHistory = false;
 			state.errorLoadingErrors = null;
-			state.history.data = action.payload.data;
+			state.history.data = action.payload.data || [];
 			state.history.meta = action.payload.meta;
 		},
 		[fetchChangesHistory.pending.type]: (state) => {
