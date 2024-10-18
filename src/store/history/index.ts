@@ -19,7 +19,7 @@ const historyReducer = createSlice({
 	initialState,
 	reducers: {
 		addNewHistory: (state, action: PayloadAction<IHistoryChange>) => {
-			state.history.data = [action.payload, ...state.history.data];
+			state.history.data = [action.payload, ...(state.history.data || [])];
 		},
 	},
 	extraReducers: {
