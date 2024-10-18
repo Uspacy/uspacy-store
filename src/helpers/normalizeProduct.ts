@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IProduct, IProducts } from '@uspacy/sdk/lib/models/crm-products';
-import { IFields } from '@uspacy/sdk/lib/models/field';
+import { IField, IFields } from '@uspacy/sdk/lib/models/field';
 import isArray from 'lodash/isArray';
 import isEmpty from 'lodash/isEmpty';
 import isObject from 'lodash/isObject';
@@ -83,6 +83,11 @@ export const normalizeGetProducts = (data: IProducts): IProducts => {
 	const newData = data.data.map((product) => normalizeProductForView(product));
 	return { ...data, data: newData as IProduct[] };
 };
+
+export const normalizeProducts = (data: IProduct[]) => {
+	// @ts-ignore
+	return data.map(normalizeProductForView);
+};
 export const normalizeCategories = (categoriesIds?: number) => {
 	if (categoriesIds === 0) return undefined;
 	if (categoriesIds === 0.1) return null;
@@ -110,3 +115,34 @@ export const normalizeSettingField = (field) => {
 };
 
 export const normalizeMockFieldValue = (field) => ({ ...field, values: defaultValue[field.type] || [] });
+
+const defColumn: IField = {
+	name: '',
+	code: '',
+	required: false,
+	editable: true,
+	show: true,
+	hidden: false,
+	multiple: false,
+	type: 'string',
+	system_field: true,
+	base_field: true,
+};
+
+export const defaultDataColumns = [
+	{ ...defColumn, name: 'product/service', code: 'title', type: 'productTitle', required: true },
+	{ ...defColumn, name: 'category', code: 'product_category_id', type: 'productCategory' },
+	{ ...defColumn, name: 'productType', code: 'type', type: 'productType' },
+	{ ...defColumn, name: 'article', code: 'article', type: 'productArticle' },
+	{ ...defColumn, name: 'price', code: 'prices', type: 'productPrice', multiple: true },
+	{ ...defColumn, name: 'unit', code: 'measurement_unit_id', type: 'productUnit' },
+	{ ...defColumn, name: 'availability', code: 'availability', type: 'productAvailability' },
+	{ ...defColumn, name: 'remainder', code: 'remainder', type: 'productRemind' },
+	{ ...defColumn, name: 'description', code: 'description', type: 'textarea' },
+	{ ...defColumn, name: 'tax', code: 'tax', type: 'productTax' },
+	{ ...defColumn, name: 'activity', code: 'is_active', type: 'productActivity' },
+	{ ...defColumn, name: 'productGallery', code: 'files', type: 'productGallery' },
+	{ ...defColumn, name: 'productLink', code: 'link', type: 'productLink' },
+	{ ...defColumn, name: 'commentProduct', code: 'comment', type: 'textarea' },
+	{ ...defColumn, name: 'currency', code: 'currency', type: 'label' },
+];

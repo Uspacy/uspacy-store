@@ -19,14 +19,14 @@ const historyReducer = createSlice({
 	initialState,
 	reducers: {
 		addNewHistory: (state, action: PayloadAction<IHistoryChange>) => {
-			state.history.data = [action.payload, ...state.history.data];
+			state.history.data = [action.payload, ...(state.history.data || [])];
 		},
 	},
 	extraReducers: {
 		[fetchChangesHistory.fulfilled.type]: (state, action: PayloadAction<IHistoryResponse>) => {
 			state.loadingHistory = false;
 			state.errorLoadingErrors = null;
-			state.history.data = action.payload.data;
+			state.history.data = action.payload.data || [];
 			state.history.meta = action.payload.meta;
 		},
 		[fetchChangesHistory.pending.type]: (state) => {
