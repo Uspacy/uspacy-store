@@ -3,6 +3,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import apps from './apps';
 import auth from './auth';
 import automations from './automations';
+import calendars from './calendars';
 import comments from './comments';
 import crm from './crm';
 import crmCalls from './crmCalls';
@@ -90,6 +91,7 @@ const rootReducer = combineReducers({
 	history,
 	settings,
 	crm,
+	calendars,
 });
 
 export const setupStore = () => {
