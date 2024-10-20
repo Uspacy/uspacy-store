@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ICardBlock } from '@uspacy/sdk/lib/models/crm-card-blocks';
-import { IEntity, IEntityData, IEntityMain, IEntityMainData } from '@uspacy/sdk/lib/models/crm-entities';
+import { IEntity, IEntityData, IEntityMainData } from '@uspacy/sdk/lib/models/crm-entities';
 import { IErrors } from '@uspacy/sdk/lib/models/crm-errors';
 import { IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { IEntityFilters, IFilter } from '@uspacy/sdk/lib/models/crm-filters';
@@ -10,6 +10,7 @@ import { IColumns, IDnDItem } from '@uspacy/sdk/lib/models/crm-kanban';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IReason, IStage, IStages } from '@uspacy/sdk/lib/models/crm-stages';
 import { IField, IFields, IFieldValue } from '@uspacy/sdk/lib/models/field';
+import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 
 import { idColumn, OTHER_DEFAULT_FIELDS } from './../../const';
 import { getField } from './../../helpers/filterFieldsArrs';
@@ -284,7 +285,7 @@ const entitiesReducer = createSlice({
 		},
 	},
 	extraReducers: {
-		[fetchEntities.fulfilled.type]: (state, action: PayloadAction<IEntityMain>) => {
+		[fetchEntities.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<IEntityMainData>>) => {
 			state.loading = false;
 			state.errorMessage = null;
 			state.entities = action.payload;
@@ -297,7 +298,7 @@ const entitiesReducer = createSlice({
 			state.loading = false;
 			state.errorMessage = action.payload;
 		},
-		[fetchEntitiesWithFunnels.fulfilled.type]: (state, action: PayloadAction<IEntityMain>) => {
+		[fetchEntitiesWithFunnels.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<IEntityMainData>>) => {
 			state.loading = false;
 			state.errorMessage = null;
 			state.entitiesWithFunnels = action.payload;

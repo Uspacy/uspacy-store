@@ -4,6 +4,7 @@ import apps from './apps';
 import auth from './auth';
 import automations from './automations';
 import comments from './comments';
+import crm from './crm';
 import crmCalls from './crmCalls';
 import crmCompanies from './crmCompanies';
 import crmContacts from './crmContacts';
@@ -88,6 +89,7 @@ const rootReducer = combineReducers({
 	crmRequisite,
 	history,
 	settings,
+	crm,
 });
 
 export const setupStore = () => {
