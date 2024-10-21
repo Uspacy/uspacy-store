@@ -27,7 +27,7 @@ export const createFilterPreset = createAsyncThunk(
 	async ({ body, type }: { body: ICouchItemData<IFilterPreset<IFilterTasks>>; type: string }, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.createFilterPreset(body, type);
-			return { _id: res.data.id, _rev: res.data.rev, ...body };
+			return res.data;
 		} catch (e) {
 			return rejectWithValue(e);
 		}
@@ -39,7 +39,7 @@ export const updateFilterPreset = createAsyncThunk(
 	async ({ id, rev, body }: { id: string; rev: string; body: ICouchItemData<IFilterPreset<IFilterTasks>> }, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.updateFilterPreset(id, rev, body);
-			return { _id: res.data.id, _rev: res.data.rev, ...body };
+			return res.data;
 		} catch (e) {
 			return rejectWithValue(e);
 		}
@@ -51,7 +51,7 @@ export const bulkUpdateFiltersPresets = createAsyncThunk(
 	async (body: ICouchItemData<IFilterPreset<IFilterTasks>>[], { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.bulkUpdateFiltersPresets(body);
-			return { res: res?.data, body };
+			return res?.data;
 		} catch (e) {
 			return rejectWithValue(e);
 		}
@@ -62,8 +62,7 @@ export const deleteFilterPreset = createAsyncThunk(
 	'tasksFilters/deleteFilterPreset',
 	async ({ id, rev }: { id: string; rev: string }, { rejectWithValue }) => {
 		try {
-			await uspacySdk.tasksService.deleteFilterPreset(id, rev);
-			return id;
+			return await uspacySdk.tasksService.deleteFilterPreset(id, rev);
 		} catch (e) {
 			return rejectWithValue(e);
 		}

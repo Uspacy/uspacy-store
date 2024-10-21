@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ICouchItemData, ICouchQueryResponse } from '@uspacy/sdk/lib/models/couchdb';
+import { ICouchItemData, ICouchQueryResponse, ICreateCouchItemResponse } from '@uspacy/sdk/lib/models/couchdb';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFilterPreset } from '@uspacy/sdk/lib/models/filter-preset';
 import { IFilterTasks } from '@uspacy/sdk/lib/models/tasks';
 
 import { bulkUpdateFiltersPresets, createFilterPreset, deleteFilterPreset, getFiltersPreset, getFiltersPresets, updateFilterPreset } from './actions';
-import { IBulkUpdateResponse, IState } from './types';
+import { IState } from './types';
 
 const initialState = {
 	isNewPreset: false,
@@ -61,8 +61,17 @@ const tasksFilters = createSlice({
 			state.errorLoadingPreset = action.payload;
 		},
 
-		[createFilterPreset.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<IFilterPreset<IFilterTasks>>>) => {
-			state.presets.docs.unshift(action.payload);
+		[createFilterPreset.fulfilled.type]: (
+			state,
+			action: PayloadAction<
+				ICreateCouchItemResponse,
+				string,
+				{ arg: { id: string; rev: string; body: ICouchItemData<IFilterPreset<IFilterTasks>> } }
+			>,
+		) => {
+			const payload = { _id: action.payload.id, _rev: action.payload.rev, ...action.meta.arg.body };
+
+			state.presets.docs.unshift({ _id: payload._id, _rev: payload._rev, ...payload });
 			state.loadingCreatePreset = false;
 			state.errorLoadingCreatePreset = null;
 		},
@@ -75,8 +84,19 @@ const tasksFilters = createSlice({
 			state.errorLoadingCreatePreset = action.payload;
 		},
 
-		[updateFilterPreset.fulfilled.type]: (state, action: PayloadAction<ICouchItemData<IFilterPreset<IFilterTasks>>>) => {
-			state.presets.docs = state.presets.docs.map((preset) => (preset._id === action.payload._id ? action.payload : preset));
+		[updateFilterPreset.fulfilled.type]: (
+			state,
+			action: PayloadAction<
+				ICreateCouchItemResponse,
+				string,
+				{ arg: { id: string; rev: string; body: ICouchItemData<IFilterPreset<IFilterTasks>> } }
+			>,
+		) => {
+			const payload = { _id: action.payload.id, _rev: action.payload.rev, ...action.meta.arg.body };
+
+			state.presets.docs = state.presets.docs.map((preset) => {
+				return preset._id === payload._id ? payload : preset;
+			});
 			state.loadingUpdatePreset = false;
 			state.errorLoadingUpdatePreset = null;
 		},
@@ -89,15 +109,20 @@ const tasksFilters = createSlice({
 			state.errorLoadingUpdatePreset = action.payload;
 		},
 
-		[bulkUpdateFiltersPresets.fulfilled.type]: (state, action: PayloadAction<IBulkUpdateResponse>) => {
+		[bulkUpdateFiltersPresets.fulfilled.type]: (
+			state,
+			action: PayloadAction<ICreateCouchItemResponse[], string, { arg: ICouchItemData<IFilterPreset<IFilterTasks>>[] }>,
+		) => {
+			const payload = { res: action.payload, body: action.meta.arg };
+
 			state.presets.docs = state.presets.docs.map((preset) => {
-				const responseItem = action.payload.res.find((res) => res.id === preset._id);
-				const bodyItem = action.payload.body.find((body) => body._id === preset._id);
+				const responseItem = payload?.res?.find((res) => res?.id === preset?._id);
+				const bodyItem = payload?.body?.find((body) => body?._id === preset?._id);
 
 				if (responseItem?.id) {
 					const updatedPreset = { ...preset, ...bodyItem };
 
-					updatedPreset._rev = responseItem.rev;
+					updatedPreset._rev = responseItem?.rev;
 
 					return updatedPreset;
 				}
@@ -117,8 +142,8 @@ const tasksFilters = createSlice({
 			state.errorLoadingUpdatePreset = action.payload;
 		},
 
-		[deleteFilterPreset.fulfilled.type]: (state, action: PayloadAction<string>) => {
-			state.presets.docs = state.presets.docs.filter((preset) => preset._id !== action.payload);
+		[deleteFilterPreset.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: { id: string; rev: string } }>) => {
+			state.presets.docs = state.presets.docs.filter((preset) => preset._id !== action.meta.arg.id);
 			state.loadingDeletePreset = false;
 			state.errorLoadingDeletePreset = null;
 		},
