@@ -23,7 +23,7 @@ const categoriesReducer = createSlice({
 		},
 		[fetchCategories.pending.type]: (state, action: PayloadAction<string, string, { arg: { entityCode: string } }>) => {
 			if (!state[action.meta.arg.entityCode]) {
-				state[action.meta.arg.entityCode] = initialCategories;
+				state[action.meta.arg.entityCode] = { ...initialCategories };
 			}
 			state[action.meta.arg.entityCode].loading = true;
 			state[action.meta.arg.entityCode].errorMessage = '';

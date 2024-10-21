@@ -24,15 +24,14 @@ const productsUnitReducer = createSlice({
 		},
 		[fetchUnits.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string } }>) => {
 			if (!state[action.meta.arg.entityCode]) {
-				state[action.meta.arg.entityCode] = initialUnits;
+				state[action.meta.arg.entityCode] = {
+					...initialUnits,
+				};
 			}
 			state[action.meta.arg.entityCode].loading = true;
 			state[action.meta.arg.entityCode].errorMessage = '';
 		},
 		[fetchUnits.rejected.type]: (state, action: PayloadAction<string, string, { arg: { entityCode: string } }>) => {
-			if (!state[action.meta.arg.entityCode]) {
-				state[action.meta.arg.entityCode] = initialUnits;
-			}
 			state[action.meta.arg.entityCode].loading = false;
 			state[action.meta.arg.entityCode].errorMessage = action.payload;
 		},

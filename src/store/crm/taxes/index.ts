@@ -24,7 +24,7 @@ const productsTaxesReducer = createSlice({
 		},
 		[fetchTaxes.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string } }>) => {
 			if (!state[action.meta.arg.entityCode]) {
-				state[action.meta.arg.entityCode] = initialTaxes;
+				state[action.meta.arg.entityCode] = { ...initialTaxes };
 			}
 			state[action.meta.arg.entityCode].loading = true;
 			state[action.meta.arg.entityCode].errorMessage = '';
