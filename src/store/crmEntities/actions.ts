@@ -9,7 +9,6 @@ import { IReason, IReasonsCreate, IStage } from '@uspacy/sdk/lib/models/crm-stag
 import { IField } from '@uspacy/sdk/lib/models/field';
 
 import { getFilterParams } from './../../helpers/filterFieldsArrs';
-import { makeURIParams } from './../../helpers/makeURIParams';
 import { IMoveCardsData } from './types';
 
 export const fetchEntities = createAsyncThunk('entities/fetchEntities', async (_, thunkAPI) => {
@@ -300,13 +299,12 @@ export const fetchUniversalEntityItemsWithFilters = createAsyncThunk(
 		try {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const filterParam = getFilterParams(data.params as any, data?.fields || []);
-			const params = makeURIParams(filterParam);
 			const entityCode = data.params.entityCode;
 			const signal = data.signal;
 
 			const res = await uspacySdk.crmEntitiesService.getEntityItemsWithFilters(
 				entityCode,
-				params,
+				filterParam,
 				signal,
 				data?.relatedEntityId,
 				data?.relatedEntityType,
