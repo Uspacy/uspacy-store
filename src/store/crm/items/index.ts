@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
 import { IErrors } from '@uspacy/sdk/lib/models/crm-errors';
+import { IEntityFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IProduct } from '@uspacy/sdk/lib/models/crm-products';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
@@ -114,16 +115,30 @@ const itemsReducer = createSlice({
 		},
 		[fetchEntityItemsByStage.pending.type]: (
 			state,
-			action: PayloadAction<unknown, string, { arg: { entityCode: string; stageId?: number } }>,
+			action: PayloadAction<
+				unknown,
+				string,
+				{ arg: { entityCode: string; stageId?: number; filters: Omit<IEntityFilters, 'openDatePicker'> } }
+			>,
 		) => {
-			const { entityCode, stageId } = action.meta.arg;
+			const { entityCode, stageId, filters } = action.meta.arg;
 			if (!state[entityCode]) {
 				state[entityCode] = {
 					...initialData,
 					stages: {},
 				};
 			}
-			state[entityCode].stages[stageId] = { ...initialData, ...state[entityCode].stages[stageId], loading: true, errorMessage: null };
+			state[entityCode].stages[stageId] = {
+				...initialData,
+				...state[entityCode].stages[stageId],
+				// page 1 means that we are fetching data for the first time and we need to clear the data
+				...(filters.page === 1 && {
+					data: [],
+					meta: undefined,
+				}),
+				loading: true,
+				errorMessage: null,
+			};
 		},
 		[fetchEntityItemsByStage.rejected.type]: (
 			state,
@@ -223,8 +238,10 @@ const itemsReducer = createSlice({
 		) => {
 			const { entityCode } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
-			state[entityCode].loading = true;
-			state[entityCode].errorMessage = null;
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].loading = true;
+				state[entityCode].errorMessage = null;
+			}
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
 				state[entityCode].stages[stageId].loading = true;
 				state[entityCode].stages[stageId].errorMessage = null;
