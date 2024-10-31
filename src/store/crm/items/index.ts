@@ -282,7 +282,7 @@ const itemsReducer = createSlice({
 			state[entityCode].errorMessage = null;
 		},
 		[moveItemFromStageToStage.pending.type]: (state, action: PayloadAction<unknown, string, { arg: IMoveCardsData }>) => {
-			const { entityCode, stageId, sourceStageId, destinationIndex } = action.meta.arg;
+			const { entityCode, stageId, destinationIndex, entityId } = action.meta.arg;
 			if (!state[entityCode]) {
 				state[entityCode] = { loading: true } as EntityItems;
 			}
@@ -307,28 +307,41 @@ const itemsReducer = createSlice({
 				}
 				return item;
 			});
-			if (Array.isArray(state[entityCode]?.stages[sourceStageId]?.data)) {
-				const foundEntityItem = state[entityCode].stages[sourceStageId]?.data.find((item) => item.id === action.meta.arg.entityId);
-				if (!foundEntityItem) return;
-				if (typeof destinationIndex === 'number') {
-					state[entityCode].stages[stageId].data.splice(destinationIndex, 0, {
-						...foundEntityItem,
-						...(action.meta.arg.isFinishedStage && {
-							first_closed_at: foundEntityItem?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
-							closed_at: Math.floor(new Date().valueOf() / 1000),
-							first_closed_by: foundEntityItem?.first_closed_by || action.meta.arg.profileId,
-							closed_by: action.meta.arg.profileId,
-						}),
-					});
-					state[entityCode].stages[stageId].meta.total++;
-				}
-				if (sourceStageId) {
-					state[entityCode].stages[sourceStageId].data = state[entityCode].stages[sourceStageId].data.filter(
-						(item) => item.id !== action.meta.arg.entityId,
-					);
-					state[entityCode].stages[sourceStageId].meta.total--;
+			let foundEntityItem1;
+			for (const stage of Object.values(state[entityCode].stages)) {
+				foundEntityItem1 = stage.data.find((item) => item.id === action.meta.arg.entityId);
+				if (foundEntityItem1) {
+					break;
 				}
 			}
+			state[entityCode].stages = Object.fromEntries(
+				Object.entries(state[entityCode].stages).map(([key, value]) => {
+					if (+key === stageId) {
+						const data = value.data;
+						data.splice(destinationIndex || 0, 0, {
+							...foundEntityItem1,
+							...(action.meta.arg.isFinishedStage && {
+								first_closed_at: foundEntityItem1?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
+								closed_at: Math.floor(new Date().valueOf() / 1000),
+								first_closed_by: foundEntityItem1?.first_closed_by || action.meta.arg.profileId,
+								closed_by: action.meta.arg.profileId,
+							}),
+						});
+						return [
+							key,
+							{
+								...value,
+								data,
+								meta: { ...value.meta, total: value.meta.total + 1 },
+							},
+						];
+					}
+					return [
+						key,
+						{ ...value, data: value.data.filter((item) => item.id !== entityId), meta: { ...value.meta, total: value.meta.total - 1 } },
+					];
+				}),
+			);
 		},
 		[moveItemFromStageToStage.rejected.type]: (state, action: PayloadAction<IErrors, string, { arg: IMoveCardsData }>) => {
 			const { entityCode } = action.meta.arg;

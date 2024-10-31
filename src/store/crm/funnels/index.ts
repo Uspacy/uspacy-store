@@ -128,13 +128,10 @@ const funnelsReducer = createSlice({
 		[updateStage.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { data: Partial<IStage>; entityCode: string } }>) => {
 			const entityCode = action.meta.arg.entityCode;
 			state[entityCode].data = state[entityCode].data.map((it) => {
-				if (it.id === action.meta.arg.data.funnel_id) {
-					return {
-						...it,
-						stages: it.stages.map((stage) => (stage.id === action.meta.arg.data.id ? { ...stage, ...action.meta.arg.data } : stage)),
-					};
-				}
-				return it;
+				return {
+					...it,
+					stages: it.stages.map((stage) => (stage.id === action.meta.arg.data.id ? { ...stage, ...action.meta.arg.data } : stage)),
+				};
 			});
 		},
 
