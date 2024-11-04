@@ -95,7 +95,7 @@ export const moveItemFromStageToStage = createAsyncThunk(
 
 export const createEntityItem = createAsyncThunk(
 	'crm/items/createEntityItem',
-	async ({ data, entityCode }: { data: Partial<IEntityData>; entityCode: string; stageId?: number }, thunkAPI) => {
+	async ({ data, entityCode, stageId }: { data: Partial<IEntityData>; entityCode: string; stageId?: number }, thunkAPI) => {
 		try {
 			switch (entityCode) {
 				case 'products': {
@@ -113,7 +113,10 @@ export const createEntityItem = createAsyncThunk(
 					return res?.data;
 				}
 				default: {
-					const res = await uspacySdk.crmEntitiesService.createEntityItem(entityCode, data);
+					const res = await uspacySdk.crmEntitiesService.createEntityItem(entityCode, {
+						...data,
+						kanban_stage_id: data.kanban_stage_id || stageId,
+					});
 					return res?.data;
 				}
 			}
@@ -179,14 +182,28 @@ export const massItemsEditing = createAsyncThunk(
 		{ rejectWithValue },
 	) => {
 		try {
-			return uspacySdk.crmEntitiesService.massEntityItemsEditing(entityCode, {
-				all,
-				entityIds,
-				exceptIds,
-				params: all && params?.length ? params : undefined,
-				payload,
-				settings,
-			});
+			switch (entityCode) {
+				case 'tasks': {
+					return await uspacySdk.crmTasksService.massTasksEditing({
+						all,
+						entityIds,
+						exceptIds,
+						params: all && params?.length ? params : undefined,
+						payload,
+						settings,
+					});
+				}
+				default: {
+					return await uspacySdk.crmEntitiesService.massEntityItemsEditing(entityCode, {
+						all,
+						entityIds,
+						exceptIds,
+						params: all && params?.length ? params : undefined,
+						payload,
+						settings,
+					});
+				}
+			}
 		} catch (e) {
 			return rejectWithValue(e);
 		}
@@ -197,12 +214,24 @@ export const massItemsDeletion = createAsyncThunk(
 	'crm/items/massItemsDeletion',
 	async ({ entityCode, entityIds, exceptIds, all, params }: IMassActions & { entityCode: string; stageId?: number }, { rejectWithValue }) => {
 		try {
-			return uspacySdk.crmEntitiesService.massEntityItemsDeletion(entityCode, {
-				all,
-				entityIds,
-				exceptIds,
-				params: all && params?.length ? params : undefined,
-			});
+			switch (entityCode) {
+				case 'tasks': {
+					return await uspacySdk.crmTasksService.massTasksDeletion({
+						all,
+						entityIds,
+						exceptIds,
+						params: all && params?.length ? params : undefined,
+					});
+				}
+				default: {
+					return await uspacySdk.crmEntitiesService.massEntityItemsDeletion(entityCode, {
+						all,
+						entityIds,
+						exceptIds,
+						params: all && params?.length ? params : undefined,
+					});
+				}
+			}
 		} catch (e) {
 			return rejectWithValue(e);
 		}
@@ -227,7 +256,7 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 	) => {
 		try {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, camelcase
-			const { table_fields, funnel_id, kanban_status, ...filtersParams } = filters as any;
+			const { table_fields, ...filtersParams } = filters as any;
 			const params = getFilterParams(filtersParams as IEntityFilters, fields || []);
 			switch (entityCode) {
 				case 'tasks': {

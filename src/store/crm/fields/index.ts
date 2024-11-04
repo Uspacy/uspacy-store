@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IField } from '@uspacy/sdk/lib/models/field';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 
-import { fieldForCalls, fieldsForTasks, idColumnField, stageField, taskField } from '../../../const';
+import { fieldForCalls, fieldsForTasks, idColumnField, requisiteField, stageField, taskField } from '../../../const';
 import { defaultDataColumns, normalizeProductFields } from '../../../helpers/normalizeProduct';
 import { createField, deleteField, deleteListValue, fetchFields, updateField, updateListValues } from './actions';
 import { EntityFields, IState } from './types';
@@ -24,11 +24,14 @@ const feildsReducer = createSlice({
 			}
 			if (entityCode === 'calls') {
 				data.splice(0, 0, ...fieldForCalls);
-			} else {
-				data.splice(0, 0, stageField);
+			} else if (!['contacts', 'companies'].includes(entityCode)) {
+				data.splice(1, 0, stageField);
 			}
 			if (entityCode === 'products') {
 				data = normalizeProductFields(action.payload, defaultDataColumns);
+			}
+			if (['companies', 'contacts'].includes(entityCode)) {
+				data.splice(2, 0, requisiteField);
 			}
 			if (entityCode === 'tasks') {
 				data = fieldsForTasks;
@@ -43,9 +46,7 @@ const feildsReducer = createSlice({
 		},
 		[fetchFields.pending.type]: (state, action: PayloadAction<unknown, string, { arg: string }>) => {
 			const entityCode = action.meta.arg;
-			if (!state[entityCode]) {
-				state[entityCode] = { loading: true } as EntityFields;
-			}
+			state[entityCode] ??= { loading: true, data: [] } as EntityFields;
 			state[entityCode].loading = true;
 			state[entityCode].errorMessage = null;
 		},
@@ -56,9 +57,7 @@ const feildsReducer = createSlice({
 
 		[createField.pending.type]: (state, action: PayloadAction<IField, string, { arg: { entityCode: string; data: IField } }>) => {
 			const entityCode = action.meta.arg.entityCode;
-			if (!state[entityCode]) {
-				state[entityCode] = { loading: false, data: [] } as EntityFields;
-			}
+			state[entityCode] ??= { loading: true, data: [] } as EntityFields;
 			state[entityCode].data.push(action.meta.arg.data);
 		},
 
