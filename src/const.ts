@@ -79,7 +79,6 @@ export const requisiteField: IField = {
 	system_field: true,
 	base_field: true,
 	sort: '',
-	default_value: '',
 };
 
 export const OTHER_DEFAULT_FIELDS = {

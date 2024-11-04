@@ -218,7 +218,7 @@ const itemsReducer = createSlice({
 			action: PayloadAction<IEntityData, string, { arg: { entityCode: string; data: IEntityData; stageId?: number } }>,
 		) => {
 			const { entityCode } = action.meta.arg;
-			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
+			const stageId = action.meta.arg.stageId || action.meta.arg.data.kanban_stage_id;
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].loading = false;
 				state[entityCode].errorMessage = null;
@@ -237,7 +237,7 @@ const itemsReducer = createSlice({
 			action: PayloadAction<unknown, string, { arg: { entityCode: string; data: IEntityData; stageId?: number } }>,
 		) => {
 			const { entityCode } = action.meta.arg;
-			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
+			const stageId = action.meta.arg.stageId || action.meta.arg.data.kanban_stage_id;
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].loading = true;
 				state[entityCode].errorMessage = null;
@@ -252,7 +252,7 @@ const itemsReducer = createSlice({
 			action: PayloadAction<IErrors, string, { arg: { entityCode: string; data: IEntityData; stageId?: number } }>,
 		) => {
 			const { entityCode } = action.meta.arg;
-			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
+			const stageId = action.meta.arg.stageId || action.meta.arg.data.kanban_stage_id;
 			state[entityCode].loading = false;
 			state[entityCode].errorMessage = action.payload;
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
@@ -307,10 +307,10 @@ const itemsReducer = createSlice({
 				}
 				return item;
 			});
-			let foundEntityItem1;
+			let foundEntityItem;
 			for (const stage of Object.values(state[entityCode].stages)) {
-				foundEntityItem1 = stage.data.find((item) => item.id === action.meta.arg.entityId);
-				if (foundEntityItem1) {
+				foundEntityItem = stage.data.find((item) => item.id === action.meta.arg.entityId);
+				if (foundEntityItem) {
 					break;
 				}
 			}
@@ -319,11 +319,11 @@ const itemsReducer = createSlice({
 					if (+key === stageId) {
 						const data = value.data;
 						data.splice(destinationIndex || 0, 0, {
-							...foundEntityItem1,
+							...foundEntityItem,
 							...(action.meta.arg.isFinishedStage && {
-								first_closed_at: foundEntityItem1?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
+								first_closed_at: foundEntityItem?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
 								closed_at: Math.floor(new Date().valueOf() / 1000),
-								first_closed_by: foundEntityItem1?.first_closed_by || action.meta.arg.profileId,
+								first_closed_by: foundEntityItem?.first_closed_by || action.meta.arg.profileId,
 								closed_by: action.meta.arg.profileId,
 							}),
 						});
@@ -336,10 +336,9 @@ const itemsReducer = createSlice({
 							},
 						];
 					}
-					return [
-						key,
-						{ ...value, data: value.data.filter((item) => item.id !== entityId), meta: { ...value.meta, total: value.meta.total - 1 } },
-					];
+					const filteredData = value.data.filter((item) => item.id !== entityId);
+					const total = filteredData.length === value.data.length ? value.meta.total : value.meta.total - 1;
+					return [key, { ...value, data: filteredData, meta: { ...value.meta, total } }];
 				}),
 			);
 		},

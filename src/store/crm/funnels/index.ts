@@ -45,7 +45,7 @@ const funnelsReducer = createSlice({
 			state[action.meta.arg].errorMessage = null;
 			state[action.meta.arg].data = action.payload
 				.map((funnel) => {
-					const stages = funnel.stages.sort((a, b) => a.sort - b.sort);
+					const stages = funnel.stages.map((stage) => ({ ...stage, sort: Number(stage.sort) })).sort((a, b) => a.sort - b.sort);
 					return {
 						...funnel,
 						stages: stages.map((stage) => ({
@@ -130,7 +130,9 @@ const funnelsReducer = createSlice({
 			state[entityCode].data = state[entityCode].data.map((it) => {
 				return {
 					...it,
-					stages: it.stages.map((stage) => (stage.id === action.meta.arg.data.id ? { ...stage, ...action.meta.arg.data } : stage)),
+					stages: it.stages
+						.map((stage) => (stage.id === action.meta.arg.data.id ? { ...stage, ...action.meta.arg.data } : stage))
+						.sort((a, b) => a.sort - b.sort),
 				};
 			});
 		},
