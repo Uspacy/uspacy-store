@@ -45,10 +45,12 @@ const itemsReducer = createSlice({
 		},
 		clearItems: (state: IState, action: PayloadAction<{ entityCode: string; stageId?: number }>) => {
 			const { entityCode, stageId } = action.payload;
-			state[entityCode].data = [];
-			state[entityCode].loading = true;
-			state[entityCode].errorMessage = null;
-			state[entityCode].meta = undefined;
+			if (state[entityCode]) {
+				state[entityCode].data = [];
+				state[entityCode].loading = true;
+				state[entityCode].errorMessage = null;
+				state[entityCode].meta = undefined;
+			}
 
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
 				state[entityCode].stages[stageId] = {
