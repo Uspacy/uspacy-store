@@ -118,7 +118,15 @@ const funnelsReducer = createSlice({
 				if (funnel.id === action.meta.arg.data.funnel_id) {
 					return {
 						...funnel,
-						stages: [...funnel.stages, action.payload].sort((a, b) => a.sort - b.sort),
+						stages: [
+							{ ...action.payload, sort: Number(action.payload.sort) },
+							...funnel.stages.map((stage) => {
+								if (stage.sort >= action.payload.sort) {
+									return { ...stage, sort: stage.sort + 10 };
+								}
+								return stage;
+							}),
+						].sort((a, b) => a.sort - b.sort),
 					};
 				}
 				return funnel;
@@ -131,7 +139,13 @@ const funnelsReducer = createSlice({
 				return {
 					...it,
 					stages: it.stages
-						.map((stage) => (stage.id === action.meta.arg.data.id ? { ...stage, ...action.meta.arg.data } : stage))
+						.map((stage) => {
+							if (stage.id === action.meta.arg.data.id) return { ...stage, ...action.meta.arg.data };
+							if (stage.sort >= action.meta.arg.data?.sort) {
+								return { ...stage, sort: stage.sort + 10 };
+							}
+							return stage;
+						})
 						.sort((a, b) => a.sort - b.sort),
 				};
 			});

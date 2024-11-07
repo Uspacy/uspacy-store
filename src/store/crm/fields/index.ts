@@ -12,7 +12,11 @@ const initialState: IState = {};
 const feildsReducer = createSlice({
 	name: 'crm/fields',
 	initialState,
-	reducers: {},
+	reducers: {
+		clearEntityFields: (state, action: PayloadAction<string>) => {
+			state[action.payload] = undefined;
+		},
+	},
 	extraReducers: {
 		[fetchFields.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<IField>, string, { arg: string }>) => {
 			const entityCode = action.meta.arg;
@@ -25,13 +29,13 @@ const feildsReducer = createSlice({
 			if (entityCode === 'calls') {
 				data.splice(0, 0, ...fieldForCalls);
 			} else if (!['contacts', 'companies'].includes(entityCode)) {
-				data.splice(1, 0, stageField);
+				data.splice(2, 0, stageField);
 			}
 			if (entityCode === 'products') {
 				data = normalizeProductFields(action.payload, defaultDataColumns);
 			}
 			if (['companies', 'contacts'].includes(entityCode)) {
-				data.splice(2, 0, requisiteField);
+				data.splice(3, 0, requisiteField);
 			}
 			if (entityCode === 'tasks') {
 				data = fieldsForTasks;
@@ -104,5 +108,5 @@ const feildsReducer = createSlice({
 		},
 	},
 });
-export const {} = feildsReducer.actions;
+export const { clearEntityFields } = feildsReducer.actions;
 export default feildsReducer.reducer;
