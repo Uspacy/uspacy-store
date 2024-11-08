@@ -29,7 +29,8 @@ const feildsReducer = createSlice({
 			if (entityCode === 'calls') {
 				data.splice(0, 0, ...fieldForCalls);
 			} else if (!['contacts', 'companies'].includes(entityCode)) {
-				data.splice(2, 0, stageField);
+				const titleIndex = data.findIndex((field) => field.code === 'title');
+				data.splice(titleIndex ? titleIndex + 1 : 2, 0, stageField);
 			}
 			if (entityCode === 'products') {
 				data = normalizeProductFields(action.payload, defaultDataColumns);
