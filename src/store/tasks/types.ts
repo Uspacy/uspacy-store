@@ -70,4 +70,5 @@ export interface IState {
 	isRegularSection: boolean;
 	tasksCardPermissions: ITaskCardActions;
 	tasksServiceType: taskType;
+	isBannerExists: boolean;
 }
