@@ -1,5 +1,6 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
+import announcers from './announcers';
 import apps from './apps';
 import auth from './auth';
 import automations from './automations';
@@ -92,6 +93,7 @@ const rootReducer = combineReducers({
 	settings,
 	crm,
 	calendars,
+	announcers,
 });
 
 export const setupStore = () => {
