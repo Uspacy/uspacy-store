@@ -150,7 +150,6 @@ const initialState = {
 	isRegularSection: false,
 	tasksCardPermissions: { type: 'task', mode: 'view' },
 	tasksServiceType: 'task',
-	isBannerExists: false,
 } as IState;
 
 const tasksReducer = createSlice({
@@ -292,9 +291,6 @@ const tasksReducer = createSlice({
 		},
 		setTasksServiceType: (state, action: PayloadAction<taskType>) => {
 			state.tasksServiceType = action.payload;
-		},
-		setBannerExists: (state, action: PayloadAction<boolean>) => {
-			state.isBannerExists = action.payload;
 		},
 	},
 	extraReducers: {
@@ -922,6 +918,5 @@ export const {
 	setAnEditMode,
 	changeTasksCardViewMode,
 	setTasksServiceType,
-	setBannerExists,
 } = tasksReducer.actions;
 export default tasksReducer.reducer;
