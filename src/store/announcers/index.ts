@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IAnnouncers } from '@uspacy/sdk/lib/services/AnnouncersService/dto/announcers-dto';
+import { ResponseApi } from '@uspacy/sdk/lib/services/AnnouncersService/dto/announcers-dto';
 
 import { fetchAnnouncers } from './actions';
 import { IState } from './types';
@@ -39,10 +39,10 @@ export const announcersSlice = createSlice({
 		},
 	},
 	extraReducers: {
-		[fetchAnnouncers.fulfilled.type]: (state, action: PayloadAction<IAnnouncers>) => {
+		[fetchAnnouncers.fulfilled.type]: (state, action: PayloadAction<ResponseApi>) => {
 			state.loadingAnnouncers = false;
 			state.errorLoading = null;
-			state.announcers = action.payload;
+			state.announcers.data = action.payload;
 		},
 		[fetchAnnouncers.pending.type]: (state) => {
 			state.loadingAnnouncers = true;
