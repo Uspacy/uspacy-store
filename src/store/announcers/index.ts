@@ -10,21 +10,19 @@ const initialState: IState = {
 	isBannerExists: false,
 	announcers: {
 		data: {
-			data: {
-				id: 0,
-				attributes: {
-					notification: null,
-					widget: [],
-					banner: null,
-				},
+			id: 0,
+			attributes: {
+				notification: null,
+				widget: [],
+				banner: null,
 			},
-			meta: {
-				pagination: {
-					page: 0,
-					pageSize: 0,
-					pageCount: 0,
-					total: 0,
-				},
+		},
+		meta: {
+			pagination: {
+				page: 0,
+				pageSize: 0,
+				pageCount: 0,
+				total: 0,
 			},
 		},
 	},
@@ -42,7 +40,7 @@ export const announcersSlice = createSlice({
 		[fetchAnnouncers.fulfilled.type]: (state, action: PayloadAction<ResponseApi>) => {
 			state.loadingAnnouncers = false;
 			state.errorLoading = null;
-			state.announcers.data = action.payload;
+			state.announcers = action.payload;
 		},
 		[fetchAnnouncers.pending.type]: (state) => {
 			state.loadingAnnouncers = true;
