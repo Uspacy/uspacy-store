@@ -12,8 +12,8 @@ const initialState: IState = {
 		data: {
 			id: 0,
 			attributes: {
-				notification: null,
-				widget: [],
+				notifications: null,
+				widgets: [],
 				banner: null,
 			},
 		},
