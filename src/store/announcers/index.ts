@@ -8,22 +8,15 @@ const initialState: IState = {
 	loadingAnnouncers: false,
 	errorLoading: false,
 	isBannerExists: false,
-	announcers: {
-		data: {
-			id: 0,
-			attributes: {
-				notifications: [],
-				widgets: [],
-				banner: null,
-			},
-		},
-		meta: {
-			pagination: {
-				page: 0,
-				pageSize: 0,
-				pageCount: 0,
-				total: 0,
-			},
+	notifications: [],
+	widgets: [],
+	banner: null,
+	meta: {
+		pagination: {
+			page: 0,
+			pageSize: 0,
+			pageCount: 0,
+			total: 0,
 		},
 	},
 };
@@ -40,7 +33,10 @@ export const announcersSlice = createSlice({
 		[fetchAnnouncers.fulfilled.type]: (state, action: PayloadAction<ResponseApi>) => {
 			state.loadingAnnouncers = false;
 			state.errorLoading = null;
-			state.announcers = action.payload;
+			state.banner = action.payload.data.attributes.banner;
+			state.notifications = action.payload.data.attributes.notifications;
+			state.widgets = action.payload.data.attributes.widgets;
+			state.meta = action.payload.meta;
 		},
 		[fetchAnnouncers.pending.type]: (state) => {
 			state.loadingAnnouncers = true;
