@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IField } from '@uspacy/sdk/lib/models/field';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
+import cloneDeep from 'lodash/cloneDeep';
 
 import { fieldForCalls, fieldsForTasks, idColumnField, requisiteField, stageField, taskField } from '../../../const';
 import { defaultDataColumns, normalizeProductFields } from '../../../helpers/normalizeProduct';
@@ -39,13 +40,16 @@ const feildsReducer = createSlice({
 				data.splice(3, 0, requisiteField);
 			}
 			if (entityCode === 'tasks') {
-				data = fieldsForTasks;
+				data.splice(0, 0, ...fieldsForTasks);
 			}
 			// TODO wait api
 			// data.splice(0, 0, dealsField);
-			state[entityCode].data = data.map((field) => {
-				field.values?.sort((a, b) => a.sort - b.sort);
-				return field;
+			// avoid mutation
+			state[entityCode].data = cloneDeep(data).map((field) => {
+				return {
+					...field,
+					values: Array.isArray(field.values) ? field.values?.sort((a, b) => a.sort - b.sort) : field.values,
+				};
 			});
 			state[entityCode].meta = action.payload.meta;
 		},
