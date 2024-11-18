@@ -447,6 +447,7 @@ const crmTasksReducer = createSlice({
 			state.isSuccessCalendarSync = action.payload;
 		},
 	},
+
 	extraReducers: {
 		[fetchTasks.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
 			state.loadingTaskList = false;
