@@ -10,7 +10,7 @@ export const getAnalyticsReportList = createAsyncThunk(
 			params: any;
 			signal: AbortSignal;
 		},
-		thunkAPI,
+		{ rejectWithValue },
 	) => {
 		try {
 			const res = await uspacySdk.analyticsService.getAnalyticsReportList(data.params, data?.signal);
@@ -21,36 +21,48 @@ export const getAnalyticsReportList = createAsyncThunk(
 					aborted: true,
 				};
 			} else {
-				return thunkAPI.rejectWithValue('Failure');
+				return rejectWithValue(e);
 			}
 		}
 	},
 );
 
-export const createReport = createAsyncThunk('analytics/createReport', async (data: IAnalyticReport, thunkAPI) => {
+export const getReport = createAsyncThunk('analytics/getReport', async ({ id }: { id: string }, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.tasksService.getTask(id);
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const createReport = createAsyncThunk('analytics/createReport', async (data: IAnalyticReport, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk.analyticsService.createReport(data);
 		return res.data;
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
+		return rejectWithValue(e);
 	}
 });
 
-export const updateReport = createAsyncThunk('analytics/updateReport', async ({ id, body }: { id: number; body: IAnalyticReport }, thunkAPI) => {
-	try {
-		const res = await uspacySdk.analyticsService.updateReport(id, body);
-		return res.data;
-	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
-	}
-});
+export const updateReport = createAsyncThunk(
+	'analytics/updateReport',
+	async ({ id, body }: { id: number; body: IAnalyticReport }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.analyticsService.updateReport(id, body);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
 
-export const deleteReport = createAsyncThunk('analytics/deleteReport', async (id: number, thunkAPI) => {
+export const deleteReport = createAsyncThunk('analytics/deleteReport', async (id: number, { rejectWithValue }) => {
 	try {
 		await uspacySdk.analyticsService.deleteReport(id);
 
 		return id;
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
+		return rejectWithValue(e);
 	}
 });
