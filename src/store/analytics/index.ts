@@ -129,4 +129,6 @@ const analyticsReducer = createSlice({
 	},
 });
 
+export const { clearAllReport } = analyticsReducer.actions;
+
 export default analyticsReducer.reducer;
