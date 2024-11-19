@@ -14,6 +14,7 @@ import {
 	fetchEntityItemsByStage,
 	massItemsDeletion,
 	massItemsEditing,
+	massItemsStageEditing,
 	moveItemFromStageToStage,
 	updateEntityItem,
 } from './actions';
@@ -364,6 +365,22 @@ const itemsReducer = createSlice({
 			state[entityCode].errorMessage = null;
 		},
 		[massItemsEditing.rejected.type]: (state, action: PayloadAction<IErrors, string, { arg: IMassActions & { entityCode: string } }>) => {
+			const { entityCode } = action.meta.arg;
+			state[entityCode].loading = false;
+			state[entityCode].errorMessage = action.payload;
+		},
+
+		[massItemsStageEditing.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActions & { entityCode: string } }>) => {
+			const { entityCode } = action.meta.arg;
+			state[entityCode].loading = false;
+			state[entityCode].errorMessage = null;
+		},
+		[massItemsStageEditing.pending.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActions & { entityCode: string } }>) => {
+			const { entityCode } = action.meta.arg;
+			state[entityCode].loading = true;
+			state[entityCode].errorMessage = null;
+		},
+		[massItemsStageEditing.rejected.type]: (state, action: PayloadAction<IErrors, string, { arg: IMassActions & { entityCode: string } }>) => {
 			const { entityCode } = action.meta.arg;
 			state[entityCode].loading = false;
 			state[entityCode].errorMessage = action.payload;

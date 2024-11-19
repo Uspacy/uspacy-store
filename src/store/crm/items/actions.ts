@@ -210,6 +210,27 @@ export const massItemsEditing = createAsyncThunk(
 	},
 );
 
+export const massItemsStageEditing = createAsyncThunk(
+	'crm/items/massItemsStageEditing',
+	async (
+		{ entityIds, exceptIds, all, params, payload, settings, entityCode }: IMassActions & { entityCode: string; stageId?: number },
+		{ rejectWithValue },
+	) => {
+		try {
+			return await uspacySdk.crmEntitiesService.massEntityItemsStageEditing(entityCode, {
+				all,
+				entityIds,
+				exceptIds,
+				params: all && params?.length ? params : undefined,
+				payload,
+				settings,
+			});
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
 export const massItemsDeletion = createAsyncThunk(
 	'crm/items/massItemsDeletion',
 	async ({ entityCode, entityIds, exceptIds, all, params }: IMassActions & { entityCode: string; stageId?: number }, { rejectWithValue }) => {
