@@ -30,7 +30,7 @@ const mock: IAnalyticReport = {
 	owner_id: 1,
 };
 
-const mock3: IReportItem = {
+const mock3 = {
 	id: 1,
 	title: 'toster charts',
 	chart_type: 'column',
@@ -52,7 +52,7 @@ const mock3: IReportItem = {
 	panel_ids: [],
 };
 
-const mock1: IReportItem = {
+const mock1 = {
 	id: 2,
 	title: 'toster 123123',
 	chart_type: 'column',
