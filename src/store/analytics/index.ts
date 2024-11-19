@@ -30,7 +30,7 @@ const mock: IAnalyticReport = {
 	owner_id: 1,
 };
 
-const mock3: IReportItem = {
+const mock3: IAnalyticReport = {
 	id: 1,
 	title: 'toster charts',
 	chart_type: 'column',
@@ -52,7 +52,7 @@ const mock3: IReportItem = {
 	panel_ids: [],
 };
 
-const mock1: IReportItem = {
+const mock1: IAnalyticReport = {
 	id: 2,
 	title: 'toster 123123',
 	chart_type: 'column',
@@ -76,7 +76,7 @@ const mock1: IReportItem = {
 	owner_id: 1,
 };
 
-const mock2 = {
+const mock2: IAnalyticReport = {
 	id: 3,
 	title: 'toster 123123',
 	chart_type: 'column',
@@ -94,11 +94,11 @@ const mock2 = {
 			{ field_code: 'string_multiple', value: ['toster'] },
 			{ field_code: 'textarea_single', value: null },
 			{ field_code: 'textarea_multiple', value: null },
-			{ field_code: 'int_single', value: { from: '10', to: '1000' } },
-			{ field_code: 'int_multiple', value: { from: '10', to: '10000' } },
-			{ field_code: 'float_single', value: { from: '12', to: '123' } },
-			{ field_code: 'float_multiple', value: { from: '213', to: '1231' } },
-			{ field_code: 'money_single', value: { from: '10', to: '10000', currency: 'USD' } },
+			{ field_code: 'int_single', value: { from: 10, to: 1000 } },
+			{ field_code: 'int_multiple', value: { from: 10, to: 10000 } },
+			{ field_code: 'float_single', value: { from: 12, to: 123 } },
+			{ field_code: 'float_multiple', value: { from: 213, to: 1231 } },
+			{ field_code: 'money_single', value: { from: 10, to: 10000, currency: 'USD' } },
 			{ field_code: 'date_single', value: { namePeriods: ['thisYear', 'thisMonth'], certainPeriod: [] } },
 			{ field_code: 'date_multiple', value: { namePeriods: ['thisMonth', 'prevMonth'], certainPeriod: [] } },
 			{ field_code: 'label_single', value: ['test_1', 'test_4'] },
