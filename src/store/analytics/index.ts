@@ -156,7 +156,7 @@ const analyticsReducer = createSlice({
 		[getAnalyticsReportList.fulfilled.type]: (state, action: PayloadAction<IAnalyticReportList>) => {
 			state.loadingReports = false;
 			state.errorLoadingReports = null;
-			state.reports = { ...state.reports, data: [...state.reports.data, ...action.payload.data], meta: state.reports.meta };
+			state.reports = { ...state.reports, data: [...state.reports.data, ...action.payload.data], meta: action.payload.meta };
 		},
 		[getAnalyticsReportList.pending.type]: (state) => {
 			state.loadingReports = true;
@@ -165,7 +165,6 @@ const analyticsReducer = createSlice({
 		[getAnalyticsReportList.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingReports = false;
 			state.errorLoadingReports = null;
-			state.reports.data = [mock, mock1, mock2, mock3];
 		},
 		[getReport.fulfilled.type]: (state, action: PayloadAction<IAnalyticReport>) => {
 			state.loadingReport = false;
