@@ -8,7 +8,7 @@ import { IMode, IState } from './types';
 const initialState = {
 	webhooks: {},
 	webhook: {},
-	modalModes: { create: false, edit: false, copy: false },
+	modalModes: { create: false, edit: false, copy: false, isIncoming: false },
 	isModalOpen: false,
 	loadingWebhooks: false,
 	errorLoadingErrors: null,
