@@ -183,6 +183,7 @@ const analyticsReducer = createSlice({
 		[createReport.fulfilled.type]: (state, action: PayloadAction<IAnalyticReport>) => {
 			state.loadingReport = false;
 			state.errorLoadingReports = null;
+			state.report = action.payload;
 			state.reports = {
 				...state.reports,
 				data: [action.payload, ...state.reports.data],
@@ -200,6 +201,7 @@ const analyticsReducer = createSlice({
 		[updateReport.fulfilled.type]: (state, action: PayloadAction<IAnalyticReport>) => {
 			state.loadingReport = false;
 			state.errorLoadingReports = null;
+			state.report = action.payload;
 			state.reports = { ...state.reports, data: state.reports.data.map((it) => (it.id === action.payload.id ? action.payload : it)) };
 		},
 		[updateReport.pending.type]: (state) => {
@@ -213,6 +215,7 @@ const analyticsReducer = createSlice({
 		[deleteReport.fulfilled.type]: (state, action: PayloadAction<number>) => {
 			state.loadingReport = false;
 			state.errorLoadingReports = null;
+			state.report = initialState.report;
 			state.reports = {
 				...state.reports,
 				data: state.reports.data.filter((it) => it.id !== action.payload),
