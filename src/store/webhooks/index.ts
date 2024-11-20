@@ -33,6 +33,9 @@ const webhooksReducer = createSlice({
 		addWebhookToEndTable: (state, action: PayloadAction<IWebhook>) => {
 			state.webhooks.data.push(action.payload);
 		},
+		deleteLastElementTable: (state) => {
+			state.webhooks.data = state.webhooks.data.slice(0, -1);
+		},
 	},
 	extraReducers: {
 		[fetchWebhooks.fulfilled.type]: (state, action: PayloadAction<IWebhooksResponse>) => {
@@ -52,7 +55,7 @@ const webhooksReducer = createSlice({
 		[createWebhook.fulfilled.type]: (state, action: PayloadAction<IWebhook>) => {
 			state.loadingWebhooks = false;
 			state.errorLoadingErrors = null;
-			state.webhooks.data = [action.payload, ...state.webhooks.data.slice(0, -1)];
+			state.webhooks.data.unshift(action.payload);
 			state.webhooks.meta.total = state.webhooks.meta.total + 1;
 		},
 		[createWebhook.pending.type]: (state) => {
@@ -117,5 +120,5 @@ const webhooksReducer = createSlice({
 	},
 });
 
-export const { setModalMode, setModalOpen, getCopyWebhook, addWebhookToEndTable } = webhooksReducer.actions;
+export const { setModalMode, setModalOpen, getCopyWebhook, addWebhookToEndTable, deleteLastElementTable } = webhooksReducer.actions;
 export default webhooksReducer.reducer;
