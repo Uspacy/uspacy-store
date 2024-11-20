@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IWebhook, IWebhooksResponse } from '@uspacy/sdk/lib/models/webhooks';
 
 import { createWebhook, deleteSelectedWebhooks, deleteWebhook, fetchWebhooks, repeatWebhook, toggleWebhook } from './actions';
@@ -44,7 +45,7 @@ const webhooksReducer = createSlice({
 			state.loadingWebhooks = true;
 			state.errorLoadingErrors = null;
 		},
-		[fetchWebhooks.rejected.type]: (state, action: PayloadAction<string>) => {
+		[fetchWebhooks.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingWebhooks = false;
 			state.errorLoadingErrors = action.payload;
 		},
@@ -58,7 +59,7 @@ const webhooksReducer = createSlice({
 			state.loadingWebhooks = true;
 			state.errorLoadingErrors = null;
 		},
-		[createWebhook.rejected.type]: (state, action: PayloadAction<string>) => {
+		[createWebhook.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingWebhooks = false;
 			state.errorLoadingErrors = action.payload;
 		},
@@ -72,7 +73,7 @@ const webhooksReducer = createSlice({
 			state.loadingWebhooks = true;
 			state.errorLoadingErrors = null;
 		},
-		[deleteWebhook.rejected.type]: (state, action: PayloadAction<string>) => {
+		[deleteWebhook.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingWebhooks = false;
 			state.errorLoadingErrors = action.payload;
 		},
@@ -84,7 +85,7 @@ const webhooksReducer = createSlice({
 			state.loadingWebhooks = true;
 			state.errorLoadingErrors = null;
 		},
-		[toggleWebhook.rejected.type]: (state, action: PayloadAction<string>) => {
+		[toggleWebhook.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingWebhooks = false;
 			state.errorLoadingErrors = action.payload;
 		},
@@ -96,7 +97,7 @@ const webhooksReducer = createSlice({
 			state.loadingWebhooks = true;
 			state.errorLoadingErrors = null;
 		},
-		[repeatWebhook.rejected.type]: (state, action: PayloadAction<string>) => {
+		[repeatWebhook.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingWebhooks = false;
 			state.errorLoadingErrors = action.payload;
 		},
@@ -109,7 +110,7 @@ const webhooksReducer = createSlice({
 			state.loadingWebhooks = true;
 			state.errorLoadingErrors = null;
 		},
-		[deleteSelectedWebhooks.rejected.type]: (state, action: PayloadAction<string>) => {
+		[deleteSelectedWebhooks.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingWebhooks = false;
 			state.errorLoadingErrors = action.payload;
 		},
