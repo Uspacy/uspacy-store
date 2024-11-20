@@ -1,4 +1,3 @@
-import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IWebhook, IWebhooksResponse } from '@uspacy/sdk/lib/models/webhooks';
 
 export interface IState {
@@ -7,7 +6,7 @@ export interface IState {
 	modalModes: IMode;
 	isModalOpen: boolean;
 	loadingWebhooks: boolean;
-	errorLoadingErrors: IErrorsAxiosResponse;
+	errorLoadingErrors: string;
 }
 
 export interface IMode {
