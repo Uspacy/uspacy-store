@@ -46,6 +46,10 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 				return `${prefix}/${entityBase}/${message.data?.root_parent?.data?.id}?${tasksEmptyFilters}&comment_id=${message.data?.entity?.id}`;
 			}
 
+			if (message.data.root_parent?.service === 'news_feed') {
+				return `${prefix}/${entityBase}/${message.data?.root_parent?.data?.id}?comment_id=${message.data?.entity?.id}`;
+			}
+
 			return `${prefix}/${entityBase}/${isWithParent ? linkData.data?.id : linkData.entity_id}`;
 		default: {
 			return `/${service}/${message.data.entity.id}`;
