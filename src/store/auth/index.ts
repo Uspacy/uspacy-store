@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IAfterGoogleOauthResponse } from '@uspacy/sdk/lib/models/calendars';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { ICoupon, IIntent, IInvoiceData, IInvoices, IRatesList, ISubscription } from '@uspacy/sdk/lib/models/tariffs';
 
@@ -13,6 +14,7 @@ import {
 	fetchInvoicesPdf,
 	fetchRatesList,
 	fetchSubscription,
+	getUrlToRedirectAfterOAuth,
 	subscriptionsIndividual,
 	subscriptionsLegal,
 } from './actions';
@@ -25,6 +27,7 @@ const initialState = {
 	subscription: [],
 	coupon: {},
 	intent: {},
+	afterGoogleOAuthData: {},
 	downloadPdfLink: '',
 	loadingInvoices: false,
 	loadingPdfLink: false,
@@ -36,6 +39,7 @@ const initialState = {
 	loadingSubscriptionRenewal: false,
 	loadingActivateDemo: false,
 	loadingDowngrade: false,
+	loadingAfterGoogleOAuth: false,
 	errorLoadingInvoices: null,
 	errorLoadingPdfLink: null,
 	errorLoadingRatesList: null,
@@ -46,6 +50,7 @@ const initialState = {
 	errorLoadingSubscriptionRenewal: null,
 	errorActivateDemo: null,
 	errorLoadingDowngrade: null,
+	errorLoadingUsingPaymentIntent: null,
 } as IState;
 
 const authReducer = createSlice({
@@ -72,6 +77,9 @@ const authReducer = createSlice({
 		},
 		setAutoDebit: (state, action: PayloadAction<boolean>) => {
 			state.activeSubscription.auto_debit = action.payload;
+		},
+		setAfterGoogleOAuthData: (state, action: PayloadAction<IAfterGoogleOauthResponse>) => {
+			state.afterGoogleOAuthData = action.payload;
 		},
 	},
 	extraReducers: {
@@ -246,8 +254,23 @@ const authReducer = createSlice({
 			state.loadingDowngrade = false;
 			state.errorLoadingDowngrade = action.payload;
 		},
+
+		[getUrlToRedirectAfterOAuth.fulfilled.type]: (state, action: PayloadAction<IAfterGoogleOauthResponse>) => {
+			state.loadingAfterGoogleOAuth = false;
+			state.errorLoadingAfterGoogleOAuth = null;
+			state.afterGoogleOAuthData = action.payload;
+		},
+		[getUrlToRedirectAfterOAuth.pending.type]: (state) => {
+			state.loadingAfterGoogleOAuth = true;
+			state.errorLoadingAfterGoogleOAuth = null;
+		},
+		[getUrlToRedirectAfterOAuth.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingAfterGoogleOAuth = false;
+			state.errorLoadingAfterGoogleOAuth = action.payload;
+		},
 	},
 });
 
-export const { clearPdfLink, clearInvoice, setSubscription, setActiveSubscription, clearIntent, clearCoupon, setAutoDebit } = authReducer.actions;
+export const { clearPdfLink, clearInvoice, setSubscription, setActiveSubscription, clearIntent, clearCoupon, setAutoDebit, setAfterGoogleOAuthData } =
+	authReducer.actions;
 export default authReducer.reducer;

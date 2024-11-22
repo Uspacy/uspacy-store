@@ -1,9 +1,12 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
+import announcers from './announcers';
 import apps from './apps';
 import auth from './auth';
 import automations from './automations';
+import calendars from './calendars';
 import comments from './comments';
+import crm from './crm';
 import crmCalls from './crmCalls';
 import crmCompanies from './crmCompanies';
 import crmContacts from './crmContacts';
@@ -27,6 +30,7 @@ import drawersManagement from './drawersManagement';
 import email from './email';
 import files from './files';
 import groups from './groups';
+import history from './history';
 import messengerReducer from './messenger';
 import migrationsReducer from './migrations';
 import newsfeed from './newsfeed';
@@ -37,6 +41,7 @@ import roles from './roles';
 import settings from './settings';
 import tasks from './tasks';
 import tasksFilters from './tasksFilters';
+import tasksSettings from './tasksSettings';
 import tasksStages from './tasksStages';
 import tasksTimer from './tasksTimer';
 import users from './users';
@@ -60,6 +65,7 @@ const rootReducer = combineReducers({
 	roles,
 	tasks,
 	tasksFilters,
+	tasksSettings,
 	tasksStages,
 	tasksTimer,
 	users,
@@ -83,7 +89,11 @@ const rootReducer = combineReducers({
 	crmProductsUnit,
 	crmDocumentTemplates,
 	crmRequisite,
+	history,
 	settings,
+	announcers,
+	crm,
+	calendars,
 });
 
 export const setupStore = () => {
