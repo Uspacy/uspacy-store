@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IWebhook, IWebhooksResponse } from '@uspacy/sdk/lib/models/webhooks';
 
-import { createWebhook, deleteSelectedWebhooks, deleteWebhook, fetchWebhooks, repeatWebhook, toggleWebhook } from './actions';
+import { createWebhook, deleteSelectedWebhooks, deleteWebhook, fetchWebhooks, getWebhookById, repeatWebhook, toggleWebhook } from './actions';
 import { IMode, IState } from './types';
 
 const initialState = {
@@ -49,6 +49,19 @@ const webhooksReducer = createSlice({
 			state.errorLoadingErrors = null;
 		},
 		[fetchWebhooks.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingWebhooks = false;
+			state.errorLoadingErrors = action.payload;
+		},
+		[getWebhookById.fulfilled.type]: (state, action: PayloadAction<IWebhook>) => {
+			state.loadingWebhooks = false;
+			state.errorLoadingErrors = null;
+			state.webhook = action.payload;
+		},
+		[getWebhookById.pending.type]: (state) => {
+			state.loadingWebhooks = true;
+			state.errorLoadingErrors = null;
+		},
+		[getWebhookById.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingWebhooks = false;
 			state.errorLoadingErrors = action.payload;
 		},
