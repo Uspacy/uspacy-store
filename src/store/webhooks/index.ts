@@ -139,10 +139,11 @@ const webhooksReducer = createSlice({
 			state.loadingWebhooks = false;
 			state.errorLoadingErrors = action.payload;
 		},
-		[updateWebhook.fulfilled.type]: (state, action: PayloadAction<IWebhook>) => {
+		[updateWebhook.fulfilled.type]: (state, action: PayloadAction<number>) => {
 			state.loadingWebhooks = false;
 			state.errorLoadingErrors = null;
-			state.webhooks.data = state.webhooks.data.map((wh) => (wh.id === action.payload.id ? action.payload : wh));
+			const updatedWebhook = state.webhooks.data.find((wh) => wh.id === action.payload);
+			state.webhooks.data = state.webhooks.data.map((wh) => (wh.id === updatedWebhook.id ? updatedWebhook : wh));
 		},
 		[updateWebhook.pending.type]: (state) => {
 			state.loadingWebhooks = true;
