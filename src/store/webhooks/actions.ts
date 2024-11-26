@@ -86,3 +86,15 @@ export const deleteSelectedWebhooks = createAsyncThunk(
 		}
 	},
 );
+
+export const updateWebhook = createAsyncThunk(
+	'webhooks/updateWebhook',
+	async ({ id, body, isIncoming }: { id: number; body: IWebhookRequest; isIncoming?: boolean }, thunkAPI) => {
+		try {
+			await uspacySdk.webhooksService.updateWebhook(id, body, isIncoming);
+			return id;
+		} catch (e) {
+			return thunkAPI.rejectWithValue('Failure');
+		}
+	},
+);
