@@ -91,8 +91,8 @@ export const updateWebhook = createAsyncThunk(
 	'webhooks/updateWebhook',
 	async ({ id, body, isIncoming }: { id: number; body: Partial<IWebhookRequest>; isIncoming?: boolean }, thunkAPI) => {
 		try {
-			await uspacySdk.webhooksService.updateWebhook(id, body, isIncoming);
-			return id;
+			const res = await uspacySdk.webhooksService.updateWebhook(id, body, isIncoming);
+			return res.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
 		}
