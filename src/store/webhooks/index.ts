@@ -2,7 +2,16 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IWebhook, IWebhooksResponse } from '@uspacy/sdk/lib/models/webhooks';
 
-import { createWebhook, deleteSelectedWebhooks, deleteWebhook, fetchWebhooks, getWebhookById, repeatWebhook, toggleWebhook } from './actions';
+import {
+	createWebhook,
+	deleteSelectedWebhooks,
+	deleteWebhook,
+	fetchWebhooks,
+	getWebhookById,
+	repeatWebhook,
+	toggleWebhook,
+	updateWebhook,
+} from './actions';
 import { IMode, IState } from './types';
 
 const initialState = {
@@ -127,6 +136,19 @@ const webhooksReducer = createSlice({
 			state.errorLoadingErrors = null;
 		},
 		[deleteSelectedWebhooks.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingWebhooks = false;
+			state.errorLoadingErrors = action.payload;
+		},
+		[updateWebhook.fulfilled.type]: (state, action: PayloadAction<IWebhook>) => {
+			state.loadingWebhooks = false;
+			state.errorLoadingErrors = null;
+			state.webhooks.data = state.webhooks.data.map((wh) => (wh.id === action.payload.id ? action.payload : wh));
+		},
+		[updateWebhook.pending.type]: (state) => {
+			state.loadingWebhooks = true;
+			state.errorLoadingErrors = null;
+		},
+		[updateWebhook.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingWebhooks = false;
 			state.errorLoadingErrors = action.payload;
 		},
