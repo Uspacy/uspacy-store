@@ -4,9 +4,9 @@ import { IWebhookRequest } from '@uspacy/sdk/lib/services/WebhooksService/dto/cr
 
 export const fetchWebhooks = createAsyncThunk(
 	'webhooks/fetchWebhooks',
-	async ({ page, list, isIncoming }: { page: number; list: number; isIncoming?: boolean }, thunkAPI) => {
+	async ({ page, list, name, isIncoming }: { page: number; list: number; name?: string; isIncoming?: boolean }, thunkAPI) => {
 		try {
-			const res = await uspacySdk.webhooksService.getWebhooks(page, list, isIncoming);
+			const res = await uspacySdk.webhooksService.getWebhooks(page, list, name, isIncoming);
 			return res.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
