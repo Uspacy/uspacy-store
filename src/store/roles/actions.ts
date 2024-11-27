@@ -71,7 +71,7 @@ export const deleteRole = createAsyncThunk('roles/deleteRole', async (id: string
 	}
 });
 
-export const getPermissionsFunnels = createAsyncThunk('roles/getPermissionsFunnels', async (role: string, thunkAPI) => {
+export const getPermissionsFunnels = createAsyncThunk('roles/getPermissionsFunnels', async ({ role = '' }: { role?: string }, thunkAPI) => {
 	try {
 		const res = await uspacySdk.rolesService.getPermissionsFunnels(role);
 		return res.data;
