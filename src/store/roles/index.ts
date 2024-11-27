@@ -1,9 +1,19 @@
 import { createSlice, current, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IPermissions, IRole } from '@uspacy/sdk/lib/models/roles';
+import { IUpdateRolePermissionsFunnels } from '@uspacy/sdk/lib/services/RolesService/create-update-role-dto';
 
 import { disabledPermissions } from '../../helpers/disabledPermissions';
-import { createRole, deleteRole, fetchPermissions, fetchRole, fetchRoles, updateRole } from './actions';
+import {
+	createRole,
+	deleteRole,
+	fetchPermissions,
+	fetchRole,
+	fetchRoles,
+	getPermissionsFunnels,
+	updateRole,
+	updateRolePermisionsFunnels,
+} from './actions';
 import { idsForDisableDeleting } from './disableDeleting.enum';
 import { PermissionsControllerViewEnums } from './role.enums';
 import { IState } from './types';
@@ -35,6 +45,7 @@ const initialState = {
 	errorLoadingRoles: null,
 	roleData: {},
 	activeRole: null,
+	permissionsFunnels: {},
 } as IState;
 
 const rolesReducer = createSlice({
@@ -287,6 +298,31 @@ const rolesReducer = createSlice({
 			state.errorLoadingRoles = null;
 		},
 		[fetchRole.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingRoles = false;
+			state.errorLoadingRoles = action.payload;
+		},
+		[getPermissionsFunnels.fulfilled.type]: (state, action: PayloadAction<IUpdateRolePermissionsFunnels>) => {
+			state.loadingRoles = false;
+			state.errorLoadingRoles = null;
+			state.permissionsFunnels = action.payload;
+		},
+		[getPermissionsFunnels.pending.type]: (state) => {
+			state.loadingRoles = true;
+			state.errorLoadingRoles = null;
+		},
+		[getPermissionsFunnels.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingRoles = false;
+			state.errorLoadingRoles = action.payload;
+		},
+		[updateRolePermisionsFunnels.fulfilled.type]: (state) => {
+			state.loadingRoles = false;
+			state.errorLoadingRoles = null;
+		},
+		[updateRolePermisionsFunnels.pending.type]: (state) => {
+			state.loadingRoles = true;
+			state.errorLoadingRoles = null;
+		},
+		[updateRolePermisionsFunnels.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingRoles = false;
 			state.errorLoadingRoles = action.payload;
 		},
