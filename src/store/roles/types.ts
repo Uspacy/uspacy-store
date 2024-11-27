@@ -1,7 +1,6 @@
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IPermissions, IRole } from '@uspacy/sdk/lib/models/roles';
+import { IPermissions, IPermissionsFunnelsResponse, IRole } from '@uspacy/sdk/lib/models/roles';
 import { IUser } from '@uspacy/sdk/lib/models/user';
-import { IUpdateRolePermissionsFunnels } from '@uspacy/sdk/lib/services/RolesService/create-update-role-dto';
 
 export interface IState {
 	roles: IRole[];
@@ -20,7 +19,7 @@ export interface IState {
 	permissionsControllerView: any[];
 	modalActiveType: string;
 	createPermissionsModal: IPermissions;
-	permissionsFunnels: IUpdateRolePermissionsFunnels;
+	permissionsFunnels: IPermissionsFunnelsResponse;
 }
 
 export interface IDepartment {

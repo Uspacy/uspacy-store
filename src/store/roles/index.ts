@@ -1,7 +1,6 @@
 import { createSlice, current, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IPermissions, IRole } from '@uspacy/sdk/lib/models/roles';
-import { IUpdateRolePermissionsFunnels } from '@uspacy/sdk/lib/services/RolesService/create-update-role-dto';
+import { IPermissions, IPermissionsFunnelsResponse, IRole } from '@uspacy/sdk/lib/models/roles';
 
 import { disabledPermissions } from '../../helpers/disabledPermissions';
 import {
@@ -310,7 +309,7 @@ const rolesReducer = createSlice({
 			state.loadingRoles = false;
 			state.errorLoadingRoles = action.payload;
 		},
-		[getPermissionsFunnels.fulfilled.type]: (state, action: PayloadAction<IUpdateRolePermissionsFunnels>) => {
+		[getPermissionsFunnels.fulfilled.type]: (state, action: PayloadAction<IPermissionsFunnelsResponse>) => {
 			state.loadingRoles = false;
 			state.errorLoadingRoles = null;
 			state.permissionsFunnels = action.payload;
