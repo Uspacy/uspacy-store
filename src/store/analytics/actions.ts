@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
-import { IAnalyticReport } from '@uspacy/sdk/lib/models/analytics';
+import { IAnalyticReport, IAnalyticReportFilter } from '@uspacy/sdk/lib/models/analytics';
 
 export const getAnalyticsReportList = createAsyncThunk(
 	'analytics/getAnalyticsReportList',
 	async (
 		data: {
-			params: any;
+			params: IAnalyticReportFilter;
 			signal: AbortSignal;
 		},
 		{ rejectWithValue },

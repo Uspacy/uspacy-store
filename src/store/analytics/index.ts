@@ -37,7 +37,7 @@ const analyticsReducer = createSlice({
 			state.loadingReports = true;
 			state.errorLoadingReports = null;
 		},
-		[getAnalyticsReportList.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[getAnalyticsReportList.rejected.type]: (state) => {
 			state.loadingReports = false;
 			state.errorLoadingReports = null;
 		},
