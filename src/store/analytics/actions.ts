@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IAnalyticReport, IAnalyticReportFilter } from '@uspacy/sdk/lib/models/analytics';
