@@ -168,23 +168,50 @@ const rolesReducer = createSlice({
 			}
 		},
 		addPermissionsForColAction(state, action) {
-			const goalForClean = action.payload.categoryName;
-			const permissionsType = action.payload.permissionsType;
+			const { categoryName: goalForClean, permissionsType, permissionKey, isFunnel, actionType } = action.payload;
 			const permissionState = permissionsType === 'create' ? state.createPermissions : state.permissions;
 
 			const newPermissions = {
-				create: permissionState.create.filter((item) => !item.includes(goalForClean)),
-				edit: permissionState.edit.filter((item) => !item.includes(goalForClean)),
-				view: permissionState.view.filter((item) => !item.includes(goalForClean)),
-				delete: permissionState.delete.filter((item) => !item.includes(goalForClean)),
+				create: [...permissionState.create],
+				edit: [...permissionState.edit],
+				view: [...permissionState.view],
+				delete: [...permissionState.delete],
 			};
-			newPermissions.create.push(`${goalForClean}.create.mine.disabled-any`);
-			newPermissions.create = [...newPermissions.create, `${goalForClean}.create.${action.payload.permissionKey}`].filter(
-				(item) => item !== `${goalForClean}.create.mine`,
-			);
-			newPermissions.edit = [...newPermissions.edit, `${goalForClean}.edit.${action.payload.permissionKey}`];
-			newPermissions.view = [...newPermissions.view, `${goalForClean}.view.${action.payload.permissionKey}`];
-			newPermissions.delete = [...newPermissions.delete, `${goalForClean}.delete.${action.payload.permissionKey}`];
+
+			if (isFunnel) {
+				// Update only the specified permissionsType for goalForClean
+				newPermissions[actionType] = newPermissions[actionType]
+					.filter((item) => !item.includes(goalForClean))
+					.concat(`${goalForClean}.${actionType}.${permissionKey}`);
+				if (actionType === 'create') {
+					newPermissions.create = newPermissions.create
+						.filter((item) => !item.includes(goalForClean))
+						.concat(`${goalForClean}.create.mine.disabled-any`, `${goalForClean}.create.${permissionKey}`);
+				}
+			} else {
+				// Update all permissions related to goalForClean
+				newPermissions.create = [
+					...permissionState.create.filter((item) => !item.includes(goalForClean)),
+					`${goalForClean}.create.mine.disabled-any`,
+					`${goalForClean}.create.${permissionKey}`,
+				].filter((item) => item !== `${goalForClean}.create.mine`);
+
+				newPermissions.edit = [
+					...permissionState.edit.filter((item) => !item.includes(goalForClean)),
+					`${goalForClean}.edit.${permissionKey}`,
+				];
+
+				newPermissions.view = [
+					...permissionState.view.filter((item) => !item.includes(goalForClean)),
+					`${goalForClean}.view.${permissionKey}`,
+				];
+
+				newPermissions.delete = [
+					...permissionState.delete.filter((item) => !item.includes(goalForClean)),
+					`${goalForClean}.delete.${permissionKey}`,
+				];
+			}
+
 			if (permissionsType === 'create') {
 				state.createPermissions = newPermissions;
 			} else {
