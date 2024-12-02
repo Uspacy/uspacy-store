@@ -14,4 +14,6 @@ export interface IMode {
 	create: boolean;
 	edit: boolean;
 	copy: boolean;
+	view: boolean;
+	isIncoming: boolean;
 }
