@@ -2,13 +2,22 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IWebhook, IWebhooksResponse } from '@uspacy/sdk/lib/models/webhooks';
 
-import { createWebhook, deleteSelectedWebhooks, deleteWebhook, fetchWebhooks, repeatWebhook, toggleWebhook } from './actions';
+import {
+	createWebhook,
+	deleteSelectedWebhooks,
+	deleteWebhook,
+	fetchWebhooks,
+	getWebhookById,
+	repeatWebhook,
+	toggleWebhook,
+	updateWebhook,
+} from './actions';
 import { IMode, IState } from './types';
 
 const initialState = {
 	webhooks: {},
 	webhook: {},
-	modalModes: { create: false, edit: false, copy: false },
+	modalModes: { create: false, edit: false, copy: false, view: false, isIncoming: false },
 	isModalOpen: false,
 	loadingWebhooks: false,
 	errorLoadingErrors: null,
@@ -33,6 +42,9 @@ const webhooksReducer = createSlice({
 		addWebhookToEndTable: (state, action: PayloadAction<IWebhook>) => {
 			state.webhooks.data.push(action.payload);
 		},
+		deleteLastElementTable: (state) => {
+			state.webhooks.data = state.webhooks.data.slice(0, -1);
+		},
 	},
 	extraReducers: {
 		[fetchWebhooks.fulfilled.type]: (state, action: PayloadAction<IWebhooksResponse>) => {
@@ -49,10 +61,23 @@ const webhooksReducer = createSlice({
 			state.loadingWebhooks = false;
 			state.errorLoadingErrors = action.payload;
 		},
+		[getWebhookById.fulfilled.type]: (state, action: PayloadAction<IWebhook>) => {
+			state.loadingWebhooks = false;
+			state.errorLoadingErrors = null;
+			state.webhook = action.payload;
+		},
+		[getWebhookById.pending.type]: (state) => {
+			state.loadingWebhooks = true;
+			state.errorLoadingErrors = null;
+		},
+		[getWebhookById.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingWebhooks = false;
+			state.errorLoadingErrors = action.payload;
+		},
 		[createWebhook.fulfilled.type]: (state, action: PayloadAction<IWebhook>) => {
 			state.loadingWebhooks = false;
 			state.errorLoadingErrors = null;
-			state.webhooks.data = [action.payload, ...state.webhooks.data.slice(0, -1)];
+			state.webhooks.data.unshift(action.payload);
 			state.webhooks.meta.total = state.webhooks.meta.total + 1;
 		},
 		[createWebhook.pending.type]: (state) => {
@@ -114,8 +139,21 @@ const webhooksReducer = createSlice({
 			state.loadingWebhooks = false;
 			state.errorLoadingErrors = action.payload;
 		},
+		[updateWebhook.fulfilled.type]: (state, action: PayloadAction<IWebhook>) => {
+			state.loadingWebhooks = false;
+			state.errorLoadingErrors = null;
+			state.webhooks.data = state.webhooks.data.map((wh) => (wh.id === action.payload.id ? action.payload : wh));
+		},
+		[updateWebhook.pending.type]: (state) => {
+			state.loadingWebhooks = true;
+			state.errorLoadingErrors = null;
+		},
+		[updateWebhook.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingWebhooks = false;
+			state.errorLoadingErrors = action.payload;
+		},
 	},
 });
 
-export const { setModalMode, setModalOpen, getCopyWebhook, addWebhookToEndTable } = webhooksReducer.actions;
+export const { setModalMode, setModalOpen, getCopyWebhook, addWebhookToEndTable, deleteLastElementTable } = webhooksReducer.actions;
 export default webhooksReducer.reducer;

@@ -1,6 +1,6 @@
 {
   "name": "@uspacy/store",
-  "version": "0.0.146",
+  "version": "0.0.151",
   "keywords": [],
   "repository": "git@github.com:Uspacy/uspacy-store.git",
   "license": "ISC",
@@ -16,7 +16,7 @@
     "predev": "rimraf lib",
     "dev": "webpack serve --mode development",
     "eslint": "eslint --max-warnings=0",
-    "eslint:fix": "npm run lint -- --fix",
+    "eslint:fix": "yarn eslint . --fix",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "prebuild:doc": "rimraf docs",
     "prepare": "husky install",
