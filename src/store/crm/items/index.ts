@@ -226,11 +226,11 @@ const itemsReducer = createSlice({
 				state[entityCode].loading = false;
 				state[entityCode].errorMessage = null;
 				state[entityCode].data = [action.payload, ...state[entityCode].data];
-				state[entityCode].meta.total++;
+				state[entityCode].meta.total = (state[entityCode].meta.total || 0) + 1;
 			}
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
 				state[entityCode].stages[stageId].data = [action.payload, ...state[entityCode].stages[stageId].data];
-				state[entityCode].stages[stageId].meta.total++;
+				state[entityCode].meta.total = (state[entityCode].meta.total || 0) + 1;
 				state[entityCode].stages[stageId].loading = false;
 				state[entityCode].stages[stageId].errorMessage = null;
 			}
