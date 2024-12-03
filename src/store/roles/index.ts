@@ -1,9 +1,18 @@
 import { createSlice, current, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IPermissions, IRole } from '@uspacy/sdk/lib/models/roles';
+import { IPermissions, IPermissionsFunnelsResponse, IRole } from '@uspacy/sdk/lib/models/roles';
 
 import { disabledPermissions } from '../../helpers/disabledPermissions';
-import { createRole, deleteRole, fetchPermissions, fetchRole, fetchRoles, updateRole } from './actions';
+import {
+	createRole,
+	deleteRole,
+	fetchPermissions,
+	fetchRole,
+	fetchRoles,
+	getPermissionsFunnels,
+	updateRole,
+	updateRolePermisionsFunnels,
+} from './actions';
 import { idsForDisableDeleting } from './disableDeleting.enum';
 import { PermissionsControllerViewEnums } from './role.enums';
 import { IState } from './types';
@@ -35,6 +44,7 @@ const initialState = {
 	errorLoadingRoles: null,
 	roleData: {},
 	activeRole: null,
+	permissionsFunnels: {},
 } as IState;
 
 const rolesReducer = createSlice({
@@ -158,23 +168,63 @@ const rolesReducer = createSlice({
 			}
 		},
 		addPermissionsForColAction(state, action) {
-			const goalForClean = action.payload.categoryName;
-			const permissionsType = action.payload.permissionsType;
+			const { categoryName: goalForClean, permissionsType, permissionKey, isFunnel, actionType } = action.payload;
 			const permissionState = permissionsType === 'create' ? state.createPermissions : state.permissions;
 
 			const newPermissions = {
-				create: permissionState.create.filter((item) => !item.includes(goalForClean)),
-				edit: permissionState.edit.filter((item) => !item.includes(goalForClean)),
-				view: permissionState.view.filter((item) => !item.includes(goalForClean)),
-				delete: permissionState.delete.filter((item) => !item.includes(goalForClean)),
+				create: [...permissionState.create],
+				edit: [...permissionState.edit],
+				view: [...permissionState.view],
+				delete: [...permissionState.delete],
 			};
-			newPermissions.create.push(`${goalForClean}.create.mine.disabled-any`);
-			newPermissions.create = [...newPermissions.create, `${goalForClean}.create.${action.payload.permissionKey}`].filter(
-				(item) => item !== `${goalForClean}.create.mine`,
-			);
-			newPermissions.edit = [...newPermissions.edit, `${goalForClean}.edit.${action.payload.permissionKey}`];
-			newPermissions.view = [...newPermissions.view, `${goalForClean}.view.${action.payload.permissionKey}`];
-			newPermissions.delete = [...newPermissions.delete, `${goalForClean}.delete.${action.payload.permissionKey}`];
+
+			if (isFunnel) {
+				// Update only the specified permissionsType for goalForClean
+				newPermissions[actionType] = newPermissions[actionType]
+					.filter((item) => !item.includes(goalForClean))
+					.concat(`${goalForClean}.${actionType}.${permissionKey}`);
+				if (actionType === 'create') {
+					newPermissions.create = newPermissions.create
+						.filter((item) => !item.includes(goalForClean))
+						.concat(`${goalForClean}.create.mine.disabled-any`, `${goalForClean}.create.${permissionKey}`);
+				}
+				if (actionType === 'view' && permissionKey === 'disabled') {
+					newPermissions.edit = newPermissions.edit
+						.filter((item) => !item.includes(goalForClean))
+						.concat(`${goalForClean}.edit.disabled-any`);
+					newPermissions.delete = newPermissions.delete
+						.filter((item) => !item.includes(goalForClean))
+						.concat(`${goalForClean}.delete.disabled-any`);
+				}
+				if (actionType === 'edit' && permissionKey === 'disabled') {
+					newPermissions.delete = newPermissions.delete
+						.filter((item) => !item.includes(goalForClean))
+						.concat(`${goalForClean}.delete.disabled-any`);
+				}
+			} else {
+				// Update all permissions related to goalForClean
+				newPermissions.create = [
+					...permissionState.create.filter((item) => !item.includes(goalForClean)),
+					`${goalForClean}.create.mine.disabled-any`,
+					`${goalForClean}.create.${permissionKey}`,
+				].filter((item) => item !== `${goalForClean}.create.mine`);
+
+				newPermissions.edit = [
+					...permissionState.edit.filter((item) => !item.includes(goalForClean)),
+					`${goalForClean}.edit.${permissionKey}`,
+				];
+
+				newPermissions.view = [
+					...permissionState.view.filter((item) => !item.includes(goalForClean)),
+					`${goalForClean}.view.${permissionKey}`,
+				];
+
+				newPermissions.delete = [
+					...permissionState.delete.filter((item) => !item.includes(goalForClean)),
+					`${goalForClean}.delete.${permissionKey}`,
+				];
+			}
+
 			if (permissionsType === 'create') {
 				state.createPermissions = newPermissions;
 			} else {
@@ -296,6 +346,31 @@ const rolesReducer = createSlice({
 			state.errorLoadingRoles = null;
 		},
 		[fetchRole.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingRoles = false;
+			state.errorLoadingRoles = action.payload;
+		},
+		[getPermissionsFunnels.fulfilled.type]: (state, action: PayloadAction<IPermissionsFunnelsResponse>) => {
+			state.loadingRoles = false;
+			state.errorLoadingRoles = null;
+			state.permissionsFunnels = action.payload;
+		},
+		[getPermissionsFunnels.pending.type]: (state) => {
+			state.loadingRoles = true;
+			state.errorLoadingRoles = null;
+		},
+		[getPermissionsFunnels.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingRoles = false;
+			state.errorLoadingRoles = action.payload;
+		},
+		[updateRolePermisionsFunnels.fulfilled.type]: (state) => {
+			state.loadingRoles = false;
+			state.errorLoadingRoles = null;
+		},
+		[updateRolePermisionsFunnels.pending.type]: (state) => {
+			state.loadingRoles = true;
+			state.errorLoadingRoles = null;
+		},
+		[updateRolePermisionsFunnels.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingRoles = false;
 			state.errorLoadingRoles = action.payload;
 		},
