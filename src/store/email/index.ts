@@ -12,17 +12,21 @@ import {
 	ILetter,
 	ILetters,
 	ILettersCrmEntities,
+	ISignature,
 } from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
+import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 
 import {
 	connectEmailBox,
 	createEmailLetter,
+	createEmailSignature,
 	getEmailBox,
 	getEmailFolders,
 	getEmailLetter,
 	getEmailLetters,
 	getEmailsBoxes,
+	getEmailSignatures,
 	getIntgrWithCrmSettings,
 	moveLetters,
 	readEmailLetters,
@@ -31,11 +35,13 @@ import {
 	removeEmailBox,
 	removeEmailLetter,
 	removeEmailLetters,
+	removeEmailSignature,
 	resendEmailLetter,
 	setupEmailBox,
 	unreadEmailLetters,
 	updateEmailBox,
 	updateEmailBoxCredentials,
+	updateEmailSignature,
 } from './actions';
 import { createNewLetterModeType, headerTypes, IEmailMassActionsResponse, IState } from './types';
 
@@ -54,6 +60,7 @@ const initialState = {
 	letter: {},
 	createdLetter: {},
 	crmSettings: [],
+	signatures: {},
 	removedLetterIds: null,
 	loadingEmailBoxes: false,
 	loadingEmailBox: false,
@@ -72,6 +79,10 @@ const initialState = {
 	loadingIsReadStatus: false,
 	loadingMoveLetter: false,
 	loadingOAuthRedirect: false,
+	loadingSignatures: false,
+	loadingCreateSignature: false,
+	loadingUpdateSignature: false,
+	loadingRemoveSignature: false,
 	errorLoadingEmailBoxes: null,
 	errorLoadingEmailBox: null,
 	errorLoadingConnectEmailBox: null,
@@ -89,6 +100,10 @@ const initialState = {
 	errorLoadingIsReadStatus: null,
 	errorLoadingMoveLetter: null,
 	errorLoadingOAuthRedirect: null,
+	errorLoadingSignatures: null,
+	errorLoadingCreateSignature: null,
+	errorLoadingUpdateSignature: null,
+	errorLoadingRemoveSignature: null,
 	openLetter: false,
 	isCreateNewLetter: false,
 	createNewLetterMode: 'window',
@@ -540,6 +555,58 @@ const emailReducer = createSlice({
 		},
 		[getIntgrWithCrmSettings.fulfilled.type]: (state, action: PayloadAction<{ data: ICrmSetting[] }>) => {
 			state.crmSettings = action.payload.data;
+		},
+		[getEmailSignatures.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<ISignature>>) => {
+			state.signatures = action.payload;
+			state.loadingSignatures = false;
+			state.errorLoadingSignatures = null;
+		},
+		[getEmailSignatures.pending.type]: (state) => {
+			state.loadingSignatures = true;
+			state.errorLoadingSignatures = null;
+		},
+		[getEmailSignatures.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingSignatures = false;
+			state.errorLoadingSignatures = action.payload;
+		},
+		[createEmailSignature.fulfilled.type]: (state, action: PayloadAction<ISignature>) => {
+			state.loadingCreateSignature = false;
+			state.errorLoadingCreateSignature = null;
+			state.signatures.data = [...state.signatures.data, action.payload];
+		},
+		[createEmailSignature.pending.type]: (state) => {
+			state.loadingCreateSignature = true;
+			state.errorLoadingCreateSignature = null;
+		},
+		[createEmailSignature.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreateSignature = false;
+			state.errorLoadingCreateSignature = action.payload;
+		},
+		[updateEmailSignature.fulfilled.type]: (state, action: PayloadAction<ISignature>) => {
+			state.loadingUpdateSignature = false;
+			state.errorLoadingUpdateSignature = null;
+			state.signatures.data = state.signatures.data.map((signature) => (signature.id === action.payload.id ? action.payload : signature));
+		},
+		[updateEmailSignature.pending.type]: (state) => {
+			state.loadingUpdateSignature = true;
+			state.errorLoadingUpdateSignature = null;
+		},
+		[updateEmailSignature.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdateSignature = false;
+			state.errorLoadingUpdateSignature = action.payload;
+		},
+		[removeEmailSignature.fulfilled.type]: (state, action: PayloadAction<number, string, { arg: { id: number } }>) => {
+			state.loadingRemoveSignature = false;
+			state.errorLoadingRemoveSignature = null;
+			state.signatures.data = state.signatures.data.filter((signature) => signature.id !== action.meta.arg.id);
+		},
+		[removeEmailSignature.pending.type]: (state) => {
+			state.loadingRemoveSignature = true;
+			state.errorLoadingRemoveSignature = null;
+		},
+		[removeEmailSignature.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingRemoveSignature = false;
+			state.errorLoadingRemoveSignature = action.payload;
 		},
 	},
 });
