@@ -5,7 +5,6 @@ import apps from './apps';
 import auth from './auth';
 import automations from './automations';
 import calendars from './calendars';
-import comments from './comments';
 import crm from './crm';
 import crmCalls from './crmCalls';
 import crmCompanies from './crmCompanies';
@@ -50,7 +49,6 @@ import webhooks from './webhooks';
 const rootReducer = combineReducers({
 	apps,
 	auth,
-	comments,
 	dealsFunnel,
 	leadsFunnel,
 	dealsStages,
