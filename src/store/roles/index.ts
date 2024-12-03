@@ -188,6 +188,19 @@ const rolesReducer = createSlice({
 						.filter((item) => !item.includes(goalForClean))
 						.concat(`${goalForClean}.create.mine.disabled-any`, `${goalForClean}.create.${permissionKey}`);
 				}
+				if (actionType === 'view' && permissionKey === 'disabled') {
+					newPermissions.edit = newPermissions.edit
+						.filter((item) => !item.includes(goalForClean))
+						.concat(`${goalForClean}.edit.disabled-any`);
+					newPermissions.delete = newPermissions.delete
+						.filter((item) => !item.includes(goalForClean))
+						.concat(`${goalForClean}.delete.disabled-any`);
+				}
+				if (actionType === 'edit' && permissionKey === 'disabled') {
+					newPermissions.delete = newPermissions.delete
+						.filter((item) => !item.includes(goalForClean))
+						.concat(`${goalForClean}.delete.disabled-any`);
+				}
 			} else {
 				// Update all permissions related to goalForClean
 				newPermissions.create = [
