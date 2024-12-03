@@ -88,7 +88,7 @@ const itemsReducer = createSlice({
 			} else {
 				state[entityCode].data = action.payload.data;
 			}
-			state[entityCode].meta = action.payload.meta || { total: 0, page: 1, list: 20 };
+			state[entityCode].meta = action.payload.meta;
 		},
 		[fetchEntityItems.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string } }>) => {
 			const { entityCode } = action.meta.arg;
@@ -105,6 +105,7 @@ const itemsReducer = createSlice({
 			const { entityCode } = action.meta.arg;
 			state[entityCode].loading = false;
 			state[entityCode].errorMessage = action.payload;
+			state[entityCode].meta = { total: 0, page: 1, list: 20 };
 		},
 
 		[fetchEntityItemsByStage.fulfilled.type]: (
