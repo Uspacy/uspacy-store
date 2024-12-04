@@ -226,7 +226,7 @@ const itemsReducer = createSlice({
 				state[entityCode].loading = false;
 				state[entityCode].errorMessage = null;
 				state[entityCode].data = [action.payload, ...state[entityCode].data];
-				state[entityCode].stages[stageId].meta.total++;
+				state[entityCode].meta.total++;
 			}
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
 				state[entityCode].stages[stageId].data = [action.payload, ...state[entityCode].stages[stageId].data];
