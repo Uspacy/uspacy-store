@@ -318,7 +318,10 @@ const itemsReducer = createSlice({
 			}
 			state[entityCode].stages = Object.fromEntries(
 				Object.entries(state[entityCode].stages).map(([key, value]) => {
+					console.log(value, 'value');
+					console.log(key, 'key');
 					if (+key === stageId) {
+						console.log(stageId, 'stageId');
 						const data = value.data;
 						data.splice(destinationIndex || 0, 0, {
 							...foundEntityItem,
@@ -339,7 +342,9 @@ const itemsReducer = createSlice({
 						];
 					}
 					const filteredData = value.data.filter((item) => item.id !== entityId);
-					const total = filteredData.length === value.data.length ? value.meta.total : value.meta.total - 1;
+					console.log(filteredData, 'filteredData');
+					const total = filteredData.length === value.data.length ? value?.meta?.total : value.meta.total - 1;
+					console.log(total, 'total');
 					return [key, { ...value, data: filteredData, meta: { ...value.meta, total } }];
 				}),
 			);
