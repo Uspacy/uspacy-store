@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {IFilterField, IFilterPreset} from '@uspacy/sdk/lib/models/crm-filter-field';
+import { IFilterField, IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { IFilter } from '@uspacy/sdk/lib/models/crm-filters';
 
 import { IState } from './types';
@@ -20,7 +20,12 @@ const filtersReducer = createSlice({
 	reducers: {
 		setFilterPresets: (
 			state,
-			action: PayloadAction<{ entityCode: string; data: IFilterPreset[]; filtersFromSearchParams: Partial<IFilter>,  filterFields: Partial<IFilterField[]> }>,
+			action: PayloadAction<{
+				entityCode: string;
+				data: IFilterPreset[];
+				filtersFromSearchParams: Partial<IFilter>;
+				filterFields: Partial<IFilterField[]>;
+			}>,
 		) => {
 			if (!state[action.payload.entityCode]) state[action.payload.entityCode] = { presets: [] };
 			const presets = sortPresets(action.payload.data);
