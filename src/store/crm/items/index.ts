@@ -104,6 +104,7 @@ const itemsReducer = createSlice({
 			const { entityCode } = action.meta.arg;
 			state[entityCode].loading = false;
 			state[entityCode].errorMessage = action.payload;
+			state[entityCode].meta = { total: 0, page: 1, list: 20 };
 		},
 
 		[fetchEntityItemsByStage.fulfilled.type]: (
