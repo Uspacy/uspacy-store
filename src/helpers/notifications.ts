@@ -37,9 +37,18 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 			const isWithEntityParent = message.data.entity.parent;
 			const entityParentLink = isWithEntityParent ? message.data.entity.parent : message.data.entity;
 			const linkData = isWithParent ? message.data.root_parent : entityParentLink;
+			const tasksEmptyFilters = 'tasksView=list&page=1&perPage=20&boolean_operator=XOR';
 
 			const prefix = ['lead', 'deal', 'company', 'contact'].includes(linkData?.entity_type) ? '/crm' : '';
 			const entityBase = getEntityBase(linkData);
+
+			if (message.data.root_parent?.service === 'tasks') {
+				return `${prefix}/${entityBase}/${message.data?.root_parent?.data?.id}?${tasksEmptyFilters}&comment_id=${message.data?.entity?.id}`;
+			}
+
+			if (message.data.root_parent?.service === 'news_feed') {
+				return `${prefix}/${entityBase}/${message.data?.root_parent?.data?.id}?comment_id=${message.data?.entity?.id}`;
+			}
 
 			return `${prefix}/${entityBase}/${isWithParent ? linkData.data?.id : linkData.entity_id}`;
 		default: {

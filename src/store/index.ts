@@ -1,11 +1,11 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
+import analytics from './analytics';
 import announcers from './announcers';
 import apps from './apps';
 import auth from './auth';
 import automations from './automations';
 import calendars from './calendars';
-import comments from './comments';
 import crm from './crm';
 import crmCalls from './crmCalls';
 import crmCompanies from './crmCompanies';
@@ -50,7 +50,6 @@ import webhooks from './webhooks';
 const rootReducer = combineReducers({
 	apps,
 	auth,
-	comments,
 	dealsFunnel,
 	leadsFunnel,
 	dealsStages,
@@ -94,6 +93,7 @@ const rootReducer = combineReducers({
 	announcers,
 	crm,
 	calendars,
+	analytics,
 });
 
 export const setupStore = () => {
