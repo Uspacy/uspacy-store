@@ -52,7 +52,7 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 
 			return `${prefix}/${entityBase}/${isWithParent ? linkData.data?.id : linkData.entity_id}`;
 		default: {
-			const serviceName = service === 'activities' ? 'tasks' : service;
+			const serviceName = service === 'activities' ? 'crm/tasks' : service;
 			return `/${serviceName}/${message.data.entity.id}`;
 		}
 	}
