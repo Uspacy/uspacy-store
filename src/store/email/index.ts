@@ -16,6 +16,7 @@ import {
 } from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
+import { ICreateSignature } from '@uspacy/sdk/lib/services/EmailService/create-signature.dto';
 
 import {
 	connectEmailBox,
@@ -582,10 +583,27 @@ const emailReducer = createSlice({
 			state.loadingCreateSignature = false;
 			state.errorLoadingCreateSignature = action.payload;
 		},
-		[updateEmailSignature.fulfilled.type]: (state, action: PayloadAction<ISignature>) => {
+		[updateEmailSignature.fulfilled.type]: (
+			state,
+			action: PayloadAction<ISignature, string, { arg: { id: number; body: ICreateSignature } }>,
+		) => {
 			state.loadingUpdateSignature = false;
 			state.errorLoadingUpdateSignature = null;
-			state.signatures.data = state.signatures.data.map((signature) => (signature.id === action.payload.id ? action.payload : signature));
+			state.signatures.data = state.signatures.data.map((signature) => {
+				if (action.meta.arg.body.is_default) {
+					if (signature.is_default && signature.id !== action.payload.id) {
+						return { ...signature, is_default: false };
+					}
+					if (signature.id === action.payload.id) {
+						return { ...signature, ...action.payload, is_default: true };
+					}
+				} else {
+					if (signature.id === action.payload.id) {
+						return { ...signature, ...action.payload };
+					}
+				}
+				return signature;
+			});
 		},
 		[updateEmailSignature.pending.type]: (state) => {
 			state.loadingUpdateSignature = true;
