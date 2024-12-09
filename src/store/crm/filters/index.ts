@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
+import { IFilterField, IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { IFilter } from '@uspacy/sdk/lib/models/crm-filters';
 
 import { IState } from './types';
@@ -20,7 +20,12 @@ const filtersReducer = createSlice({
 	reducers: {
 		setFilterPresets: (
 			state,
-			action: PayloadAction<{ entityCode: string; data: IFilterPreset[]; filtersFromSearchParams: Partial<IFilter> }>,
+			action: PayloadAction<{
+				entityCode: string;
+				data: IFilterPreset[];
+				filtersFromSearchParams: Partial<IFilter>;
+				filterFields: Partial<IFilterField[]>;
+			}>,
 		) => {
 			if (!state[action.payload.entityCode]) state[action.payload.entityCode] = { presets: [] };
 			const presets = sortPresets(action.payload.data);
@@ -31,6 +36,7 @@ const filtersReducer = createSlice({
 					...currentPreset?.filters,
 					...action.payload.filtersFromSearchParams,
 				},
+				filterFields: action.payload.filterFields,
 			};
 		},
 		createFilterPreset: (state, action: PayloadAction<{ entityCode: string; data: IFilterPreset }>) => {
@@ -46,6 +52,7 @@ const filtersReducer = createSlice({
 			state[action.payload.entityCode] = {
 				presets,
 				filters: currentPreset?.filters,
+				filterFields: currentPreset?.filterFields,
 			};
 		},
 		deleteFilterPreset: (state, action: PayloadAction<{ entityCode: string; presetId: IFilterPreset['id'] }>) => {
@@ -157,6 +164,9 @@ const filtersReducer = createSlice({
 		updateCurrentFilters: (state, action: PayloadAction<{ entityCode: string; filters: Partial<IFilter> }>) => {
 			state[action.payload.entityCode].filters = { ...state[action.payload.entityCode]?.filters, ...action.payload.filters };
 		},
+		updateCurrentFilterFields: (state, action: PayloadAction<{ entityCode: string; filterFields: Partial<IFilterField[]> }>) => {
+			state[action.payload.entityCode].filterFields = action.payload.filterFields;
+		},
 	},
 });
 export const {
@@ -169,5 +179,6 @@ export const {
 	pinFilterPreset,
 	unpinFilterPreset,
 	setCurrentFilterPreset,
+	updateCurrentFilterFields,
 } = filtersReducer.actions;
 export default filtersReducer.reducer;
