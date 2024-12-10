@@ -33,9 +33,9 @@ export const announcersSlice = createSlice({
 		[fetchAnnouncers.fulfilled.type]: (state, action: PayloadAction<ResponseApi>) => {
 			state.loadingAnnouncers = false;
 			state.errorLoading = null;
-			state.banner = action.payload.data.attributes.banner;
-			state.notifications = action.payload.data.attributes.notifications;
-			state.widgets = action.payload.data.attributes.widgets;
+			state.banner = action.payload.data.banner;
+			state.notifications = action.payload.data.notifications;
+			state.widgets = action.payload.data.widgets;
 			state.meta = action.payload.meta;
 		},
 		[fetchAnnouncers.pending.type]: (state) => {
