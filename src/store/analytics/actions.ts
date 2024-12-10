@@ -46,7 +46,7 @@ export const createReport = createAsyncThunk('analytics/createReport', async (da
 
 export const updateReport = createAsyncThunk(
 	'analytics/updateReport',
-	async ({ id, body }: { id: number; body: IAnalyticReport }, { rejectWithValue }) => {
+	async ({ id, body }: { id: string; body: IAnalyticReport }, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.analyticsService.updateReport(id, body);
 			return res.data;
@@ -56,7 +56,7 @@ export const updateReport = createAsyncThunk(
 	},
 );
 
-export const deleteReport = createAsyncThunk('analytics/deleteReport', async (id: number, { rejectWithValue }) => {
+export const deleteReport = createAsyncThunk('analytics/deleteReport', async (id: string, { rejectWithValue }) => {
 	try {
 		await uspacySdk.analyticsService.deleteReport(id);
 
