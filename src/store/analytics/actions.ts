@@ -26,9 +26,9 @@ export const getAnalyticsReportList = createAsyncThunk(
 	},
 );
 
-export const getReport = createAsyncThunk('analytics/getReport', async ({ id }: { id: number }, { rejectWithValue }) => {
+export const getReport = createAsyncThunk('analytics/getReport', async ({ id }: { id: string }, { rejectWithValue }) => {
 	try {
-		const res = await uspacySdk.analyticsService.getAnalyticReport(String(id));
+		const res = await uspacySdk.analyticsService.getAnalyticReport(id);
 		return res.data;
 	} catch (e) {
 		return rejectWithValue(e);
