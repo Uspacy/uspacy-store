@@ -61,7 +61,7 @@ const analyticsReducer = createSlice({
 			state.reports = {
 				...state.reports,
 				data: [action.payload, ...state.reports.data],
-				meta: { ...state.reports.meta, total: state.reports.meta.total + 1 },
+				meta: { ...state.reports.meta, total: state.reports.meta.total + 1, unfiltered_total: state.reports.meta.unfiltered_total + 1 },
 			};
 		},
 		[createReport.pending.type]: (state) => {
@@ -93,7 +93,7 @@ const analyticsReducer = createSlice({
 			state.reports = {
 				...state.reports,
 				data: state.reports.data.filter((it) => it.id !== action.payload),
-				meta: { ...state.reports.meta, total: state.reports.meta.total - 1 },
+				meta: { ...state.reports.meta, total: state.reports.meta.total - 1, unfiltered_total: state.reports.meta.unfiltered_total - 1 },
 			};
 		},
 		[deleteReport.pending.type]: (state) => {

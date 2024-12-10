@@ -506,10 +506,10 @@
     "@typescript-eslint/types" "6.3.0"
     eslint-visitor-keys "^3.4.1"
 
-"@uspacy/sdk@0.0.114-alpha.2":
-  version "0.0.114-alpha.2"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.114-alpha.2/6d2c7683560a9274168653516eef5e5d2f250ee6#6d2c7683560a9274168653516eef5e5d2f250ee6"
-  integrity sha512-cywM6IMJW1lUiB2Au6qoudyskgavjNfNmSP3SzEQaQcYOsYK+dPrb18/eAPrb5r84K3UkOQ9KIO2h51cgL4rBA==
+"@uspacy/sdk@0.0.114-alpha.3":
+  version "0.0.114-alpha.3"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.114-alpha.3/8d8f59dd4c918ad3afd502185d634240a2c8d890#8d8f59dd4c918ad3afd502185d634240a2c8d890"
+  integrity sha512-MpdXyD5GpBHpIxWXdP/5akplqOgHjbOx/6SgazovUJ6WA1XyTT8huGALfVM7J0i7jhAXaBsvN2dWfH4f7ndJyQ==
   dependencies:
     axios "^1.7.2"
     js-cookie "3.0.5"
@@ -1475,11 +1475,6 @@ electron-to-chromium@^1.4.535:
   version "1.4.576"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.576.tgz#0c6940fdc0d60f7e34bd742b29d8fa847c9294d1"
   integrity sha512-yXsZyXJfAqzWk1WKryr0Wl0MN2D47xodPvEEwlVePBnhU5E7raevLQR+E6b9JAD3GfL/7MbAL9ZtWQQPcLx7wA==
-
-emoji-regex@^10.3.0:
-  version "10.4.0"
-  resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-10.4.0.tgz#03553afea80b3975749cfcb36f776ca268e413d4"
-  integrity sha512-EC+0oUMY1Rqm4O6LLrgjtYDvcVYTy7chDnM4Q7030tP4Kwj3u/pR6gP9ygnp2CJMK5Gq+9Q2oqmrFJAz01DXjw==
 
 emoji-regex@^10.3.0:
   version "10.4.0"
@@ -2881,9 +2876,9 @@ lilconfig@2.0.6:
   integrity sha512-9JROoBW7pobfsx+Sq2JsASvCo6Pfo6WWoUW79HuB1BCoBXD4PLWJPqDF6fNj67pqBYTbAHkE57M1kS/+L1neOg==
 
 lilconfig@~3.1.2:
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/lilconfig/-/lilconfig-3.1.2.tgz#e4a7c3cb549e3a606c8dcc32e5ae1005e62c05cb"
-  integrity sha512-eop+wDAvpItUys0FWkHIKeC9ybYrTGbU41U5K7+bttZZeohvnY7M9dZ5kB21GNWiFT2q1OoPTvncPCgSOVO5ow==
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/lilconfig/-/lilconfig-3.1.3.tgz#a1bcfd6257f9585bf5ae14ceeebb7b559025e4c4"
+  integrity sha512-/vlFKAoH5Cgt3Ie+JLhRbwOsCQePABiU3tJ1egGvyQ+33R/vcwM2Zl2QR/LzjsBeItPt3oSVXapn+m4nQDvpzw==
 
 lint-staged@13.1.0:
   version "13.1.0"
@@ -4649,11 +4644,6 @@ yaml@^2.1.3:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.3.4.tgz#53fc1d514be80aabf386dc6001eb29bf3b7523b2"
   integrity sha512-8aAvwVUSHpfEqTQ4w/KMlf3HcRdt50E5ODIQJBw1fQ5RL34xabzxtUlzTXVqc4rkZsPbvrXKWnABCD7kWSmocA==
-
-yaml@~2.5.0:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.5.1.tgz#c9772aacf62cb7494a95b0c4f1fb065b563db130"
-  integrity sha512-bLQOjaX/ADgQ20isPJRvF0iRUHIxVhYvr53Of7wGcWlO2jvtUlH5m87DsmulFVxRpNLOnI4tB6p/oh8D7kpn9Q==
 
 yaml@~2.5.0:
   version "2.5.1"
