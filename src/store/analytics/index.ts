@@ -86,7 +86,7 @@ const analyticsReducer = createSlice({
 			state.loadingReport = false;
 			state.errorLoadingReports = action.payload;
 		},
-		[deleteReport.fulfilled.type]: (state, action: PayloadAction<number>) => {
+		[deleteReport.fulfilled.type]: (state, action: PayloadAction<string>) => {
 			state.loadingReport = false;
 			state.errorLoadingReports = null;
 			state.report = initialState.report;
