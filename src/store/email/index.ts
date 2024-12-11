@@ -613,10 +613,10 @@ const emailReducer = createSlice({
 			state.loadingUpdateSignature = false;
 			state.errorLoadingUpdateSignature = action.payload;
 		},
-		[removeEmailSignature.fulfilled.type]: (state, action: PayloadAction<number, string, { arg: { id: number } }>) => {
+		[removeEmailSignature.fulfilled.type]: (state, action: PayloadAction<number, string, { arg: number }>) => {
 			state.loadingRemoveSignature = false;
 			state.errorLoadingRemoveSignature = null;
-			state.signatures.data = state.signatures.data.filter((signature) => signature.id !== action.meta.arg.id);
+			state.signatures.data = state.signatures.data.filter((signature) => signature.id !== action.meta.arg);
 		},
 		[removeEmailSignature.pending.type]: (state) => {
 			state.loadingRemoveSignature = true;
