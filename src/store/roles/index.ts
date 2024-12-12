@@ -362,7 +362,8 @@ const rolesReducer = createSlice({
 			state.loadingRoles = false;
 			state.errorLoadingRoles = action.payload;
 		},
-		[updateRolePermisionsFunnels.fulfilled.type]: (state) => {
+		[updateRolePermisionsFunnels.fulfilled.type]: (state, action) => {
+			state.permissionsFunnels = action.payload;
 			state.loadingRoles = false;
 			state.errorLoadingRoles = null;
 		},
