@@ -240,6 +240,9 @@ const rolesReducer = createSlice({
 			};
 			state[action.payload.key] = merged;
 		},
+		clearPermissionsFunnels(state) {
+			state.permissionsFunnels = {};
+		},
 	},
 	extraReducers: {
 		[fetchPermissions.fulfilled.type]: (state, action: PayloadAction<IPermissions>) => {
@@ -390,6 +393,7 @@ export const {
 	allowAllPermissions,
 	addPermissionsForColAction,
 	mergeCreatePermissions,
+	clearPermissionsFunnels,
 } = rolesReducer.actions;
 
 export default rolesReducer.reducer;
