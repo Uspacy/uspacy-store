@@ -52,7 +52,7 @@ const rolesReducer = createSlice({
 	initialState,
 	reducers: {
 		getNextVal(state, action) {
-			const { tabName, categoryName, colName, targetVal, storeKey } = action.payload;
+			const { tabName, categoryName, colName, targetVal, storeKey, currPickPermission } = action.payload;
 
 			const filteredCurrColName = colName === 'view' ? 'edit' : 'delete';
 			const currStoreData = current(state[storeKey][filteredCurrColName]);
@@ -76,6 +76,7 @@ const rolesReducer = createSlice({
 								state[storeKey][filteredCurrColName] = [
 									...filterArr,
 									`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
+									...(colName === 'view' && currPickPermission ? [currPickPermission] : []),
 								];
 							}
 							return;
