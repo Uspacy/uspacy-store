@@ -318,6 +318,9 @@ const itemsReducer = createSlice({
 					break;
 				}
 			}
+			if (!foundEntityItem) {
+				return;
+			}
 			state[entityCode].stages = Object.fromEntries(
 				Object.entries(state[entityCode].stages).map(([key, value]) => {
 					console.log(value, 'value');
