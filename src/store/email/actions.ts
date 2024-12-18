@@ -4,7 +4,7 @@ import { uspacySdk } from '@uspacy/sdk';
 import { IEmailFiltersParams } from '@uspacy/sdk/lib/models/email';
 import { IConnectEmailBox } from '@uspacy/sdk/lib/services/EmailService/connect-email-box.dto';
 import { ICreateLetterPayload } from '@uspacy/sdk/lib/services/EmailService/create-email.dto';
-import { ICreateSignature } from '@uspacy/sdk/lib/services/EmailService/create-signature.dto';
+import { ISignaturePayload } from '@uspacy/sdk/lib/services/EmailService/signature.dto';
 
 import { IEmailMassActionsResponse, ILettersParams, IUpdateEmailBoxPayload } from './types';
 
@@ -221,7 +221,7 @@ export const getEmailSignatures = createAsyncThunk('email/getEmailSignatures', a
 	}
 });
 
-export const createEmailSignature = createAsyncThunk('email/createEmailSignature', async (body: ICreateSignature, thunkAPI) => {
+export const createEmailSignature = createAsyncThunk('email/createEmailSignature', async (body: ISignaturePayload, thunkAPI) => {
 	try {
 		const res = await uspacySdk.emailService.createEmailSignature(body);
 		return res.data;
@@ -232,7 +232,7 @@ export const createEmailSignature = createAsyncThunk('email/createEmailSignature
 
 export const updateEmailSignature = createAsyncThunk(
 	'email/updateEmailSignature',
-	async ({ id, body }: { id: number; body: ICreateSignature }, thunkAPI) => {
+	async ({ id, body }: { id: number; body: Partial<ISignaturePayload> }, thunkAPI) => {
 		try {
 			const res = await uspacySdk.emailService.updateEmailSignature(id, body);
 			return res.data;
