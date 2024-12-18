@@ -294,31 +294,32 @@ const itemsReducer = createSlice({
 			}
 			state[entityCode].movingCard = true;
 			state[entityCode].errorMessage = null;
-			console.log(action.meta.arg, 'action.meta.arg');
 			// TODO move to fulfilled after backend optimization
-			// state[entityCode].data = state[entityCode].data.map((item) => {
-			// 	if (item.id === action.meta.arg.entityId) {
-			// 		return {
-			// 			...item,
-			// 			kanban_stage_id: stageId,
-			// 			updated_at: Math.floor(new Date().valueOf() / 1000),
-			// 			kanban_reason_id: action.meta.arg.reason_id,
-			// 			changed_by: action.meta.arg.profileId,
-			// 			...(action.meta.arg.isFinishedStage && {
-			// 				first_closed_at: item?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
-			// 				closed_at: Math.floor(new Date().valueOf() / 1000),
-			// 				first_closed_by: item?.first_closed_by || action.meta.arg.profileId,
-			// 				closed_by: action.meta.arg.profileId,
-			// 			}),
-			// 		};
-			// 	}
-			// 	return item;
-			// });
+			state[entityCode].data = state[entityCode].data.map((item) => {
+				if (item.id === action.meta.arg.entityId) {
+					return {
+						...item,
+						kanban_stage_id: stageId,
+						updated_at: Math.floor(new Date().valueOf() / 1000),
+						kanban_reason_id: action.meta.arg.reason_id,
+						changed_by: action.meta.arg.profileId,
+						...(action.meta.arg.isFinishedStage && {
+							first_closed_at: item?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
+							closed_at: Math.floor(new Date().valueOf() / 1000),
+							first_closed_by: item?.first_closed_by || action.meta.arg.profileId,
+							closed_by: action.meta.arg.profileId,
+						}),
+					};
+				}
+				return item;
+			});
 			let foundEntityItem;
-			for (const stage of Object.values(state[entityCode].stages)) {
-				foundEntityItem = stage.data.find((item) => item.id === action.meta.arg.entityId);
-				if (foundEntityItem) {
-					break;
+			if (state[entityCode]?.stages) {
+				for (const stage of Object.values(state[entityCode].stages)) {
+					foundEntityItem = stage.data.find((item) => item.id === action.meta.arg.entityId);
+					if (foundEntityItem) {
+						break;
+					}
 				}
 			}
 			console.log(foundEntityItem, 'foundEntityItem');
