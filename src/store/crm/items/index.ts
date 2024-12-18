@@ -321,6 +321,7 @@ const itemsReducer = createSlice({
 					break;
 				}
 			}
+			console.log(foundEntityItem, 'foundEntityItem');
 			if (!foundEntityItem) {
 				return;
 			}
