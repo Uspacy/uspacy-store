@@ -281,8 +281,6 @@ const itemsReducer = createSlice({
 		},
 
 		[moveItemFromStageToStage.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: IMoveCardsData }>) => {
-			console.log(action.meta, 'action.mete');
-			console.log(action.meta.arg, 'action.meta.arg');
 			const { entityCode } = action.meta.arg;
 			state[entityCode].movingCard = false;
 			state[entityCode].errorMessage = null;
@@ -294,9 +292,8 @@ const itemsReducer = createSlice({
 			}
 			state[entityCode].movingCard = true;
 			state[entityCode].errorMessage = null;
-			// TODO move to fulfilled after backend optimization
-			console.log(state[entityCode]?.stages, 'state[entityCode]?.stages');
 			if (state[entityCode]?.stages) {
+				// TODO move to fulfilled after backend optimization
 				state[entityCode].data = state[entityCode].data.map((item) => {
 					if (item.id === action.meta.arg.entityId) {
 						return {
@@ -323,7 +320,7 @@ const itemsReducer = createSlice({
 						break;
 					}
 				}
-				console.log(foundEntityItem, 'foundEntityItem');
+
 				if (!foundEntityItem) {
 					return;
 				}
@@ -350,7 +347,7 @@ const itemsReducer = createSlice({
 							];
 						}
 						const filteredData = value.data.filter((item) => item.id !== entityId);
-						const total = filteredData.length === value.data.length ? value?.meta?.total : value.meta.total - 1;
+						const total = filteredData.length === value.data.length ? value.meta.total : value.meta.total - 1;
 						return [key, { ...value, data: filteredData, meta: { ...value.meta, total } }];
 					}),
 				);
