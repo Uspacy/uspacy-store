@@ -313,14 +313,12 @@ const itemsReducer = createSlice({
 					return item;
 				});
 				let foundEntityItem;
-
 				for (const stage of Object.values(state[entityCode].stages)) {
 					foundEntityItem = stage.data.find((item) => item.id === action.meta.arg.entityId);
 					if (foundEntityItem) {
 						break;
 					}
 				}
-
 				if (!foundEntityItem) {
 					return;
 				}
