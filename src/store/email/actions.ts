@@ -1,8 +1,10 @@
 /* eslint-disable camelcase */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
+import { IEmailFiltersParams } from '@uspacy/sdk/lib/models/email';
 import { IConnectEmailBox } from '@uspacy/sdk/lib/services/EmailService/connect-email-box.dto';
 import { ICreateLetterPayload } from '@uspacy/sdk/lib/services/EmailService/create-email.dto';
+import { ISignaturePayload } from '@uspacy/sdk/lib/services/EmailService/signature.dto';
 
 import { IEmailMassActionsResponse, ILettersParams, IUpdateEmailBoxPayload } from './types';
 
@@ -209,3 +211,41 @@ export const receiveToOauthLink = createAsyncThunk(
 		}
 	},
 );
+
+export const getEmailSignatures = createAsyncThunk('email/getEmailSignatures', async (params: IEmailFiltersParams, thunkAPI) => {
+	try {
+		const res = await uspacySdk.emailService.getEmailSignatures(params);
+		return res.data;
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
+	}
+});
+
+export const createEmailSignature = createAsyncThunk('email/createEmailSignature', async (body: ISignaturePayload, thunkAPI) => {
+	try {
+		const res = await uspacySdk.emailService.createEmailSignature(body);
+		return res.data;
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
+	}
+});
+
+export const updateEmailSignature = createAsyncThunk(
+	'email/updateEmailSignature',
+	async ({ id, body }: { id: number; body: Partial<ISignaturePayload> }, thunkAPI) => {
+		try {
+			const res = await uspacySdk.emailService.updateEmailSignature(id, body);
+			return res.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
+
+export const removeEmailSignature = createAsyncThunk('email/removeEmailSignature', async (id: number, thunkAPI) => {
+	try {
+		return await uspacySdk.emailService.removeEmailSignature(id);
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
+	}
+});
