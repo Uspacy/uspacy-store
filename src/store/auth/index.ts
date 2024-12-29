@@ -1,12 +1,26 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IAfterGoogleOauthResponse } from '@uspacy/sdk/lib/models/calendars';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { ICoupon, IIntent, IInvoiceData, IInvoices, IRatesList, ISubscription } from '@uspacy/sdk/lib/models/tariffs';
+import {
+	ICoupon,
+	IIntent,
+	IInvoice,
+	IInvoiceData,
+	IInvoices,
+	IPortalSubscription,
+	IRatesList,
+	ISubscription,
+	ITariff,
+} from '@uspacy/sdk/lib/models/tariffs';
 
 import {
 	activateDemo,
+	activatingDemo,
 	createPaymentIntent,
+	createSubscriptionInvdividual,
+	createSubscriptionLegal,
 	createUsingPaymentIntent,
+	disableSubscriptionRenewal,
 	disableSubscriptionsRenewal,
 	downgrade,
 	fetchCoupon,
@@ -14,6 +28,8 @@ import {
 	fetchInvoicesPdf,
 	fetchRatesList,
 	fetchSubscription,
+	getPortalSubscription,
+	getTariffsList,
 	getUrlToRedirectAfterOAuth,
 	subscriptionsIndividual,
 	subscriptionsLegal,
@@ -51,6 +67,21 @@ const initialState = {
 	errorActivateDemo: null,
 	errorLoadingDowngrade: null,
 	errorLoadingUsingPaymentIntent: null,
+
+	// ! NEW BILLING
+	tariffs: [],
+	portalSubsctription: null,
+	bill: null,
+	loadingTariffs: false,
+	loadingPortalSubsctription: false,
+	loadingCreatingSubscription: false,
+	loadingActivatingDemo: false,
+	loadingDisablingRenewal: false,
+	errorLoadingTariffs: null,
+	errorLoadingPortalSubsctription: null,
+	errorLoadingCreatingSubscription: null,
+	errorLoadingActivatingDemo: null,
+	errorLoadingDisablingRenewal: null,
 } as IState;
 
 const authReducer = createSlice({
@@ -267,6 +298,91 @@ const authReducer = createSlice({
 		[getUrlToRedirectAfterOAuth.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingAfterGoogleOAuth = false;
 			state.errorLoadingAfterGoogleOAuth = action.payload;
+		},
+
+		// ! NEW BILLING
+		[getTariffsList.fulfilled.type]: (state, action: PayloadAction<ITariff[]>) => {
+			state.loadingTariffs = false;
+			state.errorLoadingTariffs = null;
+			state.tariffs = action.payload;
+		},
+		[getTariffsList.pending.type]: (state) => {
+			state.loadingTariffs = true;
+			state.errorLoadingTariffs = null;
+		},
+		[getTariffsList.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingTariffs = false;
+			state.errorLoadingTariffs = action.payload;
+		},
+		[getPortalSubscription.fulfilled.type]: (state, action: PayloadAction<IPortalSubscription>) => {
+			state.loadingPortalSubsctription = false;
+			state.errorLoadingPortalSubsctription = null;
+			state.portalSubsctription = action.payload;
+		},
+		[getPortalSubscription.pending.type]: (state) => {
+			state.loadingPortalSubsctription = true;
+			state.errorLoadingPortalSubsctription = null;
+		},
+		[getPortalSubscription.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingPortalSubsctription = false;
+			state.errorLoadingPortalSubsctription = action.payload;
+		},
+		[createSubscriptionInvdividual.fulfilled.type]: (state, action: PayloadAction<IInvoice>) => {
+			state.loadingCreatingSubscription = false;
+			state.errorLoadingCreatingSubscription = null;
+			state.bill = action.payload;
+		},
+		[createSubscriptionInvdividual.pending.type]: (state) => {
+			state.loadingCreatingSubscription = true;
+			state.errorLoadingCreatingSubscription = null;
+		},
+		[createSubscriptionInvdividual.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreatingSubscription = false;
+			state.errorLoadingCreatingSubscription = action.payload;
+		},
+		[createSubscriptionLegal.fulfilled.type]: (state, action: PayloadAction<IInvoice>) => {
+			state.loadingCreatingSubscription = false;
+			state.errorLoadingCreatingSubscription = null;
+			state.bill = action.payload;
+		},
+		[createSubscriptionLegal.pending.type]: (state) => {
+			state.loadingCreatingSubscription = true;
+			state.errorLoadingCreatingSubscription = null;
+		},
+		[createSubscriptionLegal.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreatingSubscription = false;
+			state.errorLoadingCreatingSubscription = action.payload;
+		},
+		[activatingDemo.fulfilled.type]: (state) => {
+			state.loadingActivatingDemo = false;
+			state.errorLoadingActivatingDemo = null;
+			state.portalSubsctription = {
+				...state.portalSubsctription,
+				plan_title: 'Демо',
+				plan: 'demo',
+				plan_end: state.portalSubsctription.plan_end + 1123200,
+				demo_activation: true,
+			};
+		},
+		[activatingDemo.pending.type]: (state) => {
+			state.loadingActivatingDemo = true;
+			state.errorLoadingActivatingDemo = null;
+		},
+		[activatingDemo.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingActivatingDemo = false;
+			state.errorLoadingActivatingDemo = action.payload;
+		},
+		[disableSubscriptionRenewal.fulfilled.type]: (state) => {
+			state.loadingDisablingRenewal = false;
+			state.errorLoadingDisablingRenewal = null;
+		},
+		[disableSubscriptionRenewal.pending.type]: (state) => {
+			state.loadingDisablingRenewal = true;
+			state.errorLoadingDisablingRenewal = null;
+		},
+		[disableSubscriptionRenewal.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDisablingRenewal = false;
+			state.errorLoadingDisablingRenewal = action.payload;
 		},
 	},
 });
