@@ -2,9 +2,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IAfterGoogleOauthResponse } from '@uspacy/sdk/lib/models/calendars';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import {
+	IBill,
 	ICoupon,
 	IIntent,
-	IInvoice,
 	IInvoiceData,
 	IInvoices,
 	IPortalSubscription,
@@ -115,7 +115,7 @@ const authReducer = createSlice({
 
 		// ! NEW BILLING
 		clearBill: (state) => {
-			state.bill = {} as IInvoice;
+			state.bill = {} as IBill;
 		},
 		setPortalSubscription: (state, action: PayloadAction<IPortalSubscription>) => {
 			state.portalSubsctription = action.payload;
@@ -338,7 +338,7 @@ const authReducer = createSlice({
 			state.loadingPortalSubsctription = false;
 			state.errorLoadingPortalSubsctription = action.payload;
 		},
-		[createSubscriptionInvdividual.fulfilled.type]: (state, action: PayloadAction<IInvoice>) => {
+		[createSubscriptionInvdividual.fulfilled.type]: (state, action: PayloadAction<IBill>) => {
 			state.loadingCreatingSubscription = false;
 			state.errorLoadingCreatingSubscription = null;
 			state.bill = action.payload;
@@ -351,7 +351,7 @@ const authReducer = createSlice({
 			state.loadingCreatingSubscription = false;
 			state.errorLoadingCreatingSubscription = action.payload;
 		},
-		[createSubscriptionLegal.fulfilled.type]: (state, action: PayloadAction<IInvoice>) => {
+		[createSubscriptionLegal.fulfilled.type]: (state, action: PayloadAction<IBill>) => {
 			state.loadingCreatingSubscription = false;
 			state.errorLoadingCreatingSubscription = null;
 			state.bill = action.payload;
