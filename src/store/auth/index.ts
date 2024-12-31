@@ -112,6 +112,17 @@ const authReducer = createSlice({
 		setAfterGoogleOAuthData: (state, action: PayloadAction<IAfterGoogleOauthResponse>) => {
 			state.afterGoogleOAuthData = action.payload;
 		},
+
+		// ! NEW BILLING
+		clearBill: (state) => {
+			state.bill = {} as IInvoice;
+		},
+		setPortalSubscription: (state, action: PayloadAction<IPortalSubscription>) => {
+			state.portalSubsctription = action.payload;
+		},
+		setAutoRenewal: (state, action: PayloadAction<boolean>) => {
+			state.portalSubsctription.auto_renewal = action.payload;
+		},
 	},
 	extraReducers: {
 		[fetchInvoices.fulfilled.type]: (state, action: PayloadAction<IInvoices>) => {
@@ -387,6 +398,17 @@ const authReducer = createSlice({
 	},
 });
 
-export const { clearPdfLink, clearInvoice, setSubscription, setActiveSubscription, clearIntent, clearCoupon, setAutoDebit, setAfterGoogleOAuthData } =
-	authReducer.actions;
+export const {
+	clearPdfLink,
+	clearInvoice,
+	setSubscription,
+	setActiveSubscription,
+	clearIntent,
+	clearCoupon,
+	setAutoDebit,
+	setAfterGoogleOAuthData,
+	clearBill,
+	setAutoRenewal,
+	setPortalSubscription,
+} = authReducer.actions;
 export default authReducer.reducer;
