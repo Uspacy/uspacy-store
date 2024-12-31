@@ -1,9 +1,9 @@
 import { IAfterGoogleOauthResponse } from '@uspacy/sdk/lib/models/calendars';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import {
+	IBill,
 	ICoupon,
 	IIntent,
-	IInvoice,
 	IInvoiceData,
 	IInvoices,
 	IPortalSubscription,
@@ -50,7 +50,7 @@ export interface IState {
 	// ! NEW BILLING
 	tariffs: ITariff[];
 	portalSubsctription: IPortalSubscription;
-	bill: IInvoice;
+	bill: IBill;
 	loadingTariffs: boolean;
 	loadingPortalSubsctription: boolean;
 	loadingCreatingSubscription: boolean;
