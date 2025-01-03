@@ -56,9 +56,11 @@ export interface IState {
 	loadingCreatingSubscription: boolean;
 	loadingActivatingDemo: boolean;
 	loadingDisablingRenewal: boolean;
+	loadingDowngradeTariff: boolean;
 	errorLoadingTariffs: IErrorsAxiosResponse;
 	errorLoadingPortalSubsctription: IErrorsAxiosResponse;
 	errorLoadingCreatingSubscription: IErrorsAxiosResponse;
 	errorLoadingActivatingDemo: IErrorsAxiosResponse;
 	errorLoadingDisablingRenewal: IErrorsAxiosResponse;
+	errorLoadingDowngradeTariff: IErrorsAxiosResponse;
 }

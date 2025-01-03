@@ -8,6 +8,7 @@ import {
 	IIndividualPayload,
 	IIntentPayload,
 	ILegalPayload,
+	ISubscriptionPayload,
 	ISubscriptionsIndividual,
 	ISubscriptionsLegal,
 } from '@uspacy/sdk/lib/services/AuthService/dto/subscription.dto';
@@ -196,3 +197,15 @@ export const disableSubscriptionRenewal = createAsyncThunk('auth/disableSubscrip
 		return rejectWithValue(e);
 	}
 });
+
+export const downgradeTariff = createAsyncThunk(
+	'auth/downgradeTariff',
+	async (body: Pick<ISubscriptionPayload, 'plan_code' | 'quantity'>, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.authService.downgradeTariff(body);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);

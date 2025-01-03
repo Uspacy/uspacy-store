@@ -23,6 +23,7 @@ import {
 	disableSubscriptionRenewal,
 	disableSubscriptionsRenewal,
 	downgrade,
+	downgradeTariff,
 	fetchCoupon,
 	fetchInvoices,
 	fetchInvoicesPdf,
@@ -77,11 +78,13 @@ const initialState = {
 	loadingCreatingSubscription: false,
 	loadingActivatingDemo: false,
 	loadingDisablingRenewal: false,
+	loadingDowngradeTariff: false,
 	errorLoadingTariffs: null,
 	errorLoadingPortalSubsctription: null,
 	errorLoadingCreatingSubscription: null,
 	errorLoadingActivatingDemo: null,
 	errorLoadingDisablingRenewal: null,
+	errorLoadingDowngradeTariff: null,
 } as IState;
 
 const authReducer = createSlice({
@@ -394,6 +397,19 @@ const authReducer = createSlice({
 		[disableSubscriptionRenewal.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingDisablingRenewal = false;
 			state.errorLoadingDisablingRenewal = action.payload;
+		},
+		[downgradeTariff.fulfilled.type]: (state, action: PayloadAction<IPortalSubscription>) => {
+			state.loadingDowngradeTariff = false;
+			state.errorLoadingDowngradeTariff = null;
+			state.portalSubsctription = action.payload;
+		},
+		[downgradeTariff.pending.type]: (state) => {
+			state.loadingDowngradeTariff = true;
+			state.errorLoadingDowngradeTariff = null;
+		},
+		[downgradeTariff.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDowngradeTariff = false;
+			state.errorLoadingDowngradeTariff = action.payload;
 		},
 	},
 });
