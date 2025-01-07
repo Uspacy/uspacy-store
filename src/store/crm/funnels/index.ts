@@ -43,7 +43,9 @@ const funnelsReducer = createSlice({
 		[fetchFunnels.fulfilled.type]: (state, action: PayloadAction<IFunnel[], string, { arg: string }>) => {
 			state[action.meta.arg].loading = false;
 			state[action.meta.arg].errorMessage = null;
+			// @ts-ignore
 			state[action.meta.arg].data = action.payload
+				.map((it) => ({ ...it, permissions: { create: 'allowed', view: 'allowed', edit: 'mine', delete: 'mine' } }))
 				.map((funnel) => {
 					const stages = funnel.stages.map((stage) => ({ ...stage, sort: Number(stage.sort) })).sort((a, b) => a.sort - b.sort);
 					return {

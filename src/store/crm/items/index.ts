@@ -337,13 +337,13 @@ const itemsReducer = createSlice({
 								{
 									...value,
 									data,
-									meta: { ...value.meta, total: value.meta.total + 1 },
+									meta: { ...value.meta, total: (value?.meta?.total || 0) + 1 },
 								},
 							];
 						}
 						const filteredData = value.data.filter((item) => item.id !== entityId);
-						const total = filteredData.length === value.data.length ? value.meta.total : value.meta.total - 1;
-						return [key, { ...value, data: filteredData, meta: { ...value.meta, total } }];
+						const total = filteredData.length === value.data.length ? value.meta?.total : value.meta?.total - 1;
+						return [key, { ...value, data: filteredData, meta: { ...value.meta, total: total || 0 } }];
 					}),
 				);
 			}
