@@ -45,7 +45,7 @@ const funnelsReducer = createSlice({
 			state[action.meta.arg].errorMessage = null;
 			// @ts-ignore
 			state[action.meta.arg].data = action.payload
-				.map((it) => ({ ...it, permissions: { create: 'allowed', view: 'allowed', edit: 'mine', delete: 'mine' } }))
+				.map((it) => ({...it, permissions: { create: 'allowed', view: 'allowed', edit: 'mine' }}))
 				.map((funnel) => {
 					const stages = funnel.stages.map((stage) => ({ ...stage, sort: Number(stage.sort) })).sort((a, b) => a.sort - b.sort);
 					return {
