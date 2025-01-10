@@ -12,8 +12,8 @@ import {
 	ISubscription,
 	ITariff,
 } from '@uspacy/sdk/lib/models/tariffs';
-import { TWO_WEEK_TIME_VALUE } from 'src/const';
 
+import { TWO_WEEK_TIME_VALUE } from '../../const';
 import {
 	activateDemo,
 	activatingDemo,
