@@ -372,7 +372,7 @@ const authReducer = createSlice({
 			state.errorLoadingActivatingDemo = null;
 			state.portalSubsctription = {
 				...state.portalSubsctription,
-				plan_title: 'Демо',
+				plan_title: 'demo',
 				plan: 'demo',
 				plan_end: state.portalSubsctription.plan_end + 1123200,
 				demo_activation: true,
