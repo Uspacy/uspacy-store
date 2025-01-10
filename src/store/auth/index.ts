@@ -12,6 +12,7 @@ import {
 	ISubscription,
 	ITariff,
 } from '@uspacy/sdk/lib/models/tariffs';
+import { TWO_WEEK_TIME_VALUE } from 'src/const';
 
 import {
 	activateDemo,
@@ -118,7 +119,7 @@ const authReducer = createSlice({
 
 		// ! NEW BILLING
 		clearBill: (state) => {
-			state.bill = {} as IBill;
+			state.bill = initialState.bill;
 		},
 		setPortalSubscription: (state, action: PayloadAction<IPortalSubscription>) => {
 			state.portalSubsctription = action.payload;
@@ -374,7 +375,7 @@ const authReducer = createSlice({
 				...state.portalSubsctription,
 				plan_title: 'demo',
 				plan: 'demo',
-				plan_end: state.portalSubsctription.plan_end + 1123200,
+				plan_end: state.portalSubsctription.plan_end + TWO_WEEK_TIME_VALUE,
 				demo_activation: true,
 			};
 		},
