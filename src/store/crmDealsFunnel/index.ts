@@ -49,9 +49,7 @@ const dealsFunnelReducer = createSlice({
 		[fetchDealsFunnel.fulfilled.type]: (state, action: PayloadAction<IFunnel[]>) => {
 			state.dealsFunnelLoading = false;
 			state.errorMessage = null;
-			state.dealsFunnel = action.payload
-				.map((funnel) => ({ ...funnel, tariff_limited: false }))
-				.map((it) => ({ ...it, stages: it.stages.sort((a, b) => a.sort - b.sort) }));
+			state.dealsFunnel = action.payload.map((it) => ({ ...it, stages: it.stages.sort((a, b) => a.sort - b.sort) }));
 		},
 		[fetchDealsFunnel.pending.type]: (state) => {
 			state.dealsFunnelLoading = true;

@@ -44,9 +44,7 @@ const leadsFunnelReducer = createSlice({
 		[fetchLeadsFunnel.fulfilled.type]: (state, action: PayloadAction<IFunnel[]>) => {
 			state.leadsFunnelLoading = false;
 			state.errorMessage = null;
-			state.leadsFunnel = action.payload
-				.map((funnel) => ({ ...funnel, tariff_limited: false }))
-				.map((it) => ({ ...it, stages: it.stages.sort((a, b) => a.sort - b.sort) }));
+			state.leadsFunnel = action.payload.map((it) => ({ ...it, stages: it.stages.sort((a, b) => a.sort - b.sort) }));
 		},
 		[fetchLeadsFunnel.pending.type]: (state) => {
 			state.leadsFunnelLoading = true;
