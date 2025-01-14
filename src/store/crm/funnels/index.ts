@@ -44,6 +44,7 @@ const funnelsReducer = createSlice({
 			state[action.meta.arg].loading = false;
 			state[action.meta.arg].errorMessage = null;
 			state[action.meta.arg].data = action.payload
+				.map((funnel) => ({ ...funnel, tariff_limited: false }))
 				.map((funnel) => {
 					const stages = funnel.stages.map((stage) => ({ ...stage, sort: Number(stage.sort) })).sort((a, b) => a.sort - b.sort);
 					return {
