@@ -104,6 +104,7 @@ const itemsReducer = createSlice({
 			const { entityCode } = action.meta.arg;
 			state[entityCode].loading = false;
 			state[entityCode].errorMessage = action.payload;
+			state[entityCode].meta = { total: 0, page: 1, list: 20 };
 		},
 
 		[fetchEntityItemsByStage.fulfilled.type]: (
@@ -157,7 +158,6 @@ const itemsReducer = createSlice({
 			const { entityCode } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
 			if (Array.isArray(state[entityCode]?.data)) {
-				state[entityCode].loading = false;
 				state[entityCode].errorMessage = null;
 				state[entityCode].data = state[entityCode].data.map((item) => {
 					if (item.id === action.payload.id) {
@@ -191,7 +191,6 @@ const itemsReducer = createSlice({
 			const { entityCode } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
 			if (Array.isArray(state[entityCode]?.data)) {
-				state[entityCode].loading = true;
 				state[entityCode].errorMessage = null;
 			}
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
@@ -206,7 +205,6 @@ const itemsReducer = createSlice({
 			const { entityCode } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
 			if (Array.isArray(state[entityCode]?.data)) {
-				state[entityCode].loading = false;
 				state[entityCode].errorMessage = action.payload;
 			}
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
@@ -290,59 +288,64 @@ const itemsReducer = createSlice({
 			}
 			state[entityCode].movingCard = true;
 			state[entityCode].errorMessage = null;
-			// TODO move to fulfilled after backend optimization
-			state[entityCode].data = state[entityCode].data.map((item) => {
-				if (item.id === action.meta.arg.entityId) {
-					return {
-						...item,
-						kanban_stage_id: stageId,
-						updated_at: Math.floor(new Date().valueOf() / 1000),
-						kanban_reason_id: action.meta.arg.reason_id,
-						changed_by: action.meta.arg.profileId,
-						...(action.meta.arg.isFinishedStage && {
-							first_closed_at: item?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
-							closed_at: Math.floor(new Date().valueOf() / 1000),
-							first_closed_by: item?.first_closed_by || action.meta.arg.profileId,
-							closed_by: action.meta.arg.profileId,
-						}),
-					};
-				}
-				return item;
-			});
-			let foundEntityItem;
-			for (const stage of Object.values(state[entityCode].stages)) {
-				foundEntityItem = stage.data.find((item) => item.id === action.meta.arg.entityId);
-				if (foundEntityItem) {
-					break;
-				}
-			}
-			state[entityCode].stages = Object.fromEntries(
-				Object.entries(state[entityCode].stages).map(([key, value]) => {
-					if (+key === stageId) {
-						const data = value.data;
-						data.splice(destinationIndex || 0, 0, {
-							...foundEntityItem,
+			if (state[entityCode]?.stages) {
+				// TODO move to fulfilled after backend optimization
+				state[entityCode].data = state[entityCode].data.map((item) => {
+					if (item.id === action.meta.arg.entityId) {
+						return {
+							...item,
+							kanban_stage_id: stageId,
+							updated_at: Math.floor(new Date().valueOf() / 1000),
+							kanban_reason_id: action.meta.arg.reason_id,
+							changed_by: action.meta.arg.profileId,
 							...(action.meta.arg.isFinishedStage && {
-								first_closed_at: foundEntityItem?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
+								first_closed_at: item?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
 								closed_at: Math.floor(new Date().valueOf() / 1000),
-								first_closed_by: foundEntityItem?.first_closed_by || action.meta.arg.profileId,
+								first_closed_by: item?.first_closed_by || action.meta.arg.profileId,
 								closed_by: action.meta.arg.profileId,
 							}),
-						});
-						return [
-							key,
-							{
-								...value,
-								data,
-								meta: { ...value.meta, total: value.meta.total + 1 },
-							},
-						];
+						};
 					}
-					const filteredData = value.data.filter((item) => item.id !== entityId);
-					const total = filteredData.length === value.data.length ? value.meta.total : value.meta.total - 1;
-					return [key, { ...value, data: filteredData, meta: { ...value.meta, total } }];
-				}),
-			);
+					return item;
+				});
+				let foundEntityItem;
+				for (const stage of Object.values(state[entityCode].stages)) {
+					foundEntityItem = stage.data.find((item) => item.id === action.meta.arg.entityId);
+					if (foundEntityItem) {
+						break;
+					}
+				}
+				if (!foundEntityItem) {
+					return;
+				}
+				state[entityCode].stages = Object.fromEntries(
+					Object.entries(state[entityCode].stages).map(([key, value]) => {
+						if (+key === stageId) {
+							const data = value.data;
+							data.splice(destinationIndex || 0, 0, {
+								...foundEntityItem,
+								...(action.meta.arg.isFinishedStage && {
+									first_closed_at: foundEntityItem?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
+									closed_at: Math.floor(new Date().valueOf() / 1000),
+									first_closed_by: foundEntityItem?.first_closed_by || action.meta.arg.profileId,
+									closed_by: action.meta.arg.profileId,
+								}),
+							});
+							return [
+								key,
+								{
+									...value,
+									data,
+									meta: { ...value.meta, total: (value?.meta?.total || 0) + 1 },
+								},
+							];
+						}
+						const filteredData = value.data.filter((item) => item.id !== entityId);
+						const total = filteredData.length === value.data.length ? value.meta?.total : value.meta?.total - 1;
+						return [key, { ...value, data: filteredData, meta: { ...value.meta, total: total || 0 } }];
+					}),
+				);
+			}
 		},
 		[moveItemFromStageToStage.rejected.type]: (state, action: PayloadAction<IErrors, string, { arg: IMoveCardsData }>) => {
 			const { entityCode } = action.meta.arg;

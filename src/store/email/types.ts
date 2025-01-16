@@ -9,9 +9,11 @@ import {
 	ILetter,
 	ILetters,
 	ILettersCrmEntities,
+	ISignature,
 	IThreads,
 } from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
+import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 import { IUpdateEmailBox } from '@uspacy/sdk/lib/services/EmailService/connect-email-box.dto';
 
 export type createNewLetterModeType = 'window' | 'fullScreen' | 'fromLetter' | 'fromCRM';
@@ -25,6 +27,7 @@ export interface IState {
 	chainLetters: ILetters;
 	letter: ILetter;
 	createdLetter: ILetter;
+	signatures: IResponseWithMeta<ISignature>;
 	removedLetterIds: number[];
 	loadingEmailBoxes: boolean;
 	loadingEmailBox: boolean;
@@ -43,6 +46,10 @@ export interface IState {
 	loadingIsReadStatus: boolean;
 	loadingMoveLetter: boolean;
 	loadingOAuthRedirect: boolean;
+	loadingSignatures: boolean;
+	loadingCreateSignature: boolean;
+	loadingUpdateSignature: boolean;
+	loadingRemoveSignature: boolean;
 	errorLoadingEmailBoxes: IErrorsAxiosResponse;
 	errorLoadingEmailBox: IErrorsAxiosResponse;
 	errorLoadingConnectEmailBox: IErrorsAxiosResponse;
@@ -60,6 +67,10 @@ export interface IState {
 	errorLoadingIsReadStatus: IErrorsAxiosResponse;
 	errorLoadingMoveLetter: IErrorsAxiosResponse;
 	errorLoadingOAuthRedirect: IErrorsAxiosResponse;
+	errorLoadingSignatures: IErrorsAxiosResponse;
+	errorLoadingCreateSignature: IErrorsAxiosResponse;
+	errorLoadingUpdateSignature: IErrorsAxiosResponse;
+	errorLoadingRemoveSignature: IErrorsAxiosResponse;
 	openLetter: boolean;
 	isCreateNewLetter: boolean;
 	createNewLetterMode: createNewLetterModeType;
