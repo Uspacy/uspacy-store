@@ -2,6 +2,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 
 import cardBlocks from './cardBlocks';
 import categories from './categories';
+import crmFilters from './crmFilters';
 import entities from './entities';
 import fields from './fields';
 import filters from './filters';
@@ -13,6 +14,7 @@ import units from './units';
 const crm = combineReducers({
 	cardBlocks,
 	categories,
+	crmFilters,
 	entities,
 	fields,
 	filters,
