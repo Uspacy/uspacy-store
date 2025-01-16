@@ -189,18 +189,39 @@ const rolesReducer = createSlice({
 						.filter((item) => !item.includes(goalForClean))
 						.concat(`${goalForClean}.create.mine.disabled-any`, `${goalForClean}.create.${permissionKey}`);
 				}
-				if (actionType === 'view' && permissionKey === 'disabled') {
-					newPermissions.edit = newPermissions.edit
-						.filter((item) => !item.includes(goalForClean))
-						.concat(`${goalForClean}.edit.disabled-any`);
-					newPermissions.delete = newPermissions.delete
-						.filter((item) => !item.includes(goalForClean))
-						.concat(`${goalForClean}.delete.disabled-any`);
+				if (actionType === 'view') {
+					if (permissionKey === 'allowed') {
+						newPermissions.view = newPermissions.view
+							.filter((item) => !item.includes(goalForClean))
+							.concat(`${goalForClean}.view.${permissionKey}`);
+					}
+					if (permissionKey === 'disabled') {
+						newPermissions.edit = newPermissions.edit
+							.filter((item) => !item.includes(goalForClean))
+							.concat(`${goalForClean}.edit.disabled-any`);
+						newPermissions.delete = newPermissions.delete
+							.filter((item) => !item.includes(goalForClean))
+							.concat(`${goalForClean}.delete.disabled-any`);
+					}
+					if (permissionKey === 'mine') {
+						newPermissions.edit = newPermissions.edit
+							.filter((item) => !item.includes(goalForClean))
+							.concat(`${goalForClean}.${actionType}.${permissionKey}`);
+						newPermissions.delete = newPermissions.delete
+							.filter((item) => !item.includes(goalForClean))
+							.concat(`${goalForClean}.${actionType}.${permissionKey}`);
+					}
 				}
-				if (actionType === 'edit' && permissionKey === 'disabled') {
-					newPermissions.delete = newPermissions.delete
-						.filter((item) => !item.includes(goalForClean))
-						.concat(`${goalForClean}.delete.disabled-any`);
+				if (actionType === 'edit') {
+					if (permissionKey === 'disabled') {
+						newPermissions.delete = newPermissions.delete
+							.filter((item) => !item.includes(goalForClean))
+							.concat(`${goalForClean}.delete.disabled-any`);
+					} else {
+						newPermissions.delete = newPermissions.delete
+							.filter((item) => !item.includes(goalForClean))
+							.concat(`${goalForClean}.${actionType}.${permissionKey}`);
+					}
 				}
 			} else {
 				// Update all permissions related to goalForClean
