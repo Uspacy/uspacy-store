@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ICouchItemData, ICreateCouchItemResponse } from '@uspacy/sdk/lib/models/couchdb';
 import { IFilter } from '@uspacy/sdk/lib/models/crm-filters';
 import { IFilterField, IFilterPreset } from '@uspacy/sdk/lib/models/filter-preset';
 
@@ -87,26 +86,6 @@ const crmFiltersReducer = createSlice({
 						...action.payload.data,
 					};
 				return item;
-			});
-		},
-		bulkUpdateFiltersPresets: (
-			state,
-			action: PayloadAction<{ entityCode: string; data: ICreateCouchItemResponse[]; payload: ICouchItemData<IFilterPreset<IFilter>>[] }>,
-		) => {
-			const payload = { res: action.payload.data, body: action.payload.payload };
-			state[action.payload.entityCode].presets = state[action.payload.entityCode].presets?.map((preset) => {
-				const responseItem = payload?.res?.find((res) => res?.id === preset?._id);
-				const bodyItem = payload?.body?.find((body) => body?.id === preset?._id);
-
-				if (responseItem?.id) {
-					const updatedPreset = { ...preset, ...bodyItem };
-
-					updatedPreset._rev = responseItem?.rev;
-
-					return updatedPreset;
-				}
-
-				return preset;
 			});
 		},
 		pinFilterPreset: (state, action: PayloadAction<{ entityCode: string; presetId: IFilterPreset<IFilter>['id'] }>) => {
