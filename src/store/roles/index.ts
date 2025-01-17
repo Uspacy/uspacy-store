@@ -58,7 +58,10 @@ const rolesReducer = createSlice({
 			const currStoreData = current(state[storeKey][filteredCurrColName]);
 
 			const findNextVal = currStoreData
-				.find((item) => item.split('.').splice(0, 3).join('.') === `${tabName}.${categoryName}.${filteredCurrColName}`)
+				.find(
+					(item) =>
+						item.split('.').splice(0, 3).join('.') === `${tabName}.${categoryName}.${filteredCurrColName}` && !item.includes('disabled'),
+				)
 				?.split('.')
 				?.splice(-1)[0];
 
