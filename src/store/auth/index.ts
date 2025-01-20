@@ -4,6 +4,7 @@ import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import {
 	IBill,
 	ICoupon,
+	IDiscountCoupon,
 	IIntent,
 	IInvoiceData,
 	IInvoices,
@@ -30,6 +31,7 @@ import {
 	fetchInvoicesPdf,
 	fetchRatesList,
 	fetchSubscription,
+	getDiscountCoupon,
 	getPortalSubscription,
 	getTariffsList,
 	getUrlToRedirectAfterOAuth,
@@ -74,18 +76,21 @@ const initialState = {
 	tariffs: [],
 	portalSubsctription: null,
 	bill: null,
+	discountCoupon: null,
 	loadingTariffs: false,
 	loadingPortalSubsctription: false,
 	loadingCreatingSubscription: false,
 	loadingActivatingDemo: false,
 	loadingDisablingRenewal: false,
 	loadingDowngradeTariff: false,
+	loadingDiscountCoupon: false,
 	errorLoadingTariffs: null,
 	errorLoadingPortalSubsctription: null,
 	errorLoadingCreatingSubscription: null,
 	errorLoadingActivatingDemo: null,
 	errorLoadingDisablingRenewal: null,
 	errorLoadingDowngradeTariff: null,
+	errorLoadingDiscountCoupon: null,
 } as IState;
 
 const authReducer = createSlice({
@@ -120,6 +125,9 @@ const authReducer = createSlice({
 		// ! NEW BILLING
 		clearBill: (state) => {
 			state.bill = initialState.bill;
+		},
+		clearDiscountCoupon: (state) => {
+			state.discountCoupon = initialState.discountCoupon;
 		},
 		setPortalSubscription: (state, action: PayloadAction<IPortalSubscription>) => {
 			state.portalSubsctription = action.payload;
@@ -412,6 +420,19 @@ const authReducer = createSlice({
 			state.loadingDowngradeTariff = false;
 			state.errorLoadingDowngradeTariff = action.payload;
 		},
+		[getDiscountCoupon.fulfilled.type]: (state, action: PayloadAction<IDiscountCoupon>) => {
+			state.loadingDiscountCoupon = false;
+			state.errorLoadingDiscountCoupon = null;
+			state.discountCoupon = action.payload;
+		},
+		[getDiscountCoupon.pending.type]: (state) => {
+			state.loadingDiscountCoupon = true;
+			state.errorLoadingDiscountCoupon = null;
+		},
+		[getDiscountCoupon.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDiscountCoupon = false;
+			state.errorLoadingDiscountCoupon = action.payload;
+		},
 	},
 });
 
@@ -425,6 +446,7 @@ export const {
 	setAutoDebit,
 	setAfterGoogleOAuthData,
 	clearBill,
+	clearDiscountCoupon,
 	setAutoRenewal,
 	setPortalSubscription,
 } = authReducer.actions;
