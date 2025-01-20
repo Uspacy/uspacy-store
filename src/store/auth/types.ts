@@ -3,6 +3,7 @@ import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import {
 	IBill,
 	ICoupon,
+	IDiscountCoupon,
 	IIntent,
 	IInvoiceData,
 	IInvoices,
@@ -51,16 +52,19 @@ export interface IState {
 	tariffs: ITariff[];
 	portalSubsctription: IPortalSubscription;
 	bill: IBill;
+	discountCoupon: IDiscountCoupon;
 	loadingTariffs: boolean;
 	loadingPortalSubsctription: boolean;
 	loadingCreatingSubscription: boolean;
 	loadingActivatingDemo: boolean;
 	loadingDisablingRenewal: boolean;
 	loadingDowngradeTariff: boolean;
+	loadingDiscountCoupon: boolean;
 	errorLoadingTariffs: IErrorsAxiosResponse;
 	errorLoadingPortalSubsctription: IErrorsAxiosResponse;
 	errorLoadingCreatingSubscription: IErrorsAxiosResponse;
 	errorLoadingActivatingDemo: IErrorsAxiosResponse;
 	errorLoadingDisablingRenewal: IErrorsAxiosResponse;
 	errorLoadingDowngradeTariff: IErrorsAxiosResponse;
+	errorLoadingDiscountCoupon: IErrorsAxiosResponse;
 }

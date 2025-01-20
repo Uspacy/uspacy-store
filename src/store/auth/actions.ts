@@ -209,3 +209,12 @@ export const downgradeTariff = createAsyncThunk(
 		}
 	},
 );
+
+export const getDiscountCoupon = createAsyncThunk('auth/getDiscountCoupon', async (couponCode: string, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.authService.getDiscountCoupon(couponCode);
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
