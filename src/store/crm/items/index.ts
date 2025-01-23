@@ -220,7 +220,6 @@ const itemsReducer = createSlice({
 			const { entityCode } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || action.meta.arg.data.kanban_stage_id;
 			if (Array.isArray(state[entityCode]?.data)) {
-				state[entityCode].loading = false;
 				state[entityCode].errorMessage = null;
 				state[entityCode].data = [action.payload, ...state[entityCode].data];
 				state[entityCode].meta.total++;
@@ -239,7 +238,6 @@ const itemsReducer = createSlice({
 			const { entityCode } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || action.meta.arg.data.kanban_stage_id;
 			if (Array.isArray(state[entityCode]?.data)) {
-				state[entityCode].loading = true;
 				state[entityCode].errorMessage = null;
 			}
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
@@ -253,7 +251,6 @@ const itemsReducer = createSlice({
 		) => {
 			const { entityCode } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || action.meta.arg.data.kanban_stage_id;
-			state[entityCode].loading = false;
 			state[entityCode].errorMessage = action.payload;
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
 				state[entityCode].stages[stageId].loading = false;
