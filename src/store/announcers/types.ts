@@ -1,4 +1,4 @@
-import { IAnnounceBanner, IAnnounceNotification, IAnnounceWidget } from '@uspacy/sdk/lib/models/announcers';
+import { IAnnounceBanner, IAnnounceNotification, IAnnouncePopup, IAnnounceWidget } from '@uspacy/sdk/lib/models/announcers';
 
 export interface IState {
 	loadingAnnouncers: boolean;
@@ -6,6 +6,7 @@ export interface IState {
 	notifications: IAnnounceNotification[];
 	widgets: IAnnounceWidget[];
 	banner: IAnnounceBanner;
+	popup: IAnnouncePopup;
 	meta: Meta;
 	isBannerExists: boolean;
 }

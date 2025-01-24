@@ -11,6 +11,7 @@ const initialState: IState = {
 	notifications: [],
 	widgets: [],
 	banner: null,
+	popup: null,
 	meta: {
 		pagination: {
 			page: 0,
@@ -36,6 +37,7 @@ export const announcersSlice = createSlice({
 			state.banner = action.payload.data.banner;
 			state.notifications = action.payload.data.notifications;
 			state.widgets = action.payload.data.widgets;
+			state.popup = action.payload.data.popup;
 			state.meta = action.payload.meta;
 		},
 		[fetchAnnouncers.pending.type]: (state) => {
