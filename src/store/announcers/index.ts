@@ -11,7 +11,7 @@ const initialState: IState = {
 	notifications: [],
 	widgets: [],
 	banner: null,
-	popup: null,
+	popup: [],
 	meta: {
 		pagination: {
 			page: 0,

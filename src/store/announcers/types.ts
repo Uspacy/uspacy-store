@@ -6,7 +6,7 @@ export interface IState {
 	notifications: IAnnounceNotification[];
 	widgets: IAnnounceWidget[];
 	banner: IAnnounceBanner;
-	popup: IAnnouncePopup;
+	popup: IAnnouncePopup[];
 	meta: Meta;
 	isBannerExists: boolean;
 }
