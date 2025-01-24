@@ -5,4 +5,12 @@ export interface IState {
 		fields: IFormField[];
 		other: IFormOther[];
 	};
+	form: {
+		name: string;
+		active: boolean;
+		config: {
+			fields: IFormField[];
+			other: IFormOther[];
+		};
+	};
 }
