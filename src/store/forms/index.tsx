@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FormFieldCode, IFormField } from '@uspacy/forms/lib/forms/models';
+import { FormFieldCode, IFormField, IFormOther } from '@uspacy/forms/lib/forms/models';
 
-import { IState } from './types';
+import { IState, RequireOnlyOne } from './types';
 
 const initialState = {
 	formFields: {
@@ -49,14 +49,27 @@ const formsReducer = createSlice({
 				}
 			}
 		},
-		setFormConfigFields: (state, action: PayloadAction<IState['form']['config']['fields']>) => {
+		setFormConfigFields: (state, action: PayloadAction<IFormField[]>) => {
 			state.form.config.fields = action.payload;
 		},
-		setFormConfigOther: (state, action: PayloadAction<IState['form']['config']['other']>) => {
+		setFormConfigOther: (state, action: PayloadAction<IFormOther[]>) => {
 			state.form.config.other = action.payload;
+		},
+		updateFieldSettings: (state, action: PayloadAction<RequireOnlyOne<IFormField, 'fieldCode'>>) => {
+			const fieldIndex = state.form.config.fields.findIndex((field) => field.fieldCode === action.payload.fieldCode);
+			if (fieldIndex > -1) {
+				state.form.config.fields[fieldIndex] = { ...state.form.config.fields[fieldIndex], ...action.payload };
+			}
+		},
+		updateFieldOtherSettings: (state, action: PayloadAction<RequireOnlyOne<IFormOther, 'fieldCode'>>) => {
+			const fieldIndex = state.form.config.other.findIndex((field) => field.fieldCode === action.payload.fieldCode);
+			if (fieldIndex > -1) {
+				state.form.config.other[fieldIndex] = { ...state.form.config.other[fieldIndex], ...action.payload };
+			}
 		},
 	},
 });
 
-export const { setFormFields, toggleSelected, setFormConfigFields, setFormConfigOther } = formsReducer.actions;
+export const { setFormFields, toggleSelected, setFormConfigFields, setFormConfigOther, updateFieldSettings, updateFieldOtherSettings } =
+	formsReducer.actions;
 export default formsReducer.reducer;
