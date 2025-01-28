@@ -359,16 +359,19 @@ const itemsReducer = createSlice({
 
 		[massItemsEditing.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActions & { entityCode: string } }>) => {
 			const { entityCode } = action.meta.arg;
+			if (!state?.[entityCode]) return;
 			state[entityCode].loading = false;
 			state[entityCode].errorMessage = null;
 		},
 		[massItemsEditing.pending.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActions & { entityCode: string } }>) => {
 			const { entityCode } = action.meta.arg;
+			if (!state?.[entityCode]) return;
 			state[entityCode].loading = true;
 			state[entityCode].errorMessage = null;
 		},
 		[massItemsEditing.rejected.type]: (state, action: PayloadAction<IErrors, string, { arg: IMassActions & { entityCode: string } }>) => {
 			const { entityCode } = action.meta.arg;
+			if (!state?.[entityCode]) return;
 			state[entityCode].loading = false;
 			state[entityCode].errorMessage = action.payload;
 		},
@@ -391,6 +394,7 @@ const itemsReducer = createSlice({
 
 		[massItemsDeletion.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActions & { entityCode: string } }>) => {
 			const { entityCode } = action.meta.arg;
+			if (!state?.[entityCode]) return;
 			const hasKandban = Array.isArray(Object.keys(state[entityCode]?.stages || {}));
 			state[entityCode].loading = false;
 			state[entityCode].errorMessage = null;
@@ -428,11 +432,13 @@ const itemsReducer = createSlice({
 		},
 		[massItemsDeletion.pending.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActions & { entityCode: string } }>) => {
 			const { entityCode } = action.meta.arg;
+			if (!state?.[entityCode]) return;
 			state[entityCode].loading = true;
 			state[entityCode].errorMessage = null;
 		},
 		[massItemsDeletion.rejected.type]: (state, action: PayloadAction<IErrors, string, { arg: IMassActions & { entityCode: string } }>) => {
 			const { entityCode } = action.meta.arg;
+			if (!state?.[entityCode]) return;
 			state[entityCode].loading = false;
 			state[entityCode].errorMessage = action.payload;
 		},
