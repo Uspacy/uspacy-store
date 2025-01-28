@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FormFieldCode, IFormField, IFormOther } from '@uspacy/forms/lib/forms/models';
 
-import { IState, RequireOnlyOne } from './types';
+import { IForm, IState, RequireOnlyOne } from './types';
 
 const initialState = {
 	formFields: {
@@ -49,8 +49,8 @@ const formsReducer = createSlice({
 				}
 			}
 		},
-		setFormConfigFields: (state, action: PayloadAction<IFormField[]>) => {
-			state.form.config.fields = action.payload;
+		addFormConfigFields: (state, action: PayloadAction<IFormField>) => {
+			state.form.config.fields.push(action.payload);
 		},
 		setFormConfigOther: (state, action: PayloadAction<IFormOther[]>) => {
 			state.form.config.other = action.payload;
@@ -67,9 +67,18 @@ const formsReducer = createSlice({
 				state.form.config.other[fieldIndex] = { ...state.form.config.other[fieldIndex], ...action.payload };
 			}
 		},
+		addForm: (state, action: PayloadAction<IForm>) => {
+			state.formsList.push(action.payload);
+		},
+		removeForm: (state, action: PayloadAction<IForm['id']>) => {
+			state.formsList = state.formsList.filter((form) => form.id !== action.payload);
+		},
+		updateFormData: (state, action: PayloadAction<RequireOnlyOne<IForm, 'id'>>) => {
+			state.form = { ...state.form, ...action.payload };
+		},
 	},
 });
 
-export const { setFormFields, toggleSelected, setFormConfigFields, setFormConfigOther, updateFieldSettings, updateFieldOtherSettings } =
+export const { setFormFields, toggleSelected, addFormConfigFields, setFormConfigOther, updateFieldSettings, updateFieldOtherSettings } =
 	formsReducer.actions;
 export default formsReducer.reducer;
