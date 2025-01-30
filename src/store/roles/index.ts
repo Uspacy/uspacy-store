@@ -268,7 +268,7 @@ const rolesReducer = createSlice({
 			state[action.payload.key] = merged;
 		},
 		clearPermissionsFunnels(state) {
-			state.permissionsFunnels = {};
+			state.permissionsFunnels = initialState.permissionsFunnels;
 		},
 	},
 	extraReducers: {
