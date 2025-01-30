@@ -118,15 +118,7 @@ const funnelsReducer = createSlice({
 				if (funnel.id === action.meta.arg.data.funnel_id) {
 					return {
 						...funnel,
-						stages: [
-							{ ...action.payload, sort: Number(action.payload.sort) },
-							...funnel.stages.map((stage) => {
-								if (stage.sort >= action.payload.sort) {
-									return { ...stage, sort: stage.sort + 10 };
-								}
-								return stage;
-							}),
-						].sort((a, b) => a.sort - b.sort),
+						stages: [{ ...action.payload, sort: Number(action.payload.sort) }, ...funnel.stages].sort((a, b) => a.sort - b.sort),
 					};
 				}
 				return funnel;
