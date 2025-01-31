@@ -2,6 +2,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 
 import cardBlocks from './cardBlocks';
 import categories from './categories';
+import dependencies from './dependencies';
 import entities from './entities';
 import fields from './fields';
 import filters from './filters';
@@ -20,6 +21,7 @@ const crm = combineReducers({
 	items,
 	taxes,
 	units,
+	dependencies,
 });
 
 export default crm;
