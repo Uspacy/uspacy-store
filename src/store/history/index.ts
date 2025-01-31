@@ -44,6 +44,6 @@ const historyReducer = createSlice({
 	},
 });
 
-export const { addNewHistory } = historyReducer.actions;
+export const { addNewHistory, clearHistory } = historyReducer.actions;
 
 export default historyReducer.reducer;
