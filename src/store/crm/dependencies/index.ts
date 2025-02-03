@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IDependenciesList } from '@uspacy/sdk/lib/models/dependencies-list';
 
 import { createDependenciesList, deleteDependenciesList, fetchDependenciesLists, updateDependenciesLists } from './actions';
-import { IState } from './types';
+import { DependenciesLists, IState } from './types';
 
 const initialState: IState = {};
 
@@ -24,6 +24,7 @@ const dependenciesReducer = createSlice({
 		},
 		[fetchDependenciesLists.pending.type]: (state, action: PayloadAction<unknown, string, { arg: string }>) => {
 			const entityCode = action.meta.arg;
+			state[entityCode] ??= { loading: true, data: [], errorMessage: '' } as DependenciesLists;
 			state[entityCode].loading = true;
 			state[entityCode].errorMessage = '';
 		},
