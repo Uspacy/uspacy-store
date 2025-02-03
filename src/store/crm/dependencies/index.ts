@@ -19,6 +19,9 @@ const dependenciesReducer = createSlice({
 			state,
 			action: PayloadAction<{ data: IDependenciesList[] }, string, { arg: { entityCode: string } }>,
 		) => {
+			console.log(action, 'action');
+			const entityCode = action.meta.arg;
+			console.log(entityCode, 'entityCode');
 			console.log(action.payload, 'action.payload');
 			console.log(action.payload.data, 'action.payload.data');
 			state[action.meta.arg.entityCode].loading = false;
