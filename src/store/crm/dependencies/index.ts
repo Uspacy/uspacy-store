@@ -15,23 +15,23 @@ const dependenciesReducer = createSlice({
 		},
 	},
 	extraReducers: {
-		[fetchDependenciesLists.fulfilled.type]: (
-			state,
-			action: PayloadAction<{ data: IDependenciesList[] }, string, { arg: { entityCode: string } }>,
-		) => {
-			console.log(action.payload, 'action.payload');
-			console.log(action.payload.data, 'action.payload.data');
-			state[action.meta.arg.entityCode].loading = false;
-			state[action.meta.arg.entityCode].errorMessage = '';
-			state[action.meta.arg.entityCode].data = action.payload.data;
+		[fetchDependenciesLists.fulfilled.type]: (state, action: PayloadAction<IDependenciesList[], string, { arg: string }>) => {
+			const entityCode = action.meta.arg;
+			if (!state?.[entityCode]) return;
+			state[entityCode].loading = false;
+			state[entityCode].errorMessage = '';
+			state[entityCode].data = action.payload;
 		},
-		[fetchDependenciesLists.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string } }>) => {
-			state[action.meta.arg.entityCode].loading = true;
-			state[action.meta.arg.entityCode].errorMessage = '';
+		[fetchDependenciesLists.pending.type]: (state, action: PayloadAction<unknown, string, { arg: string }>) => {
+			const entityCode = action.meta.arg;
+			state[entityCode].loading = true;
+			state[entityCode].errorMessage = '';
 		},
-		[fetchDependenciesLists.rejected.type]: (state, action: PayloadAction<string, string, { arg: { entityCode: string } }>) => {
-			state[action.meta.arg.entityCode].loading = false;
-			state[action.meta.arg.entityCode].errorMessage = action.payload;
+		[fetchDependenciesLists.rejected.type]: (state, action: PayloadAction<string, string, { arg: string }>) => {
+			const entityCode = action.meta.arg;
+			if (!state?.[entityCode]) return;
+			state[entityCode].loading = false;
+			state[entityCode].errorMessage = action.payload;
 		},
 
 		[createDependenciesList.fulfilled.type]: (
