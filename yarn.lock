@@ -505,10 +505,10 @@
     "@typescript-eslint/types" "6.3.0"
     eslint-visitor-keys "^3.4.1"
 
-"@uspacy/sdk@0.0.130-alpha.2":
-  version "0.0.130-alpha.2"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.130-alpha.2/3cc209973453b3d803905974e5c67741c5ffb9d7#3cc209973453b3d803905974e5c67741c5ffb9d7"
-  integrity sha512-cSdF0a1tipgHN377g9EtucRTQbt7bufAPjQyNy40LbFubsuYZDu2daKNOZLCW8L+DQRCdTXRy1dqp2Pv4Tp1EA==
+"@uspacy/sdk@0.0.130-alpha.4":
+  version "0.0.130-alpha.4"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.130-alpha.4/92dbe802f09e902e452a61807850574e6f7da728#92dbe802f09e902e452a61807850574e6f7da728"
+  integrity sha512-MH9TkgC60MGGsBlhCrg7s1XWuxSdOcS3+EG1r3TSoSvWlAINopkcVGJOt610hlxpdNJ8qQf0Lj0F2LcL5okCmg==
   dependencies:
     axios "^1.7.2"
     js-cookie "3.0.5"
@@ -983,7 +983,7 @@ call-bind-apply-helpers@^1.0.0, call-bind-apply-helpers@^1.0.1:
     es-errors "^1.3.0"
     function-bind "^1.1.2"
 
-call-bind@^1.0.7, call-bind@^1.0.8:
+call-bind@^1.0.5, call-bind@^1.0.7, call-bind@^1.0.8:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/call-bind/-/call-bind-1.0.8.tgz#0736a9660f537e3388826f440d5ec45f744eaa4c"
   integrity sha512-oKlSFMcMwpUg2ednkhQ454wfWiU/ul3CkJe/PEHcTKuiX6RpbehUiFMXu13HalGZxfUwCQzZG747YXBn1im9ww==
