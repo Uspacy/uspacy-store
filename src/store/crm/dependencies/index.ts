@@ -39,42 +39,34 @@ const dependenciesReducer = createSlice({
 			state,
 			action: PayloadAction<{ data: IDependenciesList }, string, { arg: { entityCode: string } }>,
 		) => {
-			state[action.meta.arg.entityCode].loading = false;
+			state[action.meta.arg.entityCode].loadingItem = false;
 			state[action.meta.arg.entityCode].errorMessage = '';
 			const entityCode = action.meta.arg.entityCode;
 			state[entityCode].data = [...(state[entityCode]?.data || []), action.payload.data];
 		},
 		[createDependenciesList.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string } }>) => {
-			state[action.meta.arg.entityCode].loading = true;
+			const entityCode = action.meta.arg.entityCode;
+			state[entityCode] ??= { loading: false, data: [], errorMessage: '', loadingItem: true } as DependenciesLists;
+			state[action.meta.arg.entityCode].loadingItem = true;
 			state[action.meta.arg.entityCode].errorMessage = '';
 		},
 		[createDependenciesList.rejected.type]: (state, action: PayloadAction<string, string, { arg: { entityCode: string } }>) => {
-			state[action.meta.arg.entityCode].loading = false;
+			state[action.meta.arg.entityCode].loadingItem = false;
 			state[action.meta.arg.entityCode].errorMessage = action.payload;
 		},
 
-		[updateDependenciesLists.fulfilled.type]: (
+		[updateDependenciesLists.pending.type]: (
 			state,
-			action: PayloadAction<{ data: IDependenciesList }, string, { arg: { entityCode: string } }>,
+			action: PayloadAction<unknown, string, { arg: { entityCode: string; data: IDependenciesList } }>,
 		) => {
-			state[action.meta.arg.entityCode].loading = false;
-			state[action.meta.arg.entityCode].errorMessage = '';
-
-			const entityCode = action.meta.arg.entityCode;
-			state[entityCode].data = state[entityCode].data.map((dependencies) => {
-				if (dependencies.id === action.payload.data.id) {
-					return { ...dependencies, ...action.payload.data };
+			const entityCode = action.meta.arg?.entityCode;
+			const newValue = action.meta.arg?.data;
+			state[entityCode].data = state[entityCode]?.data?.map((dependencies) => {
+				if (dependencies?.id === newValue?.id) {
+					return { ...dependencies, ...newValue };
 				}
 				return dependencies;
 			});
-		},
-		[updateDependenciesLists.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string } }>) => {
-			state[action.meta.arg.entityCode].loading = true;
-			state[action.meta.arg.entityCode].errorMessage = '';
-		},
-		[updateDependenciesLists.rejected.type]: (state, action: PayloadAction<string, string, { arg: { entityCode: string } }>) => {
-			state[action.meta.arg.entityCode].loading = false;
-			state[action.meta.arg.entityCode].errorMessage = action.payload;
 		},
 
 		[deleteDependenciesList.pending.type]: (state, action: PayloadAction<number, string, { arg: { entityCode: string } }>) => {
