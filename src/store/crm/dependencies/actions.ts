@@ -4,9 +4,7 @@ import { IDependenciesList } from '@uspacy/sdk/lib/models/dependencies-list';
 
 export const fetchDependenciesLists = createAsyncThunk('crm/dependencies/fetchDependenciesLists', async (code: string, thunkAPI) => {
 	try {
-		console.log(code, 'code');
 		const res = await uspacySdk.crmEntitiesService.getDependenciesLists(code);
-		console.log(res, 'res');
 		return res?.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
