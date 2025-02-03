@@ -298,6 +298,10 @@ const formsReducer = createSlice({
 		setShowSaveButton: (state, action: PayloadAction<boolean>) => {
 			state.showSaveButton = action.payload;
 		},
+		updateFormInList: (state, action: PayloadAction<IForm>) => {
+			const formIndex = state.formsList.findIndex((it) => it.id === action.payload.id);
+			state.formsList[formIndex] = action.payload;
+		},
 	},
 });
 
@@ -314,5 +318,6 @@ export const {
 	addForm,
 	removeForm,
 	setShowSaveButton,
+	updateFormInList,
 } = formsReducer.actions;
 export default formsReducer.reducer;
