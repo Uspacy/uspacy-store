@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IDependenciesList } from '@uspacy/sdk/lib/models/dependencies-list';
 
-export const fetchDependenciesLists = createAsyncThunk('crm/dependenciesList/fetchDependenciesLists', async (code: string, thunkAPI) => {
+export const fetchDependenciesLists = createAsyncThunk('crm/dependencies/fetchDependenciesLists', async (code: string, thunkAPI) => {
 	try {
 		const res = await uspacySdk.crmEntitiesService.getDependenciesLists(code);
 		return res;
@@ -12,7 +12,7 @@ export const fetchDependenciesLists = createAsyncThunk('crm/dependenciesList/fet
 });
 
 export const createDependenciesList = createAsyncThunk(
-	'crm/dependenciesList/createDependenciesList',
+	'crm/dependencies/createDependenciesList',
 	async ({ data, entityCode }: { data: Partial<IDependenciesList>; entityCode: string }, thunkAPI) => {
 		try {
 			const res = await uspacySdk.crmEntitiesService.createOrUpdateDependencies(data, entityCode);
@@ -24,7 +24,7 @@ export const createDependenciesList = createAsyncThunk(
 );
 
 export const deleteDependenciesList = createAsyncThunk(
-	'crm/dependenciesList/deleteDependenciesList',
+	'crm/dependencies/deleteDependenciesList',
 	async ({ id, entityCode }: { id: number; entityCode: string }, thunkAPI) => {
 		try {
 			await uspacySdk.crmEntitiesService.deleteDependenciesLists(entityCode, id);
@@ -36,7 +36,7 @@ export const deleteDependenciesList = createAsyncThunk(
 );
 
 export const updateDependenciesLists = createAsyncThunk(
-	'crm/dependenciesList/updateDependenciesLists',
+	'crm/dependencies/updateDependenciesLists',
 	async ({ data, entityCode }: { data: IDependenciesList; entityCode: string }, thunkAPI) => {
 		try {
 			const res = await uspacySdk.crmEntitiesService.createOrUpdateDependencies(data, entityCode);
