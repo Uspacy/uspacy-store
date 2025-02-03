@@ -18,6 +18,7 @@ export interface IState {
 	};
 	form: IForm;
 	formsList: IForm[];
+	showSaveButton: boolean;
 }
 
 export type RequireOnlyOne<T, K extends keyof T> = Partial<T> & Required<Pick<T, K>>;
