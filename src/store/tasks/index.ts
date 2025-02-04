@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFields } from '@uspacy/sdk/lib/models/field';
-import { IFilterTasks, ITask, ITasks, taskType } from '@uspacy/sdk/lib/models/tasks';
+import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
+import { IFilterTasks, ITask, taskType } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 
 import { fillTheString } from '../../helpers/stringsHelper';
@@ -38,10 +39,13 @@ import { IDeleteTaskPayload, IState, ITaskCardActions } from './types';
 const initialState = {
 	tasks: {
 		data: [],
+		meta: {},
 		aborted: false,
 	},
 	subtasks: {
 		data: [],
+		meta: null,
+		aborted: false,
 	},
 	allSubtasks: [],
 	task: {},
@@ -133,11 +137,6 @@ const initialState = {
 	errorLoadingDeletingTask: null,
 	errorLoadingStatusesTask: null,
 	errorLoadingTaskFields: null,
-	meta: {
-		currentPage: 0,
-		perPage: 20,
-		total: 0,
-	},
 	popupLinks: [],
 	isSubtasks: false,
 	isCopyingTask: false,
@@ -156,7 +155,7 @@ const tasksReducer = createSlice({
 	name: 'tasksReducer',
 	initialState,
 	reducers: {
-		setTasks: (state, action: PayloadAction<ITasks>) => {
+		setTasks: (state, action: PayloadAction<IResponseWithMeta<ITask>>) => {
 			state.tasks = action.payload;
 		},
 		setTask: (state, action: PayloadAction<ITask>) => {
@@ -200,16 +199,16 @@ const tasksReducer = createSlice({
 		},
 		clearSubstasks: (state) => {
 			state.allSubtasks = [];
-			state.subtasks = {} as ITasks;
+			state.subtasks = initialState.subtasks;
 		},
 		clearAddedTaskReducer: (state) => {
-			state.addedTask = {} as ITask;
+			state.addedTask = initialState.addedTask;
 		},
 		clearAddedToKanbanTaskReducer: (state) => {
-			state.addedToKanbanTask = {} as ITask;
+			state.addedToKanbanTask = initialState.addedToKanbanTask;
 		},
 		clearChangeTask: (state) => {
-			state.changeTask = {} as ITask;
+			state.changeTask = initialState.changeTask;
 		},
 		clearDeleteTaskId: (state) => {
 			state.deleteTaskId = null;
@@ -227,7 +226,7 @@ const tasksReducer = createSlice({
 		addTaskToEndTable: (state, action: PayloadAction<ITask>) => {
 			state.tasks.data.push(action.payload);
 		},
-		addTasksToEndTable: (state, action: PayloadAction<ITasks>) => {
+		addTasksToEndTable: (state, action: PayloadAction<IResponseWithMeta<ITask>>) => {
 			state.tasks.data = state.tasks.data.concat(action.payload.data);
 		},
 		removeTaskFromEndTable: (state) => {
@@ -294,7 +293,7 @@ const tasksReducer = createSlice({
 		},
 	},
 	extraReducers: {
-		[getTasks.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
+		[getTasks.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<ITask>>) => {
 			state.loadingTasks = action.payload.aborted;
 			state.errorLoadingTasks = null;
 			if (state.isTable) {
@@ -310,7 +309,7 @@ const tasksReducer = createSlice({
 			state.loadingTasks = false;
 			state.errorLoadingTasks = action.payload;
 		},
-		[getRecurringTemplates.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
+		[getRecurringTemplates.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<ITask>>) => {
 			state.loadingTasks = action.payload.aborted;
 			state.errorLoadingTasks = null;
 			state.tasks = action.payload.aborted ? state.tasks : action.payload;
@@ -324,7 +323,7 @@ const tasksReducer = createSlice({
 			state.loadingTasks = false;
 			state.errorLoadingTasks = action.payload;
 		},
-		[getOneTimeTemplates.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
+		[getOneTimeTemplates.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<ITask>>) => {
 			state.loadingTasks = action.payload.aborted;
 			state.errorLoadingTasks = null;
 			state.tasks = action.payload.aborted ? state.tasks : action.payload;
@@ -338,7 +337,7 @@ const tasksReducer = createSlice({
 			state.loadingTasks = false;
 			state.errorLoadingTasks = action.payload;
 		},
-		[getHierarchies.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
+		[getHierarchies.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<ITask>>) => {
 			state.loadingTasks = action.payload.aborted;
 			state.errorLoadingTasks = null;
 			if (state.isHierarchy) {
@@ -354,7 +353,7 @@ const tasksReducer = createSlice({
 			state.loadingTasks = false;
 			state.errorLoadingTasks = action.payload;
 		},
-		[getSubtasks.fulfilled.type]: (state, action: PayloadAction<ITasks>) => {
+		[getSubtasks.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<ITask>>) => {
 			state.loadingSubtasks = false;
 			state.errorLoadingSubtasks = null;
 			state.subtasks = action.payload;

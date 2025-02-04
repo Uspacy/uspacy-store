@@ -1,7 +1,7 @@
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFields } from '@uspacy/sdk/lib/models/field';
-import { IFilterTasks, IMeta, ITask, ITasks, taskType } from '@uspacy/sdk/lib/models/tasks';
-import { ITaskValues } from '@uspacy/sdk/lib/services/TasksService/dto/create-update-task.dto';
+import { IMeta, IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
+import { IFilterTasks, ITask, taskType } from '@uspacy/sdk/lib/models/tasks';
 
 export interface ITaskCardActions {
 	type: taskType;
@@ -14,14 +14,14 @@ export interface IDeleteTaskPayload {
 }
 
 export interface ICreateTaskPayload {
-	data: ITaskValues;
+	data: Partial<ITask>;
 	abilityToAddTask: boolean;
 	id?: string;
 }
 
 export interface IState {
-	tasks: ITasks;
-	subtasks: ITasks;
+	tasks: IResponseWithMeta<ITask>;
+	subtasks: IResponseWithMeta<ITask>;
 	allSubtasks: ITask[];
 	task: ITask;
 	recurringTemplate: ITask;
