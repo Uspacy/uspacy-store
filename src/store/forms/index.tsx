@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-len */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FormFieldCode, IFormField, IFormOther } from '@uspacy/forms/lib/forms/models';
 
+// import { FormFieldCode, IFormField, IFormOther } from '@uspacy/forms/lib/forms/models';
 import { IForm, IState, RequireOnlyOne } from './types';
 
 const testForm = {
@@ -238,7 +238,8 @@ const formsReducer = createSlice({
 		setFormFields: (state, action: PayloadAction<IState['formFields']>) => {
 			state.formFields = action.payload;
 		},
-		toggleSelected: (state, action: PayloadAction<{ isOther: boolean; fieldCode: FormFieldCode; isRemove?: boolean }>) => {
+		// toggleSelected: (state, action: PayloadAction<{ isOther: boolean; fieldCode: FormFieldCode; isRemove?: boolean }>) => {
+		toggleSelected: (state, action: PayloadAction<{ isOther: boolean; fieldCode: any; isRemove?: boolean }>) => {
 			const { isOther, fieldCode, isRemove } = action.payload;
 			const fields = isOther ? state.formFields.other : state.formFields.fields;
 			const fieldIndex = fields.findIndex((field) => field.fieldCode === fieldCode);
@@ -255,14 +256,16 @@ const formsReducer = createSlice({
 					}
 				} else {
 					if (nextSelectedStatus && !isRemove) {
-						state.form.config.fields.push(fields[fieldIndex] as IFormField);
+						// state.form.config.fields.push(fields[fieldIndex] as IFormField);
+						state.form.config.fields.push(fields[fieldIndex] as any);
 					} else {
 						state.form.config.fields = state.form.config.fields.filter((field) => field.fieldCode !== fieldCode);
 					}
 				}
 			}
 		},
-		addFormConfigFields: (state, action: PayloadAction<IFormField>) => {
+		// addFormConfigFields: (state, action: PayloadAction<IFormField>) => {
+		addFormConfigFields: (state, action: PayloadAction<any>) => {
 			state.form.config.fields.push(action.payload);
 		},
 		clearForm: (state) => {
@@ -271,16 +274,19 @@ const formsReducer = createSlice({
 		clearFormConfigFields: (state) => {
 			state.form.config.fields = [];
 		},
-		setFormConfigOther: (state, action: PayloadAction<IFormOther[]>) => {
+		// setFormConfigOther: (state, action: PayloadAction<IFormOther[]>) => {
+		setFormConfigOther: (state, action: PayloadAction<any[]>) => {
 			state.form.config.other = action.payload;
 		},
-		updateFieldSettings: (state, action: PayloadAction<RequireOnlyOne<IFormField, 'fieldCode'>>) => {
+		// updateFieldSettings: (state, action: PayloadAction<RequireOnlyOne<IFormField, 'fieldCode'>>) => {
+		updateFieldSettings: (state, action: PayloadAction<RequireOnlyOne<any, 'fieldCode'>>) => {
 			const fieldIndex = state.form.config.fields.findIndex((field) => field.fieldCode === action.payload.fieldCode);
 			if (fieldIndex > -1) {
 				state.form.config.fields[fieldIndex] = { ...state.form.config.fields[fieldIndex], ...action.payload };
 			}
 		},
-		updateFieldOtherSettings: (state, action: PayloadAction<RequireOnlyOne<IFormOther, 'fieldCode'>>) => {
+		// updateFieldOtherSettings: (state, action: PayloadAction<RequireOnlyOne<IFormOther, 'fieldCode'>>) => {
+		updateFieldOtherSettings: (state, action: PayloadAction<RequireOnlyOne<any, 'fieldCode'>>) => {
 			const fieldIndex = state.form.config.other.findIndex((field) => field.fieldCode === action.payload.fieldCode);
 			if (fieldIndex > -1) {
 				state.form.config.other[fieldIndex] = { ...state.form.config.other[fieldIndex], ...action.payload };

@@ -1,4 +1,5 @@
-import { IFormField, IFormOther } from '@uspacy/forms/lib/forms/models';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// import { IFormField, IFormOther } from '@uspacy/forms/lib/forms/models';
 
 export interface IForm {
 	id?: string;
@@ -6,15 +7,21 @@ export interface IForm {
 	active: boolean;
 	crmEntity: 'lead' | 'contact';
 	config: {
-		fields: IFormField[];
-		other: IFormOther[];
+		// потім повернути
+		// fields: IFormField[];
+		// other: IFormOther[];
+		fields: any[];
+		other: any[];
 	};
 }
 
 export interface IState {
 	formFields: {
-		fields: IFormField[];
-		other: IFormOther[];
+		// потім повернути
+		// fields: IFormField[];
+		// other: IFormOther[];
+		fields: any[];
+		other: any[];
 	};
 	form: IForm;
 	formsList: IForm[];
