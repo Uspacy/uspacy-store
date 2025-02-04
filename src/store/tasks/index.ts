@@ -44,7 +44,7 @@ const initialState = {
 	},
 	subtasks: {
 		data: [],
-		meta: null,
+		meta: {},
 		aborted: false,
 	},
 	allSubtasks: [],
@@ -137,6 +137,11 @@ const initialState = {
 	errorLoadingDeletingTask: null,
 	errorLoadingStatusesTask: null,
 	errorLoadingTaskFields: null,
+	meta: {
+		currentPage: 0,
+		perPage: 20,
+		total: 0,
+	},
 	popupLinks: [],
 	isSubtasks: false,
 	isCopyingTask: false,
