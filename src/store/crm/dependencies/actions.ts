@@ -27,7 +27,8 @@ export const deleteDependenciesList = createAsyncThunk(
 	'crm/dependencies/deleteDependenciesList',
 	async ({ id, entityCode }: { id: number; entityCode: string }, thunkAPI) => {
 		try {
-			return await uspacySdk.crmEntitiesService.deleteDependenciesLists(entityCode, id);
+			const res = await uspacySdk.crmEntitiesService.deleteDependenciesLists(entityCode, id);
+			return res?.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
 		}
