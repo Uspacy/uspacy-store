@@ -66,8 +66,8 @@ const dependenciesReducer = createSlice({
 			});
 		},
 
-		[deleteDependenciesList.pending.type]: (state, action: PayloadAction<number, string, { arg: { entityCode: string; data: number } }>) => {
-			const deleteId = action.meta.arg?.data;
+		[deleteDependenciesList.pending.type]: (state, action: PayloadAction<number, string, { arg: { entityCode: string; id: number } }>) => {
+			const deleteId = action.meta.arg?.id;
 			state[action.meta.arg.entityCode].data = state[action.meta.arg.entityCode].data.filter((dependencies) => dependencies.id !== deleteId);
 		},
 	},
