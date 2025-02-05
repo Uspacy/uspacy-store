@@ -35,14 +35,11 @@ const dependenciesReducer = createSlice({
 			state[entityCode].errorMessage = action.payload;
 		},
 
-		[createDependenciesList.fulfilled.type]: (
-			state,
-			action: PayloadAction<{ data: IDependenciesList }, string, { arg: { entityCode: string } }>,
-		) => {
+		[createDependenciesList.fulfilled.type]: (state, action: PayloadAction<IDependenciesList, string, { arg: { entityCode: string } }>) => {
 			state[action.meta.arg.entityCode].loadingItem = false;
 			state[action.meta.arg.entityCode].errorMessage = '';
 			const entityCode = action.meta.arg.entityCode;
-			state[entityCode].data = [...(state[entityCode]?.data || []), action.payload.data];
+			state[entityCode].data = [...(state[entityCode]?.data || []), action.payload];
 		},
 		[createDependenciesList.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string } }>) => {
 			const entityCode = action.meta.arg.entityCode;
