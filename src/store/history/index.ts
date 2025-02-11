@@ -21,6 +21,10 @@ const historyReducer = createSlice({
 		addNewHistory: (state, action: PayloadAction<IHistoryChange>) => {
 			state.history.data = [action.payload, ...(state.history.data || [])];
 		},
+		clearHistory: (state) => {
+			state.history = initialState.history;
+			state.loadingHistory = true;
+		},
 	},
 	extraReducers: {
 		[fetchChangesHistory.fulfilled.type]: (state, action: PayloadAction<IHistoryResponse>) => {
@@ -40,6 +44,6 @@ const historyReducer = createSlice({
 	},
 });
 
-export const { addNewHistory } = historyReducer.actions;
+export const { addNewHistory, clearHistory } = historyReducer.actions;
 
 export default historyReducer.reducer;
