@@ -75,7 +75,8 @@ const rolesReducer = createSlice({
 					switch (targetVal) {
 						case 'mine':
 						case 'disabled':
-							if (findNextVal === 'allowed' || findNextVal === 'mine') {
+						case 'department':
+							if (['allowed', 'department', 'mine'].includes(findNextVal)) {
 								state[storeKey][filteredCurrColName] = [
 									...filterArr,
 									`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
@@ -216,6 +217,14 @@ const rolesReducer = createSlice({
 							`${goalForClean}.${actionType}.${permissionKey}`,
 						);
 					}
+					if (permissionKey === 'department') {
+						newPermissions.edit = updatePermissions(newPermissions.edit, goalForClean, `${goalForClean}.${actionType}.${permissionKey}`);
+						newPermissions.delete = updatePermissions(
+							newPermissions.delete,
+							goalForClean,
+							`${goalForClean}.${actionType}.${permissionKey}`,
+						);
+					}
 				}
 				if (actionType === 'edit') {
 					if (permissionKey === 'disabled') {
@@ -233,8 +242,9 @@ const rolesReducer = createSlice({
 				newPermissions.create = [
 					...permissionState.create.filter((item) => !item.includes(goalForClean)),
 					`${goalForClean}.create.mine.disabled-any`,
+					`${goalForClean}.create.department.disabled-any`,
 					`${goalForClean}.create.${permissionKey}`,
-				].filter((item) => item !== `${goalForClean}.create.mine`);
+				].filter((item) => ![`${goalForClean}.create.mine`, `${goalForClean}.create.department`].includes(item));
 
 				newPermissions.edit = [
 					...permissionState.edit.filter((item) => !item.includes(goalForClean)),
