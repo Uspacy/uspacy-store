@@ -13,7 +13,14 @@ import {
 	updateUnreadCountAndMentionedByChatId,
 } from '../../../helpers/messenger';
 import { fetchExternalChats } from './actions';
-import { IState } from './types';
+import { ICrmConnectEntity, IState } from './types';
+
+const initialConnectEntities = {
+	leads: [],
+	contacts: [],
+	companies: [],
+	deals: [],
+};
 
 const initialState: IState = {
 	externalChats: {
@@ -24,6 +31,7 @@ const initialState: IState = {
 			inactive: [],
 		},
 		externalChatsLength: 0,
+		crmConnectEntities: initialConnectEntities,
 	},
 };
 
@@ -132,6 +140,22 @@ export const externalChatSlice = createSlice({
 				return it;
 			});
 		},
+		setConnectedCrmEntities(state, action: PayloadAction<IState['externalChats']['crmConnectEntities']>) {
+			state.externalChats.crmConnectEntities = action.payload;
+		},
+		updateConnectedCrmEntitiesByKey(
+			state,
+			action: PayloadAction<{ type: keyof IState['externalChats']['crmConnectEntities']; items: ICrmConnectEntity[] }>,
+		) {
+			const { type, items } = action.payload;
+			state.externalChats.crmConnectEntities[type] = items;
+		},
+		addConnectedCrmEntities(
+			state,
+			action: PayloadAction<{ type: keyof IState['externalChats']['crmConnectEntities']; item: ICrmConnectEntity }>,
+		) {
+			state.externalChats.crmConnectEntities[action.payload.type].push(action.payload.item);
+		},
 	},
 	extraReducers: {
 		[fetchExternalChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
@@ -166,6 +190,9 @@ export const {
 	readExtMessagesAction,
 	setTimestamp,
 	setInviteStatus,
+	setConnectedCrmEntities,
+	addConnectedCrmEntities,
+	updateConnectedCrmEntitiesByKey,
 } = externalChatSlice.actions;
 
 export default externalChatSlice.reducer;
