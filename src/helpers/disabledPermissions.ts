@@ -11,6 +11,7 @@ export const disabledPermissions = {
 		'crm.activity.create.department.disabled-any',
 		'crm.activity.create.mine.disabled-any',
 		'crm.call.create.mine.disabled-any',
+		'crm.call.create.department.disabled-any',
 		'hrm.activity.create.department.disabled-any',
 		'hrm.activity.create.mine.disabled-any',
 		'hrm.employee.create.mine.disabled-any',
