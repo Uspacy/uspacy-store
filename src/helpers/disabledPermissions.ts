@@ -12,7 +12,6 @@ export const disabledPermissions = {
 		'crm.activity.create.mine.disabled-any',
 		'crm.call.create.disabled.disabled-any',
 		'crm.call.create.mine.disabled-any',
-		'crm.call.create.allowed.disabled-any',
 		'hrm.activity.create.department.disabled-any',
 		'hrm.activity.create.mine.disabled-any',
 		'hrm.employee.create.mine.disabled-any',
@@ -20,7 +19,7 @@ export const disabledPermissions = {
 		'tasks.task.create.department.disabled-any',
 		'tasks.task.create.mine.disabled-any',
 	],
-	edit: ['crm.call.edit.disabled.disabled-any', 'crm.call.edit.mine.disabled-any', 'crm.call.edit.allowed.disabled-any'],
-	view: ['crm.call.view.disabled.disabled-any', 'crm.call.view.mine.disabled-any', 'crm.call.view.allowed.disabled-any'],
-	delete: ['crm.call.delete.disabled.disabled-any', 'crm.call.delete.mine.disabled-any', 'crm.call.delete.allowed.disabled-any'],
+	edit: [],
+	view: [],
+	delete: [],
 };
