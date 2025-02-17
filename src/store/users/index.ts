@@ -49,6 +49,18 @@ export const usersSlice = createSlice({
 			});
 			// UsersCache.setData(state.data);
 		},
+		addUserDepartment(state, action: PayloadAction<{ data: number[]; departmentId: string }>) {
+			state.data = state.data.map((it) =>
+				action.payload.data.includes(it.id) ? { ...it, departmentsIds: [...(it?.departmentsIds || []), action.payload.departmentId] } : it,
+			);
+		},
+		removeUserDepartment(state, action: PayloadAction<{ data: number[]; departmentId: string }>) {
+			state.data = state.data.map((it) =>
+				action.payload.data.includes(it.id)
+					? { ...it, departmentsIds: it.departmentsIds.filter((departmentId) => departmentId !== action.payload.departmentId) }
+					: it,
+			);
+		},
 	},
 	extraReducers: {
 		[fetchUsers.fulfilled.type]: (state, action: PayloadAction<IUser[]>) => {
