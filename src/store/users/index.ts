@@ -49,12 +49,12 @@ export const usersSlice = createSlice({
 			});
 			// UsersCache.setData(state.data);
 		},
-		addUserDepartment(state, action: PayloadAction<{ data: number[]; departmentId: string }>) {
+		addDepartmentToUsers(state, action: PayloadAction<{ data: number[]; departmentId: string }>) {
 			state.data = state.data.map((it) =>
 				action.payload.data.includes(it.id) ? { ...it, departmentsIds: [...(it?.departmentsIds || []), action.payload.departmentId] } : it,
 			);
 		},
-		removeUserDepartment(state, action: PayloadAction<{ data: number[]; departmentId: string }>) {
+		removeDepartmentFromUsers(state, action: PayloadAction<{ data: number[]; departmentId: string }>) {
 			state.data = state.data.map((it) =>
 				action.payload.data.includes(it.id)
 					? { ...it, departmentsIds: it.departmentsIds.filter((departmentId) => departmentId !== action.payload.departmentId) }
@@ -204,6 +204,6 @@ export const usersSlice = createSlice({
 	},
 });
 
-export const { addUserRoleFromTable, addUserDepartment, removeUserDepartment, deleteUserRoleFromTable } = usersSlice.actions;
+export const { addUserRoleFromTable, addDepartmentToUsers, removeDepartmentFromUsers, deleteUserRoleFromTable } = usersSlice.actions;
 
 export default usersSlice.reducer;
