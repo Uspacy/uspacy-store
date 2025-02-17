@@ -204,4 +204,6 @@ export const usersSlice = createSlice({
 	},
 });
 
+export const { addUserRoleFromTable, addUserDepartment, removeUserDepartment, deleteUserRoleFromTable } = usersSlice.actions;
+
 export default usersSlice.reducer;
