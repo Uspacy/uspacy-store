@@ -1,32 +1,38 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ECalendarAccountStatuses, ICalendar, ICalendarsAccount, ICalendarsAccounts } from '@uspacy/sdk/lib/models/calendars';
 import { IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { IFilter, ITaskFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { ITask, ITasks } from '@uspacy/sdk/lib/models/crm-tasks';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IField } from '@uspacy/sdk/lib/models/field';
+import {
+	EServicesAccountStatuses,
+	ICalendar,
+	IIntegrationCalendar,
+	IOAuthServicesAccounts,
+	ISaveAccountResponse,
+} from '@uspacy/sdk/lib/models/oauthIntegrations';
 
 import { getField } from '../../helpers/filterFieldsArrs';
 import { idColumn, OTHER_DEFAULT_FIELDS } from './../../const';
 import {
-	activateGoogleCalendarsSync,
+	activateServicesAccountSync,
 	createTask,
-	deleteCalendarsAccount,
+	deleteServicesAccount,
 	deleteTaskById,
 	editTask,
 	fetchTaskById,
 	fetchTasks,
 	fetchTasksWithFilters,
-	getCalendarsAccounts,
-	getGoogleCalendars,
-	getOAuth2CalendarRedirectUrl,
+	getCalendars,
+	getOAuthRedirectUrl,
+	getOauthServicesAccounts,
 	massTasksDeletion,
 	massTasksEditing,
-	saveCalendarSettings,
-	startCalendarsSync,
-	startInitialGoogleCalendarsSync,
-	stopGoogleCalendarsSync,
+	saveCalendarsSettings,
+	startInitialServicesAccountSync,
+	startServicesAccountSync,
+	stopServicesAccountSync,
 } from './actions';
 import { IState } from './types';
 
@@ -303,21 +309,21 @@ const initialState = {
 	},
 	taskFilter: {},
 	taskFiltersPreset: initialTasksFilterPreset,
-	redirectGoogleOauthUrl: '',
-	calendarsAccounts: {},
+	redirectOauthUrl: '',
+	servicesAccounts: {},
 	calendars: [],
-	isSuccessCalendarSync: false,
+	isSuccessServicesAccountSync: false,
 	errorMessage: '',
-	errorLoadingGoogleOauthRedirectUrl: null,
-	errorLoadingCalendarsAccounts: null,
+	errorLoadingOauthRedirectUrl: null,
+	errorLoadingServicesAccounts: null,
+	errorLoadingDeleteServicesAccounts: null,
 	errorLoadingCalendars: null,
-	errorLoadingSaveCalendarSettings: null,
 	loading: false,
 	loadingTaskList: true,
-	loadingGoogleOauthRedirectUrl: false,
-	loadingCalendarsAccounts: false,
+	loadingOauthRedirectUrl: false,
+	loadingSevicesAccounts: false,
+	loadingDeleteServicesAccounts: false,
 	loadingCalendars: false,
-	loadingCalendarSync: false,
 	isCreateTaskModalOpened: false,
 	isTaskViewModalOpened: false,
 	isCopy: false,
@@ -440,11 +446,11 @@ const crmTasksReducer = createSlice({
 				...OTHER_DEFAULT_FIELDS,
 			};
 		},
-		setRedirectGoogleOauthUrl: (state, action: PayloadAction<string>) => {
-			state.redirectGoogleOauthUrl = action.payload;
+		setRedirectOauthUrl: (state, action: PayloadAction<string>) => {
+			state.redirectOauthUrl = action.payload;
 		},
-		setIsSuccessCalendarSync: (state, action: PayloadAction<boolean>) => {
-			state.isSuccessCalendarSync = action.payload;
+		setIsSuccessServicesAccountSync: (state, action: PayloadAction<boolean>) => {
+			state.isSuccessServicesAccountSync = action.payload;
 		},
 	},
 
@@ -611,149 +617,225 @@ const crmTasksReducer = createSlice({
 			state.loadingTaskList = false;
 			state.errorMessage = action.payload;
 		},
-		[getOAuth2CalendarRedirectUrl.fulfilled.type]: (state, action: PayloadAction<{ url: string }>) => {
-			state.loadingGoogleOauthRedirectUrl = false;
-			state.errorLoadingGoogleOauthRedirectUrl = null;
-			state.redirectGoogleOauthUrl = action.payload.url;
+		[getOAuthRedirectUrl.fulfilled.type]: (state, action: PayloadAction<{ url: string }>) => {
+			state.loadingOauthRedirectUrl = false;
+			state.errorLoadingOauthRedirectUrl = null;
+			state.redirectOauthUrl = action.payload.url;
 		},
-		[getOAuth2CalendarRedirectUrl.pending.type]: (state) => {
-			state.loadingGoogleOauthRedirectUrl = true;
-			state.errorLoadingGoogleOauthRedirectUrl = null;
+		[getOAuthRedirectUrl.pending.type]: (state) => {
+			state.loadingOauthRedirectUrl = true;
+			state.errorLoadingOauthRedirectUrl = null;
 		},
-		[getOAuth2CalendarRedirectUrl.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingGoogleOauthRedirectUrl = false;
-			state.errorLoadingGoogleOauthRedirectUrl = action.payload;
+		[getOAuthRedirectUrl.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingOauthRedirectUrl = false;
+			state.errorLoadingOauthRedirectUrl = action.payload;
 		},
-		[getCalendarsAccounts.fulfilled.type]: (state, action: PayloadAction<ICalendarsAccounts>) => {
-			state.loadingCalendarsAccounts = false;
-			state.errorLoadingCalendarsAccounts = null;
-			state.calendarsAccounts = action.payload;
+		[getOauthServicesAccounts.fulfilled.type]: (state, action: PayloadAction<IOAuthServicesAccounts>) => {
+			state.loadingSevicesAccounts = false;
+			state.servicesAccounts = action.payload;
+			state.errorLoadingServicesAccounts = null;
 		},
-		[getCalendarsAccounts.pending.type]: (state) => {
-			state.loadingCalendarsAccounts = true;
-			state.errorLoadingCalendarsAccounts = null;
+		[getOauthServicesAccounts.pending.type]: (state) => {
+			state.loadingSevicesAccounts = true;
+			state.errorLoadingServicesAccounts = null;
 		},
-		[getCalendarsAccounts.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingCalendarsAccounts = false;
-			state.errorLoadingCalendarsAccounts = action.payload;
+		[getOauthServicesAccounts.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingSevicesAccounts = false;
+			state.errorLoadingServicesAccounts = action.payload;
 		},
-		[deleteCalendarsAccount.fulfilled.type]: (state, action: PayloadAction<number>) => {
-			state.loadingDeleteCalendarsAccounts = false;
-			state.errorLoadingDeleteCalendarsAccounts = null;
-			state.calendarsAccounts.data = state.calendarsAccounts.data.filter((item) => item.id !== action.payload);
+		[deleteServicesAccount.fulfilled.type]: (
+			state,
+			action: PayloadAction<number, string, { arg: { providerId: number; integrationId: number } }>,
+		) => {
+			state.loadingDeleteServicesAccounts = false;
+			state.errorLoadingDeleteServicesAccounts = null;
+			state.servicesAccounts.data = state.servicesAccounts.data.filter((serviceAccount) => {
+				if (serviceAccount.id === action.meta.arg.providerId) {
+					const updatedIntegrations = serviceAccount.integrations.filter((integration) => integration.id !== action.meta.arg.integrationId);
+
+					if (updatedIntegrations.length > 1) return { ...serviceAccount, integrations: updatedIntegrations };
+					return false;
+				}
+				return true;
+			});
 		},
-		[deleteCalendarsAccount.pending.type]: (state) => {
-			state.loadingDeleteCalendarsAccounts = true;
-			state.errorLoadingDeleteCalendarsAccounts = null;
+		[deleteServicesAccount.pending.type]: (state) => {
+			state.loadingDeleteServicesAccounts = true;
+			state.errorLoadingDeleteServicesAccounts = null;
 		},
-		[deleteCalendarsAccount.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingDeleteCalendarsAccounts = false;
-			state.errorLoadingDeleteCalendarsAccounts = action.payload;
+		[deleteServicesAccount.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDeleteServicesAccounts = false;
+			state.errorLoadingDeleteServicesAccounts = action.payload;
 		},
-		[getGoogleCalendars.fulfilled.type]: (state, action: PayloadAction<ICalendar[]>) => {
+		[getCalendars.fulfilled.type]: (state, action: PayloadAction<ICalendar[]>) => {
 			state.loadingCalendars = false;
 			state.errorLoadingCalendars = null;
 			state.calendars = action.payload;
 		},
-		[getGoogleCalendars.pending.type]: (state) => {
+		[getCalendars.pending.type]: (state) => {
 			state.loadingCalendars = true;
 			state.errorLoadingCalendars = null;
 		},
-		[getGoogleCalendars.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[getCalendars.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingCalendars = false;
 			state.errorLoadingCalendars = action.payload;
 		},
-		[saveCalendarSettings.fulfilled.type]: (state, action: PayloadAction<ICalendarsAccount>) => {
-			state.loadingSaveCalendarSettings = false;
-			state.errorLoadingSaveCalendarSettings = null;
-			state.calendarsAccounts.data = state.calendarsAccounts.data.map((calendarAccount) => {
-				if (calendarAccount.id === action.payload.id) {
-					return { ...calendarAccount, ...action.payload };
+		[saveCalendarsSettings.fulfilled.type]: (state, action: PayloadAction<ISaveAccountResponse>) => {
+			state.loadingSaveServicesAccoutSettings = false;
+			state.errorLoadingSaveServicesAccoutSettings = null;
+			state.servicesAccounts.data = state.servicesAccounts.data.map((serviceAccount) => {
+				if (serviceAccount.id === action.payload.data.integration.account_id) {
+					return {
+						...serviceAccount,
+						integrations: serviceAccount.integrations.map((integration) => {
+							if (integration.id === action.payload.data.integration.id) {
+								const calendars = [
+									Object.keys(action.payload.data || {})
+										.filter((key) => key !== 'integration')
+										.reduce((acc, key) => {
+											acc[key] = action.payload.data[key];
+											return acc;
+										}, {}),
+								] as IIntegrationCalendar[];
+								return {
+									...integration,
+									calendars,
+								};
+							}
+							return integration;
+						}),
+					};
 				}
-				return calendarAccount;
+				return serviceAccount;
 			});
 		},
-		[saveCalendarSettings.pending.type]: (state) => {
-			state.loadingSaveCalendarSettings = true;
-			state.errorLoadingSaveCalendarSettings = null;
+		[saveCalendarsSettings.pending.type]: (state) => {
+			state.loadingSaveServicesAccoutSettings = true;
+			state.errorLoadingSaveServicesAccoutSettings = null;
 		},
-		[saveCalendarSettings.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingSaveCalendarSettings = false;
-			state.errorLoadingSaveCalendarSettings = action.payload;
+		[saveCalendarsSettings.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingSaveServicesAccoutSettings = false;
+			state.errorLoadingSaveServicesAccoutSettings = action.payload;
 		},
-		[startInitialGoogleCalendarsSync.fulfilled.type]: (state, action: PayloadAction<number>) => {
-			state.loadingCalendarSync = false;
-			state.errorLoadingCalendarSync = null;
-			state.isSuccessCalendarSync = true;
-			state.calendarsAccounts.data = state.calendarsAccounts.data.map((calendarAccount) => {
-				if (calendarAccount.id === action.payload) {
-					return { ...calendarAccount, status: ECalendarAccountStatuses.RUN };
+		[startInitialServicesAccountSync.fulfilled.type]: (
+			state,
+			action: PayloadAction<number, string, { arg: { providerId: number; integrationId: number } }>,
+		) => {
+			state.loadingServicesAccountSync = false;
+			state.errorLoadingServicesAccountSync = null;
+			state.isSuccessServicesAccountSync = true;
+			state.servicesAccounts.data = state.servicesAccounts.data.map((serviceAccount) => {
+				if (serviceAccount.id === action.meta.arg.providerId) {
+					return {
+						...serviceAccount,
+						integrations: serviceAccount.integrations.map((integration) => {
+							if (integration.id === action.meta.arg.integrationId) {
+								return { ...integration, status: EServicesAccountStatuses.RUN };
+							}
+							return integration;
+						}),
+					};
 				}
-				return calendarAccount;
+				return serviceAccount;
 			});
 		},
-		[startInitialGoogleCalendarsSync.pending.type]: (state) => {
-			state.loadingCalendarSync = true;
-			state.errorLoadingCalendarSync = null;
+		[startInitialServicesAccountSync.pending.type]: (state) => {
+			state.loadingServicesAccountSync = true;
+			state.errorLoadingServicesAccountSync = null;
 		},
-		[startInitialGoogleCalendarsSync.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingCalendarSync = false;
-			state.errorLoadingCalendarSync = action.payload;
+		[startInitialServicesAccountSync.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingServicesAccountSync = false;
+			state.errorLoadingServicesAccountSync = action.payload;
 		},
-		[startCalendarsSync.fulfilled.type]: (state, action: PayloadAction<number>) => {
-			state.loadingCalendarSync = false;
-			state.errorLoadingCalendarSync = null;
-			state.isSuccessCalendarSync = true;
-			state.calendarsAccounts.data = state.calendarsAccounts.data.map((calendarAccount) => {
-				if (calendarAccount.id === action.payload) {
-					return { ...calendarAccount, status: ECalendarAccountStatuses.RUN };
+		[startServicesAccountSync.fulfilled.type]: (
+			state,
+			action: PayloadAction<number, string, { arg: { providerId: number; integrationId: number } }>,
+		) => {
+			state.loadingServicesAccountSync = false;
+			state.errorLoadingServicesAccountSync = null;
+			state.isSuccessServicesAccountSync = true;
+			state.servicesAccounts.data = state.servicesAccounts.data.map((serviceAccount) => {
+				if (serviceAccount.id === action.meta.arg.providerId) {
+					return {
+						...serviceAccount,
+						integrations: serviceAccount.integrations.map((integration) => {
+							if (integration.id === action.meta.arg.integrationId) {
+								return { ...integration, status: EServicesAccountStatuses.RUN };
+							}
+							return integration;
+						}),
+					};
 				}
-				return calendarAccount;
+				return serviceAccount;
 			});
 		},
-		[startCalendarsSync.pending.type]: (state) => {
-			state.loadingCalendarSync = true;
-			state.errorLoadingCalendarSync = null;
+		[startServicesAccountSync.pending.type]: (state) => {
+			state.loadingServicesAccountSync = true;
+			state.errorLoadingServicesAccountSync = null;
 		},
-		[startCalendarsSync.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingCalendarSync = false;
-			state.errorLoadingCalendarSync = action.payload;
+		[startServicesAccountSync.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingServicesAccountSync = false;
+			state.errorLoadingServicesAccountSync = action.payload;
 		},
-		[stopGoogleCalendarsSync.fulfilled.type]: (state, action: PayloadAction<number>) => {
-			state.loadingCalendarSync = false;
-			state.errorLoadingCalendarSync = null;
-			state.calendarsAccounts.data = state.calendarsAccounts.data.map((calendarAccount) => {
-				if (calendarAccount.id === action.payload) {
-					return { ...calendarAccount, active: false, status: ECalendarAccountStatuses.STOPPED };
+		[stopServicesAccountSync.fulfilled.type]: (
+			state,
+			action: PayloadAction<number, string, { arg: { providerId: number; integrationId: number } }>,
+		) => {
+			state.loadingServicesAccountSync = false;
+			state.errorLoadingServicesAccountSync = null;
+			state.isSuccessServicesAccountSync = true;
+			state.servicesAccounts.data = state.servicesAccounts.data.map((serviceAccount) => {
+				if (serviceAccount.id === action.meta.arg.providerId) {
+					return {
+						...serviceAccount,
+						integrations: serviceAccount.integrations.map((integration) => {
+							if (integration.id === action.meta.arg.integrationId) {
+								return { ...integration, status: EServicesAccountStatuses.STOPPED };
+							}
+							return integration;
+						}),
+					};
 				}
-				return calendarAccount;
+				return serviceAccount;
 			});
 		},
-		[stopGoogleCalendarsSync.pending.type]: (state) => {
-			state.loadingCalendarSync = true;
-			state.errorLoadingCalendarSync = null;
+		[stopServicesAccountSync.pending.type]: (state) => {
+			state.loadingServicesAccountSync = true;
+			state.errorLoadingServicesAccountSync = null;
 		},
-		[stopGoogleCalendarsSync.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingCalendarSync = false;
-			state.errorLoadingCalendarSync = action.payload;
+		[stopServicesAccountSync.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingServicesAccountSync = false;
+			state.errorLoadingServicesAccountSync = action.payload;
 		},
-		[activateGoogleCalendarsSync.fulfilled.type]: (state, action: PayloadAction<number>) => {
-			state.loadingCalendarSync = false;
-			state.errorLoadingCalendarSync = null;
-			state.calendarsAccounts.data = state.calendarsAccounts.data.map((calendarAccount) => {
-				if (calendarAccount.id === action.payload) {
-					return { ...calendarAccount, active: true, status: ECalendarAccountStatuses.STARTED };
+		[activateServicesAccountSync.fulfilled.type]: (
+			state,
+			action: PayloadAction<number, string, { arg: { providerId: number; integrationId: number } }>,
+		) => {
+			state.loadingServicesAccountSync = false;
+			state.errorLoadingServicesAccountSync = null;
+			state.isSuccessServicesAccountSync = true;
+			state.servicesAccounts.data = state.servicesAccounts.data.map((serviceAccount) => {
+				if (serviceAccount.id === action.meta.arg.providerId) {
+					return {
+						...serviceAccount,
+						integrations: serviceAccount.integrations.map((integration) => {
+							if (integration.id === action.meta.arg.integrationId) {
+								return { ...integration, status: EServicesAccountStatuses.STARTED };
+							}
+							return integration;
+						}),
+					};
 				}
-				return calendarAccount;
+				return serviceAccount;
 			});
 		},
-		[activateGoogleCalendarsSync.pending.type]: (state) => {
-			state.loadingCalendarSync = true;
-			state.errorLoadingCalendarSync = null;
+		[activateServicesAccountSync.pending.type]: (state) => {
+			state.loadingServicesAccountSync = true;
+			state.errorLoadingServicesAccountSync = null;
 		},
-		[activateGoogleCalendarsSync.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingCalendarSync = false;
-			state.errorLoadingCalendarSync = action.payload;
+		[activateServicesAccountSync.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingServicesAccountSync = false;
+			state.errorLoadingServicesAccountSync = action.payload;
 		},
 	},
 });
@@ -781,7 +863,7 @@ export const {
 	setCurrentPreset,
 	setStandardPreset,
 	setFilterPresets,
-	setRedirectGoogleOauthUrl,
-	setIsSuccessCalendarSync,
+	setRedirectOauthUrl,
+	setIsSuccessServicesAccountSync,
 } = crmTasksReducer.actions;
 export default crmTasksReducer.reducer;
