@@ -239,12 +239,20 @@ const rolesReducer = createSlice({
 				}
 			} else {
 				// Update all permissions related to goalForClean
-				newPermissions.create = [
-					...permissionState.create.filter((item) => !item.includes(goalForClean)),
-					`${goalForClean}.create.mine.disabled-any`,
-					`${goalForClean}.create.department.disabled-any`,
-					`${goalForClean}.create.${permissionKey}`,
-				].filter((item) => ![`${goalForClean}.create.mine`, `${goalForClean}.create.department`].includes(item));
+
+				if (goalForClean !== 'crm.uspacy_calls') {
+					newPermissions.create = [
+						...permissionState.create.filter((item) => !item.includes(goalForClean)),
+						`${goalForClean}.create.mine.disabled-any`,
+						`${goalForClean}.create.department.disabled-any`,
+						`${goalForClean}.create.${permissionKey}`,
+					].filter((item) => ![`${goalForClean}.create.mine`, `${goalForClean}.create.department`].includes(item));
+
+					newPermissions.delete = [
+						...permissionState.delete.filter((item) => !item.includes(goalForClean)),
+						`${goalForClean}.delete.${permissionKey}`,
+					];
+				}
 
 				newPermissions.edit = [
 					...permissionState.edit.filter((item) => !item.includes(goalForClean)),
@@ -254,11 +262,6 @@ const rolesReducer = createSlice({
 				newPermissions.view = [
 					...permissionState.view.filter((item) => !item.includes(goalForClean)),
 					`${goalForClean}.view.${permissionKey}`,
-				];
-
-				newPermissions.delete = [
-					...permissionState.delete.filter((item) => !item.includes(goalForClean)),
-					`${goalForClean}.delete.${permissionKey}`,
 				];
 			}
 
