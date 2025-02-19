@@ -62,7 +62,7 @@ const prepareMessages = (items: IPreparedMessage[], profile: IUser) => {
 			Array.isArray(message.readBy) &&
 			message.authorId !== profile.authUserId &&
 			!message.readBy.includes(profile.authUserId) &&
-			(nextMessage?.readBy?.includes(profile.authUserId) || nextMessage?.authorId === profile.authUserId);
+			(nextMessage?.readBy?.includes(profile.authUserId) || nextMessage?.authorId === profile.authUserId || !nextMessage);
 
 		if (isFirstUnread && !origin.find((it) => it.isFirstUnread)) {
 			return [
@@ -249,7 +249,7 @@ export const chatSlice = createSlice({
 					return {
 						...chat,
 						unreadMentions,
-						lastMessage: lastMessage.message !== unreadMessagesValue ? lastMessage : messageBeforeAfter,
+						lastMessage: lastMessage?.message !== unreadMessagesValue ? lastMessage : messageBeforeAfter,
 						...(LMinMaIdrH && { unreadCount: chat.unreadCount - 1 }),
 					};
 				}
