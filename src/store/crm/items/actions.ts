@@ -303,6 +303,19 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 					const res = await uspacySdk.crmTasksService.getTasksWithFilters(params);
 					return res?.data;
 				}
+				case 'deals': {
+					const tasksArray = (
+						Array.isArray(filters?.['time_label_tasks']) ? filters?.['time_label_tasks'] : [filters['time_label_task']]
+					).filter(Boolean);
+					const noTasks = typeof filters?.['time_label_tasks'] !== 'undefined' && tasksArray?.includes('noBusiness');
+					const dealsParams = {
+						...params,
+						...(noTasks ? { tasks: '' } : {}),
+					};
+
+					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, dealsParams, stageId);
+					return res?.data;
+				}
 				default: {
 					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, params, stageId);
 					return res?.data;
