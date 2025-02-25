@@ -65,6 +65,25 @@ export const fetchEntityItems = createAsyncThunk(
 					const res = await uspacySdk.crmTasksService.getTasksWithFilters(rest);
 					return res?.data;
 				}
+				case 'deals': {
+					const tasksArray = (
+						Array.isArray(filters?.['time_label_tasks']) ? filters?.['time_label_tasks'] : [filters['time_label_task']]
+					).filter(Boolean);
+					const noTasks = typeof filters?.['time_label_tasks'] !== 'undefined' && tasksArray?.includes('noBusiness');
+					const dealsParams = {
+						...params,
+						...(noTasks ? { tasks: '' } : {}),
+					};
+
+					const res = await uspacySdk.crmEntitiesService.getEntityItemsWithFilters(
+						entityCode,
+						dealsParams,
+						signal,
+						String(parentEntityId),
+						parentEntityCode,
+					);
+					return res?.data;
+				}
 				default: {
 					const res = await uspacySdk.crmEntitiesService.getEntityItemsWithFilters(
 						entityCode,
