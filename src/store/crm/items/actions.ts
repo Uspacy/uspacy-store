@@ -7,7 +7,7 @@ import { IProduct } from '@uspacy/sdk/lib/models/crm-products';
 import { IField } from '@uspacy/sdk/lib/models/field';
 import { IMoveCardsData } from 'src/store/crmEntities/types';
 
-import { getFilterParams } from '../../../helpers/filterFieldsArrs';
+import { getDealsParams, getFilterParams } from '../../../helpers/filterFieldsArrs';
 import { normalizeCategories, normalizeProduct, normalizeProductForView } from '../../../helpers/normalizeProduct';
 
 export const fetchEntityItems = createAsyncThunk(
@@ -66,14 +66,7 @@ export const fetchEntityItems = createAsyncThunk(
 					return res?.data;
 				}
 				case 'deals': {
-					const tasksArray = (
-						Array.isArray(filters?.['time_label_tasks']) ? filters?.['time_label_tasks'] : [filters['time_label_task']]
-					).filter(Boolean);
-					const noTasks = typeof filters?.['time_label_tasks'] !== 'undefined' && tasksArray?.includes('noBusiness');
-					const dealsParams = {
-						...params,
-						...(noTasks ? { tasks: '' } : {}),
-					};
+					const dealsParams = getDealsParams(filters, params);
 
 					const res = await uspacySdk.crmEntitiesService.getEntityItemsWithFilters(
 						entityCode,
@@ -283,14 +276,7 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 					return res?.data;
 				}
 				case 'deals': {
-					const tasksArray = (
-						Array.isArray(filters?.['time_label_tasks']) ? filters?.['time_label_tasks'] : [filters['time_label_task']]
-					).filter(Boolean);
-					const noTasks = typeof filters?.['time_label_tasks'] !== 'undefined' && tasksArray?.includes('noBusiness');
-					const dealsParams = {
-						...params,
-						...(noTasks ? { tasks: '' } : {}),
-					};
+					const dealsParams = getDealsParams(filters, params);
 
 					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, dealsParams, stageId);
 					return res?.data;

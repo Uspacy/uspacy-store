@@ -235,3 +235,14 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			return { ...acc, [key]: value };
 		}, {});
 };
+
+export const getDealsParams = (filters: object, params: object) => {
+	const tasksArray = (Array.isArray(filters?.['time_label_tasks']) ? filters?.['time_label_tasks'] : [filters['time_label_task']]).filter(Boolean);
+	const noTasks = typeof filters?.['time_label_tasks'] !== 'undefined' && tasksArray?.includes('noBusiness');
+	const dealsParams = {
+		...params,
+		...(noTasks ? { tasks: '' } : {}),
+	};
+
+	return dealsParams;
+};
