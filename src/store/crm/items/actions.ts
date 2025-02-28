@@ -7,7 +7,7 @@ import { IProduct } from '@uspacy/sdk/lib/models/crm-products';
 import { IField } from '@uspacy/sdk/lib/models/field';
 import { IMoveCardsData } from 'src/store/crmEntities/types';
 
-import { getFilterParams } from '../../../helpers/filterFieldsArrs';
+import { getDealsParams, getFilterParams } from '../../../helpers/filterFieldsArrs';
 import { normalizeCategories, normalizeProduct, normalizeProductForView } from '../../../helpers/normalizeProduct';
 
 export const fetchEntityItems = createAsyncThunk(
@@ -63,6 +63,18 @@ export const fetchEntityItems = createAsyncThunk(
 					// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
 					const { table_fields: tableFields, ...rest } = params as any;
 					const res = await uspacySdk.crmTasksService.getTasksWithFilters(rest);
+					return res?.data;
+				}
+				case 'deals': {
+					const dealsParams = getDealsParams(filters, params);
+
+					const res = await uspacySdk.crmEntitiesService.getEntityItemsWithFilters(
+						entityCode,
+						dealsParams,
+						signal,
+						String(parentEntityId),
+						parentEntityCode,
+					);
 					return res?.data;
 				}
 				default: {
@@ -261,6 +273,12 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 			switch (entityCode) {
 				case 'tasks': {
 					const res = await uspacySdk.crmTasksService.getTasksWithFilters(params);
+					return res?.data;
+				}
+				case 'deals': {
+					const dealsParams = getDealsParams(filters, params);
+
+					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, dealsParams, stageId);
 					return res?.data;
 				}
 				default: {
