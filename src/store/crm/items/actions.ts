@@ -235,6 +235,14 @@ export const massItemsDeletion = createAsyncThunk(
 						params: all && params?.length ? params : undefined,
 					});
 				}
+				case 'products': {
+					return await uspacySdk.crmProductsService.massProductsDeletion({
+						all,
+						entityIds,
+						exceptIds,
+						params: all && params?.length ? params : undefined,
+					});
+				}
 				default: {
 					return await uspacySdk.crmEntitiesService.massEntityItemsDeletion(entityCode, {
 						all,
