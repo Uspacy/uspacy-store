@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IField, IFields } from '@uspacy/sdk/lib/models/field';
+import { IField } from '@uspacy/sdk/lib/models/field';
 import { ICountryTemplates, IRequisite, IRequisitesResponse, ITemplate, ITemplateResponse } from '@uspacy/sdk/lib/models/requisites';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
@@ -45,7 +45,7 @@ const initialState: IState = {
 		update: false,
 		delete: false,
 	},
-	fields: { data: [] },
+	fields: [],
 	errorLoading: null,
 };
 
@@ -83,7 +83,7 @@ export const profileSlice = createSlice({
 			state.currentRequestId = undefined;
 		},
 
-		[fetchProfileFields.fulfilled.type]: (state, action: PayloadAction<IFields>) => {
+		[fetchProfileFields.fulfilled.type]: (state, action: PayloadAction<IField[]>) => {
 			state.loadingFields.get = false;
 			state.fields = action.payload;
 		},
@@ -95,7 +95,7 @@ export const profileSlice = createSlice({
 		},
 		[updateProfileField.pending.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
 			const updateField = action.meta.arg;
-			state.fields.data = state.fields.data.map((field) => {
+			state.fields = state.fields.map((field) => {
 				if (field.code === updateField.code) {
 					return { ...updateField, values: updateField?.values || field?.values };
 				}
@@ -104,11 +104,11 @@ export const profileSlice = createSlice({
 		},
 		[createProfileField.pending.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
 			const newField = action.meta.arg;
-			state.fields.data.push(newField);
+			state.fields.push(newField);
 		},
 		[updateProfileListValues.pending.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
 			const updateField = action.meta.arg;
-			state.fields.data = state.fields.data.map((field) => {
+			state.fields = state.fields.map((field) => {
 				if (field.code === updateField.code) {
 					return { ...field, values: updateField?.values || field?.values };
 				}
@@ -116,7 +116,7 @@ export const profileSlice = createSlice({
 			});
 		},
 		[deleteProfileListValues.pending.type]: (state, action: PayloadAction<string, string, { arg: { fieldCode: string; value: string } }>) => {
-			state.fields.data = state.fields.data.map((field) => {
+			state.fields = state.fields.map((field) => {
 				if (field.code === action.meta.arg.fieldCode) {
 					field.values = field.values.filter((value) => value.value !== action.meta.arg.value);
 				}
@@ -124,7 +124,7 @@ export const profileSlice = createSlice({
 			});
 		},
 		[deleteProfileField.pending.type]: (state, action: PayloadAction<string, string, { arg: string }>) => {
-			state.fields.data = state.fields.data.filter((field) => field.code !== action.meta.arg);
+			state.fields = state.fields.filter((field) => field.code !== action.meta.arg);
 		},
 
 		[fetchRequisites.fulfilled.type]: (state: IState, action: PayloadAction<IRequisitesResponse>) => {

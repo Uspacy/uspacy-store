@@ -87,12 +87,9 @@ export const removeTemplate = createAsyncThunk('crm/removeTemplate', async (id: 
 
 export const fetchProfileFields = createAsyncThunk('profile/fetchProfileFields', async (_, thunkAPI) => {
 	try {
-		console.log('initial');
 		const res = await uspacySdk.profileService.getProfileFields();
-		console.log(res, 'res');
 		return res?.data;
 	} catch (e) {
-		console.log(e, 'e');
 		return thunkAPI.rejectWithValue(e);
 	}
 });

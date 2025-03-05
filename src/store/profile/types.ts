@@ -1,5 +1,5 @@
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IFields } from '@uspacy/sdk/lib/models/field';
+import { IField } from '@uspacy/sdk/lib/models/field';
 import { ICountryTemplates, IRequisite, ITemplate } from '@uspacy/sdk/lib/models/requisites';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
@@ -24,7 +24,7 @@ export interface IState {
 		update: boolean;
 		delete: boolean;
 	};
-	fields: IFields;
+	fields: IField[];
 	errorLoading: IErrorsAxiosResponse;
 	currentRequestId?: string;
 	requisites?: IRequisite[];
