@@ -90,7 +90,7 @@ export const fetchProfileFields = createAsyncThunk('profile/fetchProfileFields',
 		const res = await uspacySdk.profileService.getProfileFields();
 		return res?.data;
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
+		return thunkAPI.rejectWithValue(e);
 	}
 });
 
@@ -99,7 +99,7 @@ export const updateProfileField = createAsyncThunk('profile/updateProfileField',
 		const res = await uspacySdk.profileService.updateProfileField(data.code, data);
 		return res?.data;
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
+		return thunkAPI.rejectWithValue(e);
 	}
 });
 
@@ -108,7 +108,7 @@ export const updateProfileListValues = createAsyncThunk('profile/updateProfileLi
 		const res = await uspacySdk.profileService.updateProfileListValues(data.code, data.values);
 		return { ...data, values: res?.data };
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
+		return thunkAPI.rejectWithValue(e);
 	}
 });
 
@@ -117,7 +117,7 @@ export const createProfileField = createAsyncThunk('profile/createProfileField',
 		const res = await uspacySdk.profileService.createProfileField(data);
 		return res?.data;
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
+		return thunkAPI.rejectWithValue(e);
 	}
 });
 
@@ -128,7 +128,7 @@ export const deleteProfileListValues = createAsyncThunk(
 			await uspacySdk.profileService.deleteProfileListValues(fieldCode, value);
 			return { value, fieldCode };
 		} catch (e) {
-			return thunkAPI.rejectWithValue('Failure');
+			return thunkAPI.rejectWithValue(e);
 		}
 	},
 );
@@ -138,6 +138,6 @@ export const deleteProfileField = createAsyncThunk('profile/deleteProfileField',
 		await uspacySdk.profileService.deleteProfileField(code);
 		return code;
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
+		return thunkAPI.rejectWithValue(e);
 	}
 });
