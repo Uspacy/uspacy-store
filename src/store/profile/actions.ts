@@ -108,7 +108,7 @@ export const updateProfileField = createAsyncThunk('profile/updateProfileField',
 
 export const updateProfileListValues = createAsyncThunk('profile/updateProfileListValues', async (data: IField, thunkAPI) => {
 	try {
-		const res = await uspacySdk.profileService.updateProfileListValues(data.code, data.values);
+		const res = await uspacySdk.profileService.updateProfileListValues(data);
 		return { ...data, values: res?.data };
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
