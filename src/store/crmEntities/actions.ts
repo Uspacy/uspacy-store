@@ -78,8 +78,7 @@ export const updateFieldForUniversalEntity = createAsyncThunk(
 	'entities/updateFieldForUniversalEntity',
 	async ({ data, entityCode }: { data: IField; entityCode: string }, thunkAPI) => {
 		try {
-			const { code, ...rest } = data;
-			const res = await uspacySdk.crmEntitiesService.updateEntityField(entityCode, code, rest as any);
+			const res = await uspacySdk.crmEntitiesService.updateEntityField(entityCode, data);
 			return { response: res?.data, entityCode };
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
@@ -91,10 +90,9 @@ export const updateListValuesForUniversalEntity = createAsyncThunk(
 	'entities/updateListValuesForUniversalEntity',
 	async ({ data, entityCode }: { data: IField; entityCode: string }, thunkAPI) => {
 		try {
-			const { code, values } = data;
-			const res = await uspacySdk.crmEntitiesService.updateEntityListValues(entityCode, code, values);
+			const res = await uspacySdk.crmEntitiesService.updateEntityListValues(entityCode, data);
 
-			return { code, values: res?.data, entityCode };
+			return { code: data?.code, values: res?.data, entityCode };
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
 		}
