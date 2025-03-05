@@ -219,7 +219,7 @@ export const profileSlice = createSlice({
 		[fetchProfileFields.pending.type]: (state) => {
 			state.loadingFields.get = true;
 		},
-		[fetchProfileFields.rejected.type]: (state, action: PayloadAction<string>) => {
+		[fetchProfileFields.rejected.type]: (state) => {
 			state.loadingFields.get = false;
 		},
 		[updateProfileField.pending.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
