@@ -93,8 +93,8 @@ export const profileSlice = createSlice({
 		[fetchProfileFields.rejected.type]: (state) => {
 			state.loadingFields.get = false;
 		},
-		[updateProfileField.pending.type]: (state, action: PayloadAction<IField, string, { arg: { data: IField } }>) => {
-			const updateField = action.meta.arg.data;
+		[updateProfileField.pending.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
+			const updateField = action.meta.arg;
 			state.fields = state.fields.map((field) => {
 				if (field.code === updateField.code) {
 					return { ...updateField, values: updateField?.values || field?.values };
@@ -106,8 +106,8 @@ export const profileSlice = createSlice({
 			const newField = action.meta.arg;
 			state.fields.push(newField);
 		},
-		[updateProfileListValues.pending.type]: (state, action: PayloadAction<IField, string, { arg: {data: IField} }>) => {
-			const updateField = action.meta.arg.data;
+		[updateProfileListValues.pending.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
+			const updateField = action.meta.arg;
 			state.fields = state.fields.map((field) => {
 				if (field.code === updateField.code) {
 					return { ...field, values: updateField?.values || field?.values };
