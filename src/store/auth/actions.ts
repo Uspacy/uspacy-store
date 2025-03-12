@@ -2,7 +2,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IDowngradePayload } from '@uspacy/sdk/lib/services/AuthService/dto/downgrade.dto';
-import { IResponseGoogleData } from '@uspacy/sdk/lib/services/AuthService/dto/response-google-data.dto';
+import { IResponseOauthData } from '@uspacy/sdk/lib/services/AuthService/dto/response-oauth-data.dto';
 import {
 	ICreateUsingPaymentIntent,
 	IIndividualPayload,
@@ -130,7 +130,7 @@ export const downgrade = createAsyncThunk('auth/downgrade', async (data: IDowngr
 
 export const getUrlToRedirectAfterOAuth = createAsyncThunk(
 	'auth/getUrlToRedirectAfterOAuth',
-	async (body: IResponseGoogleData, { rejectWithValue }) => {
+	async (body: IResponseOauthData, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.authService.getUrlToRedirectAfterOAuth(body);
 			return res.data;

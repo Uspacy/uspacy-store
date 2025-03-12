@@ -1,5 +1,5 @@
-import { IAfterGoogleOauthResponse } from '@uspacy/sdk/lib/models/calendars';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
+import { IAfterOauthResponse } from '@uspacy/sdk/lib/models/oauthIntegrations';
 import {
 	IBill,
 	ICoupon,
@@ -20,7 +20,7 @@ export interface IState {
 	activeSubscription?: ISubscription;
 	coupon: ICoupon;
 	intent: IIntent;
-	afterGoogleOAuthData: IAfterGoogleOauthResponse;
+	afterGoogleOAuthData: IAfterOauthResponse;
 	downloadPdfLink: string;
 	loadingInvoices: boolean;
 	loadingPdfLink: boolean;
