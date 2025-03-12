@@ -74,8 +74,16 @@ const rolesReducer = createSlice({
 				case 'edit':
 					switch (targetVal) {
 						case 'mine':
+							if (['allowed', 'department'].includes(findNextVal)) {
+								state[storeKey][filteredCurrColName] = [
+									...filterArr,
+									`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
+									...(colName === 'view' && currPickPermission ? [currPickPermission] : []),
+								];
+							}
+							return;
 						case 'disabled':
-							if (['allowed', 'mine'].includes(findNextVal)) {
+							if (['allowed', 'mine', 'department'].includes(findNextVal)) {
 								state[storeKey][filteredCurrColName] = [
 									...filterArr,
 									`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
@@ -84,7 +92,7 @@ const rolesReducer = createSlice({
 							}
 							return;
 						case 'department':
-							if (['allowed', 'mine', 'department'].includes(findNextVal)) {
+							if (['allowed'].includes(findNextVal)) {
 								state[storeKey][filteredCurrColName] = [
 									...filterArr,
 									`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
