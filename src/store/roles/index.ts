@@ -75,7 +75,6 @@ const rolesReducer = createSlice({
 					switch (targetVal) {
 						case 'mine':
 						case 'disabled':
-						case 'department':
 							if (['allowed', 'mine'].includes(findNextVal)) {
 								state[storeKey][filteredCurrColName] = [
 									...filterArr,
@@ -84,6 +83,16 @@ const rolesReducer = createSlice({
 								];
 							}
 							return;
+						case 'department':
+							if (['allowed', 'mine', 'department'].includes(findNextVal)) {
+								state[storeKey][filteredCurrColName] = [
+									...filterArr,
+									`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
+									...(colName === 'view' && currPickPermission ? [currPickPermission] : []),
+								];
+							}
+							return;
+
 
 						default:
 							return;
