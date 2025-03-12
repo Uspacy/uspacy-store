@@ -52,7 +52,6 @@ const rolesReducer = createSlice({
 	initialState,
 	reducers: {
 		getNextVal(state, action) {
-			const hierarchy = ['department', 'mine', 'disabled'];
 			const { tabName, categoryName, colName, targetVal, storeKey, currPickPermission } = action.payload;
 
 			const filteredCurrColName = colName === 'view' ? 'edit' : 'delete';
@@ -77,7 +76,7 @@ const rolesReducer = createSlice({
 						case 'mine':
 						case 'disabled':
 						case 'department':
-							if (hierarchy.indexOf(findNextVal) < hierarchy.indexOf(targetVal)) {
+							if (['allowed', 'mine'].includes(findNextVal)) {
 								state[storeKey][filteredCurrColName] = [
 									...filterArr,
 									`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
