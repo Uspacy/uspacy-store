@@ -69,45 +69,20 @@ const rolesReducer = createSlice({
 				(item) => item.split('.').splice(0, 3).join('.') !== `${tabName}.${categoryName}.${filteredCurrColName}`,
 			);
 
-			switch (colName) {
-				case 'view':
-				case 'edit':
-					switch (targetVal) {
-						case 'mine':
-							if (['allowed', 'department'].includes(findNextVal)) {
-								state[storeKey][filteredCurrColName] = [
-									...filterArr,
-									`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
-									...(colName === 'view' && currPickPermission ? [currPickPermission] : []),
-								];
-							}
-							return;
-						case 'disabled':
-							if (['allowed', 'mine', 'department'].includes(findNextVal)) {
-								state[storeKey][filteredCurrColName] = [
-									...filterArr,
-									`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
-									...(colName === 'view' && currPickPermission ? [currPickPermission] : []),
-								];
-							}
-							return;
-						case 'department':
-							if (['allowed'].includes(findNextVal)) {
-								state[storeKey][filteredCurrColName] = [
-									...filterArr,
-									`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
-									...(colName === 'view' && currPickPermission ? [currPickPermission] : []),
-								];
-							}
-							return;
+			if (['view', 'edit'].includes(colName)) {
+				const validNextVal = {
+					mine: ['allowed', 'department'],
+					disabled: ['allowed', 'mine', 'department'],
+					department: ['allowed']
+				};
 
-
-						default:
-							return;
-					}
-
-				default:
-					return;
+				if (validNextVal[targetVal]?.includes(findNextVal)) {
+					state[storeKey][filteredCurrColName] = [
+						...filterArr,
+						`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
+						...(colName === 'view' && currPickPermission ? [currPickPermission] : [])
+					];
+				}
 			}
 		},
 		selectedRole(state, action) {
