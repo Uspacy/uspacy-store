@@ -1,15 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FormFieldCode, IFormField, IFormOther } from '@uspacy/forms/lib/forms/models';
+import { FormFieldCode } from '@uspacy/forms/lib/forms/models';
+import { IForm, IFormField, IFormOther, IPredefinedField } from '@uspacy/sdk/lib/models/forms';
 
-import { IForm, IState, RequireOnlyOne } from './types';
+import { getForms } from './actions';
+import { IState, RequireOnlyOne } from './types';
 
 const initialFormState: IState['form'] = {
 	name: '',
 	active: true,
-	crmEntity: 'lead',
 	config: {
+		crmEntity: 'lead',
 		fields: [],
 		other: [],
+		predefinedFields: [],
 	},
 };
 
@@ -20,6 +23,7 @@ const initialState: IState = {
 	},
 	form: initialFormState,
 	formsList: [],
+	loadFormsList: false,
 	showSaveButton: false,
 };
 
@@ -94,6 +98,26 @@ const formsReducer = createSlice({
 			const formIndex = state.formsList.findIndex((it) => it.id === action.payload.id);
 			state.formsList[formIndex] = action.payload;
 		},
+		setPredefinedFields: (state, action: PayloadAction<IPredefinedField>) => {
+			const findIndex = state.form.config.predefinedFields.findIndex((field) => field.type === action.payload.type);
+			if (findIndex !== -1) {
+				state.form.config.predefinedFields[findIndex] = action.payload;
+			} else {
+				state.form.config.predefinedFields.push(action.payload);
+			}
+		},
+	},
+	extraReducers: {
+		[getForms.fulfilled.type]: (state, action: PayloadAction<IForm[]>) => {
+			state.loadFormsList = false;
+			state.formsList = action.payload;
+		},
+		[getForms.pending.type]: (state) => {
+			state.loadFormsList = true;
+		},
+		[getForms.rejected.type]: (state) => {
+			state.loadFormsList = false;
+		},
 	},
 });
 
@@ -111,5 +135,6 @@ export const {
 	removeForm,
 	setShowSaveButton,
 	updateFormInList,
+	setPredefinedFields,
 } = formsReducer.actions;
 export default formsReducer.reducer;

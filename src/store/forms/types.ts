@@ -1,30 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// import { IFormField, IFormOther } from '@uspacy/forms/lib/forms/models';
-
-export interface IForm {
-	id?: string;
-	name: string;
-	active: boolean;
-	crmEntity: 'lead' | 'contact';
-	config: {
-		// потім повернути
-		// fields: IFormField[];
-		// other: IFormOther[];
-		fields: any[];
-		other: any[];
-	};
-}
+import { IFormField, IFormOther } from '@uspacy/forms/lib/forms/models';
+import { IForm } from '@uspacy/sdk/lib/models/forms';
 
 export interface IState {
 	formFields: {
-		// потім повернути
-		// fields: IFormField[];
-		// other: IFormOther[];
-		fields: any[];
-		other: any[];
+		fields: IFormField[];
+		other: IFormOther[];
 	};
 	form: IForm;
 	formsList: IForm[];
+	loadFormsList: boolean;
 	showSaveButton: boolean;
 }
 
