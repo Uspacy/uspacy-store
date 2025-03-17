@@ -2339,10 +2339,10 @@
   dependencies:
     "@ucast/core" "^1.4.1"
 
-"@uspacy/common@0.0.48-alpha.14":
-  version "0.0.48-alpha.14"
-  resolved "https://npm.pkg.github.com/download/@uspacy/common/0.0.48-alpha.14/5020812963cebf0b9d4554907ee19685d69c7bb9#5020812963cebf0b9d4554907ee19685d69c7bb9"
-  integrity sha512-5Lnw315kSlUNd4kZPUi6XSB7JbP/755lVdlrCiisHwq7iPK4Dp48rlYFV8ZrR2NX/icmtCRsCjaUMO54l1f2hw==
+"@uspacy/common@0.0.54-alpha.8":
+  version "0.0.54-alpha.8"
+  resolved "https://npm.pkg.github.com/download/@uspacy/common/0.0.54-alpha.8/73544fb856edcbf379a7bcd146ea77f756046c70#73544fb856edcbf379a7bcd146ea77f756046c70"
+  integrity sha512-lF9Mvy/oeT9a4OGyodHFSmKC8p+KaQgEIo1w6kRubkqnVjJK9WjQn8kKgE6jEQegqX373hH2nmiyyhXVRRTaOQ==
   dependencies:
     "@casl/ability" "^6.7.2"
     "@emotion/react" "11.11.4"
@@ -2373,8 +2373,8 @@
     "@reduxjs/toolkit" "1.8.1"
     "@svgr/webpack" "^8.1.0"
     "@uspacy/grpc" "^0.0.3"
-    "@uspacy/sdk" "0.0.121-alpha.11"
-    "@uspacy/store" "0.0.166-alpha.8"
+    "@uspacy/sdk" "0.0.138-alpha.6"
+    "@uspacy/store" "0.0.184-alpha.8"
     commander "^12.1.0"
     css-loader "6.8.1"
     date-fns "2.29.3"
@@ -2399,6 +2399,8 @@
     notistack "3.0.1"
     react "18.2.0"
     react-beautiful-dnd "^13.1.1"
+    react-copy-to-clipboard "5.1.0"
+    react-country-flag "^3.1.0"
     react-detect-click-outside "^1.1.7"
     react-dom "18.2.0"
     react-dropzone "^14.2.3"
@@ -2419,10 +2421,10 @@
     url-loader "^4.1.1"
     webpack "^5.97.0"
 
-"@uspacy/forms@1.0.6":
-  version "1.0.6"
-  resolved "https://npm.pkg.github.com/download/@uspacy/forms/1.0.6/9699cf67da52a9085350e0c37f836130bbdaf664#9699cf67da52a9085350e0c37f836130bbdaf664"
-  integrity sha512-KaXcC9XSy7E8K9muhD/crkPSt9XuI34dXzzgVDWoDR1t6aHjnC7Ept2FcKcJsGNtW4K/zEFwBhe+gWbt2gF5yA==
+"@uspacy/forms@1.0.8":
+  version "1.0.8"
+  resolved "https://npm.pkg.github.com/download/@uspacy/forms/1.0.8/ff188eb1745bd8e8738f59ea04f50a293d505027#ff188eb1745bd8e8738f59ea04f50a293d505027"
+  integrity sha512-rjmvt6jMLrTltWKz1t+pNU/n9U3srj2XVFE1UCBW7Q5mOBnEBrw2baxvuUY++pcx9qqFqBAoBK5I0DvC1/Vj3w==
   dependencies:
     "@emotion/react" "11.11.4"
     "@emotion/styled" "11.11.5"
@@ -2431,8 +2433,8 @@
     "@svgr/webpack" "8.1.0"
     "@types/react" "18.2.0"
     "@types/react-dom" "18.2.0"
-    "@uspacy/common" "0.0.48-alpha.14"
-    "@uspacy/sdk" "0.0.121-alpha.11"
+    "@uspacy/common" "0.0.54-alpha.8"
+    "@uspacy/sdk" "0.0.138-alpha.8"
     commander "11.1.0"
     css-loader "6.8.1"
     dotenv-webpack "8.0.1"
@@ -2441,6 +2443,7 @@
     html-webpack-plugin "5.5.3"
     i18next "23.7.16"
     i18next-browser-languagedetector "7.2.0"
+    i18next-locize-backend "^6.4.2"
     i18next-resources-to-backend "1.2.0"
     isomorphic-dompurify "^2.20.0"
     mini-css-extract-plugin "2.7.6"
@@ -2467,10 +2470,10 @@
     google-protobuf "^3.21.2"
     grpc-web "^1.4.2"
 
-"@uspacy/sdk@0.0.121-alpha.11":
-  version "0.0.121-alpha.11"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.121-alpha.11/b23de7175b516ed4c0333450560f8c065430a178#b23de7175b516ed4c0333450560f8c065430a178"
-  integrity sha512-+SjRr0T6ite9d6091Ull1X9MYcnbPkIGp05vXIjWkVj7BsIopfTqajfbcuddOFcnzg2TgkkNUpZLvm3OazFvLQ==
+"@uspacy/sdk@0.0.138-alpha.6":
+  version "0.0.138-alpha.6"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.138-alpha.6/e4262808aa700c2f3da10b56ffed5fc066333a5e#e4262808aa700c2f3da10b56ffed5fc066333a5e"
+  integrity sha512-Ky6azgyg5rcl3fS/qvof3vVT9P9mi/XBMkb8NLV+9yEbp3zd4emBcpvx+qo2BmgMEY7s5yRD7P+aHelxo2f9DQ==
   dependencies:
     axios "^1.7.2"
     js-cookie "3.0.5"
@@ -2478,10 +2481,10 @@
     lint-staged "15.2.10"
     localforage "1.10.0"
 
-"@uspacy/sdk@0.0.138-alpha.7":
-  version "0.0.138-alpha.7"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.138-alpha.7/8ca657ed540928a857b1e993470a1c6e98eb6332#8ca657ed540928a857b1e993470a1c6e98eb6332"
-  integrity sha512-QSCaL1V1BojppVW4gGxe20W07is4fg7E/k/GXTQrLo6jTyMHqp9cfc49ULZJMKXuzugwsYTRoIJp3Wzg7HYJwA==
+"@uspacy/sdk@0.0.138-alpha.8":
+  version "0.0.138-alpha.8"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.138-alpha.8/44ca1c47fa32b40606520d2ca6d65bb7d05fa897#44ca1c47fa32b40606520d2ca6d65bb7d05fa897"
+  integrity sha512-e42DtPSxwF+Ovu9rVPM/b243IKfmG0UgLaqNRcNvykKc+7VIW21veS18mhyaqXuDgNH9ksd6NCH07Nbdv2gITA==
   dependencies:
     axios "^1.7.2"
     js-cookie "3.0.5"
@@ -2489,10 +2492,10 @@
     lint-staged "15.2.10"
     localforage "1.10.0"
 
-"@uspacy/store@0.0.166-alpha.8":
-  version "0.0.166-alpha.8"
-  resolved "https://npm.pkg.github.com/download/@uspacy/store/0.0.166-alpha.8/a7653f7c55170d79a1218db44e0a2915050b0225#a7653f7c55170d79a1218db44e0a2915050b0225"
-  integrity sha512-mDm5vN6TRghyLA8yJC431lDmtTFWTZka3IrJ1Ie1taNPCSnp80vuMInTd8MO4BAfHAAogIY1whiz2K63G8kc7w==
+"@uspacy/store@0.0.184-alpha.8":
+  version "0.0.184-alpha.8"
+  resolved "https://npm.pkg.github.com/download/@uspacy/store/0.0.184-alpha.8/2c8da61adaf73670cfa2872e21d5735b2e51d2cf#2c8da61adaf73670cfa2872e21d5735b2e51d2cf"
+  integrity sha512-Om5pW+h+lBbLqJeLJ/Y8udJ9XVx6cezUIflLC3HyN4hpw7f/sk7o650CShAC0c1kCvK1LF465Y2p+b4//kn5BA==
 
 "@webassemblyjs/ast@1.12.1", "@webassemblyjs/ast@^1.11.5":
   version "1.12.1"
@@ -3393,6 +3396,13 @@ cookie@0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.7.1.tgz#2f73c42142d5d5cf71310a74fc4ae61670e5dbc9"
   integrity sha512-6DnInpx7SJ2AK3+CTUE/ZM0vWTUboZCegxhC2xiIydHR9jNuTAASBrfEpHhiGOZw/nX51bHt6YQl8jsGo4y/0w==
+
+copy-to-clipboard@^3.3.1:
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/copy-to-clipboard/-/copy-to-clipboard-3.3.3.tgz#55ac43a1db8ae639a4bd99511c148cdd1b83a1b0"
+  integrity sha512-2KV8NhB5JqC3ky0r9PMCAZKbUHSwtEo4CwCs0KXgruG43gX5PMqDEBbVU4OUzw2MuAWUfsuFmWvEKG5QRfSnJA==
+  dependencies:
+    toggle-selection "^1.0.6"
 
 core-js-compat@^3.38.0, core-js-compat@^3.38.1:
   version "3.40.0"
@@ -7256,6 +7266,19 @@ react-beautiful-dnd@^13.1.1:
     redux "^4.0.4"
     use-memo-one "^1.1.1"
 
+react-copy-to-clipboard@5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/react-copy-to-clipboard/-/react-copy-to-clipboard-5.1.0.tgz#09aae5ec4c62750ccb2e6421a58725eabc41255c"
+  integrity sha512-k61RsNgAayIJNoy9yDsYzDe/yAZAzEbEgcz3DZMhF686LEyukcE1hzurxe85JandPUG+yTfGVFzuEw3xt8WP/A==
+  dependencies:
+    copy-to-clipboard "^3.3.1"
+    prop-types "^15.8.1"
+
+react-country-flag@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/react-country-flag/-/react-country-flag-3.1.0.tgz#f0c4c332934a77d3e894ba4800634f7a887e53d4"
+  integrity sha512-JWQFw1efdv9sTC+TGQvTKXQg1NKbDU2mBiAiRWcKM9F1sK+/zjhP2yGmm8YDddWyZdXVkR8Md47rPMJmo4YO5g==
+
 react-detect-click-outside@^1.1.7:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/react-detect-click-outside/-/react-detect-click-outside-1.1.7.tgz#8dd5766544475ab0d55084b3e2a35165e9a47854"
@@ -8185,8 +8208,16 @@ string-argv@^0.3.1, string-argv@~0.3.2:
   resolved "https://registry.yarnpkg.com/string-argv/-/string-argv-0.3.2.tgz#2b6d0ef24b656274d957d54e0a4bbf6153dc02b6"
   integrity sha512-aqD2Q0144Z+/RqG52NeHEkZauTAUWJO8c6yTftGJKO3Tja5tUgIfmIl6kExvhtxSDP7fXB6DvzkfMpCd/F3G+Q==
 
-"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
-  name string-width-cjs
+"string-width-cjs@npm:string-width@^4.2.0":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
+
+string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -8259,7 +8290,14 @@ string_decoder@~1.1.1:
   dependencies:
     safe-buffer "~5.1.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
+
+strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -8443,6 +8481,11 @@ to-regex-range@^5.0.1:
   integrity sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==
   dependencies:
     is-number "^7.0.0"
+
+toggle-selection@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/toggle-selection/-/toggle-selection-1.0.6.tgz#6e45b1263f2017fa0acc7d89d78b15b8bf77da32"
+  integrity sha512-BiZS+C1OS8g/q2RRbJmy59xpyghNBqrr6k5L/uKBGRsTfxmu3ffiRnd8mlGPUVayg8pvfi5urfnu8TU7DVOkLQ==
 
 toidentifier@1.0.1:
   version "1.0.1"
@@ -9064,8 +9107,7 @@ word-wrap@^1.2.5:
   resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.5.tgz#d2c45c6dd4fbce621a66f136cbe328afd0410b34"
   integrity sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
-  name wrap-ansi-cjs
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -9078,6 +9120,15 @@ wrap-ansi@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
+wrap-ansi@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"
