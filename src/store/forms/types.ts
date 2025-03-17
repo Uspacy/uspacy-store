@@ -1,5 +1,4 @@
-import { IFormField, IFormOther } from '@uspacy/forms/lib/forms/models';
-import { IForm } from '@uspacy/sdk/lib/models/forms';
+import { IForm, IFormField, IFormOther } from '@uspacy/sdk/lib/models/forms';
 
 export interface IState {
 	formFields: {

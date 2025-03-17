@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FormFieldCode } from '@uspacy/forms/lib/forms/models';
-import { IForm, IFormField, IFormOther, IPredefinedField } from '@uspacy/sdk/lib/models/forms';
+import { FormFieldCode, IForm, IFormField, IFormOther, IPredefinedField } from '@uspacy/sdk/lib/models/forms';
 
 import { getForms } from './actions';
 import { IState, RequireOnlyOne } from './types';
