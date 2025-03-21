@@ -109,7 +109,7 @@ const formsReducer = createSlice({
 	extraReducers: {
 		[getForms.fulfilled.type]: (state, action: PayloadAction<IForm[]>) => {
 			state.loadFormsList = false;
-			state.formsList = action.payload;
+			state.formsList = Array.isArray(action.payload) ? action.payload : [];
 		},
 		[getForms.pending.type]: (state) => {
 			state.loadFormsList = true;
