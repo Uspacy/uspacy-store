@@ -2470,6 +2470,17 @@
     google-protobuf "^3.21.2"
     grpc-web "^1.4.2"
 
+"@uspacy/sdk@0.0.138-alpha.12":
+  version "0.0.138-alpha.12"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.138-alpha.12/dff811bc2da05a88fcded86d4a839958ac5d081b#dff811bc2da05a88fcded86d4a839958ac5d081b"
+  integrity sha512-/lCvGv4b2yMQDv8oo9447cRt4X9NmpF/B0sVZDoa7m3W5bw8g/RS6QqpM735bNVGny2D+XDo5CpvPq7YqCWiGw==
+  dependencies:
+    axios "^1.7.2"
+    js-cookie "3.0.5"
+    jwt-decode "3.1.2"
+    lint-staged "15.2.10"
+    localforage "1.10.0"
+
 "@uspacy/sdk@0.0.138-alpha.6":
   version "0.0.138-alpha.6"
   resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.138-alpha.6/e4262808aa700c2f3da10b56ffed5fc066333a5e#e4262808aa700c2f3da10b56ffed5fc066333a5e"
