@@ -2490,10 +2490,10 @@
     google-protobuf "^3.21.2"
     grpc-web "^1.4.2"
 
-"@uspacy/sdk@0.0.138-alpha.12":
-  version "0.0.138-alpha.12"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.138-alpha.12/dff811bc2da05a88fcded86d4a839958ac5d081b#dff811bc2da05a88fcded86d4a839958ac5d081b"
-  integrity sha512-/lCvGv4b2yMQDv8oo9447cRt4X9NmpF/B0sVZDoa7m3W5bw8g/RS6QqpM735bNVGny2D+XDo5CpvPq7YqCWiGw==
+"@uspacy/sdk@0.0.138-alpha.13":
+  version "0.0.138-alpha.13"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.138-alpha.13/8030435f7e9d22ae51c332ad177794552059efb1#8030435f7e9d22ae51c332ad177794552059efb1"
+  integrity sha512-QM54o+R+kHk/IRZAByAIqRo17p2Kic6b7rB3nXNBMM6qVG1BZs5S0lQEGSFdNqlp+gUnTsGLRJ7o7/qd99yfrQ==
   dependencies:
     axios "^1.7.2"
     js-cookie "3.0.5"
