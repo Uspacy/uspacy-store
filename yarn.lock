@@ -2470,17 +2470,6 @@
     google-protobuf "^3.21.2"
     grpc-web "^1.4.2"
 
-"@uspacy/sdk@0.0.138-alpha.13":
-  version "0.0.138-alpha.13"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.138-alpha.13/8030435f7e9d22ae51c332ad177794552059efb1#8030435f7e9d22ae51c332ad177794552059efb1"
-  integrity sha512-QM54o+R+kHk/IRZAByAIqRo17p2Kic6b7rB3nXNBMM6qVG1BZs5S0lQEGSFdNqlp+gUnTsGLRJ7o7/qd99yfrQ==
-  dependencies:
-    axios "^1.7.2"
-    js-cookie "3.0.5"
-    jwt-decode "3.1.2"
-    lint-staged "15.2.10"
-    localforage "1.10.0"
-
 "@uspacy/sdk@0.0.138-alpha.6":
   version "0.0.138-alpha.6"
   resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.138-alpha.6/e4262808aa700c2f3da10b56ffed5fc066333a5e#e4262808aa700c2f3da10b56ffed5fc066333a5e"
@@ -2496,6 +2485,17 @@
   version "0.0.138-alpha.8"
   resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.138-alpha.8/44ca1c47fa32b40606520d2ca6d65bb7d05fa897#44ca1c47fa32b40606520d2ca6d65bb7d05fa897"
   integrity sha512-e42DtPSxwF+Ovu9rVPM/b243IKfmG0UgLaqNRcNvykKc+7VIW21veS18mhyaqXuDgNH9ksd6NCH07Nbdv2gITA==
+  dependencies:
+    axios "^1.7.2"
+    js-cookie "3.0.5"
+    jwt-decode "3.1.2"
+    lint-staged "15.2.10"
+    localforage "1.10.0"
+
+"@uspacy/sdk@0.0.139-alpha.1":
+  version "0.0.139-alpha.1"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.139-alpha.1/a76dae191e9a42af8aaa21e94fa7795f5fb20b7e#a76dae191e9a42af8aaa21e94fa7795f5fb20b7e"
+  integrity sha512-612BhTHR/vxYSWqGjjt+PagNuKHIitPEVqcHOIZ8yBT41BLEMWPTPi3S9YnPbHI6P48NxlJBFpsiPoXKtdSpQw==
   dependencies:
     axios "^1.7.2"
     js-cookie "3.0.5"
