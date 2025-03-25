@@ -111,7 +111,7 @@ export const separateExternalChats = (items: IChat[]) =>
 	items.reduce(
 		(acc, item) => {
 			const isActive = item.active && !!item.members.length;
-			const isUndistributed = item.active && !item.members.length;
+			const isUndistributed = !item.assigned;
 			const isInactive = !item.active;
 
 			switch (true) {
