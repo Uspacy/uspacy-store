@@ -17,8 +17,7 @@ export const fetchUsers = createAsyncThunk('users/fetchUsers', async (_, thunkAP
 
 export const updateUser = createAsyncThunk('users/updateUser', async (user: IUser, thunkAPI) => {
 	try {
-		const { id, ...clone } = user;
-		const response = await uspacySdk.usersService.updateUser(id, clone);
+		const response = await uspacySdk.usersService.updateUser(user.id, user);
 		if (!user.active && !user.registered) {
 			response.data.dateOfInvitation = user.dateOfInvitation;
 		}
