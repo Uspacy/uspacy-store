@@ -112,19 +112,20 @@ export const separateExternalChats = (items: IChat[]) =>
 		(acc, item) => {
 			const isActive = item.active && item.assigned;
 			const isUndistributed = !item.assigned;
-			const isInactive = !item.active && item.assigned;
+			const isInactive = !item.active;
 
 			switch (true) {
 				case isActive: {
 					acc.active.push({ ...item, externalChatStatus: EActiveEntity.ACTIVE_EXTERNAL });
 					break;
 				}
+				case isInactive: {
+					acc.inactive.push({ ...item, externalChatStatus: EActiveEntity.INACTIVE_EXTERNAL });
+					break;
+				}
 				case isUndistributed: {
 					acc.undistributed.push({ ...item, externalChatStatus: EActiveEntity.UNDISTRIBUTED_EXTERNAL });
 					break;
-				}
-				case isInactive: {
-					acc.inactive.push({ ...item, externalChatStatus: EActiveEntity.INACTIVE_EXTERNAL });
 				}
 			}
 
