@@ -20,8 +20,8 @@ export const disabledPermissions = {
 		'tasks.task.create.department.disabled-any',
 		'tasks.task.create.mine.disabled-any',
 	],
-	edit: ['crm.uspacy_calls.edit.department.disabled-any'],
-	view: ['crm.uspacy_calls.view.department.disabled-any'],
+	edit: [],
+	view: [],
 	delete: [
 		'crm.uspacy_calls.delete.allowed.disabled-any',
 		'crm.uspacy_calls.delete.mine.disabled-any',
