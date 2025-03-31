@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IAfterGoogleOauthResponse } from '@uspacy/sdk/lib/models/calendars';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
+import { IAfterOauthResponse } from '@uspacy/sdk/lib/models/oauthIntegrations';
 import {
 	IBill,
 	ICoupon,
@@ -113,7 +113,7 @@ const authReducer = createSlice({
 		setAutoDebit: (state, action: PayloadAction<boolean>) => {
 			state.activeSubscription.auto_debit = action.payload;
 		},
-		setAfterGoogleOAuthData: (state, action: PayloadAction<IAfterGoogleOauthResponse>) => {
+		setAfterGoogleOAuthData: (state, action: PayloadAction<IAfterOauthResponse>) => {
 			state.afterGoogleOAuthData = action.payload;
 		},
 
@@ -301,7 +301,7 @@ const authReducer = createSlice({
 			state.errorLoadingDowngrade = action.payload;
 		},
 
-		[getUrlToRedirectAfterOAuth.fulfilled.type]: (state, action: PayloadAction<IAfterGoogleOauthResponse>) => {
+		[getUrlToRedirectAfterOAuth.fulfilled.type]: (state, action: PayloadAction<IAfterOauthResponse>) => {
 			state.loadingAfterGoogleOAuth = false;
 			state.errorLoadingAfterGoogleOAuth = null;
 			state.afterGoogleOAuthData = action.payload;

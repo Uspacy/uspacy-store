@@ -31,4 +31,5 @@ export interface IMoveCardsData {
 	isFinishedStage?: boolean;
 	sourceStageId?: number;
 	destinationIndex?: number;
+	item?: IEntityData;
 }
