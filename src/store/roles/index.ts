@@ -69,27 +69,20 @@ const rolesReducer = createSlice({
 				(item) => item.split('.').splice(0, 3).join('.') !== `${tabName}.${categoryName}.${filteredCurrColName}`,
 			);
 
-			switch (colName) {
-				case 'view':
-				case 'edit':
-					switch (targetVal) {
-						case 'mine':
-						case 'disabled':
-							if (findNextVal === 'allowed' || findNextVal === 'mine') {
-								state[storeKey][filteredCurrColName] = [
-									...filterArr,
-									`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
-									...(colName === 'view' && currPickPermission ? [currPickPermission] : []),
-								];
-							}
-							return;
+			if (['view', 'edit'].includes(colName)) {
+				const validNextVal = {
+					mine: ['allowed', 'department'],
+					disabled: ['allowed', 'mine', 'department'],
+					department: ['allowed'],
+				};
 
-						default:
-							return;
-					}
-
-				default:
-					return;
+				if (validNextVal[targetVal]?.includes(findNextVal)) {
+					state[storeKey][filteredCurrColName] = [
+						...filterArr,
+						`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
+						...(colName === 'view' && currPickPermission ? [currPickPermission] : []),
+					];
+				}
 			}
 		},
 		selectedRole(state, action) {
@@ -216,6 +209,14 @@ const rolesReducer = createSlice({
 							`${goalForClean}.${actionType}.${permissionKey}`,
 						);
 					}
+					if (permissionKey === 'department') {
+						newPermissions.edit = updatePermissions(newPermissions.edit, goalForClean, `${goalForClean}.${actionType}.${permissionKey}`);
+						newPermissions.delete = updatePermissions(
+							newPermissions.delete,
+							goalForClean,
+							`${goalForClean}.${actionType}.${permissionKey}`,
+						);
+					}
 				}
 				if (actionType === 'edit') {
 					if (permissionKey === 'disabled') {
@@ -235,8 +236,9 @@ const rolesReducer = createSlice({
 					newPermissions.create = [
 						...permissionState.create.filter((item) => !item.includes(goalForClean)),
 						`${goalForClean}.create.mine.disabled-any`,
+						`${goalForClean}.create.department.disabled-any`,
 						`${goalForClean}.create.${permissionKey}`,
-					].filter((item) => item !== `${goalForClean}.create.mine`);
+					].filter((item) => ![`${goalForClean}.create.mine`, `${goalForClean}.create.department`].includes(item));
 
 					newPermissions.delete = [
 						...permissionState.delete.filter((item) => !item.includes(goalForClean)),
