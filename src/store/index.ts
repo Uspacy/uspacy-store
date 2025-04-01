@@ -28,6 +28,7 @@ import departments from './departments';
 import drawersManagement from './drawersManagement';
 import email from './email';
 import files from './files';
+import forms from './forms';
 import groups from './groups';
 import history from './history';
 import messengerReducer from './messenger';
@@ -92,6 +93,7 @@ const rootReducer = combineReducers({
 	announcers,
 	crm,
 	analytics,
+	forms,
 });
 
 export const setupStore = () => {
