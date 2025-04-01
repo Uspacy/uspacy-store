@@ -5,7 +5,6 @@ import announcers from './announcers';
 import apps from './apps';
 import auth from './auth';
 import automations from './automations';
-import calendars from './calendars';
 import crm from './crm';
 import crmCalls from './crmCalls';
 import crmCompanies from './crmCompanies';
@@ -93,7 +92,6 @@ const rootReducer = combineReducers({
 	settings,
 	announcers,
 	crm,
-	calendars,
 	analytics,
 	forms,
 });

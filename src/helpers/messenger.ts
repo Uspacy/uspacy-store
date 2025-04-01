@@ -110,8 +110,8 @@ export const sortChats = (a: IChat, b: IChat) => {
 export const separateExternalChats = (items: IChat[]) =>
 	items.reduce(
 		(acc, item) => {
-			const isActive = item.active && !!item.members.length;
-			const isUndistributed = item.active && !item.members.length;
+			const isActive = item.active && item.assigned;
+			const isUndistributed = !item.assigned;
 			const isInactive = !item.active;
 
 			switch (true) {
@@ -119,12 +119,13 @@ export const separateExternalChats = (items: IChat[]) =>
 					acc.active.push({ ...item, externalChatStatus: EActiveEntity.ACTIVE_EXTERNAL });
 					break;
 				}
+				case isInactive: {
+					acc.inactive.push({ ...item, externalChatStatus: EActiveEntity.INACTIVE_EXTERNAL });
+					break;
+				}
 				case isUndistributed: {
 					acc.undistributed.push({ ...item, externalChatStatus: EActiveEntity.UNDISTRIBUTED_EXTERNAL });
 					break;
-				}
-				case isInactive: {
-					acc.inactive.push({ ...item, externalChatStatus: EActiveEntity.INACTIVE_EXTERNAL });
 				}
 			}
 

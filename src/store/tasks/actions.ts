@@ -1,15 +1,14 @@
 /* eslint-disable camelcase */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
-import { ITasksParams } from '@uspacy/sdk/lib/models/tasks';
-import { ITaskValues } from '@uspacy/sdk/lib/services/TasksService/dto/create-update-task.dto';
+import { ITask, ITasksParams } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 
 import { ICreateTaskPayload, IDeleteTaskPayload } from './types';
 
 export const getTasks = createAsyncThunk(
 	'tasks/getTasks',
-	async ({ params, withoutResponsible, signal }: { params: ITasksParams; withoutResponsible: boolean; signal: AbortSignal }, thunkAPI) => {
+	async ({ params, withoutResponsible, signal }: { params: ITasksParams; withoutResponsible?: boolean; signal?: AbortSignal }, thunkAPI) => {
 		try {
 			const res = await uspacySdk.tasksService.getTasks(params, withoutResponsible, signal);
 			return res.data;
@@ -27,7 +26,7 @@ export const getTasks = createAsyncThunk(
 
 export const getRecurringTemplates = createAsyncThunk(
 	'tasks/getRecurringTemplates',
-	async ({ params, withoutResponsible, signal }: { params: ITasksParams; withoutResponsible: boolean; signal: AbortSignal }, thunkAPI) => {
+	async ({ params, withoutResponsible, signal }: { params: ITasksParams; withoutResponsible?: boolean; signal?: AbortSignal }, thunkAPI) => {
 		try {
 			const res = await uspacySdk.tasksService.getRecurringTemplates(params, withoutResponsible, signal);
 			return res.data;
@@ -45,7 +44,7 @@ export const getRecurringTemplates = createAsyncThunk(
 
 export const getOneTimeTemplates = createAsyncThunk(
 	'tasks/getOneTimeTemplates',
-	async ({ params, withoutResponsible, signal }: { params: ITasksParams; withoutResponsible: boolean; signal: AbortSignal }, thunkAPI) => {
+	async ({ params, withoutResponsible, signal }: { params: ITasksParams; withoutResponsible?: boolean; signal?: AbortSignal }, thunkAPI) => {
 		try {
 			const res = await uspacySdk.tasksService.getOneTimeTemplates(params, withoutResponsible, signal);
 			return res.data;
@@ -63,7 +62,7 @@ export const getOneTimeTemplates = createAsyncThunk(
 
 export const getHierarchies = createAsyncThunk(
 	'tasks/getHierarchies',
-	async ({ params, withoutResponsible, signal }: { params: ITasksParams; withoutResponsible: boolean; signal: AbortSignal }, thunkAPI) => {
+	async ({ params, withoutResponsible, signal }: { params: ITasksParams; withoutResponsible?: boolean; signal?: AbortSignal }, thunkAPI) => {
 		try {
 			const res = await uspacySdk.tasksService.getHierarchies(params, withoutResponsible, signal);
 			return res.data;
@@ -169,7 +168,7 @@ export const replicateTask = createAsyncThunk(
 	},
 );
 
-export const updateTask = createAsyncThunk('tasks/updateTask', async ({ id, data }: { id: string; data: ITaskValues }, { rejectWithValue }) => {
+export const updateTask = createAsyncThunk('tasks/updateTask', async ({ id, data }: { id: string; data: Partial<ITask> }, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk.tasksService.updateTask(id, data);
 		return res.data;
@@ -180,7 +179,7 @@ export const updateTask = createAsyncThunk('tasks/updateTask', async ({ id, data
 
 export const updateRecurringTemplate = createAsyncThunk(
 	'tasks/updateRecurringTemplate',
-	async ({ id, data }: { id: string; data: ITaskValues }, { rejectWithValue }) => {
+	async ({ id, data }: { id: string; data: Partial<ITask> }, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.updateRecurringTemplate(id, data);
 			return res.data;
@@ -192,7 +191,7 @@ export const updateRecurringTemplate = createAsyncThunk(
 
 export const updateOneTimeTemplate = createAsyncThunk(
 	'tasks/updateOneTimeTemplate',
-	async ({ id, data }: { id: string; data: ITaskValues }, { rejectWithValue }) => {
+	async ({ id, data }: { id: string; data: Partial<ITask> }, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.updateOneTimeTemplate(id, data);
 			return res.data;
@@ -202,14 +201,17 @@ export const updateOneTimeTemplate = createAsyncThunk(
 	},
 );
 
-export const updateSubtask = createAsyncThunk('tasks/updateSubtask', async ({ id, data }: { id: string; data: ITaskValues }, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.updateSubtask(id, data);
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
+export const updateSubtask = createAsyncThunk(
+	'tasks/updateSubtask',
+	async ({ id, data }: { id: string; data: Partial<ITask> }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.tasksService.updateSubtask(id, data);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
 
 export const delegationTask = createAsyncThunk(
 	'tasks/delegationTask',

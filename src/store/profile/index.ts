@@ -1,18 +1,25 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
+import { IField } from '@uspacy/sdk/lib/models/field';
 import { ICountryTemplates, IRequisite, IRequisitesResponse, ITemplate, ITemplateResponse } from '@uspacy/sdk/lib/models/requisites';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 import { checkBasicRequisite } from '../../helpers/checkBasicRequisite';
 import {
+	createProfileField,
 	createTemplate,
+	deleteProfileField,
+	deleteProfileListValues,
 	fetchBasicTemplates,
 	fetchProfile,
+	fetchProfileFields,
 	fetchRequisites,
 	fetchTemplates,
 	removeRequisite,
 	removeTemplate,
+	updateProfileField,
+	updateProfileListValues,
 	updateRequisite,
 	updateTemplate,
 } from './actions';
@@ -32,6 +39,13 @@ const initialState: IState = {
 		loadingUpdateRequisites: false,
 		loadingDeleteRequisites: false,
 	},
+	loadingFields: {
+		create: false,
+		get: false,
+		update: false,
+		delete: false,
+	},
+	fields: [],
 	errorLoading: null,
 };
 
@@ -68,6 +82,51 @@ export const profileSlice = createSlice({
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
 		},
+
+		[fetchProfileFields.fulfilled.type]: (state, action: PayloadAction<IField[]>) => {
+			state.loadingFields.get = false;
+			state.fields = action.payload;
+		},
+		[fetchProfileFields.pending.type]: (state) => {
+			state.loadingFields.get = true;
+		},
+		[fetchProfileFields.rejected.type]: (state) => {
+			state.loadingFields.get = false;
+		},
+		[updateProfileField.pending.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
+			const updateField = action.meta.arg;
+			state.fields = state.fields.map((field) => {
+				if (field.code === updateField.code) {
+					return { ...updateField, values: updateField?.values || field?.values };
+				}
+				return field;
+			});
+		},
+		[createProfileField.pending.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
+			const newField = action.meta.arg;
+			state.fields.push(newField);
+		},
+		[updateProfileListValues.pending.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
+			const updateField = action.meta.arg;
+			state.fields = state.fields.map((field) => {
+				if (field.code === updateField.code) {
+					return { ...field, values: updateField?.values || field?.values };
+				}
+				return field;
+			});
+		},
+		[deleteProfileListValues.pending.type]: (state, action: PayloadAction<string, string, { arg: { fieldCode: string; value: string } }>) => {
+			state.fields = state.fields.map((field) => {
+				if (field.code === action.meta.arg.fieldCode) {
+					field.values = field.values.filter((value) => value.value !== action.meta.arg.value);
+				}
+				return field;
+			});
+		},
+		[deleteProfileField.pending.type]: (state, action: PayloadAction<string, string, { arg: string }>) => {
+			state.fields = state.fields.filter((field) => field.code !== action.meta.arg);
+		},
+
 		[fetchRequisites.fulfilled.type]: (state: IState, action: PayloadAction<IRequisitesResponse>) => {
 			state.loadingRequisites.loadingReadRequisites = false;
 			state.requisites = action.payload.data;

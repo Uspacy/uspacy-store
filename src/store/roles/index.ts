@@ -1,9 +1,18 @@
 import { createSlice, current, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IPermissions, IRole } from '@uspacy/sdk/lib/models/roles';
+import { IPermissions, IPermissionsFunnelsResponse, IRole } from '@uspacy/sdk/lib/models/roles';
 
 import { disabledPermissions } from '../../helpers/disabledPermissions';
-import { createRole, deleteRole, fetchPermissions, fetchRole, fetchRoles, updateRole } from './actions';
+import {
+	createRole,
+	deleteRole,
+	fetchPermissions,
+	fetchRole,
+	fetchRoles,
+	getPermissionsFunnels,
+	updateRole,
+	updateRolePermisionsFunnels,
+} from './actions';
 import { idsForDisableDeleting } from './disableDeleting.enum';
 import { PermissionsControllerViewEnums } from './role.enums';
 import { IState } from './types';
@@ -35,6 +44,7 @@ const initialState = {
 	errorLoadingRoles: null,
 	roleData: {},
 	activeRole: null,
+	permissionsFunnels: {},
 } as IState;
 
 const rolesReducer = createSlice({
@@ -42,13 +52,16 @@ const rolesReducer = createSlice({
 	initialState,
 	reducers: {
 		getNextVal(state, action) {
-			const { tabName, categoryName, colName, targetVal, storeKey } = action.payload;
+			const { tabName, categoryName, colName, targetVal, storeKey, currPickPermission } = action.payload;
 
 			const filteredCurrColName = colName === 'view' ? 'edit' : 'delete';
 			const currStoreData = current(state[storeKey][filteredCurrColName]);
 
 			const findNextVal = currStoreData
-				.find((item) => item.split('.').splice(0, 3).join('.') === `${tabName}.${categoryName}.${filteredCurrColName}`)
+				.find(
+					(item) =>
+						item.split('.').splice(0, 3).join('.') === `${tabName}.${categoryName}.${filteredCurrColName}` && !item.includes('disabled'),
+				)
 				?.split('.')
 				?.splice(-1)[0];
 
@@ -56,26 +69,20 @@ const rolesReducer = createSlice({
 				(item) => item.split('.').splice(0, 3).join('.') !== `${tabName}.${categoryName}.${filteredCurrColName}`,
 			);
 
-			switch (colName) {
-				case 'view':
-				case 'edit':
-					switch (targetVal) {
-						case 'mine':
-						case 'disabled':
-							if (findNextVal === 'allowed' || findNextVal === 'mine') {
-								state[storeKey][filteredCurrColName] = [
-									...filterArr,
-									`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
-								];
-							}
-							return;
+			if (['view', 'edit'].includes(colName)) {
+				const validNextVal = {
+					mine: ['allowed', 'department'],
+					disabled: ['allowed', 'mine', 'department'],
+					department: ['allowed'],
+				};
 
-						default:
-							return;
-					}
-
-				default:
-					return;
+				if (validNextVal[targetVal]?.includes(findNextVal)) {
+					state[storeKey][filteredCurrColName] = [
+						...filterArr,
+						`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
+						...(colName === 'view' && currPickPermission ? [currPickPermission] : []),
+					];
+				}
 			}
 		},
 		selectedRole(state, action) {
@@ -158,23 +165,98 @@ const rolesReducer = createSlice({
 			}
 		},
 		addPermissionsForColAction(state, action) {
-			const goalForClean = action.payload.categoryName;
-			const permissionsType = action.payload.permissionsType;
+			const { categoryName: goalForClean, permissionsType, permissionKey, isFunnel, actionType } = action.payload;
 			const permissionState = permissionsType === 'create' ? state.createPermissions : state.permissions;
 
 			const newPermissions = {
-				create: permissionState.create.filter((item) => !item.includes(goalForClean)),
-				edit: permissionState.edit.filter((item) => !item.includes(goalForClean)),
-				view: permissionState.view.filter((item) => !item.includes(goalForClean)),
-				delete: permissionState.delete.filter((item) => !item.includes(goalForClean)),
+				create: [...permissionState.create],
+				edit: [...permissionState.edit],
+				view: [...permissionState.view],
+				delete: [...permissionState.delete],
 			};
-			newPermissions.create.push(`${goalForClean}.create.mine.disabled-any`);
-			newPermissions.create = [...newPermissions.create, `${goalForClean}.create.${action.payload.permissionKey}`].filter(
-				(item) => item !== `${goalForClean}.create.mine`,
-			);
-			newPermissions.edit = [...newPermissions.edit, `${goalForClean}.edit.${action.payload.permissionKey}`];
-			newPermissions.view = [...newPermissions.view, `${goalForClean}.view.${action.payload.permissionKey}`];
-			newPermissions.delete = [...newPermissions.delete, `${goalForClean}.delete.${action.payload.permissionKey}`];
+
+			const updatePermissions = (permissionList: string[], goal: string, ...newPerms: string[]) =>
+				permissionList.filter((item) => !item.includes(goal)).concat(newPerms);
+
+			if (isFunnel) {
+				// Update only the specified permissionsType for goalForClean
+				newPermissions[actionType] = updatePermissions(
+					newPermissions[actionType],
+					goalForClean,
+					`${goalForClean}.${actionType}.${permissionKey}`,
+				);
+				if (actionType === 'create') {
+					newPermissions.create = updatePermissions(
+						newPermissions.create,
+						goalForClean,
+						`${goalForClean}.create.mine.disabled-any`,
+						`${goalForClean}.create.${permissionKey}`,
+					);
+				}
+				if (actionType === 'view') {
+					if (permissionKey === 'allowed') {
+						newPermissions.view = updatePermissions(newPermissions.view, goalForClean, `${goalForClean}.view.${permissionKey}`);
+					}
+					if (permissionKey === 'disabled') {
+						newPermissions.edit = updatePermissions(newPermissions.edit, goalForClean, `${goalForClean}.edit.disabled-any`);
+						newPermissions.delete = updatePermissions(newPermissions.delete, goalForClean, `${goalForClean}.delete.disabled-any`);
+					}
+					if (permissionKey === 'mine') {
+						newPermissions.edit = updatePermissions(newPermissions.edit, goalForClean, `${goalForClean}.${actionType}.${permissionKey}`);
+						newPermissions.delete = updatePermissions(
+							newPermissions.delete,
+							goalForClean,
+							`${goalForClean}.${actionType}.${permissionKey}`,
+						);
+					}
+					if (permissionKey === 'department') {
+						newPermissions.edit = updatePermissions(newPermissions.edit, goalForClean, `${goalForClean}.${actionType}.${permissionKey}`);
+						newPermissions.delete = updatePermissions(
+							newPermissions.delete,
+							goalForClean,
+							`${goalForClean}.${actionType}.${permissionKey}`,
+						);
+					}
+				}
+				if (actionType === 'edit') {
+					if (permissionKey === 'disabled') {
+						newPermissions.delete = newPermissions.delete
+							.filter((item) => !item.includes(goalForClean))
+							.concat(`${goalForClean}.delete.disabled-any`);
+					} else {
+						newPermissions.delete = newPermissions.delete
+							.filter((item) => !item.includes(goalForClean))
+							.concat(`${goalForClean}.${actionType}.${permissionKey}`);
+					}
+				}
+			} else {
+				// Update all permissions related to goalForClean
+
+				if (goalForClean !== 'crm.uspacy_calls') {
+					newPermissions.create = [
+						...permissionState.create.filter((item) => !item.includes(goalForClean)),
+						`${goalForClean}.create.mine.disabled-any`,
+						`${goalForClean}.create.department.disabled-any`,
+						`${goalForClean}.create.${permissionKey}`,
+					].filter((item) => ![`${goalForClean}.create.mine`, `${goalForClean}.create.department`].includes(item));
+
+					newPermissions.delete = [
+						...permissionState.delete.filter((item) => !item.includes(goalForClean)),
+						`${goalForClean}.delete.${permissionKey}`,
+					];
+				}
+
+				newPermissions.edit = [
+					...permissionState.edit.filter((item) => !item.includes(goalForClean)),
+					`${goalForClean}.edit.${permissionKey}`,
+				];
+
+				newPermissions.view = [
+					...permissionState.view.filter((item) => !item.includes(goalForClean)),
+					`${goalForClean}.view.${permissionKey}`,
+				];
+			}
+
 			if (permissionsType === 'create') {
 				state.createPermissions = newPermissions;
 			} else {
@@ -189,6 +271,9 @@ const rolesReducer = createSlice({
 				delete: [...state[action.payload.key].delete, ...action.payload.universal.delete],
 			};
 			state[action.payload.key] = merged;
+		},
+		clearPermissionsFunnels(state) {
+			state.permissionsFunnels = initialState.permissionsFunnels;
 		},
 	},
 	extraReducers: {
@@ -299,6 +384,32 @@ const rolesReducer = createSlice({
 			state.loadingRoles = false;
 			state.errorLoadingRoles = action.payload;
 		},
+		[getPermissionsFunnels.fulfilled.type]: (state, action: PayloadAction<IPermissionsFunnelsResponse>) => {
+			state.loadingRoles = false;
+			state.errorLoadingRoles = null;
+			state.permissionsFunnels = action.payload;
+		},
+		[getPermissionsFunnels.pending.type]: (state) => {
+			state.loadingRoles = true;
+			state.errorLoadingRoles = null;
+		},
+		[getPermissionsFunnels.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingRoles = false;
+			state.errorLoadingRoles = action.payload;
+		},
+		[updateRolePermisionsFunnels.fulfilled.type]: (state, action) => {
+			state.permissionsFunnels = action.payload;
+			state.loadingRoles = false;
+			state.errorLoadingRoles = null;
+		},
+		[updateRolePermisionsFunnels.pending.type]: (state) => {
+			state.loadingRoles = true;
+			state.errorLoadingRoles = null;
+		},
+		[updateRolePermisionsFunnels.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingRoles = false;
+			state.errorLoadingRoles = action.payload;
+		},
 	},
 });
 
@@ -314,6 +425,7 @@ export const {
 	allowAllPermissions,
 	addPermissionsForColAction,
 	mergeCreatePermissions,
+	clearPermissionsFunnels,
 } = rolesReducer.actions;
 
 export default rolesReducer.reducer;

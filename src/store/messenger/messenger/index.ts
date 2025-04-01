@@ -41,12 +41,12 @@ const initialState: IState = {
 	},
 };
 
-interface IPreperedMessage extends IMessage {
+interface IPreparedMessage extends IMessage {
 	readByTemp?: number[];
 }
 
-const prepereMessages = (items: IPreperedMessage[], profile: IUser) => {
-	let comparedMessage: IPreperedMessage;
+const prepareMessages = (items: IPreparedMessage[], profile: IUser) => {
+	let comparedMessage: IPreparedMessage;
 	return items.flatMap((message, index, origin) => {
 		if (
 			!comparedMessage ||
@@ -62,7 +62,7 @@ const prepereMessages = (items: IPreperedMessage[], profile: IUser) => {
 			Array.isArray(message.readBy) &&
 			message.authorId !== profile.authUserId &&
 			!message.readBy.includes(profile.authUserId) &&
-			nextMessage?.readBy?.includes(profile.authUserId);
+			(nextMessage?.readBy?.includes(profile.authUserId) || nextMessage?.authorId === profile.authUserId || !nextMessage);
 
 		if (isFirstUnread && !origin.find((it) => it.isFirstUnread)) {
 			return [
@@ -94,7 +94,7 @@ export const chatSlice = createSlice({
 			state.chats.currentChatId = action.payload.id;
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === action.payload.id) {
-					const items = prepereMessages(
+					const items = prepareMessages(
 						group.items.filter((message) => !message.isFirstUnread),
 						action.payload.profile,
 					);
@@ -129,7 +129,7 @@ export const chatSlice = createSlice({
 			const { chatId, item, profile } = action.payload;
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === chatId) {
-					const items = prepereMessages([item, ...group.items], profile);
+					const items = prepareMessages([item, ...group.items], profile);
 					return {
 						...group,
 						items,
@@ -249,7 +249,7 @@ export const chatSlice = createSlice({
 					return {
 						...chat,
 						unreadMentions,
-						lastMessage: lastMessage.message !== unreadMessagesValue ? lastMessage : messageBeforeAfter,
+						lastMessage: lastMessage?.message !== unreadMessagesValue ? lastMessage : messageBeforeAfter,
 						...(LMinMaIdrH && { unreadCount: chat.unreadCount - 1 }),
 					};
 				}
@@ -593,7 +593,7 @@ export const chatSlice = createSlice({
 							: action.payload.items;
 					return {
 						...group,
-						items: prepereMessages(getUniqueItems(items), action.payload.profile),
+						items: prepareMessages(getUniqueItems(items), action.payload.profile),
 						loading: false,
 						lastTimestamp,
 						firstTimestamp,
@@ -647,7 +647,7 @@ export const chatSlice = createSlice({
 				state.messages.push({
 					draftMessage: '',
 					chatId: action.payload.items[0]?.chatId,
-					items: prepereMessages(action.payload.items, action.payload.profile),
+					items: prepareMessages(action.payload.items, action.payload.profile),
 					loading: false,
 					lastTimestamp,
 					firstTimestamp,
@@ -659,7 +659,7 @@ export const chatSlice = createSlice({
 				if (group.chatId === action.meta.arg.chatId) {
 					return {
 						...group,
-						items: prepereMessages(action.payload.items, action.payload.profile),
+						items: prepareMessages(action.payload.items, action.payload.profile),
 						loading: false,
 						lastTimestamp,
 						firstTimestamp,
