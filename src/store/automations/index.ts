@@ -34,7 +34,7 @@ const automationsReducer = createSlice({
 		[fetchAutomations.fulfilled.type]: (state, action: PayloadAction<IAutomationsResponse>) => {
 			state.loadingAutomations = false;
 			state.errorLoadingAutomations = null;
-			state.automations.data = action.payload.data;
+			state.automations.data = action.payload.data || [];
 			state.automations.meta = action.payload.meta;
 		},
 		[fetchAutomations.pending.type]: (state) => {
