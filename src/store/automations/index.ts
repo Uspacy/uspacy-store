@@ -26,7 +26,7 @@ const automationsReducer = createSlice({
 			state.automations.data = state.automations.data.map((it) => (it.portal_id === action.payload ? { ...it, active: !it.active } : it));
 		},
 		addAutomationToStartTable: (state, action: PayloadAction<IAutomation>) => {
-			state.automations.data = [action.payload, ...state.automations.data];
+			state.automations.data = [action.payload, ...(state.automations?.data || [])];
 			state.automations.meta.total = state.automations.meta.total + 1;
 		},
 	},
@@ -34,7 +34,7 @@ const automationsReducer = createSlice({
 		[fetchAutomations.fulfilled.type]: (state, action: PayloadAction<IAutomationsResponse>) => {
 			state.loadingAutomations = false;
 			state.errorLoadingAutomations = null;
-			state.automations.data = action.payload.data;
+			state.automations.data = action.payload.data || [];
 			state.automations.meta = action.payload.meta;
 		},
 		[fetchAutomations.pending.type]: (state) => {

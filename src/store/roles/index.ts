@@ -73,14 +73,14 @@ const rolesReducer = createSlice({
 				const validNextVal = {
 					mine: ['allowed', 'department'],
 					disabled: ['allowed', 'mine', 'department'],
-					department: ['allowed']
+					department: ['allowed'],
 				};
 
 				if (validNextVal[targetVal]?.includes(findNextVal)) {
 					state[storeKey][filteredCurrColName] = [
 						...filterArr,
 						`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
-						...(colName === 'view' && currPickPermission ? [currPickPermission] : [])
+						...(colName === 'view' && currPickPermission ? [currPickPermission] : []),
 					];
 				}
 			}
