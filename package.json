@@ -56,6 +56,6 @@
     "webpack-node-externals": "3.0.0"
   },
   "dependencies": {
-    "@types/react": "^19.0.12"
+    "@types/react": "18.2.0"
   }
 }
