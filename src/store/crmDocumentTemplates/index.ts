@@ -104,9 +104,9 @@ const documentTemplatesReducer = createSlice({
 	},
 	extraReducers: {
 		[fetchDocumentTemplates.fulfilled.type]: (state, action: PayloadAction<IDocumentTemplates>) => {
-			state.loadingDocumentTemplates = false;
+			state.loadingDocumentTemplates = !!action.payload?.aborted;
 			state.error = null;
-			state.documentTemplates = action.payload;
+			state.documentTemplates = !!action.payload.aborted ? state.documentTemplates : action.payload;
 		},
 		[fetchDocumentTemplates.pending.type]: (state) => {
 			state.loadingDocumentTemplates = true;
@@ -117,9 +117,9 @@ const documentTemplatesReducer = createSlice({
 			state.error = action.payload;
 		},
 		[fetchDocumentTemplatesFields.fulfilled.type]: (state, action: PayloadAction<IDocumentTemplateFields>) => {
-			state.loadingDocumentTemplatesFields = false;
+			state.loadingDocumentTemplatesFields = !!action.payload?.aborted;
 			state.error = null;
-			state.documentTemplatesFields = action.payload;
+			state.documentTemplatesFields = !!action.payload.aborted ? state.documentTemplatesFields : action.payload;
 		},
 		[fetchDocumentTemplatesFields.pending.type]: (state) => {
 			state.loadingDocumentTemplatesFields = true;
