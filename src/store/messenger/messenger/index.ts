@@ -58,11 +58,14 @@ const prepareMessages = (items: IPreparedMessage[], profile: IUser) => {
 		const showTime = comparedMessage.id === message.id || differenceInMinutes(comparedMessage.timestamp, message.timestamp) > 1;
 
 		const nextMessage = items[index + 1];
+		const isExternalMessage = !!message?.externalAuthorId;
+		const isNotSender = isExternalMessage || message.authorId !== profile.authUserId;
+		const nextIsSender = isExternalMessage ? !nextMessage?.externalAuthorId : nextMessage?.authorId === profile.authUserId;
 		const isFirstUnread =
 			Array.isArray(message.readBy) &&
-			message.authorId !== profile.authUserId &&
+			isNotSender &&
 			!message.readBy.includes(profile.authUserId) &&
-			(nextMessage?.readBy?.includes(profile.authUserId) || nextMessage?.authorId === profile.authUserId || !nextMessage);
+			(nextMessage?.readBy?.includes(profile.authUserId) || nextIsSender || !nextMessage);
 
 		if (isFirstUnread && !origin.find((it) => it.isFirstUnread)) {
 			return [
