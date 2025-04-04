@@ -46,7 +46,7 @@
     "prettier": "3.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-redux": "^9.2.0",
+    "react-redux": "8.1.2",
     "ts-loader": "9.4.4",
     "typedoc": "0.24.8",
     "typescript": "5.1.6",
