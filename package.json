@@ -1,6 +1,6 @@
 {
   "name": "@uspacy/store",
-  "version": "0.0.194",
+  "version": "0.0.196",
   "keywords": [],
   "repository": "git@github.com:Uspacy/uspacy-store.git",
   "license": "ISC",
@@ -27,7 +27,7 @@
     "@typescript-eslint/eslint-plugin": "6.3.0",
     "@typescript-eslint/parser": "6.3.0",
     "@uspacy/forms": "1.0.8",
-    "@uspacy/sdk": "0.0.143",
+    "@uspacy/sdk": "0.0.144",
     "cross-env": "7.0.3",
     "date-fns": "2.30.0",
     "dotenv-webpack": "8.0.1",
@@ -46,7 +46,7 @@
     "prettier": "3.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-redux": "^9.2.0",
+    "react-redux": "8.1.2",
     "ts-loader": "9.4.4",
     "typedoc": "0.24.8",
     "typescript": "5.1.6",
@@ -55,7 +55,8 @@
     "webpack-dev-server": "4.15.1",
     "webpack-node-externals": "3.0.0"
   },
-  "dependencies": {
-    "@types/react": "^19.0.12"
+  "resolutions": {
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0"
   }
 }
