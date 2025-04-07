@@ -2139,18 +2139,7 @@
   resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-4.4.12.tgz#b5d76568485b02a307238270bfe96cb51ee2a044"
   integrity sha512-8TV6R3h2j7a91c+1DXdJi3Syo69zzIZbz7Lg5tORM5LEJG7X/E6a1V3drRyBRZq7/utz7A+c4OgYLiLcYGHG6w==
 
-<<<<<<< HEAD
-"@types/react@*":
-  version "19.0.7"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-19.0.7.tgz#c451968b999d1cb2d9207dc5ff56496164cf511d"
-  integrity sha512-MoFsEJKkAtZCrC1r6CM8U22GzhG7u2Wir8ons/aCKH6MBdD1ibV24zOSSkdZVUKqN5i396zG5VKLYZ3yaUZdLA==
-  dependencies:
-    csstype "^3.0.2"
-
-"@types/react@18.2.0":
-=======
 "@types/react@*", "@types/react@18.2.0":
->>>>>>> feat/5276_dashboard
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.0.tgz#15cda145354accfc09a18d2f2305f9fc099ada21"
   integrity sha512-0FLj93y5USLHdnhIhABk83rm8XEGA7kH3cr+YUlvxoUGp1xNt/DINUMvqPxLyOQMzLmZe8i4RTHbvb8MC7NmrA==
@@ -2511,17 +2500,10 @@
     lint-staged "15.2.10"
     localforage "1.10.0"
 
-<<<<<<< HEAD
-"@uspacy/sdk@0.0.144-alpha.1":
-  version "0.0.144-alpha.1"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.144-alpha.1/a10e96e53cff602a71d1d2c99184ec0c625fa3f9#a10e96e53cff602a71d1d2c99184ec0c625fa3f9"
-  integrity sha512-6sU8vXcu1UsZmTk5voXXEN0kanxmIJX46IPYrOKprS3KVJodcuTg3Hh1SR+zPvqaOa0heOx3vSmCaNvwqlWXgA==
-=======
 "@uspacy/sdk@0.0.145-alpha.2":
   version "0.0.145-alpha.2"
   resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.145-alpha.2/01234c07756ca4680b2300edd33ab22d768e7700#01234c07756ca4680b2300edd33ab22d768e7700"
   integrity sha512-EYpkF8nd8l541N90FghSkcHc3qp0171apYvZptjGrBjZMkecSlR1rKy8MedJTyPmpO59DTGh1H52mA1kF3U1iw==
->>>>>>> feat/5276_dashboard
   dependencies:
     axios "^1.7.2"
     js-cookie "3.0.5"
