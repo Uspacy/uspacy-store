@@ -10,7 +10,6 @@ export const disabledPermissions = {
 		'crm.deals.create.mine.disabled-any',
 		'crm.activity.create.department.disabled-any',
 		'crm.activity.create.mine.disabled-any',
-		'crm.uspacy_calls.create.allowed.disabled-any',
 		'crm.uspacy_calls.create.mine.disabled-any',
 		'crm.uspacy_calls.create.department.disabled-any',
 		'hrm.activity.create.department.disabled-any',
