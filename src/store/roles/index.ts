@@ -233,18 +233,18 @@ const rolesReducer = createSlice({
 				// Update all permissions related to goalForClean
 
 				if (goalForClean !== 'crm.uspacy_calls') {
-					newPermissions.create = [
-						...permissionState.create.filter((item) => !item.includes(goalForClean)),
-						`${goalForClean}.create.mine.disabled-any`,
-						`${goalForClean}.create.department.disabled-any`,
-						`${goalForClean}.create.${permissionKey}`,
-					].filter((item) => ![`${goalForClean}.create.mine`, `${goalForClean}.create.department`].includes(item));
-
 					newPermissions.delete = [
 						...permissionState.delete.filter((item) => !item.includes(goalForClean)),
 						`${goalForClean}.delete.${permissionKey}`,
 					];
 				}
+
+				newPermissions.create = [
+					...permissionState.create.filter((item) => !item.includes(goalForClean)),
+					`${goalForClean}.create.mine.disabled-any`,
+					`${goalForClean}.create.department.disabled-any`,
+					`${goalForClean}.create.${permissionKey}`,
+				].filter((item) => ![`${goalForClean}.create.mine`, `${goalForClean}.create.department`].includes(item));
 
 				newPermissions.edit = [
 					...permissionState.edit.filter((item) => !item.includes(goalForClean)),
