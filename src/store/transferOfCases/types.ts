@@ -1,8 +1,13 @@
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { ITransferOfCasesProgress } from '@uspacy/sdk/lib/models/transferOfCases';
 
+export interface IDataForTransferOfCases {
+	open: boolean;
+	userId: number;
+}
+
 export interface IState {
-	openTransferOfCases: boolean;
+	dataForTransferOfCases: IDataForTransferOfCases;
 	tasks: ITransferOfCasesProgress;
 	groups: ITransferOfCasesProgress;
 	activities: ITransferOfCasesProgress;

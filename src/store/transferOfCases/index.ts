@@ -3,10 +3,13 @@ import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { ITransferOfCasesProgress } from '@uspacy/sdk/lib/models/transferOfCases';
 
 import { transferActivitiesProgress, transferCrmEntitiesProgress, transferTasksProgress } from './actions';
-import { IState } from './types';
+import { IDataForTransferOfCases, IState } from './types';
 
 const initialState = {
-	openTransferOfCases: false,
+	dataForTransferOfCases: {
+		open: false,
+		userId: null,
+	},
 	tasks: {
 		status: null,
 		totalQuantity: null,
@@ -45,8 +48,8 @@ const transferOfCasesReducer = createSlice({
 	name: 'transferOfCasesReducer',
 	initialState,
 	reducers: {
-		setOpenTransferOfCases: (state, action: PayloadAction<boolean>) => {
-			state.openTransferOfCases = action.payload;
+		setDataTransferOfCases: (state, action: PayloadAction<IDataForTransferOfCases>) => {
+			state.dataForTransferOfCases = action.payload;
 		},
 		setTransferTasksProgress: (state, action: PayloadAction<ITransferOfCasesProgress>) => {
 			state.tasks = action.payload;
@@ -106,6 +109,11 @@ const transferOfCasesReducer = createSlice({
 	},
 });
 
-export const { setTransferTasksProgress, setTransferGroupsProgress, setTransferActivitiesProgress, setTransferCrmEntitiesProgress } =
-	transferOfCasesReducer.actions;
+export const {
+	setDataTransferOfCases,
+	setTransferTasksProgress,
+	setTransferGroupsProgress,
+	setTransferActivitiesProgress,
+	setTransferCrmEntitiesProgress,
+} = transferOfCasesReducer.actions;
 export default transferOfCasesReducer.reducer;
