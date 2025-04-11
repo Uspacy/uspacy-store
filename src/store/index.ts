@@ -44,6 +44,7 @@ import tasksFilters from './tasksFilters';
 import tasksSettings from './tasksSettings';
 import tasksStages from './tasksStages';
 import tasksTimer from './tasksTimer';
+import transferOfCases from './transferOfCases';
 import users from './users';
 import webhooks from './webhooks';
 
@@ -94,6 +95,7 @@ const rootReducer = combineReducers({
 	announcers,
 	analytics,
 	forms,
+	transferOfCases,
 });
 
 export const setupStore = () => {
