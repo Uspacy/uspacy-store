@@ -8,31 +8,34 @@ import { IDataForTransferOfCases, IState } from './types';
 const initialState = {
 	dataForTransferOfCases: {
 		open: false,
+		expand: false,
 		userId: null,
 	},
-	tasks: {
-		status: null,
-		totalQuantity: null,
-		quantity: null,
-		createdAt: null,
-	},
-	groups: {
-		status: null,
-		totalQuantity: null,
-		quantity: null,
-		createdAt: null,
-	},
-	activities: {
-		status: null,
-		totalQuantity: null,
-		quantity: null,
-		createdAt: null,
-	},
-	crmEntities: {
-		status: null,
-		totalQuantity: null,
-		quantity: null,
-		createdAt: null,
+	transferProgress: {
+		tasks: {
+			status: null,
+			totalQuantity: null,
+			quantity: null,
+			createdAt: null,
+		},
+		groups: {
+			status: null,
+			totalQuantity: null,
+			quantity: null,
+			createdAt: null,
+		},
+		activities: {
+			status: null,
+			totalQuantity: null,
+			quantity: null,
+			createdAt: null,
+		},
+		crmEntities: {
+			status: null,
+			totalQuantity: null,
+			quantity: null,
+			createdAt: null,
+		},
 	},
 	loadingTasksProgress: false,
 	loadingGroupsProgress: false,
@@ -52,21 +55,21 @@ const transferOfCasesReducer = createSlice({
 			state.dataForTransferOfCases = action.payload;
 		},
 		setTransferTasksProgress: (state, action: PayloadAction<ITransferOfCasesProgress>) => {
-			state.tasks = action.payload;
+			state.transferProgress.tasks = action.payload;
 		},
 		setTransferGroupsProgress: (state, action: PayloadAction<ITransferOfCasesProgress>) => {
-			state.groups = action.payload;
+			state.transferProgress.groups = action.payload;
 		},
 		setTransferActivitiesProgress: (state, action: PayloadAction<ITransferOfCasesProgress>) => {
-			state.activities = action.payload;
+			state.transferProgress.activities = action.payload;
 		},
 		setTransferCrmEntitiesProgress: (state, action: PayloadAction<ITransferOfCasesProgress>) => {
-			state.crmEntities = action.payload;
+			state.transferProgress.crmEntities = action.payload;
 		},
 	},
 	extraReducers: {
 		[getTransferTasksProgress.fulfilled.type]: (state, action: PayloadAction<ITransferOfCasesProgress>) => {
-			state.tasks = action.payload;
+			state.transferProgress.tasks = action.payload;
 			state.loadingTasksProgress = false;
 			state.errorLoadingTasksProgress = null;
 		},
@@ -80,7 +83,7 @@ const transferOfCasesReducer = createSlice({
 		},
 
 		[getTransferActivitiesProgress.fulfilled.type]: (state, action: PayloadAction<ITransferOfCasesProgress>) => {
-			state.activities = action.payload;
+			state.transferProgress.activities = action.payload;
 			state.loadingActivitiesProgress = false;
 			state.errorLoadingActivitiesProgress = null;
 		},
@@ -94,7 +97,7 @@ const transferOfCasesReducer = createSlice({
 		},
 
 		[getTransferEntitiesProgress.fulfilled.type]: (state, action: PayloadAction<ITransferOfCasesProgress>) => {
-			state.crmEntities = action.payload;
+			state.transferProgress.crmEntities = action.payload;
 			state.loadingActivitiesProgress = false;
 			state.errorLoadingActivitiesProgress = null;
 		},
