@@ -3,15 +3,18 @@ import { ITransferOfCasesProgress } from '@uspacy/sdk/lib/models/transferOfCases
 
 export interface IDataForTransferOfCases {
 	open: boolean;
+	expand: boolean;
 	userId: number;
 }
 
 export interface IState {
 	dataForTransferOfCases: IDataForTransferOfCases;
-	tasks: ITransferOfCasesProgress;
-	groups: ITransferOfCasesProgress;
-	activities: ITransferOfCasesProgress;
-	crmEntities: ITransferOfCasesProgress;
+	transferProgress: {
+		tasks: ITransferOfCasesProgress;
+		groups: ITransferOfCasesProgress;
+		activities: ITransferOfCasesProgress;
+		crmEntities: ITransferOfCasesProgress;
+	};
 	loadingTasksProgress: boolean;
 	loadingGroupsProgress: boolean;
 	loadingActivitiesProgress: boolean;
