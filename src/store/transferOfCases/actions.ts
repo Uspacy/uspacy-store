@@ -1,27 +1,27 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 
-export const transferTasksProgress = createAsyncThunk('transferOfCases/transferTasksProgress', async (_, { rejectWithValue }) => {
+export const getTransferTasksProgress = createAsyncThunk('transferOfCases/getTransferTasksProgress', async (_, { rejectWithValue }) => {
 	try {
-		const res = await uspacySdk.tasksService.transferTasksProgress();
+		const res = await uspacySdk.tasksService.getTransferTasksProgress();
 		return res.data;
 	} catch (e) {
 		return rejectWithValue(e);
 	}
 });
 
-export const transferActivitiesProgress = createAsyncThunk('transferOfCases/transferActivitiesProgress', async (_, { rejectWithValue }) => {
+export const getTransferActivitiesProgress = createAsyncThunk('transferOfCases/getTransferActivitiesProgress', async (_, { rejectWithValue }) => {
 	try {
-		const res = await uspacySdk.crmTasksService.transferActivitiesProgress();
+		const res = await uspacySdk.crmTasksService.getTransferActivitiesProgress();
 		return res.data;
 	} catch (e) {
 		return rejectWithValue(e);
 	}
 });
 
-export const transferCrmEntitiesProgress = createAsyncThunk('transferOfCases/transferEntitiesProgress', async (_, { rejectWithValue }) => {
+export const getTransferEntitiesProgress = createAsyncThunk('transferOfCases/getTransferEntitiesProgress', async (_, { rejectWithValue }) => {
 	try {
-		const res = await uspacySdk.crmEntitiesService.transferEntitiesProgress();
+		const res = await uspacySdk.crmEntitiesService.getTransferEntitiesProgress();
 		return res.data;
 	} catch (e) {
 		return rejectWithValue(e);
