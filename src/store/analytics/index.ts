@@ -171,7 +171,7 @@ const analyticsReducer = createSlice({
 		[updateDashboard.pending.type]: (state, action: PayloadAction<IDashboard, string, { arg: { id: string; body: IDashboard } }>) => {
 			const dashboard = action.meta.arg.body;
 			state.dashboard = dashboard;
-			state.dashboards = state.dashboards.map((it) => (it.id === dashboard.id ? action.payload : it));
+			state.dashboards = state.dashboards.map((it) => (it.id === dashboard.id ? dashboard : it));
 		},
 		// [deleteDashboard.fulfilled.type]: (state, action: PayloadAction<string>) => {
 		// 	state.loadingDashboard = false;
