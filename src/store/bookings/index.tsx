@@ -32,6 +32,8 @@ const initialBookingState: IBooking = {
 	},
 	userData: {
 		formName: '',
+		// @VitasPirozhko, please fix it
+		// @ts-ignore, TODO: remove
 		entity: ECreateEntity.deal,
 		source: '',
 		fields: [],

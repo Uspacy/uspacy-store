@@ -2500,17 +2500,10 @@
     lint-staged "15.2.10"
     localforage "1.10.0"
 
-<<<<<<< HEAD
-"@uspacy/sdk@0.0.145-alpha.11":
-  version "0.0.145-alpha.11"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.145-alpha.11/a67a2d5168698ab85eb14f8633e9ac264797e608#a67a2d5168698ab85eb14f8633e9ac264797e608"
-  integrity sha512-eQ+2Bd6l172Sa1H+ghdxzHLeNCyW9yMj5qQH3pBhvBkbhqMhxKaDxjSdTuU67XdPJfCZqxeoRSlyB6uxOgcU3A==
-=======
 "@uspacy/sdk@0.0.145-alpha.20":
   version "0.0.145-alpha.20"
   resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.145-alpha.20/75cca4c34c419d01a49bb5a126881c24dc94c544#75cca4c34c419d01a49bb5a126881c24dc94c544"
   integrity sha512-IigBc7TR4d2nqIaUU/ahZZUyX+CTWI8hWmDh7RzCuOcEx6JLRZhPWWFMmd8sCXoHj92rfqKhbKy/Mm2uspqlBg==
->>>>>>> feature/5137_transfer_of_cases
   dependencies:
     axios "^1.7.2"
     js-cookie "3.0.5"
