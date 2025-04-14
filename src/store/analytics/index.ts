@@ -168,8 +168,8 @@ const analyticsReducer = createSlice({
 		// 	state.dashboard = action.payload;
 		// 	state.dashboards = state.dashboards.map((it) => (it.id === action.payload.id ? action.payload : it));
 		// },
-		[updateDashboard.pending.type]: (state, action: PayloadAction<IDashboard, string, { arg: IDashboard }>) => {
-			const dashboard = action.meta.arg;
+		[updateDashboard.pending.type]: (state, action: PayloadAction<IDashboard, string, { arg: { id: string; body: IDashboard } }>) => {
+			const dashboard = action.meta.arg.body;
 			state.dashboard = dashboard;
 			state.dashboards = state.dashboards.map((it) => (it.id === dashboard.id ? action.payload : it));
 		},
