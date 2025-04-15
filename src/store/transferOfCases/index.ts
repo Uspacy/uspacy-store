@@ -10,7 +10,7 @@ const initialState = {
 		open: false,
 		expand: false,
 		userId: null,
-		isCasesTransfered: false,
+		status: 'preparing',
 	},
 	transferProgress: {
 		tasks: {
