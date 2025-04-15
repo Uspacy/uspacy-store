@@ -124,6 +124,13 @@ const analyticsReducer = createSlice({
 					};
 				}
 
+				if (hasReportInLayout && hasReportInDashboard) {
+					return {
+						...dashboard,
+						layout: dashboard.layout.map((item) => (item.report_id === action.payload.id ? { ...item, report: action.payload } : item)),
+					};
+				}
+
 				return dashboard;
 			});
 		},
