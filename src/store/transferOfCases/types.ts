@@ -5,7 +5,7 @@ export interface IDataForTransferOfCases {
 	open: boolean;
 	expand: boolean;
 	userId: number;
-	isCasesTransfered: boolean;
+	status: 'preparing' | 'transfering' | 'transfered';
 }
 
 export interface IState {
