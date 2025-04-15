@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IAnalyticReport, IAnalyticReportList, IDashboard } from '@uspacy/sdk/lib/models/analytics';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
+import { addReportToLayout, removeReportFromLayout } from '../../helpers/dashboardHelper';
 import {
 	createDashboard,
 	createReport,
@@ -82,6 +83,15 @@ const analyticsReducer = createSlice({
 				data: [action.payload, ...state.reports.data],
 				meta: { ...state.reports.meta, total: state.reports.meta.total + 1, unfiltered_total: state.reports.meta.unfiltered_total + 1 },
 			};
+			state.dashboards = state.dashboards.map((dashboard) => {
+				if (action.payload.panel_ids.includes(action.payload.id)) {
+					return {
+						...dashboard,
+						layout: addReportToLayout(dashboard.layout, action.payload),
+					};
+				}
+				return dashboard;
+			});
 		},
 		[createReport.pending.type]: (state) => {
 			state.loadingReport = true;
@@ -96,6 +106,26 @@ const analyticsReducer = createSlice({
 			state.errorLoadingReports = null;
 			state.report = action.payload;
 			state.reports = { ...state.reports, data: state.reports.data.map((it) => (it.id === action.payload.id ? action.payload : it)) };
+			state.dashboards = state.dashboards.map((dashboard) => {
+				const hasReportInLayout = dashboard.layout.some((item) => item.report_id === action.payload.id);
+				const hasReportInDashboard = action.payload.panel_ids.includes(dashboard.id);
+
+				if (hasReportInLayout && !hasReportInDashboard) {
+					return {
+						...dashboard,
+						layout: removeReportFromLayout(dashboard.layout, action.payload.id),
+					};
+				}
+
+				if (!hasReportInLayout && hasReportInDashboard) {
+					return {
+						...dashboard,
+						layout: addReportToLayout(dashboard.layout, action.payload),
+					};
+				}
+
+				return dashboard;
+			});
 		},
 		[updateReport.pending.type]: (state) => {
 			state.loadingReport = true;
@@ -114,6 +144,15 @@ const analyticsReducer = createSlice({
 				data: state.reports.data.filter((it) => it.id !== action.payload),
 				meta: { ...state.reports.meta, total: state.reports.meta.total - 1, unfiltered_total: state.reports.meta.unfiltered_total - 1 },
 			};
+			state.dashboards = state.dashboards.map((dashboard) => {
+				if (dashboard.layout.some((item) => item.report_id === action.payload)) {
+					return {
+						...dashboard,
+						layout: removeReportFromLayout(dashboard.layout, action.payload),
+					};
+				}
+				return dashboard;
+			});
 		},
 		[deleteReport.pending.type]: (state) => {
 			state.loadingReport = true;
