@@ -53,6 +53,7 @@ export interface IState {
 	portalSubsctription: IPortalSubscription;
 	bill: IBill;
 	discountCoupon: IDiscountCoupon;
+	redirectToStripeUrl: string;
 	loadingTariffs: boolean;
 	loadingPortalSubsctription: boolean;
 	loadingCreatingSubscription: boolean;
@@ -60,6 +61,7 @@ export interface IState {
 	loadingDisablingRenewal: boolean;
 	loadingDowngradeTariff: boolean;
 	loadingDiscountCoupon: boolean;
+	loadingRedirectToStripeUrl: boolean;
 	errorLoadingTariffs: IErrorsAxiosResponse;
 	errorLoadingPortalSubsctription: IErrorsAxiosResponse;
 	errorLoadingCreatingSubscription: IErrorsAxiosResponse;
@@ -67,4 +69,5 @@ export interface IState {
 	errorLoadingDisablingRenewal: IErrorsAxiosResponse;
 	errorLoadingDowngradeTariff: IErrorsAxiosResponse;
 	errorLoadingDiscountCoupon: IErrorsAxiosResponse;
+	errorLoadingRedirectToStripeUrl: IErrorsAxiosResponse;
 }

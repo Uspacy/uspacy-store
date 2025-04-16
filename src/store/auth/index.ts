@@ -10,6 +10,7 @@ import {
 	IInvoices,
 	IPortalSubscription,
 	IRatesList,
+	IStripeRedirect,
 	ISubscription,
 	ITariff,
 } from '@uspacy/sdk/lib/models/tariffs';
@@ -35,6 +36,7 @@ import {
 	getPortalSubscription,
 	getTariffsList,
 	getUrlToRedirectAfterOAuth,
+	redirectToStripe,
 	subscriptionsIndividual,
 	subscriptionsLegal,
 } from './actions';
@@ -77,6 +79,7 @@ const initialState = {
 	portalSubsctription: null,
 	bill: null,
 	discountCoupon: null,
+	redirectToStripeUrl: '',
 	loadingTariffs: false,
 	loadingPortalSubsctription: false,
 	loadingCreatingSubscription: false,
@@ -84,6 +87,7 @@ const initialState = {
 	loadingDisablingRenewal: false,
 	loadingDowngradeTariff: false,
 	loadingDiscountCoupon: false,
+	loadingRedirectToStripeUrl: false,
 	errorLoadingTariffs: null,
 	errorLoadingPortalSubsctription: null,
 	errorLoadingCreatingSubscription: null,
@@ -91,6 +95,7 @@ const initialState = {
 	errorLoadingDisablingRenewal: null,
 	errorLoadingDowngradeTariff: null,
 	errorLoadingDiscountCoupon: null,
+	errorLoadingRedirectToStripeUrl: null,
 } as IState;
 
 const authReducer = createSlice({
@@ -134,6 +139,9 @@ const authReducer = createSlice({
 		},
 		setAutoRenewal: (state, action: PayloadAction<boolean>) => {
 			state.portalSubsctription.auto_renewal = action.payload;
+		},
+		setRedirectToStripeUrl: (state, action: PayloadAction<IStripeRedirect>) => {
+			state.redirectToStripeUrl = action.payload.url;
 		},
 	},
 	extraReducers: {
@@ -376,6 +384,19 @@ const authReducer = createSlice({
 			state.loadingCreatingSubscription = false;
 			state.errorLoadingCreatingSubscription = action.payload;
 		},
+		[redirectToStripe.fulfilled.type]: (state, action: PayloadAction<IStripeRedirect>) => {
+			state.loadingRedirectToStripeUrl = false;
+			state.errorLoadingRedirectToStripeUrl = null;
+			state.redirectToStripeUrl = action.payload.url;
+		},
+		[redirectToStripe.pending.type]: (state) => {
+			state.loadingRedirectToStripeUrl = true;
+			state.errorLoadingRedirectToStripeUrl = null;
+		},
+		[redirectToStripe.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingRedirectToStripeUrl = false;
+			state.errorLoadingRedirectToStripeUrl = action.payload;
+		},
 		[activatingDemo.fulfilled.type]: (state) => {
 			state.loadingActivatingDemo = false;
 			state.errorLoadingActivatingDemo = null;
@@ -449,5 +470,6 @@ export const {
 	clearDiscountCoupon,
 	setAutoRenewal,
 	setPortalSubscription,
+	setRedirectToStripeUrl,
 } = authReducer.actions;
 export default authReducer.reducer;

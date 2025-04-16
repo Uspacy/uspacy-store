@@ -11,6 +11,7 @@ import {
 	ISubscriptionPayload,
 	ISubscriptionsIndividual,
 	ISubscriptionsLegal,
+	ISubscriptionStripePayload,
 } from '@uspacy/sdk/lib/services/AuthService/dto/subscription.dto';
 
 export const fetchInvoices = createAsyncThunk('auth/fetchInvoices', async ({ limit }: { limit: number }, { rejectWithValue }) => {
@@ -174,6 +175,15 @@ export const createSubscriptionInvdividual = createAsyncThunk(
 export const createSubscriptionLegal = createAsyncThunk('auth/createSubscriptionLegal', async (body: ILegalPayload, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk.authService.createSubscriptionLegal(body);
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const redirectToStripe = createAsyncThunk('auth/redirectToStripe', async (body: ISubscriptionStripePayload, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.authService.redirectToStripe(body);
 		return res.data;
 	} catch (e) {
 		return rejectWithValue(e);
