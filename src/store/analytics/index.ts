@@ -46,7 +46,7 @@ const analyticsReducer = createSlice({
 		clearAllDashboard: (state) => {
 			state.dashboards = initialState.dashboards;
 		},
-		updateDashboardById: (state, action: PayloadAction<IDashboard>) => {
+		updateDashboardStateById: (state, action: PayloadAction<IDashboard>) => {
 			state.dashboards = state.dashboards.map((it) => (it.id === action.payload.id ? action.payload : it));
 		},
 	},
@@ -87,7 +87,7 @@ const analyticsReducer = createSlice({
 				meta: { ...state.reports.meta, total: state.reports.meta.total + 1, unfiltered_total: state.reports.meta.unfiltered_total + 1 },
 			};
 			state.dashboards = state.dashboards.map((dashboard) => {
-				if (action.payload.panel_ids.includes(action.payload.id)) {
+				if (action.payload.dashboards.includes(action.payload.id)) {
 					return {
 						...dashboard,
 						layout: addReportToLayout(dashboard.layout, action.payload),
@@ -111,7 +111,7 @@ const analyticsReducer = createSlice({
 			state.reports = { ...state.reports, data: state.reports.data.map((it) => (it.id === action.payload.id ? action.payload : it)) };
 			state.dashboards = state.dashboards.map((dashboard) => {
 				const hasReportInLayout = dashboard.layout.some((item) => item.report_id === action.payload.id);
-				const hasReportInDashboard = action.payload.panel_ids.includes(dashboard.id);
+				const hasReportInDashboard = action.payload.dashboards.includes(dashboard.id);
 
 				if (hasReportInLayout && !hasReportInDashboard) {
 					return {
@@ -234,6 +234,6 @@ const analyticsReducer = createSlice({
 	},
 });
 
-export const { clearAllReport, clearAllDashboard, updateDashboardById } = analyticsReducer.actions;
+export const { clearAllReport, clearAllDashboard, updateDashboardStateById } = analyticsReducer.actions;
 
 export default analyticsReducer.reducer;
