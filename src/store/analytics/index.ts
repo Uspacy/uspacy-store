@@ -87,7 +87,7 @@ const analyticsReducer = createSlice({
 				meta: { ...state.reports.meta, total: state.reports.meta.total + 1, unfiltered_total: state.reports.meta.unfiltered_total + 1 },
 			};
 			state.dashboards = state.dashboards.map((dashboard) => {
-				if (action.payload.dashboards.includes(action.payload.id)) {
+				if (action.payload.dashboards.includes(dashboard.id)) {
 					return {
 						...dashboard,
 						layout: addReportToLayout(dashboard.layout, action.payload),
