@@ -51,16 +51,19 @@ export interface IState {
 	tariffs: ITariff[];
 	portalSubsctription: IPortalSubscription;
 	bill: IBill;
+	redirectToStripeUrl: string;
 	loadingTariffs: boolean;
 	loadingPortalSubsctription: boolean;
 	loadingCreatingSubscription: boolean;
 	loadingActivatingDemo: boolean;
 	loadingDisablingRenewal: boolean;
 	loadingDowngradeTariff: boolean;
+	loadingRedirectToStripeUrl: boolean;
 	errorLoadingTariffs: IErrorsAxiosResponse;
 	errorLoadingPortalSubsctription: IErrorsAxiosResponse;
 	errorLoadingCreatingSubscription: IErrorsAxiosResponse;
 	errorLoadingActivatingDemo: IErrorsAxiosResponse;
 	errorLoadingDisablingRenewal: IErrorsAxiosResponse;
 	errorLoadingDowngradeTariff: IErrorsAxiosResponse;
+	errorLoadingRedirectToStripeUrl: IErrorsAxiosResponse;
 }
