@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ECreateEntity, IBooking } from '@uspacy/sdk/lib/models/booking';
+import { IResource } from '@uspacy/sdk/lib/models/resources';
 
+import { prepareResourceInToBooking } from '../../helpers/prepareData';
 import { getBookings } from './actions';
 import { IState, SecondLevelKeys, ThirdLevelKeys, UpdateBookingPayload } from './types';
 
@@ -32,7 +34,7 @@ const initialBookingState: IBooking = {
 	},
 	userData: {
 		formName: '',
-		entity: ECreateEntity.deal,
+		entity: ECreateEntity.activity,
 		source: '',
 		fields: [],
 	},
@@ -62,6 +64,7 @@ const initialState: IState = {
 	booking: initialBookingState,
 	bookingList: [],
 	loading: false,
+	loadingDetail: false,
 };
 
 const bookingsReducer = createSlice({
@@ -99,17 +102,33 @@ const bookingsReducer = createSlice({
 				}
 			}
 		},
+		setBookingData: (state, action: PayloadAction<Partial<IBooking>>) => {
+			state.booking = {
+				...state.booking,
+				...action.payload,
+			};
+		},
 		clearBooking: (state) => {
 			state.booking = initialBookingState;
 		},
 		addBooking: (state, action: PayloadAction<IBooking>) => {
 			state.bookingList.push(action.payload);
 		},
+		removeBooking: (state, action: PayloadAction<IBooking['id']>) => {
+			state.bookingList = state.bookingList.filter((booking) => booking.id !== action.payload);
+		},
+		setLoadingDetail: (state, action: PayloadAction<boolean>) => {
+			state.loadingDetail = action.payload;
+		},
+		updateBookingInList: (state, action: PayloadAction<IBooking>) => {
+			const bookingIndex = state.bookingList.findIndex((it) => it.id === action.payload.id);
+			state.bookingList[bookingIndex] = action.payload;
+		},
 	},
 	extraReducers: {
-		[getBookings.fulfilled.type]: (state, action: PayloadAction<IBooking[]>) => {
+		[getBookings.fulfilled.type]: (state, action: PayloadAction<IResource[]>) => {
 			state.loading = false;
-			state.bookingList = Array.isArray(action.payload) ? action.payload : [];
+			state.bookingList = Array.isArray(action.payload) ? action.payload.map((resource) => prepareResourceInToBooking(resource)) : [];
 		},
 		[getBookings.pending.type]: (state) => {
 			state.loading = true;
@@ -120,5 +139,6 @@ const bookingsReducer = createSlice({
 	},
 });
 
-export const { updateBooking, clearBooking, addBooking } = bookingsReducer.actions;
+export const { updateBooking, clearBooking, addBooking, removeBooking, setBookingData, setLoadingDetail, updateBookingInList } =
+	bookingsReducer.actions;
 export default bookingsReducer.reducer;

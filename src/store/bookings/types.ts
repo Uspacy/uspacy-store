@@ -4,6 +4,7 @@ export interface IState {
 	booking: IBooking;
 	bookingList: IBooking[];
 	loading: boolean;
+	loadingDetail: boolean;
 }
 
 export type SecondLevelKeys<T, K extends keyof T> = K extends keyof T ? keyof T[K] : never;
