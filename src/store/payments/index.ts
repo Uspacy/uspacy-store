@@ -49,6 +49,7 @@ const initialState = {
 		companyName: '',
 		legalAddress: '',
 		directorsFullName: '',
+		token: '',
 	},
 	legalEntityFormEuCom: {
 		firstName: '',
