@@ -46,6 +46,9 @@ const analyticsReducer = createSlice({
 		clearAllDashboard: (state) => {
 			state.dashboards = initialState.dashboards;
 		},
+		updateDashboardById: (state, action: PayloadAction<IDashboard>) => {
+			state.dashboards = state.dashboards.map((it) => (it.id === action.payload.id ? action.payload : it));
+		},
 	},
 	extraReducers: {
 		[getAnalyticsReportList.fulfilled.type]: (state, action: PayloadAction<IAnalyticReportList>) => {
@@ -231,6 +234,6 @@ const analyticsReducer = createSlice({
 	},
 });
 
-export const { clearAllReport, clearAllDashboard } = analyticsReducer.actions;
+export const { clearAllReport, clearAllDashboard, updateDashboardById } = analyticsReducer.actions;
 
 export default analyticsReducer.reducer;
