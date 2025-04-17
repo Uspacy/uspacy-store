@@ -2,6 +2,7 @@ import { IBooking } from '@uspacy/sdk/lib/models/booking';
 
 export interface IState {
 	booking: IBooking;
+	invalidBookingFields: string[];
 	bookingList: IBooking[];
 	loading: boolean;
 	loadingDetail: boolean;

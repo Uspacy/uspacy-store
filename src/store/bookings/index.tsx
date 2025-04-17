@@ -62,6 +62,7 @@ const initialBookingState: IBooking = {
 
 const initialState: IState = {
 	booking: initialBookingState,
+	invalidBookingFields: [],
 	bookingList: [],
 	loading: false,
 	loadingDetail: false,
@@ -124,6 +125,9 @@ const bookingsReducer = createSlice({
 			const bookingIndex = state.bookingList.findIndex((it) => it.id === action.payload.id);
 			state.bookingList[bookingIndex] = action.payload;
 		},
+		setInvalidBookingFields: (state, action: PayloadAction<string[]>) => {
+			state.invalidBookingFields = action.payload;
+		},
 	},
 	extraReducers: {
 		[getBookings.fulfilled.type]: (state, action: PayloadAction<IResource[]>) => {
@@ -139,6 +143,14 @@ const bookingsReducer = createSlice({
 	},
 });
 
-export const { updateBooking, clearBooking, addBooking, removeBooking, setBookingData, setLoadingDetail, updateBookingInList } =
-	bookingsReducer.actions;
+export const {
+	updateBooking,
+	clearBooking,
+	addBooking,
+	removeBooking,
+	setBookingData,
+	setLoadingDetail,
+	updateBookingInList,
+	setInvalidBookingFields,
+} = bookingsReducer.actions;
 export default bookingsReducer.reducer;
