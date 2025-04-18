@@ -2,7 +2,14 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { ITransferOfCasesProgress } from '@uspacy/sdk/lib/models/transferOfCases';
 
-import { getTransferActivitiesProgress, getTransferEntitiesProgress, getTransferTasksProgress } from './actions';
+import {
+	getTransferActivitiesProgress,
+	getTransferEntitiesProgress,
+	getTransferTasksProgress,
+	stopTransferActivities,
+	stopTransferEntities,
+	stopTransferTasks,
+} from './actions';
 import { IDataForTransferOfCases, IState } from './types';
 
 const initialState = {
@@ -109,6 +116,46 @@ const transferOfCasesReducer = createSlice({
 		[getTransferEntitiesProgress.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingActivitiesProgress = false;
 			state.errorLoadingActivitiesProgress = action.payload;
+		},
+
+		[stopTransferTasks.fulfilled.type]: (state) => {
+			state.transferProgress.tasks = { status: null, totalQuantity: null, quantity: null, createdAt: null };
+			state.loadingStopTasksTransfer = false;
+			state.errorLoadingStopTasksTransfer = null;
+		},
+		[stopTransferTasks.pending.type]: (state) => {
+			state.loadingStopTasksTransfer = true;
+			state.errorLoadingStopTasksTransfer = null;
+		},
+		[stopTransferTasks.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingStopTasksTransfer = false;
+			state.errorLoadingStopTasksTransfer = action.payload;
+		},
+		[stopTransferActivities.fulfilled.type]: (state) => {
+			state.transferProgress.activities = { status: null, total_quantity: null, quantity: null, created_at: null };
+			state.loadingActivitiesProgress = false;
+			state.errorLoadingActivitiesProgress = null;
+		},
+		[stopTransferActivities.pending.type]: (state) => {
+			state.loadingActivitiesProgress = true;
+			state.errorLoadingActivitiesProgress = null;
+		},
+		[stopTransferActivities.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingActivitiesProgress = false;
+			state.errorLoadingActivitiesProgress = action.payload;
+		},
+		[stopTransferEntities.fulfilled.type]: (state) => {
+			state.transferProgress.crmEntities = { status: null, total_quantity: null, quantity: null, created_at: null };
+			state.loadingCrmEntitiesProgress = false;
+			state.errorLoadingCrmEntitiesProgress = null;
+		},
+		[stopTransferEntities.pending.type]: (state) => {
+			state.loadingCrmEntitiesProgress = true;
+			state.errorLoadingCrmEntitiesProgress = null;
+		},
+		[stopTransferEntities.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCrmEntitiesProgress = false;
+			state.errorLoadingCrmEntitiesProgress = action.payload;
 		},
 	},
 });
