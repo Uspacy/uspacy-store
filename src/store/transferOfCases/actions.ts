@@ -27,3 +27,30 @@ export const getTransferEntitiesProgress = createAsyncThunk('transferOfCases/get
 		return rejectWithValue(e);
 	}
 });
+
+export const stopTransferTasks = createAsyncThunk('transferOfCases/stopTransferTasks', async (_, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.tasksService.stopTransferTasks();
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const stopTransferActivities = createAsyncThunk('transferOfCases/stopTransferActivities', async (_, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.crmTasksService.stopTransferActivities();
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const stopTransferEntities = createAsyncThunk('transferOfCases/stopTransferEntities', async (_, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.crmEntitiesService.stopTransferEntities();
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});

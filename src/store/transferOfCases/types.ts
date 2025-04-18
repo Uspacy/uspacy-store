@@ -20,8 +20,16 @@ export interface IState {
 	loadingGroupsProgress: boolean;
 	loadingActivitiesProgress: boolean;
 	loadingCrmEntitiesProgress: boolean;
+	loadingStopTasksTransfer: boolean;
+	loadingStopGroupsTransfer: boolean;
+	loadingStopActivitiesTransfer: boolean;
+	loadingStopCrmEntitiesTransfer: boolean;
 	errorLoadingTasksProgress: IErrorsAxiosResponse;
 	errorLoadingGroupsProgress: IErrorsAxiosResponse;
 	errorLoadingActivitiesProgress: IErrorsAxiosResponse;
 	errorLoadingCrmEntitiesProgress: IErrorsAxiosResponse;
+	errorLoadingStopTasksTransfer: IErrorsAxiosResponse;
+	errorLoadingStopGroupsTransfer: IErrorsAxiosResponse;
+	errorLoadingStopActivitiesTransfer: IErrorsAxiosResponse;
+	errorLoadingStopCrmEntitiesTransfer: IErrorsAxiosResponse;
 }
