@@ -2,7 +2,17 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IFilterField, IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { IFilter } from '@uspacy/sdk/lib/models/crm-filters';
 
-import { IState } from './types';
+interface IState {
+	userFilter: {
+		presets: IFilterPreset[];
+		filters?: IFilter;
+		filterFields?: IFilterField[];
+	};
+}
+
+const initialState: IState = {
+	userFilter: null,
+};
 
 export const sortPresets = (presets: IFilterPreset[]) => {
 	return presets.sort((a, b) => {
@@ -10,10 +20,6 @@ export const sortPresets = (presets: IFilterPreset[]) => {
 		if (b.pinned) return 1;
 		return 0;
 	});
-};
-
-const initialState: IState = {
-	userFilter: null,
 };
 
 export const companyUserFilterSlice = createSlice({
