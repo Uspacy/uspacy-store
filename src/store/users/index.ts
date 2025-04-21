@@ -202,21 +202,21 @@ export const usersSlice = createSlice({
 				state.userFilter.filters = currentPreset?.filters;
 			}
 		},
-		updateCurrentPresetFilters: (state, action: PayloadAction<{ entityCode: string; filters: Partial<IFilter> }>) => {
-			state[action.payload.entityCode].presets = state[action.payload.entityCode].presets?.map((item) => {
+		updateCurrentPresetFilters: (state, action: PayloadAction<{ filters: Partial<IFilter> }>) => {
+			state.userFilter.presets = state.userFilter.presets?.map((item) => {
 				if (item.current) {
 					const it = { ...item, filters: { ...item.filters, ...action.payload.filters } };
 					return it;
 				}
 				return item;
 			});
-			state[action.payload.entityCode].filters = { ...state[action.payload.entityCode]?.filters, ...action.payload.filters };
+			state.userFilter.filters = { ...state.userFilter?.filters, ...action.payload.filters };
 		},
-		updateCurrentFilters: (state, action: PayloadAction<{ entityCode: string; filters: Partial<IFilter> }>) => {
-			state[action.payload.entityCode].filters = { ...state[action.payload.entityCode]?.filters, ...action.payload.filters };
+		updateCurrentFilters: (state, action: PayloadAction<{ filters: Partial<IFilter> }>) => {
+			state.userFilter.filters = { ...state.userFilter?.filters, ...action.payload.filters };
 		},
-		updateCurrentFilterFields: (state, action: PayloadAction<{ entityCode: string; filterFields: Partial<IFilterField[]> }>) => {
-			state[action.payload.entityCode].filterFields = action.payload.filterFields;
+		updateCurrentFilterFields: (state, action: PayloadAction<{ filterFields: Partial<IFilterField[]> }>) => {
+			state.userFilter.filterFields = action.payload.filterFields;
 		},
 	},
 	extraReducers: {
