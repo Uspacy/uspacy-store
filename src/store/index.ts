@@ -6,6 +6,7 @@ import apps from './apps';
 import auth from './auth';
 import automations from './automations';
 import bookings from './bookings';
+import companyUsers from './companyUsers';
 import crm from './crm';
 import crmCalls from './crmCalls';
 import crmCompanies from './crmCompanies';
@@ -98,6 +99,7 @@ const rootReducer = combineReducers({
 	forms,
 	transferOfCases,
 	bookings,
+	companyUsers,
 });
 
 export const setupStore = () => {
