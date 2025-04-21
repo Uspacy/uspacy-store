@@ -184,6 +184,6 @@ export const {
 	unpinFilterPreset,
 	setCurrentFilterPreset,
 	updateCurrentFilterFields,
-} = usersSlice.actions;
+} = companyUserFilterSlice.actions;
 
-export default usersSlice.reducer;
+export default companyUserFilterSlice.reducer;
