@@ -1,3 +1,5 @@
+import { IFilterField, IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
+import { IFilter } from '@uspacy/sdk/lib/models/crm-filters';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
@@ -7,6 +9,11 @@ export interface IState {
 	errorLoadingUpdatingUser: IErrorsAxiosResponse;
 	loading: boolean;
 	loadingUpdatingUser: boolean;
+	userFilter: {
+		presets: IFilterPreset[];
+		filters?: IFilter;
+		filterFields?: IFilterField[];
+	};
 }
 
 export interface IInvite {
