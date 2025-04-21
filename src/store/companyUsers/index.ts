@@ -13,10 +13,6 @@ export const sortPresets = (presets: IFilterPreset[]) => {
 };
 
 const initialState: IState = {
-	data: [],
-	loading: true,
-	loadingUpdatingUser: false,
-	errorLoadingUpdatingUser: null,
 	userFilter: null,
 };
 
