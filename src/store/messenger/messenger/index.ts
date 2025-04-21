@@ -485,21 +485,8 @@ export const chatSlice = createSlice({
 				return it;
 			});
 		},
-		readAllMessages(state, action: PayloadAction<{ chatId: IChat['id']; profile: IUser; userId: IUser['authUserId'] }>) {
-			const { chatId, profile, userId } = action.payload;
-
-			if (profile.authUserId === userId) {
-				state.chats.items = state.chats.items.map((it) => {
-					if (it.id === chatId && it.unreadCount) {
-						return {
-							...it,
-							unreadCount: 0,
-							unreadMentions: [],
-						};
-					}
-					return it;
-				});
-			}
+		readAllMessages(state, action: PayloadAction<{ chatId: IChat['id']; profile: IUser; userId: IUser['authUserId']; isExternal?: boolean }>) {
+			const { chatId, profile, userId, isExternal } = action.payload;
 
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === chatId) {
@@ -516,21 +503,33 @@ export const chatSlice = createSlice({
 				return group;
 			});
 
-			if (userId !== profile.authUserId) {
-				state.chats.items = state.chats.items.map((chat) => {
-					if (chat.id === chatId && chat.lastMessage?.authorId !== userId) {
-						const { lastMessage } = chat;
-						return {
-							...chat,
-							lastMessage: {
-								...lastMessage,
-								readBy: !lastMessage.readBy.includes(userId) ? [...lastMessage.readBy, userId] : lastMessage.readBy,
-							},
-						};
-					}
-
-					return chat;
-				});
+			if (!isExternal) {
+				if (profile.authUserId === userId) {
+					state.chats.items = state.chats.items.map((it) => {
+						if (it.id === chatId && it.unreadCount) {
+							return {
+								...it,
+								unreadCount: 0,
+								unreadMentions: [],
+							};
+						}
+						return it;
+					});
+				} else {
+					state.chats.items = state.chats.items.map((chat) => {
+						if (chat.id === chatId && chat.lastMessage?.authorId !== userId) {
+							const { lastMessage } = chat;
+							return {
+								...chat,
+								lastMessage: {
+									...lastMessage,
+									readBy: !lastMessage.readBy.includes(userId) ? [...lastMessage.readBy, userId] : lastMessage.readBy,
+								},
+							};
+						}
+						return chat;
+					});
+				}
 			}
 		},
 		resetMessages(state) {
