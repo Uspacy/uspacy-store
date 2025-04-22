@@ -76,6 +76,7 @@ export const addReportToLayout = (layout, reportData) => {
 		i: uuidv4(),
 		w: chartLimitSize.minW,
 		h: chartLimitSize.minH,
+		maxH: 5,
 		...chartLimitSize,
 	};
 	return [...(layout || []), newItem];
