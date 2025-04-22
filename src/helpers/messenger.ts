@@ -93,8 +93,11 @@ export const readLastMessagesInChat = (chats: IChat[], items: { id: string; read
 					},
 				};
 			}
+
+			const readedMessageCount = items.filter((it) => it.readBy.includes(profile.authUserId)).length;
 			return {
 				...chat,
+				unreadCount: Math.max(chat.unreadCount - readedMessageCount, 0),
 			};
 		}
 		return chat;
