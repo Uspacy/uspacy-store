@@ -76,6 +76,7 @@ export const usersSlice = createSlice({
 			state,
 			action: PayloadAction<{
 				data: IFilterPreset[];
+				filters: Partial<IFilter>;
 				filterFields: Partial<IFilterField[]>;
 			}>,
 		) => {
@@ -86,6 +87,7 @@ export const usersSlice = createSlice({
 				presets,
 				filters: {
 					...currentPreset?.filters,
+					...action.payload.filters,
 				},
 				filterFields: action.payload.filterFields,
 			};
