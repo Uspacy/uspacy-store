@@ -5,8 +5,8 @@ import { IField } from '@uspacy/sdk/lib/models/field';
 import { ICountryTemplates, IRequisite, IRequisitesResponse, ITemplate, ITemplateResponse } from '@uspacy/sdk/lib/models/requisites';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 import cloneDeep from 'lodash/cloneDeep';
-import { headField } from 'src/const';
 
+import { headField } from '../../const';
 import { checkBasicRequisite } from '../../helpers/checkBasicRequisite';
 import {
 	createProfileField,
@@ -87,8 +87,7 @@ export const profileSlice = createSlice({
 
 		[fetchProfileFields.fulfilled.type]: (state, action: PayloadAction<IField[]>) => {
 			state.loadingFields.get = false;
-			const data = action.payload;
-			data.splice(0, 0, headField);
+			const data = [headField, ...(action?.payload || [])];
 			state.fields = cloneDeep(data).map((field) => {
 				return {
 					...field,
