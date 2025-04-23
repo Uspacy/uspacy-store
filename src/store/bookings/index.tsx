@@ -125,7 +125,7 @@ const bookingsReducer = createSlice({
 			const bookingIndex = state.bookingList.findIndex((it) => it.id === action.payload.id);
 			state.bookingList[bookingIndex] = action.payload;
 		},
-		setInvalidBookingFields: (state, action: PayloadAction<string[]>) => {
+		setInvalidBookingFields: (state, action: PayloadAction<unknown[]>) => {
 			state.invalidBookingFields = action.payload;
 		},
 	},
