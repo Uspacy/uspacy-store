@@ -2,8 +2,8 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IField } from '@uspacy/sdk/lib/models/field';
 import { IUser, IUserFilter, MainRoles } from '@uspacy/sdk/lib/models/user';
-import { getFilterParams } from 'src/helpers/filterFieldsArrs';
 
+import { getFilterParams } from '../../helpers/filterFieldsArrs';
 import { IInvite, IUploadAvatar } from './types';
 
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async (_, thunkAPI) => {
