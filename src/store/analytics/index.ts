@@ -196,11 +196,6 @@ const analyticsReducer = createSlice({
 		[getDashboard.rejected.type]: (state) => {
 			state.loadingDashboard = false;
 		},
-		// [createDashboard.fulfilled.type]: (state, action: PayloadAction<IDashboard>) => {
-		// 	state.loadingDashboard = false;
-		// 	state.dashboard = action.payload;
-		// 	state.dashboards = [...state.dashboards, action.payload];
-		// },
 		[createDashboard.fulfilled.type]: (state, action: PayloadAction<IDashboard, string, { arg: IDashboard }>) => {
 			const dashboard = { ...action.meta.arg, id: action.payload.id };
 			state.dashboard = action.payload;
@@ -212,21 +207,11 @@ const analyticsReducer = createSlice({
 		[createDashboard.rejected.type]: (state) => {
 			state.loadingDashboard = false;
 		},
-		// [updateDashboard.fulfilled.type]: (state, action: PayloadAction<IDashboard>) => {
-		// 	state.loadingDashboard = false;
-		// 	state.dashboard = action.payload;
-		// 	state.dashboards = state.dashboards.map((it) => (it.id === action.payload.id ? action.payload : it));
-		// },
 		[updateDashboard.pending.type]: (state, action: PayloadAction<IDashboard, string, { arg: { id: string; body: IDashboard } }>) => {
 			const dashboard = action.meta.arg.body;
 			state.dashboard = dashboard;
 			state.dashboards = state.dashboards.map((it) => (it.id === dashboard.id ? dashboard : it));
 		},
-		// [deleteDashboard.fulfilled.type]: (state, action: PayloadAction<string>) => {
-		// 	state.loadingDashboard = false;
-		// 	state.dashboard = initialState.dashboard;
-		// 	state.dashboards = state.dashboards.filter((it) => it.id !== action.payload);
-		// },
 		[deleteDashboard.pending.type]: (state, action: PayloadAction<string, string, { arg: string }>) => {
 			state.dashboard = initialState.dashboard;
 			state.dashboards = state.dashboards.filter((it) => it.id !== action.meta.arg);
