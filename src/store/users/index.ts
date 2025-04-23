@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IFilterField, IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
 import { IFilter } from '@uspacy/sdk/lib/models/crm-filters';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
+import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 import {
@@ -9,6 +10,7 @@ import {
 	deactivateUser,
 	deleteInvitation,
 	fetchUsers,
+	fetchUsersByFilters,
 	repeatInvitation,
 	sendUserInvites,
 	updateUser,
@@ -28,7 +30,12 @@ export const sortPresets = (presets: IFilterPreset[]) => {
 
 const initialState: IState = {
 	data: [],
+	usersFiltersData: {
+		data: [],
+		meta: null,
+	},
 	loading: true,
+	loadingUsersByFilter: true,
 	loadingUpdatingUser: false,
 	errorLoadingUpdatingUser: null,
 	userFilter: null,
@@ -220,8 +227,23 @@ export const usersSlice = createSlice({
 		updateCurrentFilterFields: (state, action: PayloadAction<{ filterFields: Partial<IFilterField[]> }>) => {
 			state.userFilter.filterFields = action.payload.filterFields;
 		},
+		clearItems: (state: IState) => {
+			state.usersFiltersData = initialState.usersFiltersData;
+		},
 	},
 	extraReducers: {
+		[fetchUsersByFilters.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<IUser>>) => {
+			state.loadingUsersByFilter = false;
+			state.usersFiltersData = !!action.payload.aborted ? state.usersFiltersData : action.payload;
+		},
+		[fetchUsersByFilters.pending.type]: (state) => {
+			state.loadingUsersByFilter = true;
+			state.errorLoading = '';
+		},
+		[fetchUsersByFilters.rejected.type]: (state, action: PayloadAction<string>) => {
+			state.loadingUsersByFilter = false;
+			state.errorLoading = action.payload;
+		},
 		[fetchUsers.fulfilled.type]: (state, action: PayloadAction<IUser[]>) => {
 			state.loading = false;
 			state.data = action.payload.filter((user) => !!user.authUserId);
