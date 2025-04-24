@@ -12,6 +12,7 @@ import {
 	deleteEntityItem,
 	fetchEntityItems,
 	fetchEntityItemsByStage,
+	fetchEntityItemsByTimePeriod,
 	massItemsDeletion,
 	massItemsEditing,
 	massItemsStageEditing,
@@ -44,8 +45,8 @@ const itemsReducer = createSlice({
 				return item;
 			});
 		},
-		clearItems: (state: IState, action: PayloadAction<{ entityCode: string; stageId?: number }>) => {
-			const { entityCode, stageId } = action.payload;
+		clearItems: (state: IState, action: PayloadAction<{ entityCode: string; stageId?: number; timePeriod?: string }>) => {
+			const { entityCode, stageId, timePeriod } = action.payload;
 			if (state[entityCode]) {
 				state[entityCode].data = [];
 				state[entityCode].loading = true;
@@ -55,6 +56,15 @@ const itemsReducer = createSlice({
 
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
 				state[entityCode].stages[stageId] = {
+					data: [],
+					loading: true,
+					errorMessage: null,
+					meta: undefined,
+				};
+			}
+
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod] = {
 					data: [],
 					loading: true,
 					errorMessage: null,
@@ -96,6 +106,7 @@ const itemsReducer = createSlice({
 				state[entityCode] = {
 					...initialData,
 					stages: {},
+					timePeriods: {},
 				};
 			}
 			state[entityCode].loading = true;
@@ -152,11 +163,57 @@ const itemsReducer = createSlice({
 			state[entityCode].stages[stageId].loading = false;
 		},
 
+		[fetchEntityItemsByTimePeriod.fulfilled.type]: (
+			state,
+			action: PayloadAction<IResponseWithMeta<IEntityData>, string, { arg: { entityCode: string; timePeriod: string } }>,
+		) => {
+			const { entityCode, timePeriod } = action.meta.arg;
+
+			state[entityCode].timePeriods[timePeriod].data = [...state[entityCode].timePeriods[timePeriod].data, ...action.payload.data];
+			state[entityCode].timePeriods[timePeriod].loading = false;
+			state[entityCode].timePeriods[timePeriod].meta = action.payload.meta;
+		},
+		[fetchEntityItemsByTimePeriod.pending.type]: (
+			state,
+			action: PayloadAction<
+				unknown,
+				string,
+				{ arg: { entityCode: string; timePeriod: string; filters: Omit<IEntityFilters, 'openDatePicker'> } }
+			>,
+		) => {
+			const { entityCode, timePeriod, filters } = action.meta.arg;
+			if (!state[entityCode]) {
+				state[entityCode] = {
+					...initialData,
+					timePeriods: {},
+				};
+			}
+			state[entityCode].timePeriods[timePeriod] = {
+				...initialData,
+				...state[entityCode].timePeriods[timePeriod],
+				// page 1 means that we are fetching data for the first time and we need to clear the data
+				...(filters.page === 1 && {
+					data: [],
+					meta: undefined,
+				}),
+				loading: true,
+				errorMessage: null,
+			};
+		},
+		[fetchEntityItemsByTimePeriod.rejected.type]: (
+			state,
+			action: PayloadAction<IErrors, string, { arg: { entityCode: string; timePeriod: string } }>,
+		) => {
+			const { entityCode, timePeriod } = action.meta.arg;
+
+			state[entityCode].timePeriods[timePeriod].loading = false;
+		},
+
 		[updateEntityItem.fulfilled.type]: (
 			state,
-			action: PayloadAction<IEntityData, string, { arg: { data: IEntityData; entityCode: string; stageId?: number } }>,
+			action: PayloadAction<IEntityData, string, { arg: { data: IEntityData; entityCode: string; stageId?: number; timePeriod?: string } }>,
 		) => {
-			const { entityCode } = action.meta.arg;
+			const { entityCode, timePeriod } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].errorMessage = null;
@@ -184,12 +241,26 @@ const itemsReducer = createSlice({
 					return item;
 				});
 			}
+
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod].loading = false;
+				state[entityCode].timePeriods[timePeriod].errorMessage = null;
+				state[entityCode].timePeriods[timePeriod].data = state[entityCode].timePeriods[timePeriod].data.map((item) => {
+					if (item.id === action.payload.id) {
+						return {
+							...item,
+							...action.payload,
+						};
+					}
+					return item;
+				});
+			}
 		},
 		[updateEntityItem.pending.type]: (
 			state,
-			action: PayloadAction<IEntityData, string, { arg: { entityCode: string; data: IEntityData; stageId?: number } }>,
+			action: PayloadAction<IEntityData, string, { arg: { entityCode: string; data: IEntityData; stageId?: number; timePeriod?: string } }>,
 		) => {
-			const { entityCode } = action.meta.arg;
+			const { entityCode, timePeriod } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].errorMessage = null;
@@ -198,12 +269,17 @@ const itemsReducer = createSlice({
 				state[entityCode].stages[stageId].loading = true;
 				state[entityCode].stages[stageId].errorMessage = null;
 			}
+
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod].loading = true;
+				state[entityCode].timePeriods[timePeriod].errorMessage = null;
+			}
 		},
 		[updateEntityItem.rejected.type]: (
 			state,
-			action: PayloadAction<IErrors, string, { arg: { entityCode: string; data: IEntityData; stageId?: number } }>,
+			action: PayloadAction<IErrors, string, { arg: { entityCode: string; data: IEntityData; stageId?: number; timePeriod?: string } }>,
 		) => {
-			const { entityCode } = action.meta.arg;
+			const { entityCode, timePeriod } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].errorMessage = action.payload;
@@ -212,11 +288,15 @@ const itemsReducer = createSlice({
 				state[entityCode].stages[stageId].loading = false;
 				state[entityCode].stages[stageId].errorMessage = action.payload;
 			}
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod].loading = false;
+				state[entityCode].timePeriods[timePeriod].errorMessage = action.payload;
+			}
 		},
 
 		[createEntityItem.fulfilled.type]: (
 			state,
-			action: PayloadAction<IEntityData, string, { arg: { entityCode: string; data: IEntityData; stageId?: number } }>,
+			action: PayloadAction<IEntityData, string, { arg: { entityCode: string; data: IEntityData; stageId?: number; timePeriod?: string } }>,
 		) => {
 			const { entityCode } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || action.meta.arg.data.kanban_stage_id;
@@ -235,9 +315,9 @@ const itemsReducer = createSlice({
 		},
 		[createEntityItem.pending.type]: (
 			state,
-			action: PayloadAction<unknown, string, { arg: { entityCode: string; data: IEntityData; stageId?: number } }>,
+			action: PayloadAction<unknown, string, { arg: { entityCode: string; data: IEntityData; stageId?: number; timePeriod?: string } }>,
 		) => {
-			const { entityCode } = action.meta.arg;
+			const { entityCode, timePeriod } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || action.meta.arg.data.kanban_stage_id;
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].loading = true;
@@ -247,12 +327,16 @@ const itemsReducer = createSlice({
 				state[entityCode].stages[stageId].loading = true;
 				state[entityCode].stages[stageId].errorMessage = null;
 			}
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod].loading = true;
+				state[entityCode].timePeriods[timePeriod].errorMessage = null;
+			}
 		},
 		[createEntityItem.rejected.type]: (
 			state,
-			action: PayloadAction<IErrors, string, { arg: { entityCode: string; data: IEntityData; stageId?: number } }>,
+			action: PayloadAction<IErrors, string, { arg: { entityCode: string; data: IEntityData; stageId?: number; timePeriod?: string } }>,
 		) => {
-			const { entityCode } = action.meta.arg;
+			const { entityCode, timePeriod } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || action.meta.arg.data.kanban_stage_id;
 			state[entityCode].loading = false;
 			state[entityCode].errorMessage = action.payload;
@@ -260,13 +344,17 @@ const itemsReducer = createSlice({
 				state[entityCode].stages[stageId].loading = false;
 				state[entityCode].stages[stageId].errorMessage = action.payload;
 			}
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod].loading = false;
+				state[entityCode].timePeriods[timePeriod].errorMessage = action.payload;
+			}
 		},
 
 		[deleteEntityItem.pending.type]: (
 			state,
-			action: PayloadAction<unknown, string, { arg: { id: Number; entityCode: string; stageId?: number } }>,
+			action: PayloadAction<unknown, string, { arg: { id: Number; entityCode: string; stageId?: number; timePeriod?: string } }>,
 		) => {
-			const { entityCode, stageId, id } = action.meta.arg;
+			const { entityCode, stageId, id, timePeriod } = action.meta.arg;
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].data = state[entityCode].data.filter((item) => item.id !== id);
 				state[entityCode].meta.total--;
@@ -274,6 +362,10 @@ const itemsReducer = createSlice({
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
 				state[entityCode].stages[stageId].data = state[entityCode].stages[stageId].data.filter((item) => item.id !== id);
 				state[entityCode].stages[stageId].meta.total--;
+			}
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod].data = state[entityCode].timePeriods[timePeriod].data.filter((item) => item.id !== id);
+				state[entityCode].timePeriods[timePeriod].meta.total--;
 			}
 		},
 
