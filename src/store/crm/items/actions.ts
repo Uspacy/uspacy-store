@@ -299,3 +299,31 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 		}
 	},
 );
+
+export const fetchEntityItemsByTimePeriod = createAsyncThunk(
+	'crm/items/fetchEntityItemsByTimePeriod',
+	async (
+		{
+			fields,
+			filters,
+			entityCode,
+		}: {
+			filters: Omit<IEntityFilters, 'openDatePicker'>;
+			entityCode: string;
+			fields: IField[];
+			timePeriod?: string;
+		},
+		thunkAPI,
+	) => {
+		try {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, camelcase
+			const { table_fields, ...filtersParams } = filters as any;
+			const params = getFilterParams(filtersParams as IEntityFilters & { activities: number[][] }, fields || []);
+
+			const res = await uspacySdk.crmEntitiesService.getEntityItemsWithFilters(entityCode, params);
+			return res?.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);

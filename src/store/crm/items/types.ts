@@ -15,6 +15,12 @@ export interface EntityItems extends IResponseWithMeta<IEntityData> {
 			errorMessage?: IErrors;
 		} & IResponseWithMeta<IEntityData>;
 	};
+	timePeriods?: {
+		[key: string]: {
+			loading: boolean;
+			errorMessage?: IErrors;
+		} & IResponseWithMeta<IEntityData>;
+	};
 }
 
 export interface IState {
