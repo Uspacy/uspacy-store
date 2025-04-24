@@ -1,8 +1,7 @@
-import { IFilterField, IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
-import { IFilter } from '@uspacy/sdk/lib/models/crm-filters';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
+import { IFilterField, IFilterPreset } from '@uspacy/sdk/lib/models/filter-preset';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
-import { IUser } from '@uspacy/sdk/lib/models/user';
+import { IUser, IUserFilter } from '@uspacy/sdk/lib/models/user';
 
 export interface IState {
 	data: IUser[];
@@ -13,8 +12,8 @@ export interface IState {
 	loadingUsersByFilter: boolean;
 	loadingUpdatingUser: boolean;
 	userFilter: {
-		presets: IFilterPreset[];
-		filters?: IFilter;
+		presets: IFilterPreset<IUserFilter>[];
+		filters?: IUserFilter;
 		filterFields?: IFilterField[];
 	};
 }

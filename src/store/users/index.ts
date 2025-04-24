@@ -1,9 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IFilterField, IFilterPreset } from '@uspacy/sdk/lib/models/crm-filter-field';
-import { IFilter } from '@uspacy/sdk/lib/models/crm-filters';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
+import { IFilterField, IFilterPreset } from '@uspacy/sdk/lib/models/filter-preset';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
-import { IUser } from '@uspacy/sdk/lib/models/user';
+import { IUser, IUserFilter } from '@uspacy/sdk/lib/models/user';
 
 import {
 	activateUser,
@@ -20,7 +19,7 @@ import {
 } from './actions';
 import { IState } from './types';
 
-export const sortPresets = (presets: IFilterPreset[]) => {
+export const sortPresets = (presets: IFilterPreset<IUserFilter>[]) => {
 	return presets.sort((a, b) => {
 		if (a.pinned) return -1;
 		if (b.pinned) return 1;
@@ -53,10 +52,26 @@ export const usersSlice = createSlice({
 					return item;
 				}
 			});
+			state.usersFiltersData.data = state.usersFiltersData.data.filter((item) => {
+				if (item.id === action.payload.id) {
+					return item.roles.push(action.payload.role);
+				} else {
+					return item;
+				}
+			});
 			// UsersCache.setData(state.data);
 		},
 		deleteUserRoleFromTable(state, action) {
 			state.data = state.data.filter((item) => {
+				if (item.id === action.payload.id) {
+					const filterData = item.roles.filter((role) => role !== action.payload.role);
+					item.roles = filterData;
+					return item;
+				} else {
+					return item;
+				}
+			});
+			state.usersFiltersData.data = state.usersFiltersData.data.filter((item) => {
 				if (item.id === action.payload.id) {
 					const filterData = item.roles.filter((role) => role !== action.payload.role);
 					item.roles = filterData;
@@ -71,9 +86,17 @@ export const usersSlice = createSlice({
 			state.data = state.data.map((it) =>
 				action.payload.data.includes(it.id) ? { ...it, departmentsIds: [...(it?.departmentsIds || []), action.payload.departmentId] } : it,
 			);
+			state.usersFiltersData.data = state.usersFiltersData.data.map((it) =>
+				action.payload.data.includes(it.id) ? { ...it, departmentsIds: [...(it?.departmentsIds || []), action.payload.departmentId] } : it,
+			);
 		},
 		removeDepartmentFromUsers(state, action: PayloadAction<{ data: number[]; departmentId: string }>) {
 			state.data = state.data.map((it) =>
+				action.payload.data.includes(it.id)
+					? { ...it, departmentsIds: it.departmentsIds.filter((departmentId) => departmentId !== action.payload.departmentId) }
+					: it,
+			);
+			state.usersFiltersData.data = state.usersFiltersData.data.map((it) =>
 				action.payload.data.includes(it.id)
 					? { ...it, departmentsIds: it.departmentsIds.filter((departmentId) => departmentId !== action.payload.departmentId) }
 					: it,
@@ -82,8 +105,8 @@ export const usersSlice = createSlice({
 		setFilterPresets: (
 			state,
 			action: PayloadAction<{
-				data: IFilterPreset[];
-				filters: Partial<IFilter>;
+				data: IFilterPreset<IUserFilter>[];
+				filters: Partial<IUserFilter>;
 				filterFields: Partial<IFilterField[]>;
 			}>,
 		) => {
@@ -99,7 +122,7 @@ export const usersSlice = createSlice({
 				filterFields: action.payload.filterFields,
 			};
 		},
-		createFilterPreset: (state, action: PayloadAction<{ data: IFilterPreset }>) => {
+		createFilterPreset: (state, action: PayloadAction<{ data: IFilterPreset<IUserFilter> }>) => {
 			const presets = sortPresets([
 				...state.userFilter.presets.map((it) => ({
 					...it,
@@ -115,7 +138,7 @@ export const usersSlice = createSlice({
 				filterFields: currentPreset?.filterFields,
 			};
 		},
-		deleteFilterPreset: (state, action: PayloadAction<{ presetId: IFilterPreset['id'] }>) => {
+		deleteFilterPreset: (state, action: PayloadAction<{ presetId: IFilterPreset<IUserFilter>['id'] }>) => {
 			let newItems = state.userFilter?.presets.filter((item) => item.id !== action.payload.presetId || item.default);
 			let needChangeFilter = false;
 			const pinnedItem = newItems?.find((item) => item.pinned);
@@ -138,7 +161,7 @@ export const usersSlice = createSlice({
 				state.userFilter.filters = currentPreset?.filters;
 			}
 		},
-		updateFilterPreset: (state, action: PayloadAction<{ data: Partial<IFilterPreset> }>) => {
+		updateFilterPreset: (state, action: PayloadAction<{ data: Partial<IFilterPreset<IUserFilter>> }>) => {
 			state.userFilter.presets = state.userFilter.presets?.map((item) => {
 				if (item.id === action.payload.data.id)
 					return {
@@ -148,7 +171,7 @@ export const usersSlice = createSlice({
 				return item;
 			});
 		},
-		pinFilterPreset: (state, action: PayloadAction<{ presetId: IFilterPreset['id'] }>) => {
+		pinFilterPreset: (state, action: PayloadAction<{ presetId: IFilterPreset<IUserFilter>['id'] }>) => {
 			let needChangeFilter = false;
 			const newItems = state.userFilter.presets?.map((item) => {
 				if (item.id === action.payload.presetId && !item.pinned) {
@@ -170,7 +193,7 @@ export const usersSlice = createSlice({
 				state.userFilter.filters = currentPreset?.filters;
 			}
 		},
-		unpinFilterPreset: (state, action: PayloadAction<{ presetId: IFilterPreset['id'] }>) => {
+		unpinFilterPreset: (state, action: PayloadAction<{ presetId: IFilterPreset<IUserFilter>['id'] }>) => {
 			const newItems = state.userFilter.presets?.map((item) => {
 				if (item.id === action.payload.presetId && item.pinned)
 					return {
@@ -190,7 +213,7 @@ export const usersSlice = createSlice({
 			const currentPreset = newItems.find((item) => item.current);
 			state.userFilter.filters = currentPreset?.filters;
 		},
-		setCurrentFilterPreset: (state, action: PayloadAction<{ presetId: IFilterPreset['id'] }>) => {
+		setCurrentFilterPreset: (state, action: PayloadAction<{ presetId: IFilterPreset<IUserFilter>['id'] }>) => {
 			let needChangeFilter = false;
 			const newItems = state.userFilter.presets?.map((item) => {
 				if (item.id === action.payload.presetId) {
@@ -211,7 +234,7 @@ export const usersSlice = createSlice({
 				state.userFilter.filters = currentPreset?.filters;
 			}
 		},
-		updateCurrentPresetFilters: (state, action: PayloadAction<{ filters: Partial<IFilter> }>) => {
+		updateCurrentPresetFilters: (state, action: PayloadAction<{ filters: Partial<IUserFilter> }>) => {
 			state.userFilter.presets = state.userFilter.presets?.map((item) => {
 				if (item.current) {
 					const it = { ...item, filters: { ...item.filters, ...action.payload.filters } };
@@ -221,7 +244,7 @@ export const usersSlice = createSlice({
 			});
 			state.userFilter.filters = { ...state.userFilter?.filters, ...action.payload.filters };
 		},
-		updateCurrentFilters: (state, action: PayloadAction<{ filters: Partial<IFilter> }>) => {
+		updateCurrentFilters: (state, action: PayloadAction<{ filters: Partial<IUserFilter> }>) => {
 			state.userFilter.filters = { ...state.userFilter?.filters, ...action.payload.filters };
 		},
 		updateCurrentFilterFields: (state, action: PayloadAction<{ filterFields: Partial<IFilterField[]> }>) => {
@@ -260,6 +283,7 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
+			state.usersFiltersData.data = state.usersFiltersData.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[updateUser.pending.type]: (state) => {
@@ -274,6 +298,7 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
+			state.usersFiltersData.data = state.usersFiltersData.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[updateUserPosition.pending.type]: (state) => {
@@ -288,6 +313,7 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
+			state.usersFiltersData.data = state.usersFiltersData.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[updateUserRoles.pending.type]: (state) => {
@@ -302,6 +328,7 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
+			state.usersFiltersData.data = state.usersFiltersData.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[deactivateUser.pending.type]: (state) => {
@@ -316,6 +343,7 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
+			state.usersFiltersData.data = state.usersFiltersData.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[activateUser.pending.type]: (state) => {
@@ -344,6 +372,10 @@ export const usersSlice = createSlice({
 			state.data = state.data.map((user) =>
 				user.id.toString() === action.payload.toString() ? { ...user, dateOfInvitation: new Date().getTime() / 1000 } : user,
 			);
+			state.usersFiltersData.data = state.usersFiltersData.data.map((user) =>
+				user.id.toString() === action.payload.toString() ? { ...user, dateOfInvitation: new Date().getTime() / 1000 } : user,
+			);
+
 			// UsersCache.setData(state.data);
 		},
 		[repeatInvitation.pending.type]: (state) => {
@@ -358,6 +390,7 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.filter((user) => user.id.toString() !== action.payload.toString());
+			state.usersFiltersData.data = state.usersFiltersData.data.filter((user) => user.id.toString() !== action.payload.toString());
 			// UsersCache.setData(state.data);
 		},
 		[deleteInvitation.pending.type]: (state) => {
@@ -372,6 +405,7 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
+			state.usersFiltersData.data = state.usersFiltersData.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[uploadAvatar.pending.type]: (state) => {
