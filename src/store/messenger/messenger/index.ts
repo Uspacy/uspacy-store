@@ -191,12 +191,12 @@ export const chatSlice = createSlice({
 				return chat;
 			});
 		},
-		deleteMembers(state, action: PayloadAction<{ id: string; members: number[] }>) {
+		deleteMembers(state, action: PayloadAction<{ id: string; members: number[]; isOnHandle: boolean }>) {
 			state.chats.items = state.chats.items.map((chat) => {
 				if (chat.id === action.payload.id) {
 					return {
 						...chat,
-						members: chat.members.filter((m) => !action.payload.members.includes(m)),
+						members: chat.members.filter((m) => action.payload.members.includes(m) === action.payload.isOnHandle),
 					};
 				}
 				return chat;
