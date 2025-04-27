@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
-import { IEntityFilters } from '@uspacy/sdk/lib/models/crm-filters';
+import { IEntityFilters, IFilterCurrenciesAmount } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IProduct } from '@uspacy/sdk/lib/models/crm-products';
 import { IField } from '@uspacy/sdk/lib/models/field';
@@ -294,6 +294,18 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 					return res?.data;
 				}
 			}
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
+
+export const getEntitiesCurrenciesAmount = createAsyncThunk(
+	'deals/getEntitiesCurrenciesAmount',
+	async ({ params, entityCode, id }: { params: IFilterCurrenciesAmount; entityCode: string; id: number }, thunkAPI) => {
+		try {
+			const res = await uspacySdk.crmEntitiesService.getEntitiesCurrenciesAmount(params, entityCode, id);
+			return res.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
 		}

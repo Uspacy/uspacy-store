@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
+import { IEntityAmount, IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
 import { IErrors } from '@uspacy/sdk/lib/models/crm-errors';
 import { IEntityFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
@@ -12,6 +12,7 @@ import {
 	deleteEntityItem,
 	fetchEntityItems,
 	fetchEntityItemsByStage,
+	getEntitiesCurrenciesAmount,
 	massItemsDeletion,
 	massItemsEditing,
 	moveItemFromStageToStage,
@@ -424,6 +425,42 @@ const itemsReducer = createSlice({
 			if (!state?.[entityCode]) return;
 			state[entityCode].loading = false;
 			state[entityCode].errorMessage = action.payload;
+		},
+		[getEntitiesCurrenciesAmount.fulfilled.type]: (
+			state,
+			action: PayloadAction<IEntityAmount, string, { arg: { entityCode: string; stageId: number } }>,
+		) => {
+			const { entityCode, stageId } = action.meta.arg;
+			state[entityCode].stages[stageId].currencyAmount = action.payload;
+			state[entityCode].stages[stageId].loadingCurrencyAmount = false;
+		},
+		[getEntitiesCurrenciesAmount.pending.type]: (
+			state,
+			action: PayloadAction<
+				unknown,
+				string,
+				{ arg: { entityCode: string; stageId?: number; filters: Omit<IEntityFilters, 'openDatePicker'> } }
+			>,
+		) => {
+			const { entityCode, stageId } = action.meta.arg;
+			if (!state[entityCode]) {
+				state[entityCode] = {
+					...initialData,
+					stages: {},
+				};
+			}
+			state[entityCode].stages[stageId] = {
+				...state[entityCode].stages[stageId],
+				loadingCurrencyAmount: true,
+				errorCurrencyAmount: null,
+			};
+		},
+		[getEntitiesCurrenciesAmount.rejected.type]: (
+			state,
+			action: PayloadAction<IErrors, string, { arg: { entityCode: string; stageId: number } }>,
+		) => {
+			const { entityCode, stageId } = action.meta.arg;
+			state[entityCode].stages[stageId].loadingCurrencyAmount = false;
 		},
 	},
 });
