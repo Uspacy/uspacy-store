@@ -72,14 +72,6 @@ const itemsReducer = createSlice({
 					meta: undefined,
 				};
 			}
-
-			if (state[entityCode]?.currencies?.[stageId]?.currencyAmount) {
-				state[entityCode].currencies[stageId] = {
-					currencyAmount: null,
-					loadingCurrencyAmount: true,
-					errorCurrencyAmount: null,
-				};
-			}
 		},
 		setViewModalOpen: (state: IState, action: PayloadAction<{ entityCode: string; value: boolean }>) => {
 			const { entityCode, value } = action.payload;
