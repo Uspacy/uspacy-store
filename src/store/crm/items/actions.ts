@@ -351,9 +351,9 @@ export const fetchEntityItemsByTimePeriod = createAsyncThunk(
 
 export const getEntitiesCurrenciesAmount = createAsyncThunk(
 	'deals/getEntitiesCurrenciesAmount',
-	async ({ params, entityCode, id }: { params: IFilterCurrenciesAmount; entityCode: string; id: number }, thunkAPI) => {
+	async ({ params, entityCode, stageId }: { params: IFilterCurrenciesAmount; entityCode: string; stageId: number }, thunkAPI) => {
 		try {
-			const res = await uspacySdk.crmEntitiesService.getEntitiesCurrenciesAmount(params, entityCode, id);
+			const res = await uspacySdk.crmEntitiesService.getEntitiesCurrenciesAmount(params, entityCode, stageId);
 			return res.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
