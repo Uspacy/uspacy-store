@@ -13,14 +13,10 @@ export interface EntityItems extends IResponseWithMeta<IEntityData> {
 		[key: string]: {
 			loading: boolean;
 			errorMessage?: IErrors;
-		} & IResponseWithMeta<IEntityData>;
-	};
-	currencies?: {
-		[key: string]: {
 			currencyAmount?: IEntityAmount;
 			loadingCurrencyAmount?: boolean;
 			errorCurrencyAmount?: IErrors;
-		};
+		} & IResponseWithMeta<IEntityData>;
 	};
 }
 
