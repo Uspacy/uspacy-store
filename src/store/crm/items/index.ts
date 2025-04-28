@@ -61,6 +61,14 @@ const itemsReducer = createSlice({
 					meta: undefined,
 				};
 			}
+
+			if (state[entityCode]?.currencies?.[stageId]?.currencyAmount) {
+				state[entityCode].currencies[stageId] = {
+					currencyAmount: null,
+					loadingCurrencyAmount: true,
+					errorCurrencyAmount: null,
+				};
+			}
 		},
 		setViewModalOpen: (state: IState, action: PayloadAction<{ entityCode: string; value: boolean }>) => {
 			const { entityCode, value } = action.payload;
@@ -96,6 +104,7 @@ const itemsReducer = createSlice({
 				state[entityCode] = {
 					...initialData,
 					stages: {},
+					currencies: {},
 				};
 			}
 			state[entityCode].loading = true;
@@ -431,8 +440,10 @@ const itemsReducer = createSlice({
 			action: PayloadAction<IEntityAmount, string, { arg: { entityCode: string; stageId: number } }>,
 		) => {
 			const { entityCode, stageId } = action.meta.arg;
-			state[entityCode].stages[stageId].currencyAmount = action.payload;
-			state[entityCode].stages[stageId].loadingCurrencyAmount = false;
+
+			state[entityCode].currencies[stageId].currencyAmount = action.payload;
+			state[entityCode].currencies[stageId].loadingCurrencyAmount = false;
+			state[entityCode].currencies[stageId].errorCurrencyAmount = null;
 		},
 		[getEntitiesCurrenciesAmount.pending.type]: (
 			state,
@@ -443,8 +454,15 @@ const itemsReducer = createSlice({
 			>,
 		) => {
 			const { entityCode, stageId } = action.meta.arg;
-			state[entityCode].stages[stageId] = {
-				...state[entityCode].stages[stageId],
+			if (!state[entityCode]) {
+				state[entityCode] = {
+					...initialData,
+					currencies: {},
+				};
+			}
+			state[entityCode].currencies[stageId] = {
+				...initialData,
+				...state[entityCode].currencies[stageId],
 				loadingCurrencyAmount: true,
 				errorCurrencyAmount: null,
 			};
@@ -454,7 +472,7 @@ const itemsReducer = createSlice({
 			action: PayloadAction<IErrors, string, { arg: { entityCode: string; stageId: number } }>,
 		) => {
 			const { entityCode, stageId } = action.meta.arg;
-			state[entityCode].stages[stageId].loadingCurrencyAmount = false;
+			state[entityCode].currencies[stageId].loadingCurrencyAmount = false;
 		},
 	},
 });

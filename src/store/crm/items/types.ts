@@ -12,11 +12,15 @@ export interface EntityItems extends IResponseWithMeta<IEntityData> {
 	stages?: {
 		[key: string]: {
 			loading: boolean;
-			loadingCurrencyAmount?: boolean;
 			errorMessage?: IErrors;
-			errorCurrencyAmount?: IErrors;
-			currencyAmount?: IEntityAmount;
 		} & IResponseWithMeta<IEntityData>;
+	};
+	currencies?: {
+		[key: string]: {
+			currencyAmount?: IEntityAmount;
+			loadingCurrencyAmount?: boolean;
+			errorCurrencyAmount?: IErrors;
+		};
 	};
 }
 
