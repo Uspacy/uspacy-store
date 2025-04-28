@@ -552,12 +552,6 @@ const itemsReducer = createSlice({
 			>,
 		) => {
 			const { entityCode, stageId } = action.meta.arg;
-			if (!state[entityCode]) {
-				state[entityCode] = {
-					...initialData,
-					stages: {},
-				};
-			}
 			state[entityCode].stages[stageId] = {
 				...state[entityCode].stages[stageId],
 				loadingCurrencyAmount: true,
