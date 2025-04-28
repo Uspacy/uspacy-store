@@ -108,7 +108,6 @@ const itemsReducer = createSlice({
 					...initialData,
 					stages: {},
 					timePeriods: {},
-					currencies: {},
 				};
 			}
 			state[entityCode].loading = true;
@@ -542,9 +541,9 @@ const itemsReducer = createSlice({
 		) => {
 			const { entityCode, stageId } = action.meta.arg;
 
-			state[entityCode].currencies[stageId].currencyAmount = action.payload;
-			state[entityCode].currencies[stageId].loadingCurrencyAmount = false;
-			state[entityCode].currencies[stageId].errorCurrencyAmount = null;
+			state[entityCode].stages[stageId].currencyAmount = action.payload;
+			state[entityCode].stages[stageId].loadingCurrencyAmount = false;
+			state[entityCode].stages[stageId].errorCurrencyAmount = null;
 		},
 		[getEntitiesCurrenciesAmount.pending.type]: (
 			state,
@@ -558,12 +557,11 @@ const itemsReducer = createSlice({
 			if (!state[entityCode]) {
 				state[entityCode] = {
 					...initialData,
-					currencies: {},
+					stages: {},
 				};
 			}
-			state[entityCode].currencies[stageId] = {
-				...initialData,
-				...state[entityCode].currencies[stageId],
+			state[entityCode].stages[stageId] = {
+				...state[entityCode].stages[stageId],
 				loadingCurrencyAmount: true,
 				errorCurrencyAmount: null,
 			};
@@ -573,7 +571,7 @@ const itemsReducer = createSlice({
 			action: PayloadAction<IErrors, string, { arg: { entityCode: string; stageId: number } }>,
 		) => {
 			const { entityCode, stageId } = action.meta.arg;
-			state[entityCode].currencies[stageId].loadingCurrencyAmount = false;
+			state[entityCode].stages[stageId].loadingCurrencyAmount = false;
 		},
 	},
 });

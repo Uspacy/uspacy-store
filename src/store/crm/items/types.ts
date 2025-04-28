@@ -13,6 +13,9 @@ export interface EntityItems extends IResponseWithMeta<IEntityData> {
 		[key: string]: {
 			loading: boolean;
 			errorMessage?: IErrors;
+			currencyAmount?: IEntityAmount;
+			loadingCurrencyAmount?: boolean;
+			errorCurrencyAmount?: IErrors;
 		} & IResponseWithMeta<IEntityData>;
 	};
 	timePeriods?: {
@@ -20,13 +23,6 @@ export interface EntityItems extends IResponseWithMeta<IEntityData> {
 			loading: boolean;
 			errorMessage?: IErrors;
 		} & IResponseWithMeta<IEntityData>;
-	};
-	currencies?: {
-		[key: string]: {
-			currencyAmount?: IEntityAmount;
-			loadingCurrencyAmount?: boolean;
-			errorCurrencyAmount?: IErrors;
-		};
 	};
 }
 
