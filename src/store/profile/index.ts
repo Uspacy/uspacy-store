@@ -4,7 +4,9 @@ import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IField } from '@uspacy/sdk/lib/models/field';
 import { ICountryTemplates, IRequisite, IRequisitesResponse, ITemplate, ITemplateResponse } from '@uspacy/sdk/lib/models/requisites';
 import { IUser } from '@uspacy/sdk/lib/models/user';
+import cloneDeep from 'lodash/cloneDeep';
 
+import { headField } from '../../const';
 import { checkBasicRequisite } from '../../helpers/checkBasicRequisite';
 import {
 	createProfileField,
@@ -85,7 +87,13 @@ export const profileSlice = createSlice({
 
 		[fetchProfileFields.fulfilled.type]: (state, action: PayloadAction<IField[]>) => {
 			state.loadingFields.get = false;
-			state.fields = action.payload;
+			const data = [headField, ...(action?.payload || [])];
+			state.fields = cloneDeep(data).map((field) => {
+				return {
+					...field,
+					values: Array.isArray(field.values) ? field.values?.sort((a, b) => a.sort - b.sort) : field.values,
+				};
+			});
 		},
 		[fetchProfileFields.pending.type]: (state) => {
 			state.loadingFields.get = true;
