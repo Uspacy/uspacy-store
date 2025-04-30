@@ -79,6 +79,20 @@ export const requisiteField: IField = {
 	sort: '',
 };
 
+export const headField: IField = {
+	name: 'head',
+	code: 'head',
+	required: false,
+	editable: false,
+	show: false,
+	hidden: true,
+	multiple: false,
+	type: 'user_id',
+	system_field: true,
+	sort: '',
+	default_value: '',
+};
+
 export const OTHER_DEFAULT_FIELDS = {
 	openDatePicker: false,
 	search: '',
