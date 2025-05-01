@@ -207,5 +207,6 @@ const authReducer = createSlice({
 	},
 });
 
-export const { setAfterGoogleOAuthData, clearBill, setAutoRenewal, setPortalSubscription, setRedirectToStripeUrl } = authReducer.actions;
+export const { setAfterGoogleOAuthData, clearBill, clearDiscountCoupon, setAutoRenewal, setPortalSubscription, setRedirectToStripeUrl } =
+	authReducer.actions;
 export default authReducer.reducer;
