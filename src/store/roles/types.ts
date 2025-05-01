@@ -1,5 +1,5 @@
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IPermissions, IRole } from '@uspacy/sdk/lib/models/roles';
+import { IPermissions, IPermissionsFunnelsResponse, IRole } from '@uspacy/sdk/lib/models/roles';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 export interface IState {
@@ -19,6 +19,7 @@ export interface IState {
 	permissionsControllerView: any[];
 	modalActiveType: string;
 	createPermissionsModal: IPermissions;
+	permissionsFunnels: IPermissionsFunnelsResponse;
 }
 
 export interface IDepartment {

@@ -4,6 +4,7 @@ import { ITaskFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { ITask } from '@uspacy/sdk/lib/models/crm-tasks';
 import { IField } from '@uspacy/sdk/lib/models/field';
+import { oauthProvider, oauthType } from '@uspacy/sdk/lib/models/oauthIntegrations';
 import { ICalendarSettings, ISyncSettings } from '@uspacy/sdk/lib/services/CrmTasksService/calendars-settings.dto';
 
 import { getFilterParams } from './../../helpers/filterFieldsArrs';
@@ -116,86 +117,104 @@ export const massTasksEditing = createAsyncThunk(
 	},
 );
 
-export const getOAuth2CalendarRedirectUrl = createAsyncThunk('crmTasks/getOAuth2CalendarRedirectUrl', async (_, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk?.crmTasksService?.getOAuth2CalendarRedirectUrl();
-		return res?.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
-export const getCalendarsAccounts = createAsyncThunk('crmTasks/getCalendarsAccounts', async (_, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk?.crmTasksService?.getCalendarsAccounts();
-		return res?.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
-export const deleteCalendarsAccount = createAsyncThunk('crmTasks/deleteCalendarsAccount', async (id: number, { rejectWithValue }) => {
-	try {
-		await uspacySdk?.crmTasksService?.deleteCalendarsAccount();
-		return id;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
-export const getGoogleCalendars = createAsyncThunk('crmTasks/getGoogleCalendars', async (_, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk?.crmTasksService?.getGoogleCalendars();
-		return res?.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
-export const saveCalendarSettings = createAsyncThunk('crmTasks/saveCalendarSettings', async (body: ICalendarSettings, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk?.crmTasksService?.saveCalendarSettings(body);
-		return res?.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
-export const startInitialGoogleCalendarsSync = createAsyncThunk(
-	'crmTasks/startInitialGoogleCalendarsSync',
-	async ({ body, id }: { body: ISyncSettings; id: number }, { rejectWithValue }) => {
+export const getOAuthRedirectUrl = createAsyncThunk(
+	'crmTasks/getOAuthRedirectUrl',
+	async ({ provider, type }: { provider: oauthProvider; type: oauthType }, { rejectWithValue }) => {
 		try {
-			await uspacySdk?.crmTasksService?.startInitialGoogleCalendarsSync(body);
-			return id;
+			const res = await uspacySdk.crmTasksService.getOAuthRedirectUrl(provider, type);
+			return res?.data;
 		} catch (e) {
 			return rejectWithValue(e);
 		}
 	},
 );
 
-export const startCalendarsSync = createAsyncThunk('crmTasks/startCalendarsSync', async (id: number, { rejectWithValue }) => {
+export const getOauthServicesAccounts = createAsyncThunk(
+	'crmTasks/getOauthServicesAccounts',
+	async (params: { with: string[] }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.crmTasksService.getOauthServicesAccounts(params);
+			return res?.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const getCalendars = createAsyncThunk('crmTasks/getCalendars', async (_, { rejectWithValue }) => {
 	try {
-		await uspacySdk?.crmTasksService?.startCalendarsSync();
-		return id;
+		const res = await uspacySdk.crmTasksService.getCalendars();
+		return res?.data;
 	} catch (e) {
 		return rejectWithValue(e);
 	}
 });
 
-export const stopGoogleCalendarsSync = createAsyncThunk('crmTasks/stopGoogleCalendarsSync', async (id: number, { rejectWithValue }) => {
+export const saveCalendarsSettings = createAsyncThunk('crmTasks/saveCalendarsSettings', async (body: ICalendarSettings, { rejectWithValue }) => {
 	try {
-		await uspacySdk?.crmTasksService?.stopGoogleCalendarsSync();
-		return id;
+		const res = await uspacySdk.crmTasksService.saveCalendarsSettings(body);
+		return res?.data;
 	} catch (e) {
 		return rejectWithValue(e);
 	}
 });
 
-export const activateGoogleCalendarsSync = createAsyncThunk('crmTasks/activateGoogleCalendarsSync', async (id: number, { rejectWithValue }) => {
-	try {
-		await uspacySdk?.crmTasksService?.activateGoogleCalendarsSync(id);
-		return id;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
+export const startInitialServicesAccountSync = createAsyncThunk(
+	'crmTasks/startInitialServicesAccountSync',
+	async ({ body, providerId, integrationId }: { body: ISyncSettings; providerId: number; integrationId: number }, { rejectWithValue }) => {
+		try {
+			await uspacySdk.crmTasksService.startInitialServicesAccountSync(body);
+			return { providerId, integrationId };
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const startServicesAccountSync = createAsyncThunk(
+	'crmTasks/startServicesAccountSync',
+	async ({ providerId, integrationId }: { providerId: number; integrationId: number }, { rejectWithValue }) => {
+		try {
+			await uspacySdk.crmTasksService.startServicesAccountSync();
+			return { providerId, integrationId };
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const stopServicesAccountSync = createAsyncThunk(
+	'crmTasks/stopServicesAccountSync',
+	async ({ providerId, integrationId }: { providerId: number; integrationId: number }, { rejectWithValue }) => {
+		try {
+			await uspacySdk.crmTasksService.stopServicesAccountSync();
+			return { providerId, integrationId };
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const activateServicesAccountSync = createAsyncThunk(
+	'crmTasks/activateServicesAccountSync',
+	async ({ providerId, integrationId }: { providerId: number; integrationId: number }, { rejectWithValue }) => {
+		try {
+			await uspacySdk.crmTasksService.activateServicesAccountSync(integrationId);
+			return { providerId, integrationId };
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const deleteServicesAccount = createAsyncThunk(
+	'crmTasks/deleteServicesAccount',
+	async ({ providerId, integrationId }: { providerId: number; integrationId: number }, { rejectWithValue }) => {
+		try {
+			await uspacySdk.crmTasksService.deleteServicesAccount(providerId, integrationId);
+			return { providerId, integrationId };
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);

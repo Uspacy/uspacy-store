@@ -1,6 +1,6 @@
 {
   "name": "@uspacy/store",
-  "version": "0.0.166-alpha.11",
+  "version": "0.0.205-alpha.1",
   "keywords": [],
   "repository": "git@github.com:Uspacy/uspacy-store.git",
   "license": "ISC",
@@ -22,12 +22,12 @@
     "prepare": "husky install",
     "prepublishOnly": "npm run build"
   },
-  "dependencies": {},
   "devDependencies": {
     "@reduxjs/toolkit": "1.9.5",
     "@typescript-eslint/eslint-plugin": "6.3.0",
     "@typescript-eslint/parser": "6.3.0",
-    "@uspacy/sdk": "0.0.122-alpha.8",
+    "@uspacy/forms": "1.0.8",
+    "@uspacy/sdk": "0.0.148-alpha.1",
     "cross-env": "7.0.3",
     "date-fns": "2.30.0",
     "dotenv-webpack": "8.0.1",
@@ -54,5 +54,9 @@
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "4.15.1",
     "webpack-node-externals": "3.0.0"
+  },
+  "resolutions": {
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0"
   }
 }

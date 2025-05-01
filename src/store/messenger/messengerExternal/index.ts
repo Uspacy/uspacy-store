@@ -13,7 +13,14 @@ import {
 	updateUnreadCountAndMentionedByChatId,
 } from '../../../helpers/messenger';
 import { fetchExternalChats } from './actions';
-import { IState } from './types';
+import { ICrmConnectEntity, IState } from './types';
+
+const initialConnectEntities = {
+	leads: [],
+	contacts: [],
+	companies: [],
+	deals: [],
+};
 
 const initialState: IState = {
 	externalChats: {
@@ -24,6 +31,7 @@ const initialState: IState = {
 			inactive: [],
 		},
 		externalChatsLength: 0,
+		crmConnectEntities: initialConnectEntities,
 	},
 };
 
@@ -132,6 +140,53 @@ export const externalChatSlice = createSlice({
 				return it;
 			});
 		},
+		setConnectedCrmEntities(state, action: PayloadAction<IState['externalChats']['crmConnectEntities']>) {
+			state.externalChats.crmConnectEntities = action.payload;
+		},
+		updateConnectedCrmEntitiesByKey(
+			state,
+			action: PayloadAction<{ type: keyof IState['externalChats']['crmConnectEntities']; items: ICrmConnectEntity[] }>,
+		) {
+			const { type, items } = action.payload;
+			state.externalChats.crmConnectEntities[type] = items;
+		},
+		addConnectedCrmEntities(
+			state,
+			action: PayloadAction<{ type: keyof IState['externalChats']['crmConnectEntities']; item: ICrmConnectEntity }>,
+		) {
+			state.externalChats.crmConnectEntities[action.payload.type].push(action.payload.item);
+		},
+		readExtChat(state, action: PayloadAction<{ chatId: IChat['id']; profile: IUser; userId: IUser['authUserId'] }>) {
+			const { chatId, profile, userId } = action.payload;
+
+			if (profile.authUserId === userId) {
+				state.externalChats.items.active = state.externalChats.items.active.map((it) => {
+					if (it.id === chatId && it.unreadCount) {
+						return {
+							...it,
+							unreadCount: 0,
+							unreadMentions: [],
+						};
+					}
+					return it;
+				});
+			} else {
+				state.externalChats.items.active = state.externalChats.items.active.map((chat) => {
+					if (chat.id === chatId && chat.lastMessage?.authorId !== userId) {
+						const { lastMessage } = chat;
+						return {
+							...chat,
+							lastMessage: {
+								...lastMessage,
+								readBy: !lastMessage.readBy.includes(userId) ? [...lastMessage.readBy, userId] : lastMessage.readBy,
+							},
+						};
+					}
+
+					return chat;
+				});
+			}
+		},
 	},
 	extraReducers: {
 		[fetchExternalChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
@@ -166,6 +221,10 @@ export const {
 	readExtMessagesAction,
 	setTimestamp,
 	setInviteStatus,
+	setConnectedCrmEntities,
+	addConnectedCrmEntities,
+	updateConnectedCrmEntitiesByKey,
+	readExtChat,
 } = externalChatSlice.actions;
 
 export default externalChatSlice.reducer;

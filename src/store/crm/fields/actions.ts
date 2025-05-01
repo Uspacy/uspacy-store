@@ -37,10 +37,9 @@ export const deleteField = createAsyncThunk(
 
 export const updateField = createAsyncThunk(
 	'crm/fields/updateField',
-	async ({ data, entityCode }: { data: Partial<IField>; entityCode: string }, thunkAPI) => {
+	async ({ data, entityCode }: { data: IField; entityCode: string }, thunkAPI) => {
 		try {
-			const { code, ...rest } = data;
-			const res = await uspacySdk.crmEntitiesService.updateEntityField(entityCode, code, rest as IField);
+			const res = await uspacySdk.crmEntitiesService.updateEntityField(entityCode, data);
 			return res?.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
@@ -50,10 +49,9 @@ export const updateField = createAsyncThunk(
 
 export const updateListValues = createAsyncThunk(
 	'crm/fields/updateListValues',
-	async ({ data, entityCode }: { data: Pick<IField, 'code' | 'values'>; entityCode: string }, thunkAPI) => {
+	async ({ data, entityCode }: { data: IField; entityCode: string }, thunkAPI) => {
 		try {
-			const { code, values } = data;
-			const res = await uspacySdk.crmEntitiesService.updateEntityListValues(entityCode, code, values);
+			const res = await uspacySdk.crmEntitiesService.updateEntityListValues(entityCode, data);
 			return res?.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');

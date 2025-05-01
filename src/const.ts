@@ -14,7 +14,6 @@ export const idColumn: IField = {
 	hidden: true,
 	multiple: false,
 	type: 'id_column',
-	field_section_id: '',
 	system_field: true,
 	sort: '',
 	default_value: '',
@@ -47,7 +46,6 @@ export const dealsField: IField = {
 	hidden: true,
 	multiple: false,
 	type: 'deals_filter',
-	field_section_id: '',
 	system_field: true,
 	sort: '',
 	default_value: '',
@@ -62,7 +60,6 @@ export const taskField: IField = {
 	hidden: true,
 	multiple: false,
 	type: 'tasks_filter',
-	field_section_id: '',
 	system_field: true,
 	sort: '',
 	default_value: '',
@@ -80,6 +77,20 @@ export const requisiteField: IField = {
 	system_field: true,
 	base_field: true,
 	sort: '',
+};
+
+export const headField: IField = {
+	name: 'head',
+	code: 'head',
+	required: false,
+	editable: false,
+	show: false,
+	hidden: true,
+	multiple: false,
+	type: 'user_id',
+	system_field: true,
+	sort: '',
+	default_value: '',
 };
 
 export const OTHER_DEFAULT_FIELDS = {
@@ -292,7 +303,6 @@ export const fieldForCalls: IField[] = [
 		hidden: false,
 		multiple: false,
 		type: 'call_phone',
-		field_section_id: '',
 		sort: '',
 		system_field: false,
 		default_value: '',
@@ -361,7 +371,6 @@ export const fieldsForTasks: IField[] = [
 		hidden: true,
 		multiple: false,
 		type: 'list',
-		field_section_id: '',
 		system_field: true,
 		sort: '',
 		default_value: '',
@@ -568,7 +577,6 @@ export const fieldsForTasks: IField[] = [
 		hidden: false,
 		multiple: true,
 		type: 'user_id',
-		field_section_id: '',
 		system_field: false,
 		sort: '',
 		default_value: '',

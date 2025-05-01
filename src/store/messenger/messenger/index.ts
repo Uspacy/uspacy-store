@@ -41,12 +41,12 @@ const initialState: IState = {
 	},
 };
 
-interface IPreperedMessage extends IMessage {
+interface IPreparedMessage extends IMessage {
 	readByTemp?: number[];
 }
 
-const prepereMessages = (items: IPreperedMessage[], profile: IUser) => {
-	let comparedMessage: IPreperedMessage;
+const prepareMessages = (items: IPreparedMessage[], profile: IUser) => {
+	let comparedMessage: IPreparedMessage;
 	return items.flatMap((message, index, origin) => {
 		if (
 			!comparedMessage ||
@@ -58,11 +58,14 @@ const prepereMessages = (items: IPreperedMessage[], profile: IUser) => {
 		const showTime = comparedMessage.id === message.id || differenceInMinutes(comparedMessage.timestamp, message.timestamp) > 1;
 
 		const nextMessage = items[index + 1];
+		const isExternalMessage = !!message?.externalLine;
+		const isNotSender = isExternalMessage ? !!message?.externalAuthorId : message.authorId !== profile.authUserId;
+		const nextIsSender = isExternalMessage ? !nextMessage?.externalAuthorId : nextMessage?.authorId === profile.authUserId;
 		const isFirstUnread =
 			Array.isArray(message.readBy) &&
-			message.authorId !== profile.authUserId &&
+			isNotSender &&
 			!message.readBy.includes(profile.authUserId) &&
-			nextMessage?.readBy?.includes(profile.authUserId);
+			(nextMessage?.readBy?.includes(profile.authUserId) || nextIsSender || !nextMessage);
 
 		if (isFirstUnread && !origin.find((it) => it.isFirstUnread)) {
 			return [
@@ -94,7 +97,7 @@ export const chatSlice = createSlice({
 			state.chats.currentChatId = action.payload.id;
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === action.payload.id) {
-					const items = prepereMessages(
+					const items = prepareMessages(
 						group.items.filter((message) => !message.isFirstUnread),
 						action.payload.profile,
 					);
@@ -129,7 +132,7 @@ export const chatSlice = createSlice({
 			const { chatId, item, profile } = action.payload;
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === chatId) {
-					const items = prepereMessages([item, ...group.items], profile);
+					const items = prepareMessages([item, ...group.items], profile);
 					return {
 						...group,
 						items,
@@ -188,12 +191,12 @@ export const chatSlice = createSlice({
 				return chat;
 			});
 		},
-		deleteMembers(state, action: PayloadAction<{ id: string; members: number[] }>) {
+		deleteMembers(state, action: PayloadAction<{ id: string; members: number[]; isOnHandle: boolean }>) {
 			state.chats.items = state.chats.items.map((chat) => {
 				if (chat.id === action.payload.id) {
 					return {
 						...chat,
-						members: chat.members.filter((m) => !action.payload.members.includes(m)),
+						members: chat.members.filter((m) => action.payload.members.includes(m) === action.payload.isOnHandle),
 					};
 				}
 				return chat;
@@ -249,7 +252,7 @@ export const chatSlice = createSlice({
 					return {
 						...chat,
 						unreadMentions,
-						lastMessage: lastMessage.message !== unreadMessagesValue ? lastMessage : messageBeforeAfter,
+						lastMessage: lastMessage?.message !== unreadMessagesValue ? lastMessage : messageBeforeAfter,
 						...(LMinMaIdrH && { unreadCount: chat.unreadCount - 1 }),
 					};
 				}
@@ -482,21 +485,8 @@ export const chatSlice = createSlice({
 				return it;
 			});
 		},
-		readAllMessages(state, action: PayloadAction<{ chatId: IChat['id']; profile: IUser; userId: IUser['authUserId'] }>) {
-			const { chatId, profile, userId } = action.payload;
-
-			if (profile.authUserId === userId) {
-				state.chats.items = state.chats.items.map((it) => {
-					if (it.id === chatId && it.unreadCount) {
-						return {
-							...it,
-							unreadCount: 0,
-							unreadMentions: [],
-						};
-					}
-					return it;
-				});
-			}
+		readAllMessages(state, action: PayloadAction<{ chatId: IChat['id']; profile: IUser; userId: IUser['authUserId']; isExternal?: boolean }>) {
+			const { chatId, profile, userId, isExternal } = action.payload;
 
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === chatId) {
@@ -513,21 +503,33 @@ export const chatSlice = createSlice({
 				return group;
 			});
 
-			if (userId !== profile.authUserId) {
-				state.chats.items = state.chats.items.map((chat) => {
-					if (chat.id === chatId && chat.lastMessage?.authorId !== userId) {
-						const { lastMessage } = chat;
-						return {
-							...chat,
-							lastMessage: {
-								...lastMessage,
-								readBy: !lastMessage.readBy.includes(userId) ? [...lastMessage.readBy, userId] : lastMessage.readBy,
-							},
-						};
-					}
-
-					return chat;
-				});
+			if (!isExternal) {
+				if (profile.authUserId === userId) {
+					state.chats.items = state.chats.items.map((it) => {
+						if (it.id === chatId && it.unreadCount) {
+							return {
+								...it,
+								unreadCount: 0,
+								unreadMentions: [],
+							};
+						}
+						return it;
+					});
+				} else {
+					state.chats.items = state.chats.items.map((chat) => {
+						if (chat.id === chatId && chat.lastMessage?.authorId !== userId) {
+							const { lastMessage } = chat;
+							return {
+								...chat,
+								lastMessage: {
+									...lastMessage,
+									readBy: !lastMessage.readBy.includes(userId) ? [...lastMessage.readBy, userId] : lastMessage.readBy,
+								},
+							};
+						}
+						return chat;
+					});
+				}
 			}
 		},
 		resetMessages(state) {
@@ -593,7 +595,7 @@ export const chatSlice = createSlice({
 							: action.payload.items;
 					return {
 						...group,
-						items: prepereMessages(getUniqueItems(items), action.payload.profile),
+						items: prepareMessages(getUniqueItems(items), action.payload.profile),
 						loading: false,
 						lastTimestamp,
 						firstTimestamp,
@@ -647,7 +649,7 @@ export const chatSlice = createSlice({
 				state.messages.push({
 					draftMessage: '',
 					chatId: action.payload.items[0]?.chatId,
-					items: prepereMessages(action.payload.items, action.payload.profile),
+					items: prepareMessages(action.payload.items, action.payload.profile),
 					loading: false,
 					lastTimestamp,
 					firstTimestamp,
@@ -659,7 +661,7 @@ export const chatSlice = createSlice({
 				if (group.chatId === action.meta.arg.chatId) {
 					return {
 						...group,
-						items: prepereMessages(action.payload.items, action.payload.profile),
+						items: prepareMessages(action.payload.items, action.payload.profile),
 						loading: false,
 						lastTimestamp,
 						firstTimestamp,

@@ -5,7 +5,6 @@ import announcers from './announcers';
 import apps from './apps';
 import auth from './auth';
 import automations from './automations';
-import calendars from './calendars';
 import crm from './crm';
 import crmCalls from './crmCalls';
 import crmCompanies from './crmCompanies';
@@ -29,6 +28,7 @@ import departments from './departments';
 import drawersManagement from './drawersManagement';
 import email from './email';
 import files from './files';
+import forms from './forms';
 import groups from './groups';
 import history from './history';
 import messengerReducer from './messenger';
@@ -92,8 +92,8 @@ const rootReducer = combineReducers({
 	settings,
 	announcers,
 	crm,
-	calendars,
 	analytics,
+	forms,
 });
 
 export const setupStore = () => {

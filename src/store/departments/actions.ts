@@ -101,7 +101,7 @@ export const addUsersToDepartment = createAsyncThunk(
 			departmentId,
 			usersIds,
 		}: {
-			departmentId: string;
+			departmentId: number;
 			usersIds: string[];
 		},
 		thunkAPI,
@@ -121,7 +121,7 @@ export const removeUsersFromDepartment = createAsyncThunk(
 			departmentId,
 			usersIds,
 		}: {
-			departmentId: string;
+			departmentId: number;
 			usersIds: string[];
 		},
 		thunkAPI,

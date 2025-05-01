@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
+import { IUpdateRolePermissionsFunnels } from '@uspacy/sdk/lib/services/RolesService/create-update-role-dto';
 
 import { IDepartment } from './types';
 
@@ -69,3 +70,24 @@ export const deleteRole = createAsyncThunk('roles/deleteRole', async (id: string
 		return thunkAPI.rejectWithValue('Failure');
 	}
 });
+
+export const getPermissionsFunnels = createAsyncThunk('roles/getPermissionsFunnels', async ({ role = '' }: { role?: string }, thunkAPI) => {
+	try {
+		const res = await uspacySdk.rolesService.getPermissionsFunnels(role);
+		return res.data;
+	} catch (e) {
+		return thunkAPI.rejectWithValue('Failure');
+	}
+});
+
+export const updateRolePermisionsFunnels = createAsyncThunk(
+	'roles/updateRolePermisionsFunnels',
+	async (body: IUpdateRolePermissionsFunnels, thunkAPI) => {
+		try {
+			const res = await uspacySdk.rolesService.updateRolePermisionsFunnels(body);
+			return res.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue('Failure');
+		}
+	},
+);

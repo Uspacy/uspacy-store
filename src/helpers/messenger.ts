@@ -93,8 +93,11 @@ export const readLastMessagesInChat = (chats: IChat[], items: { id: string; read
 					},
 				};
 			}
+
+			const readedMessageCount = items.filter((it) => it.readBy.includes(profile.authUserId)).length;
 			return {
 				...chat,
+				unreadCount: Math.max(chat.unreadCount - readedMessageCount, 0),
 			};
 		}
 		return chat;
@@ -110,8 +113,8 @@ export const sortChats = (a: IChat, b: IChat) => {
 export const separateExternalChats = (items: IChat[]) =>
 	items.reduce(
 		(acc, item) => {
-			const isActive = item.active && !!item.members.length;
-			const isUndistributed = item.active && !item.members.length;
+			const isActive = item.active && item.assigned;
+			const isUndistributed = !item.assigned;
 			const isInactive = !item.active;
 
 			switch (true) {
@@ -119,12 +122,13 @@ export const separateExternalChats = (items: IChat[]) =>
 					acc.active.push({ ...item, externalChatStatus: EActiveEntity.ACTIVE_EXTERNAL });
 					break;
 				}
+				case isInactive: {
+					acc.inactive.push({ ...item, externalChatStatus: EActiveEntity.INACTIVE_EXTERNAL });
+					break;
+				}
 				case isUndistributed: {
 					acc.undistributed.push({ ...item, externalChatStatus: EActiveEntity.UNDISTRIBUTED_EXTERNAL });
 					break;
-				}
-				case isInactive: {
-					acc.inactive.push({ ...item, externalChatStatus: EActiveEntity.INACTIVE_EXTERNAL });
 				}
 			}
 

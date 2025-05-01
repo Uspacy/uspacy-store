@@ -1,12 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IUser } from '@uspacy/sdk/lib/models/user';
+import { IFilterField, IFilterPreset } from '@uspacy/sdk/lib/models/filter-preset';
+import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
+import { IUser, IUserFilter } from '@uspacy/sdk/lib/models/user';
 
 import {
 	activateUser,
 	deactivateUser,
 	deleteInvitation,
 	fetchUsers,
+	fetchUsersByFilters,
 	repeatInvitation,
 	sendUserInvites,
 	updateUser,
@@ -16,11 +19,25 @@ import {
 } from './actions';
 import { IState } from './types';
 
+export const sortPresets = (presets: IFilterPreset<IUserFilter>[]) => {
+	return presets.sort((a, b) => {
+		if (a.pinned) return -1;
+		if (b.pinned) return 1;
+		return 0;
+	});
+};
+
 const initialState: IState = {
 	data: [],
+	usersFiltersData: {
+		data: [],
+		meta: null,
+	},
 	loading: true,
+	loadingUsersByFilter: true,
 	loadingUpdatingUser: false,
 	errorLoadingUpdatingUser: null,
+	userFilter: null,
 };
 
 export const usersSlice = createSlice({
@@ -29,6 +46,13 @@ export const usersSlice = createSlice({
 	reducers: {
 		addUserRoleFromTable(state, action) {
 			state.data = state.data.filter((item) => {
+				if (item.id === action.payload.id) {
+					return item.roles.push(action.payload.role);
+				} else {
+					return item;
+				}
+			});
+			state.usersFiltersData.data = state.usersFiltersData.data.filter((item) => {
 				if (item.id === action.payload.id) {
 					return item.roles.push(action.payload.role);
 				} else {
@@ -47,10 +71,202 @@ export const usersSlice = createSlice({
 					return item;
 				}
 			});
+			state.usersFiltersData.data = state.usersFiltersData.data.filter((item) => {
+				if (item.id === action.payload.id) {
+					const filterData = item.roles.filter((role) => role !== action.payload.role);
+					item.roles = filterData;
+					return item;
+				} else {
+					return item;
+				}
+			});
 			// UsersCache.setData(state.data);
+		},
+		addDepartmentToUsers(state, action: PayloadAction<{ data: number[]; departmentId: string }>) {
+			state.data = state.data.map((it) =>
+				action.payload.data.includes(it.id) ? { ...it, departmentsIds: [...(it?.departmentsIds || []), action.payload.departmentId] } : it,
+			);
+			state.usersFiltersData.data = state.usersFiltersData.data.map((it) =>
+				action.payload.data.includes(it.id) ? { ...it, departmentsIds: [...(it?.departmentsIds || []), action.payload.departmentId] } : it,
+			);
+		},
+		removeDepartmentFromUsers(state, action: PayloadAction<{ data: number[]; departmentId: string }>) {
+			state.data = state.data.map((it) =>
+				action.payload.data.includes(it.id)
+					? { ...it, departmentsIds: it.departmentsIds.filter((departmentId) => departmentId !== action.payload.departmentId) }
+					: it,
+			);
+			state.usersFiltersData.data = state.usersFiltersData.data.map((it) =>
+				action.payload.data.includes(it.id)
+					? { ...it, departmentsIds: it.departmentsIds.filter((departmentId) => departmentId !== action.payload.departmentId) }
+					: it,
+			);
+		},
+		setFilterPresets: (
+			state,
+			action: PayloadAction<{
+				data: IFilterPreset<IUserFilter>[];
+				filters: Partial<IUserFilter>;
+				filterFields: Partial<IFilterField[]>;
+			}>,
+		) => {
+			if (!state.userFilter) state.userFilter = { presets: [] };
+			const presets = sortPresets(action.payload.data);
+			const currentPreset = presets.find((item) => item.current);
+			state.userFilter = {
+				presets,
+				filters: {
+					...currentPreset?.filters,
+					...action.payload.filters,
+				},
+				filterFields: action.payload.filterFields,
+			};
+		},
+		createFilterPreset: (state, action: PayloadAction<{ data: IFilterPreset<IUserFilter> }>) => {
+			const presets = sortPresets([
+				...state.userFilter.presets.map((it) => ({
+					...it,
+					current: false,
+					pinned: false,
+				})),
+				action.payload.data,
+			]);
+			const currentPreset = presets.find((item) => item.current);
+			state.userFilter = {
+				presets,
+				filters: currentPreset?.filters,
+				filterFields: currentPreset?.filterFields,
+			};
+		},
+		deleteFilterPreset: (state, action: PayloadAction<{ presetId: IFilterPreset<IUserFilter>['id'] }>) => {
+			let newItems = state.userFilter?.presets.filter((item) => item.id !== action.payload.presetId || item.default);
+			let needChangeFilter = false;
+			const pinnedItem = newItems?.find((item) => item.pinned);
+			if (!pinnedItem) {
+				newItems = newItems.map((item) => {
+					if (item.default) {
+						needChangeFilter = true;
+						return {
+							...item,
+							pinned: true,
+							current: true,
+						};
+					}
+					return item;
+				});
+			}
+			state.userFilter.presets = newItems;
+			if (needChangeFilter) {
+				const currentPreset = newItems.find((item) => item.current);
+				state.userFilter.filters = currentPreset?.filters;
+			}
+		},
+		updateFilterPreset: (state, action: PayloadAction<{ data: Partial<IFilterPreset<IUserFilter>> }>) => {
+			state.userFilter.presets = state.userFilter.presets?.map((item) => {
+				if (item.id === action.payload.data.id)
+					return {
+						...item,
+						...action.payload.data,
+					};
+				return item;
+			});
+		},
+		pinFilterPreset: (state, action: PayloadAction<{ presetId: IFilterPreset<IUserFilter>['id'] }>) => {
+			let needChangeFilter = false;
+			const newItems = state.userFilter.presets?.map((item) => {
+				if (item.id === action.payload.presetId && !item.pinned) {
+					needChangeFilter = true;
+					return {
+						...item,
+						pinned: true,
+						current: true,
+					};
+				}
+				return {
+					...item,
+					pinned: false,
+				};
+			});
+			state.userFilter.presets = sortPresets(newItems);
+			if (needChangeFilter) {
+				const currentPreset = newItems.find((item) => item.current);
+				state.userFilter.filters = currentPreset?.filters;
+			}
+		},
+		unpinFilterPreset: (state, action: PayloadAction<{ presetId: IFilterPreset<IUserFilter>['id'] }>) => {
+			const newItems = state.userFilter.presets?.map((item) => {
+				if (item.id === action.payload.presetId && item.pinned)
+					return {
+						...item,
+						pinned: false,
+					};
+				if (item.default && !item.pinned) {
+					return {
+						...item,
+						pinned: true,
+						current: true,
+					};
+				}
+				return item;
+			});
+			state.userFilter.presets = sortPresets(newItems);
+			const currentPreset = newItems.find((item) => item.current);
+			state.userFilter.filters = currentPreset?.filters;
+		},
+		setCurrentFilterPreset: (state, action: PayloadAction<{ presetId: IFilterPreset<IUserFilter>['id'] }>) => {
+			let needChangeFilter = false;
+			const newItems = state.userFilter.presets?.map((item) => {
+				if (item.id === action.payload.presetId) {
+					needChangeFilter = true;
+					return {
+						...item,
+						current: true,
+					};
+				}
+				return {
+					...item,
+					current: false,
+				};
+			});
+			state.userFilter.presets = newItems;
+			if (needChangeFilter) {
+				const currentPreset = newItems.find((item) => item.current);
+				state.userFilter.filters = currentPreset?.filters;
+			}
+		},
+		updateCurrentPresetFilters: (state, action: PayloadAction<{ filters: Partial<IUserFilter> }>) => {
+			state.userFilter.presets = state.userFilter.presets?.map((item) => {
+				if (item.current) {
+					const it = { ...item, filters: { ...item.filters, ...action.payload.filters } };
+					return it;
+				}
+				return item;
+			});
+			state.userFilter.filters = { ...state.userFilter?.filters, ...action.payload.filters };
+		},
+		updateCurrentFilters: (state, action: PayloadAction<{ filters: Partial<IUserFilter> }>) => {
+			state.userFilter.filters = { ...state.userFilter?.filters, ...action.payload.filters };
+		},
+		updateCurrentFilterFields: (state, action: PayloadAction<{ filterFields: Partial<IFilterField[]> }>) => {
+			state.userFilter.filterFields = action.payload.filterFields;
+		},
+		clearItems: (state: IState) => {
+			state.usersFiltersData = initialState.usersFiltersData;
 		},
 	},
 	extraReducers: {
+		[fetchUsersByFilters.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<IUser>>) => {
+			state.loadingUsersByFilter = false;
+			state.usersFiltersData = !!action.payload.aborted ? state.usersFiltersData : action.payload;
+		},
+		[fetchUsersByFilters.pending.type]: (state) => {
+			state.loadingUsersByFilter = true;
+			state.errorLoading = '';
+		},
+		[fetchUsersByFilters.rejected.type]: (state, action: PayloadAction<string>) => {
+			state.loadingUsersByFilter = false;
+			state.errorLoading = action.payload;
+		},
 		[fetchUsers.fulfilled.type]: (state, action: PayloadAction<IUser[]>) => {
 			state.loading = false;
 			state.data = action.payload.filter((user) => !!user.authUserId);
@@ -67,6 +283,7 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
+			state.usersFiltersData.data = state.usersFiltersData.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[updateUser.pending.type]: (state) => {
@@ -81,6 +298,7 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
+			state.usersFiltersData.data = state.usersFiltersData.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[updateUserPosition.pending.type]: (state) => {
@@ -95,6 +313,7 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
+			state.usersFiltersData.data = state.usersFiltersData.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[updateUserRoles.pending.type]: (state) => {
@@ -109,6 +328,7 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
+			state.usersFiltersData.data = state.usersFiltersData.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[deactivateUser.pending.type]: (state) => {
@@ -123,6 +343,7 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
+			state.usersFiltersData.data = state.usersFiltersData.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[activateUser.pending.type]: (state) => {
@@ -151,6 +372,10 @@ export const usersSlice = createSlice({
 			state.data = state.data.map((user) =>
 				user.id.toString() === action.payload.toString() ? { ...user, dateOfInvitation: new Date().getTime() / 1000 } : user,
 			);
+			state.usersFiltersData.data = state.usersFiltersData.data.map((user) =>
+				user.id.toString() === action.payload.toString() ? { ...user, dateOfInvitation: new Date().getTime() / 1000 } : user,
+			);
+
 			// UsersCache.setData(state.data);
 		},
 		[repeatInvitation.pending.type]: (state) => {
@@ -165,6 +390,7 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.filter((user) => user.id.toString() !== action.payload.toString());
+			state.usersFiltersData.data = state.usersFiltersData.data.filter((user) => user.id.toString() !== action.payload.toString());
 			// UsersCache.setData(state.data);
 		},
 		[deleteInvitation.pending.type]: (state) => {
@@ -179,6 +405,7 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = null;
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
+			state.usersFiltersData.data = state.usersFiltersData.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
 		[uploadAvatar.pending.type]: (state) => {
@@ -191,5 +418,22 @@ export const usersSlice = createSlice({
 		},
 	},
 });
+
+export const {
+	addUserRoleFromTable,
+	addDepartmentToUsers,
+	removeDepartmentFromUsers,
+	deleteUserRoleFromTable,
+	setFilterPresets,
+	createFilterPreset,
+	deleteFilterPreset,
+	updateFilterPreset,
+	updateCurrentPresetFilters,
+	updateCurrentFilters,
+	pinFilterPreset,
+	unpinFilterPreset,
+	setCurrentFilterPreset,
+	updateCurrentFilterFields,
+} = usersSlice.actions;
 
 export default usersSlice.reducer;
