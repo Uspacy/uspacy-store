@@ -1,12 +1,13 @@
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IAfterOauthResponse } from '@uspacy/sdk/lib/models/oauthIntegrations';
-import { IBill, IPortalSubscription, ITariff } from '@uspacy/sdk/lib/models/tariffs';
+import { IBill, IDiscountCoupon, IPortalSubscription, ITariff } from '@uspacy/sdk/lib/models/tariffs';
 
 export interface IState {
 	afterGoogleOAuthData: IAfterOauthResponse;
 	tariffs: ITariff[];
 	portalSubsctription: IPortalSubscription;
 	bill: IBill;
+	discountCoupon: IDiscountCoupon;
 	redirectToStripeUrl: string;
 	loadingAfterGoogleOAuth: boolean;
 	loadingTariffs: boolean;
@@ -15,6 +16,7 @@ export interface IState {
 	loadingActivatingDemo: boolean;
 	loadingDisablingRenewal: boolean;
 	loadingDowngradeTariff: boolean;
+	loadingDiscountCoupon: boolean;
 	loadingRedirectToStripeUrl: boolean;
 	errorLoadingAfterGoogleOAuth: IErrorsAxiosResponse;
 	errorLoadingTariffs: IErrorsAxiosResponse;
@@ -23,5 +25,6 @@ export interface IState {
 	errorLoadingActivatingDemo: IErrorsAxiosResponse;
 	errorLoadingDisablingRenewal: IErrorsAxiosResponse;
 	errorLoadingDowngradeTariff: IErrorsAxiosResponse;
+	errorLoadingDiscountCoupon: IErrorsAxiosResponse;
 	errorLoadingRedirectToStripeUrl: IErrorsAxiosResponse;
 }

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IAfterOauthResponse } from '@uspacy/sdk/lib/models/oauthIntegrations';
-import { IBill, IPortalSubscription, IStripeRedirect, ITariff } from '@uspacy/sdk/lib/models/tariffs';
+import { IBill, IDiscountCoupon, IPortalSubscription, IStripeRedirect, ITariff } from '@uspacy/sdk/lib/models/tariffs';
 
 import { TWO_WEEK_TIME_VALUE } from '../../const';
 import {
@@ -10,6 +10,7 @@ import {
 	createSubscriptionLegal,
 	disableSubscriptionRenewal,
 	downgradeTariff,
+	getDiscountCoupon,
 	getPortalSubscription,
 	getTariffsList,
 	getUrlToRedirectAfterOAuth,
@@ -22,6 +23,7 @@ const initialState = {
 	tariffs: [],
 	portalSubsctription: null,
 	bill: null,
+	discountCoupon: null,
 	redirectToStripeUrl: '',
 	loadingAfterGoogleOAuth: false,
 	loadingTariffs: false,
@@ -30,6 +32,7 @@ const initialState = {
 	loadingActivatingDemo: false,
 	loadingDisablingRenewal: false,
 	loadingDowngradeTariff: false,
+	loadingDiscountCoupon: false,
 	loadingRedirectToStripeUrl: false,
 	errorLoadingAfterGoogleOAuth: null,
 	errorLoadingTariffs: null,
@@ -38,6 +41,7 @@ const initialState = {
 	errorLoadingActivatingDemo: null,
 	errorLoadingDisablingRenewal: null,
 	errorLoadingDowngradeTariff: null,
+	errorLoadingDiscountCoupon: null,
 	errorLoadingRedirectToStripeUrl: null,
 } as IState;
 
@@ -50,6 +54,9 @@ const authReducer = createSlice({
 		},
 		clearBill: (state) => {
 			state.bill = initialState.bill;
+		},
+		clearDiscountCoupon: (state) => {
+			state.discountCoupon = initialState.discountCoupon;
 		},
 		setPortalSubscription: (state, action: PayloadAction<IPortalSubscription>) => {
 			state.portalSubsctription = action.payload;
@@ -186,8 +193,22 @@ const authReducer = createSlice({
 			state.loadingDowngradeTariff = false;
 			state.errorLoadingDowngradeTariff = action.payload;
 		},
+		[getDiscountCoupon.fulfilled.type]: (state, action: PayloadAction<IDiscountCoupon>) => {
+			state.loadingDiscountCoupon = false;
+			state.errorLoadingDiscountCoupon = null;
+			state.discountCoupon = action.payload;
+		},
+		[getDiscountCoupon.pending.type]: (state) => {
+			state.loadingDiscountCoupon = true;
+			state.errorLoadingDiscountCoupon = null;
+		},
+		[getDiscountCoupon.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDiscountCoupon = false;
+			state.errorLoadingDiscountCoupon = action.payload;
+		},
 	},
 });
 
-export const { setAfterGoogleOAuthData, clearBill, setAutoRenewal, setPortalSubscription, setRedirectToStripeUrl } = authReducer.actions;
+export const { setAfterGoogleOAuthData, clearBill, clearDiscountCoupon, setAutoRenewal, setPortalSubscription, setRedirectToStripeUrl } =
+	authReducer.actions;
 export default authReducer.reducer;
