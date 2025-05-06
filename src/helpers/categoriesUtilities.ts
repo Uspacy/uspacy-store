@@ -94,7 +94,47 @@ export const addCategoryRecursively = (categories: IProductCategory[], newCatego
 };
 
 export const updateCategoryArray = (categories: IProductCategory[], updatedCategory: IProductCategory): IProductCategory[] => {
-	const withoutOld = removeCategory(categories, updatedCategory.id);
+	const { id, parent_id: parentId } = updatedCategory;
 
-	return addCategoryRecursively(withoutOld, updatedCategory);
+	const findCategory = (list: IProductCategory[]): IProductCategory | null => {
+		for (const item of list) {
+			if (item.id === id) return item;
+			if (item.child_categories?.length) {
+				const foundInChildren = findCategory(item.child_categories);
+				if (foundInChildren) return foundInChildren;
+			}
+		}
+		return null;
+	};
+
+	const existingCategory = findCategory(categories);
+
+	if (!existingCategory) {
+		return addCategoryRecursively(categories, updatedCategory);
+	}
+
+	const oldParentId = existingCategory.parent_id;
+	const parentChanged = oldParentId !== parentId;
+
+	if (!parentChanged) {
+		const updateInPlace = (list: IProductCategory[]): IProductCategory[] => {
+			return list.map((item) => {
+				if (item.id === id) return updatedCategory;
+
+				if (item.child_categories?.length) {
+					return {
+						...item,
+						child_categories: updateInPlace(item.child_categories),
+					};
+				}
+
+				return item;
+			});
+		};
+
+		return updateInPlace(categories);
+	} else {
+		const removed = removeCategory(categories, id);
+		return addCategoryRecursively(removed, updatedCategory);
+	}
 };
