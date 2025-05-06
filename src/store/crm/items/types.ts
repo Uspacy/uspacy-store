@@ -1,4 +1,4 @@
-import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
+import { IEntityAmount, IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
 import { IErrors } from '@uspacy/sdk/lib/models/crm-errors';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 
@@ -13,6 +13,9 @@ export interface EntityItems extends IResponseWithMeta<IEntityData> {
 		[key: string]: {
 			loading: boolean;
 			errorMessage?: IErrors;
+			currencyAmount?: IEntityAmount;
+			loadingCurrencyAmount?: boolean;
+			errorCurrencyAmount?: IErrors;
 		} & IResponseWithMeta<IEntityData>;
 	};
 }
