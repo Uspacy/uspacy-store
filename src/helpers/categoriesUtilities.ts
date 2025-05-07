@@ -2,42 +2,26 @@ import { IProductCategory } from '@uspacy/sdk/lib/models/crm-products-category';
 
 export const removeCategory = (categories: IProductCategory[], idToRemove: number, moveChildrenToParent: boolean = false): IProductCategory[] => {
 	const traverse = (list: IProductCategory[]): IProductCategory[] => {
-		let changed = false;
-
-		const result = list.reduce((acc, item) => {
+		return list.reduce<IProductCategory[]>((acc, item) => {
 			if (item.id === idToRemove) {
-				changed = true;
-
 				if (moveChildrenToParent && item.child_categories?.length) {
 					acc.push(...item.child_categories);
 				}
-
 				return acc;
 			}
 
+			let updatedChildren: IProductCategory[] | undefined;
 			if (item.child_categories?.length) {
-				const updatedChildren = traverse(item.child_categories);
-
-				if (
-					updatedChildren.length !== item.child_categories.length ||
-					!updatedChildren.every((c, i) => c.id === item.child_categories![i].id)
-				) {
-					changed = true;
-					acc.push({
-						...item,
-						child_categories: updatedChildren,
-					});
-				} else {
-					acc.push(item);
-				}
-			} else {
-				acc.push(item);
+				updatedChildren = traverse(item.child_categories);
 			}
 
-			return acc;
-		}, [] as IProductCategory[]);
+			acc.push({
+				...item,
+				...(updatedChildren ? { child_categories: updatedChildren } : {}),
+			});
 
-		return changed ? result : list;
+			return acc;
+		}, []);
 	};
 
 	return traverse(categories);
@@ -108,10 +92,6 @@ export const updateCategoryArray = (categories: IProductCategory[], updatedCateg
 	};
 
 	const existingCategory = findCategory(categories);
-
-	if (!existingCategory) {
-		return addCategoryRecursively(categories, updatedCategory);
-	}
 
 	const oldParentId = existingCategory.parent_id;
 	const parentChanged = oldParentId !== parentId;
