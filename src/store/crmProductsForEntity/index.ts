@@ -3,6 +3,7 @@ import { IProductForEntity, IProductInfoForEntity } from '@uspacy/sdk/lib/models
 
 import {
 	createProductForEntity,
+	createProductsForEntity,
 	deleteProductForEntityById,
 	deleteProductsForEntity,
 	editInfoProductsForEntity,
@@ -181,6 +182,27 @@ const productsForEntityReducer = createSlice({
 			state.loading = false;
 			state.errorMessage = action.payload;
 		},
+
+		[createProductsForEntity.pending.type]: (state) => {
+			state.loading = true;
+			state.errorMessage = '';
+		},
+		[createProductsForEntity.rejected.type]: (state, action: PayloadAction<string>) => {
+			state.loading = false;
+			state.errorMessage = action.payload;
+		},
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		[createProductsForEntity.fulfilled.type]: (state, action: PayloadAction<IProductForEntity[]>) => {
+			state.loading = false;
+			state.errorMessage = '';
+
+			state.productsWithInfoForEntity.list_products = [
+				...state.productsWithInfoForEntity.list_products.filter((product) => product.id !== 0),
+				...action.payload,
+			];
+			state.productsForEntity = [...state.productsForEntity.filter((product) => product.id !== 0), ...action.payload];
+		},
+
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		[editProductForEntity.fulfilled.type]: (state, action: PayloadAction<IProductForEntity>) => {
 			state.loading = false;
