@@ -54,6 +54,19 @@ export const createProductForEntity = createAsyncThunk(
 		}
 	},
 );
+
+export const createProductsForEntity = createAsyncThunk(
+	'productsForEntity/createProductsForEntity',
+	async (data: Partial<IProductForEntity[]>, thunkAPI) => {
+		try {
+			const res = await uspacySdk?.crmProductsForEntityService?.createProductsForEntity(data);
+			return res?.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue('Failure');
+		}
+	},
+);
+
 export const editProductForEntity = createAsyncThunk('productsForEntity/editProductForEntity', async (data: Partial<IProductForEntity>, thunkAPI) => {
 	try {
 		const res = await uspacySdk?.crmProductsForEntityService?.updateProductForEntity(data?.id, data);

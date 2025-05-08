@@ -61,8 +61,15 @@ const categoriesReducer = createSlice({
 			);
 		},
 
-		[deleteCategory.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string; id: number } }>) => {
-			state[action.meta.arg.entityCode].data = removeCategory(state[action.meta.arg.entityCode].data, action.meta.arg.id);
+		[deleteCategory.pending.type]: (
+			state,
+			action: PayloadAction<unknown, string, { arg: { entityCode: string; id: number; removeWithChildren: boolean } }>,
+		) => {
+			state[action.meta.arg.entityCode].data = removeCategory(
+				state[action.meta.arg.entityCode].data,
+				action.meta.arg.id,
+				!action.meta.arg.removeWithChildren,
+			);
 		},
 	},
 });
