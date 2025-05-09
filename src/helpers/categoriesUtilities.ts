@@ -116,7 +116,7 @@ export const updateCategoryArray = (categories: IProductCategory[], updatedCateg
 	if (!existingCategory) return categories;
 
 	const parentChanged = existingCategory.parent_id !== newParentId;
-	const sortChanged = (existingCategory.sort ?? 0) !== (newSort ?? 0);
+	const sortChanged = (existingCategory.sort ?? 10) !== (newSort ?? 10);
 
 	if (!parentChanged && !sortChanged) {
 		const updateInPlace = (list: IProductCategory[]): IProductCategory[] => {
