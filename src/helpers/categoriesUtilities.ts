@@ -8,9 +8,9 @@ export const insertAndShiftSort = (list: IProductCategory[], category: IProductC
 	const preparedCategory: IProductCategory = hasSort
 		? category
 		: {
-			...category,
-			sort: Math.max(-10, ...updatedList.map((item) => item.sort ?? -10)) + 10,
-		};
+				...category,
+				sort: Math.max(-10, ...updatedList.map((item) => item.sort ?? -10)) + 10,
+		  };
 
 	updatedList = [...updatedList, preparedCategory].sort((a, b) => (a.sort ?? 10) - (b.sort ?? 10));
 

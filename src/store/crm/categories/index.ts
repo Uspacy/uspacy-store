@@ -1,12 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IProductCategory } from '@uspacy/sdk/lib/models/crm-products-category';
 
-import {
-	addCategoryRecursively,
-	removeCategory,
-	sortCategories,
-	updateCategoryArray
-} from '../../../helpers/categoriesUtilities';
+import { addCategoryRecursively, removeCategory, sortCategories, updateCategoryArray } from '../../../helpers/categoriesUtilities';
 import { createCategory, deleteCategory, fetchCategories, updateCategory } from './actions';
 import { IState } from './types';
 
