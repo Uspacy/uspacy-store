@@ -1,7 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IProductCategory } from '@uspacy/sdk/lib/models/crm-products-category';
 
-import { addCategoryRecursively, removeCategory, updateCategoryArray } from '../../../helpers/categoriesUtilities';
+import {
+	addCategoryRecursively,
+	removeCategory,
+	sortCategories,
+	updateCategoryArray
+} from '../../../helpers/categoriesUtilities';
 import { createCategory, deleteCategory, fetchCategories, updateCategory } from './actions';
 import { IState } from './types';
 
@@ -20,7 +25,7 @@ const categoriesReducer = createSlice({
 		[fetchCategories.fulfilled.type]: (state, action: PayloadAction<{ data: IProductCategory[] }, string, { arg: { entityCode: string } }>) => {
 			state[action.meta.arg.entityCode].loading = false;
 			state[action.meta.arg.entityCode].errorMessage = '';
-			state[action.meta.arg.entityCode].data = action.payload.data;
+			state[action.meta.arg.entityCode].data = sortCategories(action.payload.data || []);
 		},
 		[fetchCategories.pending.type]: (state, action: PayloadAction<string, string, { arg: { entityCode: string } }>) => {
 			if (!state[action.meta.arg.entityCode]) {
