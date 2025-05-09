@@ -192,15 +192,15 @@ const productsForEntityReducer = createSlice({
 			state.errorMessage = action.payload;
 		},
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		[createProductsForEntity.fulfilled.type]: (state, action: PayloadAction<IProductForEntity[]>) => {
+		[createProductsForEntity.fulfilled.type]: (state, action: PayloadAction<{ data: IProductForEntity[] }>) => {
 			state.loading = false;
 			state.errorMessage = '';
 
 			state.productsWithInfoForEntity.list_products = [
 				...state.productsWithInfoForEntity.list_products.filter((product) => product.id !== 0),
-				...action.payload,
+				...action.payload.data,
 			];
-			state.productsForEntity = [...state.productsForEntity.filter((product) => product.id !== 0), ...action.payload];
+			state.productsForEntity = [...state.productsForEntity.filter((product) => product.id !== 0), ...action.payload.data];
 		},
 
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
