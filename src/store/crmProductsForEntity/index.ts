@@ -196,7 +196,7 @@ const productsForEntityReducer = createSlice({
 			state.loading = false;
 			state.errorMessage = '';
 			const addedItems = action.payload.data.map((it, idx) => {
-				return { ...action?.meta?.arg?.[idx], ...it };
+				return { ...it, product: action?.meta?.arg?.[idx]?.product };
 			});
 
 			state.productsWithInfoForEntity.list_products = [
