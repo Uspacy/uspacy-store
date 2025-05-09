@@ -118,3 +118,26 @@ export const updateCategoryArray = (categories: IProductCategory[], updatedCateg
 		return addCategoryRecursively(removed, updatedCategory);
 	}
 };
+
+export const sortCategories = (categories: IProductCategory[]): IProductCategory[] => {
+	const sorted = categories
+		.map((cat) => ({ ...cat }))
+		.sort((a, b) => {
+			const aSort = typeof a.sort === 'number' ? a.sort : Number.MAX_SAFE_INTEGER;
+			const bSort = typeof b.sort === 'number' ? b.sort : Number.MAX_SAFE_INTEGER;
+			return aSort - bSort;
+		});
+
+	let currentSort = 0;
+	for (let i = 0; i < sorted.length; i++) {
+		if (typeof sorted[i].sort !== 'number') {
+			sorted[i].sort = currentSort;
+		}
+		currentSort = sorted[i].sort + 10;
+	}
+
+	return sorted.map((category) => ({
+		...category,
+		child_categories: category.child_categories?.length ? sortCategories(category.child_categories) : [],
+	}));
+};
