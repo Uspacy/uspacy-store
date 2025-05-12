@@ -31,6 +31,7 @@ const initialBookingState: IBooking = {
 		participants: [],
 		showPicture: true,
 		canEditOthers: true,
+		responsible: null,
 	},
 	userData: {
 		formName: '',
