@@ -97,7 +97,8 @@ export const normalizeCategories = (categoriesIds?: number) => {
 export const normalizeProductField = (resField, defaultFields) => {
 	const connectedField = defaultFields.find((defField) => resField.code === defField.code);
 	const galleryField = connectedField?.code === 'files';
-	if (connectedField) return { ...connectedField, code: galleryField ? 'preview_image_id' : connectedField.code, name: resField.name };
+	const fieldName = resField?.name === 'activity' ? 'activityProductFilter' : resField?.name;
+	if (connectedField) return { ...connectedField, code: galleryField ? 'preview_image_id' : connectedField.code, name: fieldName };
 	return resField;
 };
 
