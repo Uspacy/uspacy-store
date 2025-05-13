@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FormFieldCode, IForm, IFormField, IFormOther, IPredefinedField } from '@uspacy/sdk/lib/models/forms';
 
+import { updateFieldsOrderHelp } from '../../helpers/forms';
 import { getForms } from './actions';
 import { IState, RequireOnlyOne } from './types';
 
@@ -105,6 +106,10 @@ const formsReducer = createSlice({
 				state.form.config.predefinedFields.push(action.payload);
 			}
 		},
+		updateFieldsOrder: (state, action: PayloadAction<string[]>) => {
+			state.form.config.fields = updateFieldsOrderHelp(state.form.config.fields, action.payload);
+			state.form.config.other = updateFieldsOrderHelp(state.form.config.other, action.payload);
+		},
 	},
 	extraReducers: {
 		[getForms.fulfilled.type]: (state, action: PayloadAction<IForm[]>) => {
@@ -135,5 +140,6 @@ export const {
 	setShowSaveButton,
 	updateFormInList,
 	setPredefinedFields,
+	updateFieldsOrder,
 } = formsReducer.actions;
 export default formsReducer.reducer;
