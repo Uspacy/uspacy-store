@@ -51,7 +51,16 @@ const formsReducer = createSlice({
 					}
 				} else {
 					if (nextSelectedStatus && !isRemove) {
-						state.form.config.fields.push(fields[fieldIndex] as IFormField);
+						const maxFieldOrder = Math.max(...state.form.config.fields.map((field) => field.order), -1);
+						const addFieldButtonOrder = state.form.config.other.find((it) => it.fieldCode === 'addFieldButton')?.order - 1 || 0;
+						let orderSeparatorCount = maxFieldOrder < 0 ? addFieldButtonOrder : maxFieldOrder;
+						state.form.config.fields.push({ ...fields[fieldIndex], order: ++orderSeparatorCount } as IFormField);
+						state.form.config.other = state.form.config.other.map((it) => {
+							if (it.order >= orderSeparatorCount) {
+								return { ...it, order: ++orderSeparatorCount };
+							}
+							return it;
+						});
 					} else {
 						state.form.config.fields = state.form.config.fields.filter((field) => field.fieldCode !== fieldCode);
 					}
