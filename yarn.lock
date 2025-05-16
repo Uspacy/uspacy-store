@@ -2502,15 +2502,14 @@
     lint-staged "15.2.10"
     localforage "1.10.0"
 
-"@uspacy/sdk@0.0.150-alpha.3":
-  version "0.0.150-alpha.3"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.150-alpha.3/87756b131a59a67b46fc7c8937cd9625f0fd89ea#87756b131a59a67b46fc7c8937cd9625f0fd89ea"
-  integrity sha512-nQvV3pK42IL8P+COH0Rsm2tM6rNM0DanJ1wC5/Ftj6vXo4IrlzUafjM3bMB7fo8tu2yfeaLy7elCuG2v8drNfg==
+"@uspacy/sdk@0.0.151":
+  version "0.0.151"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.151/20b4002465893f785c6847e444f77419c69a735d#20b4002465893f785c6847e444f77419c69a735d"
+  integrity sha512-aXC58cA1lDMG0X75wUkqZavo3JJKPyUwLdfkQUciMCISX6SZTRmcJymGe8C1z5Zue0k/8uG32aPJYx1Rq3YG5Q==
   dependencies:
-    axios "^1.7.2"
+    axios "^1.9.0"
     js-cookie "3.0.5"
     jwt-decode "3.1.2"
-    lint-staged "15.2.10"
     localforage "1.10.0"
 
 "@uspacy/store@0.0.184-alpha.8":
@@ -3026,6 +3025,15 @@ axios@^1.7.2:
   version "1.7.5"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.5.tgz#21eed340eb5daf47d29b6e002424b3e88c8c54b1"
   integrity sha512-fZu86yCo+svH3uqJ/yTdQ0QHpQu5oL+/QE+QPSv6BZSkDAoky9vytxp7u5qk83OJFS3kEBcesWni9WTZAv3tSw==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
+
+axios@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.9.0.tgz#25534e3b72b54540077d33046f77e3b8d7081901"
+  integrity sha512-re4CqKTJaURpzbLHtIi6XpDv20/CnpXOtjRY5/CU32L8gU8ek9UIivcfvSWvmKEngmVbrUtPpdDwWDWL7DNHvg==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.0"
