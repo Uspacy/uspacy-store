@@ -26,8 +26,28 @@ export const sortCategories = (categories: IProductCategory[]): IProductCategory
 export const addCategoryRecursively = (categories: IProductCategory[], newCategory: IProductCategory): IProductCategory[] => {
 	const parentId = newCategory.parent_id;
 
+	const exists = (list: IProductCategory[]): boolean => {
+		return list.some((item) => {
+			if (item.id === newCategory.id) return true;
+			if (item.child_categories?.length) return exists(item.child_categories);
+			return false;
+		});
+	};
+
+	const normalizeSort = (sort?: number): number => {
+		if (typeof sort !== 'number') return 10;
+		return Math.ceil(sort / 10) * 10;
+	};
+
+	const categoryToInsert: IProductCategory = exists(categories)
+		? newCategory
+		: {
+				...newCategory,
+				sort: normalizeSort(newCategory.sort),
+		  };
+
 	if (!parentId || parentId <= 0) {
-		return insertAndShiftSort(categories, newCategory);
+		return insertAndShiftSort(categories, categoryToInsert);
 	}
 
 	const traverse = (list: IProductCategory[]): IProductCategory[] => {
@@ -35,7 +55,7 @@ export const addCategoryRecursively = (categories: IProductCategory[], newCatego
 			if (item.id === parentId) {
 				return {
 					...item,
-					child_categories: insertAndShiftSort(item.child_categories || [], newCategory),
+					child_categories: insertAndShiftSort(item.child_categories || [], categoryToInsert),
 				};
 			}
 
@@ -49,7 +69,7 @@ export const addCategoryRecursively = (categories: IProductCategory[], newCatego
 	const updated = traverse(categories);
 
 	const parentExists = JSON.stringify(updated) !== JSON.stringify(categories);
-	return parentExists ? updated : insertAndShiftSort(categories, newCategory);
+	return parentExists ? updated : insertAndShiftSort(categories, categoryToInsert);
 };
 
 export const insertAndShiftSort = (list: IProductCategory[], category: IProductCategory): IProductCategory[] => {
