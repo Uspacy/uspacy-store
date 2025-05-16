@@ -23,7 +23,7 @@ export const sortCategories = (categories: IProductCategory[]): IProductCategory
 	}));
 };
 
-const addCategoryRecursively = (categories: IProductCategory[], newCategory: IProductCategory): IProductCategory[] => {
+export const addCategoryRecursively = (categories: IProductCategory[], newCategory: IProductCategory): IProductCategory[] => {
 	const parentId = newCategory.parent_id;
 
 	if (!parentId || parentId <= 0) {
@@ -52,7 +52,7 @@ const addCategoryRecursively = (categories: IProductCategory[], newCategory: IPr
 	return parentExists ? updated : insertAndShiftSort(categories, newCategory);
 };
 
-const insertAndShiftSort = (list: IProductCategory[], category: IProductCategory): IProductCategory[] => {
+export const insertAndShiftSort = (list: IProductCategory[], category: IProductCategory): IProductCategory[] => {
 	const updatedList = list.filter((item) => item.id !== category.id);
 
 	const hasSort = typeof category.sort === 'number';
