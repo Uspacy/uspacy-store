@@ -1,26 +1,29 @@
 import { IProductCategory } from '@uspacy/sdk/lib/models/crm-products-category';
 
-export const insertAndShiftSort = (list: IProductCategory[], category: IProductCategory): IProductCategory[] => {
-	let updatedList = list.filter((item) => item.id !== category.id);
+export const sortCategories = (categories: IProductCategory[]): IProductCategory[] => {
+	const sorted = categories
+		.map((cat) => ({ ...cat }))
+		.sort((a, b) => {
+			const aSort = typeof a.sort === 'number' ? a.sort : Number.MAX_SAFE_INTEGER;
+			const bSort = typeof b.sort === 'number' ? b.sort : Number.MAX_SAFE_INTEGER;
+			return aSort - bSort;
+		});
 
-	const hasSort = typeof category.sort === 'number';
+	let currentSort = 10;
+	for (let i = 0; i < sorted.length; i++) {
+		if (typeof sorted[i].sort !== 'number') {
+			sorted[i].sort = currentSort;
+		}
+		currentSort = sorted[i].sort + 10;
+	}
 
-	const preparedCategory: IProductCategory = hasSort
-		? category
-		: {
-				...category,
-				sort: Math.max(-10, ...updatedList.map((item) => item.sort ?? -10)) + 10,
-		  };
-
-	updatedList = [...updatedList, preparedCategory].sort((a, b) => (a.sort ?? 10) - (b.sort ?? 10));
-
-	return updatedList.map((item, index) => ({
-		...item,
-		sort: index * 10,
+	return sorted.map((category) => ({
+		...category,
+		child_categories: category.child_categories?.length ? sortCategories(category.child_categories) : [],
 	}));
 };
 
-export const addCategoryRecursively = (categories: IProductCategory[], newCategory: IProductCategory): IProductCategory[] => {
+const addCategoryRecursively = (categories: IProductCategory[], newCategory: IProductCategory): IProductCategory[] => {
 	const parentId = newCategory.parent_id;
 
 	if (!parentId || parentId <= 0) {
@@ -44,8 +47,38 @@ export const addCategoryRecursively = (categories: IProductCategory[], newCatego
 	};
 
 	const updated = traverse(categories);
+
 	const parentExists = JSON.stringify(updated) !== JSON.stringify(categories);
 	return parentExists ? updated : insertAndShiftSort(categories, newCategory);
+};
+
+const insertAndShiftSort = (list: IProductCategory[], category: IProductCategory): IProductCategory[] => {
+	const updatedList = list.filter((item) => item.id !== category.id);
+
+	const hasSort = typeof category.sort === 'number';
+	let tempSort = category.sort;
+
+	if (hasSort) {
+		const oldItem = list.find((item) => item.id === category.id);
+		const oldSort = oldItem?.sort ?? 10;
+		const direction = (category.sort ?? 10) > oldSort ? 5 : -5;
+		tempSort = (category.sort ?? 10) + direction;
+	} else {
+		const maxSort = Math.max(-10, ...updatedList.map((item) => item.sort ?? -10));
+		tempSort = maxSort + 10;
+	}
+
+	const preparedCategory: IProductCategory = {
+		...category,
+		sort: tempSort,
+	};
+
+	const finalList = [...updatedList, preparedCategory].sort((a, b) => (a.sort ?? 10) - (b.sort ?? 10));
+
+	return finalList.map((item, index) => ({
+		...item,
+		sort: index * 10,
+	}));
 };
 
 export const removeCategory = (categories: IProductCategory[], idToRemove: number, moveChildrenToParent: boolean = false): IProductCategory[] => {
@@ -74,31 +107,8 @@ export const removeCategory = (categories: IProductCategory[], idToRemove: numbe
 	return traverse(categories);
 };
 
-export const sortCategories = (categories: IProductCategory[]): IProductCategory[] => {
-	const sorted = categories
-		.map((cat) => ({ ...cat }))
-		.sort((a, b) => {
-			const aSort = typeof a.sort === 'number' ? a.sort : Number.MAX_SAFE_INTEGER;
-			const bSort = typeof b.sort === 'number' ? b.sort : Number.MAX_SAFE_INTEGER;
-			return aSort - bSort;
-		});
-
-	let currentSort = 10;
-	for (let i = 0; i < sorted.length; i++) {
-		if (typeof sorted[i].sort !== 'number') {
-			sorted[i].sort = currentSort;
-		}
-		currentSort = sorted[i].sort + 10;
-	}
-
-	return sorted.map((category) => ({
-		...category,
-		child_categories: category.child_categories?.length ? sortCategories(category.child_categories) : [],
-	}));
-};
-
 export const updateCategoryArray = (categories: IProductCategory[], updatedCategory: IProductCategory): IProductCategory[] => {
-	const { id, parent_id: newParentId, sort: newSort } = updatedCategory;
+	const { id, parent_id: newParentId, sort: intendedSort } = updatedCategory;
 
 	const findCategory = (list: IProductCategory[]): IProductCategory | null => {
 		for (const item of list) {
@@ -112,11 +122,13 @@ export const updateCategoryArray = (categories: IProductCategory[], updatedCateg
 	};
 
 	const existingCategory = findCategory(categories);
-
 	if (!existingCategory) return categories;
 
+	const oldSort = existingCategory.sort ?? 10;
+	const newSort = intendedSort != null ? intendedSort + (intendedSort > oldSort ? 5 : -5) : oldSort;
+
 	const parentChanged = existingCategory.parent_id !== newParentId;
-	const sortChanged = (existingCategory.sort ?? 10) !== (newSort ?? 10);
+	const sortChanged = oldSort !== newSort;
 
 	if (!parentChanged && !sortChanged) {
 		const updateInPlace = (list: IProductCategory[]): IProductCategory[] => {
@@ -137,6 +149,11 @@ export const updateCategoryArray = (categories: IProductCategory[], updatedCateg
 		return updateInPlace(categories);
 	}
 
+	const modifiedCategory = {
+		...updatedCategory,
+		sort: newSort,
+	};
+
 	const removed = removeCategory(categories, id);
-	return addCategoryRecursively(removed, updatedCategory);
+	return addCategoryRecursively(removed, modifiedCategory);
 };
