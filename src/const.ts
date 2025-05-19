@@ -354,7 +354,7 @@ export const fieldForCalls: IField[] = [
 		show: true,
 		hidden: true,
 		multiple: false,
-		type: 'list',
+		type: 'call_duration',
 		sort: '',
 		system_field: false,
 		default_value: '',
