@@ -325,7 +325,7 @@ export const fieldForCalls: IField[] = [
 	},
 	{
 		name: 'responsibleId',
-		code: 'owner',
+		code: 'responsible_id',
 		required: false,
 		editable: false,
 		show: true,
