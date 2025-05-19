@@ -267,10 +267,26 @@ export const fieldForCalls: IField[] = [
 		sort: '',
 		system_field: false,
 		default_value: '',
+		values: [
+			{
+				color: '',
+				selected: false,
+				sort: 0,
+				title: 'outgoing',
+				value: 'outgoing',
+			},
+			{
+				color: '',
+				selected: false,
+				sort: 0,
+				title: 'incoming',
+				value: 'incoming',
+			},
+		],
 	},
 	{
 		name: 'callStatus',
-		code: 'call_status',
+		code: 'ended_call_status',
 		required: false,
 		editable: false,
 		show: true,
@@ -283,7 +299,7 @@ export const fieldForCalls: IField[] = [
 	},
 	{
 		name: 'date',
-		code: 'date',
+		code: 'begin_time',
 		required: false,
 		editable: false,
 		show: true,
@@ -309,7 +325,7 @@ export const fieldForCalls: IField[] = [
 	},
 	{
 		name: 'responsibleId',
-		code: 'responsible_id',
+		code: 'owner',
 		required: false,
 		editable: false,
 		show: true,

@@ -23,7 +23,7 @@ export const getDefaultFastFields = (entityType: string) => {
 		case 'product':
 			return ['kanban_status', 'kanban_stage_id', 'source', 'created_at', 'owner', 'contact_label', 'deals', 'company_label'];
 		case 'calls':
-			return ['responsible_id', 'call_type', 'call_status', 'duration', 'created_at'];
+			return ['call_status', 'call_type', 'duration', 'responsible_id', 'created_at'];
 		default:
 			return ['created_at', 'updated_at', 'owner', 'created_by', 'changed_by', 'created_at_custom', 'updated_at_custom'];
 	}
