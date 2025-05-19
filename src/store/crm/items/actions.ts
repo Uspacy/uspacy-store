@@ -35,7 +35,8 @@ export const fetchEntityItems = createAsyncThunk(
 			const params = getFilterParams(filters, fields || []) as { [key: string]: any };
 			switch (entityCode) {
 				case 'calls': {
-					const filter = { ...params, ...(params.responsible_id && { owner: params.responsible_id }) } as ICallFilters;
+					const { responsible_id: responsibleId, ...otherParams } = params;
+					const filter = { ...otherParams, ...(responsibleId && { owner: responsibleId }) } as ICallFilters;
 					const res = await uspacySdk.crmCallsService.getCallsWithFilters(filter);
 					return res?.data;
 				}
