@@ -211,10 +211,10 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 				return { ...acc, [`sort_by[${checkField}]`]: sort };
 			}
 
-			if (key?.startsWith('from_') || key?.startsWith('to_') || key?.startsWith('currency_')) {
-				const fieldCode = key.replace(/^(from_|to_|currency_)/, '');
+			if (key?.startsWith('from_') || key?.startsWith('to_') || key?.startsWith('currency_') || key?.startsWith('by_')) {
+				const fieldCode = key.replace(/^(from_|to_|currency_|by_)/, '');
 				const fieldType = key.split('_')[0];
-				if (isNull(value)) {
+				if (isNull(value) || fieldType === 'by') {
 					return acc;
 				}
 
