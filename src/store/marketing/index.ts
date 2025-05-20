@@ -116,8 +116,10 @@ const marketingReducer = createSlice({
 			state.errorLoadingUpdatingEmailTemplate = action.payload;
 		},
 
-		[deleteEmailTemplate.fulfilled.type]: (state, action: PayloadAction<IEmailTemplate>) => {
-			state.emailTemplates.data = state.emailTemplates.data.filter((emailTemplate) => emailTemplate.id !== action.payload.id);
+		[deleteEmailTemplate.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: { id: number } }>) => {
+			const { id } = action.meta.arg;
+
+			state.emailTemplates.data = state.emailTemplates.data.filter((emailTemplate) => emailTemplate.id !== id);
 			state.loadingDeletingEmailTemplate = false;
 			state.errorLoadingDeletingEmailTemplate = null;
 		},

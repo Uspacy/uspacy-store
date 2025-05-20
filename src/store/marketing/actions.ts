@@ -48,8 +48,7 @@ export const updateEmailTemplate = createAsyncThunk(
 
 export const deleteEmailTemplate = createAsyncThunk('marketing/deleteEmailTemplate', async ({ id }: { id: number }, thunkAPI) => {
 	try {
-		const res = await uspacySdk.marketingService.deleteEmailTemplate(id);
-		return res.data;
+		return await uspacySdk.marketingService.deleteEmailTemplate(id);
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
