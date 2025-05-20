@@ -15,7 +15,10 @@ const initialState = {
 	},
 	emailTemplate: null,
 	emailTemplatesFilter: {
+		page: 1,
+		list: 20,
 		sections: [],
+		created_by: [],
 		user_ids: [],
 		created_at: [],
 		updated_at: [],
@@ -47,8 +50,11 @@ const marketingReducer = createSlice({
 		clearEmailTemplates: (state) => {
 			state.emailTemplates = initialState.emailTemplates;
 		},
-		setEmailTemplatesData: (state, action: PayloadAction<IEmailTemplate[]>) => {
-			state.emailTemplates.data = action.payload;
+		clearEmailTemplatesFilter: (state) => {
+			state.emailTemplatesFilter = initialState.emailTemplatesFilter;
+		},
+		setEmailTemplates: (state, action: PayloadAction<IResponseWithMeta<IEmailTemplate>>) => {
+			state.emailTemplates = action.payload;
 		},
 		setEmailTemplate: (state, action: PayloadAction<IEmailTemplate>) => {
 			state.emailTemplate = action.payload;
@@ -134,5 +140,6 @@ const marketingReducer = createSlice({
 	},
 });
 
-export const { clearEmailTemplates, setEmailTemplatesData, setEmailTemplate, setEmailTemplatesFilter } = marketingReducer.actions;
+export const { clearEmailTemplates, clearEmailTemplatesFilter, setEmailTemplates, setEmailTemplate, setEmailTemplatesFilter } =
+	marketingReducer.actions;
 export default marketingReducer.reducer;
