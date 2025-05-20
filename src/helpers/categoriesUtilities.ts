@@ -118,7 +118,7 @@ export const removeCategory = (categories: IProductCategory[], idToRemove: numbe
 		});
 
 		return filtered
-			.sort((a, b) => (a.sort ?? 10) - (b.sort ?? 10))
+			.sort((a, b) => (a.sort ?? MIN_SORT) - (b.sort ?? MIN_SORT))
 			.map((item, index) => ({
 				...item,
 				sort: index * 10,
@@ -145,7 +145,7 @@ export const updateCategoryArray = (categories: IProductCategory[], updatedCateg
 	const existingCategory = findCategory(categories);
 	if (!existingCategory) return categories;
 
-	const oldSort = existingCategory.sort ?? 10;
+	const oldSort = existingCategory.sort ?? MIN_SORT;
 	const newSort = intendedSort != null ? intendedSort + (intendedSort > oldSort ? 5 : -5) : oldSort;
 
 	const parentChanged = existingCategory.parent_id !== newParentId;
