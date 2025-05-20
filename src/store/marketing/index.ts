@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IEmailTemplate } from '@uspacy/sdk/lib/models/email-template';
-import { ITemplateFilter } from '@uspacy/sdk/lib/models/email-template-filter';
+import { IEmailTemplateFilter } from '@uspacy/sdk/lib/models/email-template-filter';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 
@@ -47,13 +47,13 @@ const marketingReducer = createSlice({
 		clearEmailTemplates: (state) => {
 			state.emailTemplates = initialState.emailTemplates;
 		},
-		setEmailTemplatesData: (state, action: PayloadAction<IResponseWithMeta<IEmailTemplate>>) => {
-			state.emailTemplates.data = action.payload.data;
+		setEmailTemplatesData: (state, action: PayloadAction<IEmailTemplate[]>) => {
+			state.emailTemplates.data = action.payload;
 		},
 		setEmailTemplate: (state, action: PayloadAction<IEmailTemplate>) => {
 			state.emailTemplate = action.payload;
 		},
-		setEmailTemplatesFilter: (state, action: PayloadAction<ITemplateFilter>) => {
+		setEmailTemplatesFilter: (state, action: PayloadAction<IEmailTemplateFilter>) => {
 			state.emailTemplatesFilter = action.payload;
 		},
 	},

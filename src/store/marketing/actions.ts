@@ -1,11 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IEmailTemplate } from '@uspacy/sdk/lib/models/email-template';
-import { ITemplateFilter } from '@uspacy/sdk/lib/models/email-template-filter';
+import { IEmailTemplateFilter } from '@uspacy/sdk/lib/models/email-template-filter';
 
 export const getEmailTemplates = createAsyncThunk(
 	'marketing/getEmailTemplates',
-	async ({ params, signal }: { params: ITemplateFilter; signal?: AbortSignal }, thunkAPI) => {
+	async ({ params, signal }: { params: Partial<IEmailTemplateFilter>; signal?: AbortSignal }, thunkAPI) => {
 		try {
 			const res = await uspacySdk.marketingService.getEmailTemplates(params, signal);
 			return res.data;
