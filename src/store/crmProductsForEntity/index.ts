@@ -191,7 +191,6 @@ const productsForEntityReducer = createSlice({
 			state.loading = false;
 			state.errorMessage = action.payload;
 		},
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		[createProductsForEntity.fulfilled.type]: (state, action: { payload: { data: IProductForEntity[] }; meta: { arg: IProductForEntity[] } }) => {
 			state.loading = false;
 			state.errorMessage = '';
