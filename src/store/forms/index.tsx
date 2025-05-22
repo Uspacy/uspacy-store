@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FormFieldCode, IForm, IFormField, IFormOther, IPredefinedField } from '@uspacy/sdk/lib/models/forms';
 
+import { updateFieldsOrderHelp } from '../../helpers/forms';
 import { getForms } from './actions';
 import { IState, RequireOnlyOne } from './types';
 
@@ -50,7 +51,16 @@ const formsReducer = createSlice({
 					}
 				} else {
 					if (nextSelectedStatus && !isRemove) {
-						state.form.config.fields.push(fields[fieldIndex] as IFormField);
+						const maxFieldOrder = Math.max(...state.form.config.fields.map((field) => field.order), -1);
+						const addFieldButtonOrder = state.form.config.other.find((it) => it.fieldCode === 'addFieldButton')?.order - 1 || 0;
+						let orderSeparatorCount = maxFieldOrder < 0 ? addFieldButtonOrder : maxFieldOrder;
+						state.form.config.fields.push({ ...fields[fieldIndex], order: ++orderSeparatorCount } as IFormField);
+						state.form.config.other = state.form.config.other.map((it) => {
+							if (it.order >= orderSeparatorCount) {
+								return { ...it, order: ++orderSeparatorCount };
+							}
+							return it;
+						});
 					} else {
 						state.form.config.fields = state.form.config.fields.filter((field) => field.fieldCode !== fieldCode);
 					}
@@ -105,6 +115,10 @@ const formsReducer = createSlice({
 				state.form.config.predefinedFields.push(action.payload);
 			}
 		},
+		updateFieldsOrder: (state, action: PayloadAction<string[]>) => {
+			state.form.config.fields = updateFieldsOrderHelp(state.form.config.fields, action.payload);
+			state.form.config.other = updateFieldsOrderHelp(state.form.config.other, action.payload);
+		},
 	},
 	extraReducers: {
 		[getForms.fulfilled.type]: (state, action: PayloadAction<IForm[]>) => {
@@ -135,5 +149,6 @@ export const {
 	setShowSaveButton,
 	updateFormInList,
 	setPredefinedFields,
+	updateFieldsOrder,
 } = formsReducer.actions;
 export default formsReducer.reducer;
