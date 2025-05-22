@@ -35,11 +35,14 @@ export const updateCategory = createAsyncThunk(
 	},
 );
 
-export const deleteCategory = createAsyncThunk('crm/categories/deleteCategory', async ({ id }: { entityCode?: string; id: number }, thunkAPI) => {
-	try {
-		await uspacySdk?.crmProductsCategoryService?.deleteProductCategory(id);
-		return id;
-	} catch (e) {
-		return thunkAPI.rejectWithValue(e);
-	}
-});
+export const deleteCategory = createAsyncThunk(
+	'crm/categories/deleteCategory',
+	async ({ id, parentId, removeWithChildren }: { entityCode?: string; id: number; parentId: number; removeWithChildren?: boolean }, thunkAPI) => {
+		try {
+			await uspacySdk?.crmProductsCategoryService?.deleteProductCategory(id, parentId, removeWithChildren);
+			return id;
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
