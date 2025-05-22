@@ -5,6 +5,7 @@ import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 
 export interface IState {
 	emailTemplates: IResponseWithMeta<IEmailTemplate>;
+	emailTemplatesCards: IEmailTemplate[];
 	emailTemplate: IEmailTemplate;
 	emailTemplatesFilter: IEmailTemplateFilter;
 	loadingEmailTemplates: boolean;
