@@ -13,6 +13,7 @@ const initialState = {
 		meta: null,
 		aborted: false,
 	},
+	emailTemplatesCards: [],
 	emailTemplate: null,
 	emailTemplatesFilter: {
 		page: 1,
@@ -56,6 +57,9 @@ const marketingReducer = createSlice({
 		setEmailTemplates: (state, action: PayloadAction<IResponseWithMeta<IEmailTemplate>>) => {
 			state.emailTemplates = action.payload;
 		},
+		setEmailTemplatesCards: (state, action: PayloadAction<IEmailTemplate[]>) => {
+			state.emailTemplatesCards = action.payload;
+		},
 		setEmailTemplate: (state, action: PayloadAction<IEmailTemplate>) => {
 			state.emailTemplate = action.payload;
 		},
@@ -94,6 +98,7 @@ const marketingReducer = createSlice({
 
 		[createEmailTemplate.fulfilled.type]: (state, action: PayloadAction<IEmailTemplate>) => {
 			state.emailTemplates.data.unshift(action.payload);
+			state.emailTemplatesCards.unshift(action.payload);
 			state.loadingCreatingEmailTemplate = false;
 			state.errorLoadingCreatingEmailTemplate = null;
 		},
@@ -107,9 +112,12 @@ const marketingReducer = createSlice({
 		},
 
 		[updateEmailTemplate.fulfilled.type]: (state, action: PayloadAction<IEmailTemplate>) => {
-			state.emailTemplates.data = state.emailTemplates.data.map((emailTemplate) =>
-				emailTemplate.id === action.payload.id ? action.payload : emailTemplate,
-			);
+			state.emailTemplates.data = state.emailTemplates.data.map((emailTemplate) => {
+				return emailTemplate.id === action.payload.id ? action.payload : emailTemplate;
+			});
+			state.emailTemplatesCards = state.emailTemplatesCards.map((emailTemplate) => {
+				return emailTemplate.id === action.payload.id ? action.payload : emailTemplate;
+			});
 			state.loadingUpdatingEmailTemplate = false;
 			state.errorLoadingUpdatingEmailTemplate = null;
 		},
@@ -126,6 +134,7 @@ const marketingReducer = createSlice({
 			const { id } = action.meta.arg;
 
 			state.emailTemplates.data = state.emailTemplates.data.filter((emailTemplate) => emailTemplate.id !== id);
+			state.emailTemplatesCards = state.emailTemplatesCards.filter((emailTemplate) => emailTemplate.id !== id);
 			state.loadingDeletingEmailTemplate = false;
 			state.errorLoadingDeletingEmailTemplate = null;
 		},
@@ -140,6 +149,12 @@ const marketingReducer = createSlice({
 	},
 });
 
-export const { clearEmailTemplates, clearEmailTemplatesFilter, setEmailTemplates, setEmailTemplate, setEmailTemplatesFilter } =
-	marketingReducer.actions;
+export const {
+	clearEmailTemplates,
+	clearEmailTemplatesFilter,
+	setEmailTemplates,
+	setEmailTemplatesCards,
+	setEmailTemplate,
+	setEmailTemplatesFilter,
+} = marketingReducer.actions;
 export default marketingReducer.reducer;
