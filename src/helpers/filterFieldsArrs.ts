@@ -23,7 +23,7 @@ export const getDefaultFastFields = (entityType: string) => {
 		case 'product':
 			return ['kanban_status', 'kanban_stage_id', 'source', 'created_at', 'owner', 'contact_label', 'deals', 'company_label'];
 		case 'calls':
-			return ['responsible_id', 'call_type', 'call_status', 'duration', 'created_at'];
+			return ['ended_call_status', 'call_type', 'duration', 'responsible_id', 'begin_time'];
 		default:
 			return ['created_at', 'updated_at', 'owner', 'created_by', 'changed_by', 'created_at_custom', 'updated_at_custom'];
 	}
@@ -211,10 +211,10 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 				return { ...acc, [`sort_by[${checkField}]`]: sort };
 			}
 
-			if (key?.startsWith('from_') || key?.startsWith('to_') || key?.startsWith('currency_')) {
-				const fieldCode = key.replace(/^(from_|to_|currency_)/, '');
+			if (key?.startsWith('from_') || key?.startsWith('to_') || key?.startsWith('currency_') || key?.startsWith('by_')) {
+				const fieldCode = key.replace(/^(from_|to_|currency_|by_)/, '');
 				const fieldType = key.split('_')[0];
-				if (isNull(value)) {
+				if (isNull(value) || fieldType === 'by') {
 					return acc;
 				}
 

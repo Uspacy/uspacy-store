@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
-import { IEntityFilters, IFilterCurrenciesAmount } from '@uspacy/sdk/lib/models/crm-filters';
+import { ICallFilters, IEntityFilters, IFilterCurrenciesAmount } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IProduct } from '@uspacy/sdk/lib/models/crm-products';
 import { IField } from '@uspacy/sdk/lib/models/field';
@@ -31,10 +32,22 @@ export const fetchEntityItems = createAsyncThunk(
 		thunkAPI,
 	) => {
 		try {
-			const params = getFilterParams(filters, fields || []);
+			const params = getFilterParams(filters, fields || []) as { [key: string]: any };
 			switch (entityCode) {
 				case 'calls': {
-					const res = await uspacySdk.crmCallsService.getCallsWithFilters(params);
+					const {
+						responsible_id: responsibleId,
+						duration_by: durationBy,
+						duration_from: durationFrom,
+						duration_to: durationTo,
+						...otherParams
+					} = params;
+					const filter = {
+						...otherParams,
+						...(responsibleId && { owner: responsibleId }),
+						...((!!durationFrom || !!durationTo) && { duration_by: durationBy, duration_to: durationTo, duration_from: durationFrom }),
+					} as ICallFilters;
+					const res = await uspacySdk.crmCallsService.getCallsWithFilters(filter);
 					return res?.data;
 				}
 				case 'products': {
