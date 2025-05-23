@@ -14,6 +14,7 @@ const initialFormState: IState['form'] = {
 		other: [],
 		predefinedFields: [],
 	},
+	order: 0,
 };
 
 const initialState: IState = {
@@ -115,9 +116,14 @@ const formsReducer = createSlice({
 				state.form.config.predefinedFields.push(action.payload);
 			}
 		},
-		updateFieldsOrder: (state, action: PayloadAction<string[]>) => {
-			state.form.config.fields = updateFieldsOrderHelp(state.form.config.fields, action.payload);
-			state.form.config.other = updateFieldsOrderHelp(state.form.config.other, action.payload);
+		updateFieldsOrder: (state, action: PayloadAction<{ sortedngArr: string[]; isOutsideSort?: boolean }>) => {
+			const { sortedngArr, isOutsideSort } = action.payload;
+			state.form.config.other = updateFieldsOrderHelp(state.form.config.other, sortedngArr, isOutsideSort);
+			if (isOutsideSort) {
+				state.form.order = sortedngArr.findIndex((it) => it === 'form');
+			} else {
+				state.form.config.fields = updateFieldsOrderHelp(state.form.config.fields, sortedngArr);
+			}
 		},
 	},
 	extraReducers: {
