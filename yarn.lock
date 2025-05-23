@@ -2502,10 +2502,10 @@
     lint-staged "15.2.10"
     localforage "1.10.0"
 
-"@uspacy/sdk@0.0.153-alpha.8":
-  version "0.0.153-alpha.8"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.153-alpha.8/5c469133b16261397669286d9effeb70fe873bb4#5c469133b16261397669286d9effeb70fe873bb4"
-  integrity sha512-zzUvWC0CoU+36JHYls0acY2Hh6spAH8iDucqLZSv5A9Oq51Rmoa9+cD9rIjLZuKt97IQDlbuX5JT8UvNWb/gCA==
+"@uspacy/sdk@0.0.153-alpha.9":
+  version "0.0.153-alpha.9"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.153-alpha.9/e27c1578c5846ffe4b2a4d6fdca138c5485b2b80#e27c1578c5846ffe4b2a4d6fdca138c5485b2b80"
+  integrity sha512-Y8XDy1ThVIGvdhR6lY/QaeIwRiSCWBshAnBYQdZlKLLttCC00QBNe3STIv1ieXuLE4UhOzArRn/KYL+NdLxLwQ==
   dependencies:
     axios "^1.9.0"
     js-cookie "3.0.5"
