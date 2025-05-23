@@ -1,4 +1,5 @@
 import { IProductCategory } from '@uspacy/sdk/lib/models/crm-products-category';
+const MIN_SORT = 10;
 
 export const sortCategories = (categories: IProductCategory[]): IProductCategory[] => {
 	const sorted = categories
@@ -9,12 +10,12 @@ export const sortCategories = (categories: IProductCategory[]): IProductCategory
 			return aSort - bSort;
 		});
 
-	let currentSort = 10;
+	let currentSort = MIN_SORT;
 	for (let i = 0; i < sorted.length; i++) {
 		if (typeof sorted[i].sort !== 'number') {
 			sorted[i].sort = currentSort;
 		}
-		currentSort = sorted[i].sort + 10;
+		currentSort = sorted[i].sort + MIN_SORT;
 	}
 
 	return sorted.map((category) => ({
@@ -35,7 +36,7 @@ export const addCategoryRecursively = (categories: IProductCategory[], newCatego
 	};
 
 	const normalizeSort = (sort?: number): number => {
-		if (typeof sort !== 'number') return 10;
+		if (typeof sort !== 'number') return MIN_SORT;
 		return Math.ceil(sort / 10) * 10;
 	};
 
@@ -80,12 +81,12 @@ export const insertAndShiftSort = (list: IProductCategory[], category: IProductC
 
 	if (hasSort) {
 		const oldItem = list.find((item) => item.id === category.id);
-		const oldSort = oldItem?.sort ?? 10;
-		const direction = (category.sort ?? 10) > oldSort ? 5 : -5;
-		tempSort = (category.sort ?? 10) + direction;
+		const oldSort = oldItem?.sort ?? MIN_SORT;
+		const direction = (category.sort ?? MIN_SORT) > oldSort ? 5 : -5;
+		tempSort = (category.sort ?? MIN_SORT) + direction;
 	} else {
 		const maxSort = Math.max(-10, ...updatedList.map((item) => item.sort ?? -10));
-		tempSort = maxSort + 10;
+		tempSort = maxSort + MIN_SORT;
 	}
 
 	const preparedCategory: IProductCategory = {
@@ -93,11 +94,11 @@ export const insertAndShiftSort = (list: IProductCategory[], category: IProductC
 		sort: tempSort,
 	};
 
-	const finalList = [...updatedList, preparedCategory].sort((a, b) => (a.sort ?? 10) - (b.sort ?? 10));
+	const finalList = [...updatedList, preparedCategory].sort((a, b) => (a.sort ?? MIN_SORT) - (b.sort ?? MIN_SORT));
 
 	return finalList.map((item, index) => ({
 		...item,
-		sort: index * 10,
+		sort: index * MIN_SORT,
 	}));
 };
 
@@ -117,7 +118,7 @@ export const removeCategory = (categories: IProductCategory[], idToRemove: numbe
 		});
 
 		return filtered
-			.sort((a, b) => (a.sort ?? 10) - (b.sort ?? 10))
+			.sort((a, b) => (a.sort ?? MIN_SORT) - (b.sort ?? MIN_SORT))
 			.map((item, index) => ({
 				...item,
 				sort: index * 10,
@@ -144,7 +145,7 @@ export const updateCategoryArray = (categories: IProductCategory[], updatedCateg
 	const existingCategory = findCategory(categories);
 	if (!existingCategory) return categories;
 
-	const oldSort = existingCategory.sort ?? 10;
+	const oldSort = existingCategory.sort ?? MIN_SORT;
 	const newSort = intendedSort != null ? intendedSort + (intendedSort > oldSort ? 5 : -5) : oldSort;
 
 	const parentChanged = existingCategory.parent_id !== newParentId;
