@@ -107,6 +107,10 @@ const marketingReducer = createSlice({
 		[createEmailTemplate.fulfilled.type]: (state, action: PayloadAction<IEmailTemplate>) => {
 			state.emailTemplates.data.unshift(action.payload);
 			state.emailTemplatesCards.unshift(action.payload);
+			state.emailTemplates.meta = {
+				...state.emailTemplates.meta,
+				total: state.emailTemplates.meta?.total + 1,
+			};
 			state.loadingCreatingEmailTemplate = false;
 			state.errorLoadingCreatingEmailTemplate = null;
 		},
@@ -143,6 +147,10 @@ const marketingReducer = createSlice({
 
 			state.emailTemplates.data = state.emailTemplates.data.filter((emailTemplate) => emailTemplate.id !== id);
 			state.emailTemplatesCards = state.emailTemplatesCards.filter((emailTemplate) => emailTemplate.id !== id);
+			state.emailTemplates.meta = {
+				...state.emailTemplates.meta,
+				total: state.emailTemplates.meta?.total - 1,
+			};
 			state.loadingDeletingEmailTemplate = false;
 			state.errorLoadingDeletingEmailTemplate = null;
 		},
