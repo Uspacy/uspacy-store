@@ -3,6 +3,8 @@ import { uspacySdk } from '@uspacy/sdk';
 import { IEmailTemplate } from '@uspacy/sdk/lib/models/email-template';
 import { IEmailTemplateFilter } from '@uspacy/sdk/lib/models/email-template-filter';
 
+import { IMassActionsEmailTemplatesPayload } from './types';
+
 export const getEmailTemplates = createAsyncThunk(
 	'marketing/getEmailTemplates',
 	async ({ params, signal }: { params: Partial<IEmailTemplateFilter>; signal?: AbortSignal }, thunkAPI) => {
@@ -53,3 +55,25 @@ export const deleteEmailTemplate = createAsyncThunk('marketing/deleteEmailTempla
 		return thunkAPI.rejectWithValue(e);
 	}
 });
+
+export const massEditingEmailTemplates = createAsyncThunk(
+	'marketing/massEditingEmailTemplates',
+	async ({ id, payload, all, params }: IMassActionsEmailTemplatesPayload, thunkAPI) => {
+		try {
+			return await uspacySdk.marketingService.massEditingEmailTemplates(id, payload, all, params);
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
+
+export const massDeletionEmailTemplates = createAsyncThunk(
+	'marketing/massDeletionEmailTemplates',
+	async ({ id, all, params }: IMassActionsEmailTemplatesPayload, thunkAPI) => {
+		try {
+			return await uspacySdk.marketingService.massDeletionEmailTemplates(id, all, params);
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);

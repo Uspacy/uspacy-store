@@ -4,8 +4,16 @@ import { IEmailTemplateFilter } from '@uspacy/sdk/lib/models/email-template-filt
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 
-import { createEmailTemplate, deleteEmailTemplate, getEmailTemplate, getEmailTemplates, updateEmailTemplate } from './actions';
-import { IState } from './types';
+import {
+	createEmailTemplate,
+	deleteEmailTemplate,
+	getEmailTemplate,
+	getEmailTemplates,
+	massDeletionEmailTemplates,
+	massEditingEmailTemplates,
+	updateEmailTemplate,
+} from './actions';
+import { IMassActionsEmailTemplatesPayload, IState } from './types';
 
 const initialState = {
 	emailTemplates: {
@@ -143,6 +151,54 @@ const marketingReducer = createSlice({
 			state.errorLoadingDeletingEmailTemplate = null;
 		},
 		[deleteEmailTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDeletingEmailTemplate = false;
+			state.errorLoadingDeletingEmailTemplate = action.payload;
+		},
+
+		[massEditingEmailTemplates.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActionsEmailTemplatesPayload }>) => {
+			const { id, payload } = action.meta.arg;
+
+			state.emailTemplates.data = state.emailTemplates.data.map((emailTemplate) => {
+				if (id?.includes(emailTemplate.id)) {
+					const copiedEmailTemplate = { ...emailTemplate };
+
+					for (const key in payload) {
+						if (payload.hasOwnProperty(key)) {
+							if (Array.isArray(payload[key])) {
+								copiedEmailTemplate[key] = Array.from(new Set([...copiedEmailTemplate[key], ...payload[key]]));
+							}
+						}
+					}
+
+					return copiedEmailTemplate;
+				}
+				return emailTemplate;
+			});
+
+			state.loadingUpdatingEmailTemplate = false;
+			state.errorLoadingUpdatingEmailTemplate = null;
+		},
+		[massEditingEmailTemplates.pending.type]: (state) => {
+			state.loadingUpdatingEmailTemplate = true;
+			state.errorLoadingUpdatingEmailTemplate = null;
+		},
+		[massEditingEmailTemplates.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingEmailTemplate = false;
+			state.errorLoadingUpdatingEmailTemplate = action.payload;
+		},
+
+		[massDeletionEmailTemplates.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActionsEmailTemplatesPayload }>) => {
+			const { id } = action.meta.arg;
+
+			state.emailTemplates.data = state.emailTemplates.data.filter((emailTemplate) => !id?.includes(emailTemplate.id));
+			state.loadingDeletingEmailTemplate = false;
+			state.errorLoadingDeletingEmailTemplate = null;
+		},
+		[massDeletionEmailTemplates.pending.type]: (state) => {
+			state.loadingDeletingEmailTemplate = true;
+			state.errorLoadingDeletingEmailTemplate = null;
+		},
+		[massDeletionEmailTemplates.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingDeletingEmailTemplate = false;
 			state.errorLoadingDeletingEmailTemplate = action.payload;
 		},

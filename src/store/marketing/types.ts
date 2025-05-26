@@ -3,6 +3,13 @@ import { IEmailTemplateFilter } from '@uspacy/sdk/lib/models/email-template-filt
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 
+export interface IMassActionsEmailTemplatesPayload {
+	id: number[];
+	payload?: Partial<IEmailTemplate>;
+	all?: boolean;
+	params?: Partial<IEmailTemplateFilter>;
+}
+
 export interface IState {
 	emailTemplates: IResponseWithMeta<IEmailTemplate>;
 	emailTemplatesCards: IEmailTemplate[];
