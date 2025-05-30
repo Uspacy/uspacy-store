@@ -13,6 +13,12 @@ const initialFormState: IState['form'] = {
 		fields: [],
 		other: [],
 		predefinedFields: [],
+		after: {
+			showMessage: true,
+			fields: [],
+			redirectUrl: null,
+			timeBeforeRedirect: null,
+		},
 	},
 };
 
@@ -119,6 +125,20 @@ const formsReducer = createSlice({
 			state.form.config.fields = updateFieldsOrderHelp(state.form.config.fields, action.payload);
 			state.form.config.other = updateFieldsOrderHelp(state.form.config.other, action.payload);
 		},
+		updateAfterScreenSettings: (state, action: PayloadAction<Partial<IForm['config']['after']>>) => {
+			state.form.config.after = { ...state.form.config.after, ...action.payload };
+		},
+		updateAfterScreenField: (state, action: PayloadAction<RequireOnlyOne<IFormOther, 'fieldCode'>>) => {
+			const fieldIndex = state.form.config.after.fields.findIndex((field) => field.fieldCode === action.payload.fieldCode);
+			if (fieldIndex === -1) {
+				state.form.config.after.fields.push(action.payload);
+			} else {
+				state.form.config.after.fields[fieldIndex] = { ...state.form.config.after.fields[fieldIndex], ...action.payload };
+			}
+		},
+		removeAfterScreenField: (state, action: PayloadAction<IFormOther['fieldCode']>) => {
+			state.form.config.after.fields = state.form.config.after.fields.filter((field) => field.fieldCode !== action.payload);
+		},
 	},
 	extraReducers: {
 		[getForms.fulfilled.type]: (state, action: PayloadAction<IForm[]>) => {
@@ -150,5 +170,8 @@ export const {
 	updateFormInList,
 	setPredefinedFields,
 	updateFieldsOrder,
+	updateAfterScreenSettings,
+	updateAfterScreenField,
+	removeAfterScreenField,
 } = formsReducer.actions;
 export default formsReducer.reducer;
