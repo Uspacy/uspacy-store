@@ -121,9 +121,15 @@ const formsReducer = createSlice({
 				state.form.config.predefinedFields.push(action.payload);
 			}
 		},
-		updateFieldsOrder: (state, action: PayloadAction<string[]>) => {
-			state.form.config.fields = updateFieldsOrderHelp(state.form.config.fields, action.payload);
-			state.form.config.other = updateFieldsOrderHelp(state.form.config.other, action.payload);
+		updateFieldsOrder: (state, action: PayloadAction<{ sortedArr: string[]; isScreenAfterSend?: boolean }>) => {
+			const { sortedArr, isScreenAfterSend } = action.payload;
+
+			if (isScreenAfterSend) {
+				state.form.config.after.fields = updateFieldsOrderHelp(state.form.config.after.fields, sortedArr);
+			} else {
+				state.form.config.fields = updateFieldsOrderHelp(state.form.config.fields, sortedArr);
+				state.form.config.other = updateFieldsOrderHelp(state.form.config.other, sortedArr);
+			}
 		},
 		updateAfterScreenSettings: (state, action: PayloadAction<Partial<IForm['config']['after']>>) => {
 			state.form.config.after = { ...state.form.config.after, ...action.payload };
