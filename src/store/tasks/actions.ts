@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
+import { IField } from '@uspacy/sdk/lib/models/field';
 import { ITask, ITasksParams } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 
@@ -327,9 +328,67 @@ export const restartTask = createAsyncThunk('tasks/restartTask', async (id: stri
 	}
 });
 
+// ! old method
 export const fetchTaskFields = createAsyncThunk('tasks/fetchTaskFields', async (_, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk.tasksService.getTasksField();
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const getTasksFields = createAsyncThunk('tasks/getTasksFields', async (_, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.tasksService.getTasksFields();
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const updateTasksField = createAsyncThunk('tasks/updateTasksField', async (data: IField, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.tasksService.updateTasksField(data.code, data);
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const updateTasksListValues = createAsyncThunk('tasks/updateTasksListValues', async (data: IField, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.tasksService.updateTasksListValues(data);
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const createTasksField = createAsyncThunk('tasks/createTasksField', async (data: IField, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.tasksService.createTasksField(data);
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const deleteTasksListValues = createAsyncThunk(
+	'tasks/deleteTasksListValues',
+	async ({ fieldCode, value }: { fieldCode: string; value: string }, thunkAPI) => {
+		try {
+			await uspacySdk.tasksService.deleteTasksListValues(fieldCode, value);
+			return { value, fieldCode };
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
+
+export const deleteTasksField = createAsyncThunk('tasks/deleteTasksField', async (fieldCode: string, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.tasksService.deleteTasksField(fieldCode);
 		return res.data;
 	} catch (e) {
 		return rejectWithValue(e);
