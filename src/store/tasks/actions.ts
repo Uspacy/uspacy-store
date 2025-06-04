@@ -5,6 +5,7 @@ import { IField } from '@uspacy/sdk/lib/models/field';
 import { ITask, ITasksParams } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 
+import { transformKeysToCaseByType } from '../../helpers/objectsUtilities';
 import { ICreateTaskPayload, IDeleteTaskPayload } from './types';
 
 export const getTasks = createAsyncThunk(
@@ -341,7 +342,8 @@ export const fetchTaskFields = createAsyncThunk('tasks/fetchTaskFields', async (
 export const getTasksFields = createAsyncThunk('tasks/getTasksFields', async (_, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk.tasksService.getTasksFields();
-		return res.data;
+		const preparedFields = res.data.map((field) => transformKeysToCaseByType(field, 'snake')) as IField[];
+		return preparedFields;
 	} catch (e) {
 		return rejectWithValue(e);
 	}
@@ -349,8 +351,11 @@ export const getTasksFields = createAsyncThunk('tasks/getTasksFields', async (_,
 
 export const updateTasksField = createAsyncThunk('tasks/updateTasksField', async (data: IField, { rejectWithValue }) => {
 	try {
-		const res = await uspacySdk.tasksService.updateTasksField(data.code, data);
-		return res.data;
+		const fieldsToCamelCase = transformKeysToCaseByType(data, 'camel') as IField;
+		const res = await uspacySdk.tasksService.updateTasksField(data.code, fieldsToCamelCase);
+
+		const fieldsToSnakeCase = transformKeysToCaseByType(res.data, 'snake') as IField;
+		return fieldsToSnakeCase;
 	} catch (e) {
 		return rejectWithValue(e);
 	}
@@ -358,8 +363,11 @@ export const updateTasksField = createAsyncThunk('tasks/updateTasksField', async
 
 export const updateTasksListValues = createAsyncThunk('tasks/updateTasksListValues', async (data: IField, { rejectWithValue }) => {
 	try {
-		const res = await uspacySdk.tasksService.updateTasksListValues(data);
-		return res.data;
+		const fieldsToCamelCase = transformKeysToCaseByType(data, 'camel') as IField;
+		const res = await uspacySdk.tasksService.updateTasksListValues(fieldsToCamelCase);
+
+		const fieldsToSnakeCase = transformKeysToCaseByType(res.data, 'snake') as IField;
+		return fieldsToSnakeCase;
 	} catch (e) {
 		return rejectWithValue(e);
 	}
@@ -367,8 +375,11 @@ export const updateTasksListValues = createAsyncThunk('tasks/updateTasksListValu
 
 export const createTasksField = createAsyncThunk('tasks/createTasksField', async (data: IField, { rejectWithValue }) => {
 	try {
-		const res = await uspacySdk.tasksService.createTasksField(data);
-		return res.data;
+		const fieldsToCamelCase = transformKeysToCaseByType(data, 'camel') as IField;
+		const res = await uspacySdk.tasksService.createTasksField(fieldsToCamelCase);
+
+		const fieldsToSnakeCase = transformKeysToCaseByType(res.data, 'snake') as IField;
+		return fieldsToSnakeCase;
 	} catch (e) {
 		return rejectWithValue(e);
 	}
