@@ -28,7 +28,7 @@ const productPriceReducer = createSlice({
 		[fetchPriceTypes.fulfilled.type]: (state, action: PayloadAction<{ data: IPriceType[] }, string, { arg: { entityCode: string } }>) => {
 			state[action.meta.arg.entityCode].loading = false;
 			state[action.meta.arg.entityCode].errorMessage = '';
-			state[action.meta.arg.entityCode].data = action.payload.data.sort((a, b) => a.sort - b.sort);
+			state[action.meta.arg.entityCode].data = (action.payload.data || []).sort((a, b) => a.sort - b.sort);
 		},
 		[fetchPriceTypes.pending.type]: (state, action: PayloadAction<string, string, { arg: { entityCode: string } }>) => {
 			if (!state[action.meta.arg.entityCode]) {
@@ -43,7 +43,6 @@ const productPriceReducer = createSlice({
 		},
 
 		[createProductPrice.fulfilled.type]: (state, action: PayloadAction<IPriceType, string, { arg: { entityCode: string } }>) => {
-			state[action.meta.arg.entityCode].loading = false;
 			state[action.meta.arg.entityCode].errorMessage = '';
 			state[action.meta.arg.entityCode].data = [...state[action.meta.arg.entityCode].data, action.payload];
 		},
@@ -52,11 +51,9 @@ const productPriceReducer = createSlice({
 				state[action.meta.arg.entityCode] = initialProductTypes;
 			}
 			state[action.meta.arg.entityCode].errorMessage = '';
-			state[action.meta.arg.entityCode].loading = true;
 		},
 		[createProductPrice.rejected.type]: (state, action: PayloadAction<string, string, { arg: { entityCode: string } }>) => {
 			state[action.meta.arg.entityCode].errorMessage = action.payload;
-			state[action.meta.arg.entityCode].loading = false;
 		},
 
 		[updateProductPrice.pending.type]: (
@@ -65,7 +62,9 @@ const productPriceReducer = createSlice({
 		) => {
 			const updatePriceType = action.meta.arg.priceType;
 			const withUpdatedPriceSort = state[action.meta.arg.entityCode].data.map((item) =>
-				item.id === updatePriceType.id ? { ...item, sort: updatePriceType.sort } : item,
+				item.id === updatePriceType.id
+					? { ...item, sort: updatePriceType.sort, default: updatePriceType.default }
+					: { ...item, default: updatePriceType.default ? false : item.default },
 			);
 			state[action.meta.arg.entityCode].data = normalizeSort(withUpdatedPriceSort);
 		},
