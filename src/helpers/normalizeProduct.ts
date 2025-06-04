@@ -141,6 +141,7 @@ export const defaultDataColumns = [
 	{ ...defColumn, name: 'remainder', code: 'remainder', type: 'productRemind' },
 	{ ...defColumn, name: 'description', code: 'description', type: 'textarea' },
 	{ ...defColumn, name: 'tax', code: 'tax', type: 'productTax' },
+	{ ...defColumn, name: 'tax', code: 'price_type_id', type: 'productPriceType' },
 	{ ...defColumn, name: 'activityProductFilter', code: 'is_active', type: 'productActivity' },
 	{ ...defColumn, name: 'productGallery', code: 'files', type: 'productGallery' },
 	{ ...defColumn, name: 'productLink', code: 'link', type: 'productLink' },
