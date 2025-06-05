@@ -6,7 +6,6 @@ import { IFilterTasks, ITask, taskType } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 import cloneDeep from 'lodash/cloneDeep';
 
-import { headField } from '../../const';
 import { fillTheString } from '../../helpers/stringsHelper';
 import {
 	completeTask,
@@ -901,8 +900,7 @@ const tasksReducer = createSlice({
 		[getTasksFields.fulfilled.type]: (state, action: PayloadAction<IField[]>) => {
 			state.loadingTasksFields = false;
 			state.errorLoadingTasksFields = null;
-			const data = [headField, ...(action?.payload || [])];
-			state.fields = cloneDeep(data).map((field) => {
+			state.fields = cloneDeep(action?.payload || []).map((field) => {
 				return {
 					...field,
 					values: Array.isArray(field.values) ? field.values?.sort((a, b) => a.sort - b.sort) : field.values,
