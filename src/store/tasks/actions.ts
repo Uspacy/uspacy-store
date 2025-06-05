@@ -342,7 +342,8 @@ export const fetchTaskFields = createAsyncThunk('tasks/fetchTaskFields', async (
 export const getTasksFields = createAsyncThunk('tasks/getTasksFields', async (_, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk.tasksService.getTasksFields();
-		const preparedFields = res.data.map((field) => transformKeysToCaseByType(field, 'snake')) as IField[];
+		const preparedFields = res.data.data.map((field) => transformKeysToCaseByType(field, 'snake')) as IField[];
+
 		return preparedFields;
 	} catch (e) {
 		return rejectWithValue(e);
