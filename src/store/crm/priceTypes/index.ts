@@ -74,7 +74,7 @@ const productPriceReducer = createSlice({
 			const withoutRemovedPriceType = state[action.meta.arg.entityCode].data.filter((it) => it.id !== action.meta.arg.id);
 			if (removeItem?.default) {
 				const [firstItem, ...otherItems] = withoutRemovedPriceType ?? [];
-				state[action.meta.arg.entityCode].data = normalizeSort([{ ...firstItem, default: true }, ...otherItems]);
+				state[action.meta.arg.entityCode].data = normalizeSort([{ ...firstItem, default: true, active: true }, ...otherItems]);
 			} else {
 				state[action.meta.arg.entityCode].data = normalizeSort(withoutRemovedPriceType);
 			}
