@@ -19,6 +19,30 @@ const initialFormState: IState['form'] = {
 			redirectUrl: null,
 			timeBeforeRedirect: null,
 		},
+		design: {
+			generalColors: {
+				pageBg: '#9155FD0A',
+				formBg: '#FBF8FF',
+			},
+			button: {
+				style: 'contained',
+				borderRadius: 6,
+				size: 'medium',
+				textSize: 16,
+				textLetterSpacing: 'standard',
+			},
+			fields: {
+				style: 'outlined',
+				borderRadius: 6,
+				size: 'small',
+				textSize: 14,
+				hideFieldLabel: false,
+			},
+			additional: {
+				formPosition: 'center',
+				showUspacyBrand: true,
+			},
+		},
 	},
 };
 
@@ -145,6 +169,12 @@ const formsReducer = createSlice({
 		removeAfterScreenField: (state, action: PayloadAction<IFormOther['fieldCode']>) => {
 			state.form.config.after.fields = state.form.config.after.fields.filter((field) => field.fieldCode !== action.payload);
 		},
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		updateDesignSettings: (state, action: PayloadAction<{ groupKey: keyof IForm['config']['design']; value: any }>) => {
+			const { groupKey, value } = action.payload;
+
+			state.form.config.design[groupKey] = { ...state.form.config.design[groupKey], ...value };
+		},
 	},
 	extraReducers: {
 		[getForms.fulfilled.type]: (state, action: PayloadAction<IForm[]>) => {
@@ -179,5 +209,6 @@ export const {
 	updateAfterScreenSettings,
 	updateAfterScreenField,
 	removeAfterScreenField,
+	updateDesignSettings,
 } = formsReducer.actions;
 export default formsReducer.reducer;
