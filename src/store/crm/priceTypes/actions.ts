@@ -7,7 +7,7 @@ export const fetchPriceTypes = createAsyncThunk('crm/priceTypes/fetchPriceTypes'
 		const res = await uspacySdk?.crmProductsPriceTypes?.getProductPriceTypes();
 		return res?.data;
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
+		return thunkAPI.rejectWithValue(e);
 	}
 });
 
@@ -18,7 +18,7 @@ export const createProductPrice = createAsyncThunk(
 			const res = await uspacySdk?.crmProductsPriceTypes?.createProductPriceType(data);
 			return res?.data;
 		} catch (e) {
-			return thunkAPI.rejectWithValue('Failure');
+			return thunkAPI.rejectWithValue(e);
 		}
 	},
 );
@@ -30,7 +30,7 @@ export const updateProductPrice = createAsyncThunk(
 			const res = await uspacySdk?.crmProductsPriceTypes?.updateProductPriceType(priceType.id, priceType);
 			return res?.data;
 		} catch (e) {
-			return thunkAPI.rejectWithValue('Failure');
+			return thunkAPI.rejectWithValue(e);
 		}
 	},
 );
