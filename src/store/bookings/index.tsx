@@ -38,6 +38,7 @@ const initialBookingState: IBooking = {
 		entity: ECreateEntity.activity,
 		source: '',
 		fields: [],
+		language: 'en',
 	},
 	meetHours: {
 		active: false,
