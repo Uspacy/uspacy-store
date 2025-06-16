@@ -22,7 +22,7 @@ const initialFormState: IState['form'] = {
 		design: {
 			generalColors: {
 				pageBg: '#9155FD0A',
-				formBg: '#FBF8FF',
+				formBg: '',
 			},
 			button: {
 				style: 'contained',
