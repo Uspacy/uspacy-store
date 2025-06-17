@@ -1,9 +1,34 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FormFieldCode, IForm, IFormField, IFormOther, IPredefinedField } from '@uspacy/sdk/lib/models/forms';
+import { FormFieldCode, IForm, IFormDesign, IFormField, IFormOther, IPredefinedField } from '@uspacy/sdk/lib/models/forms';
 
 import { updateFieldsOrderHelp } from '../../helpers/forms';
 import { getForms } from './actions';
 import { IState, RequireOnlyOne } from './types';
+
+export const initialDesignState: IFormDesign = {
+	generalColors: {
+		pageBg: '#9155FD0A',
+		formBg: '',
+	},
+	button: {
+		style: 'contained',
+		borderRadius: 6,
+		size: 'medium',
+		textSize: 16,
+		textLetterSpacing: 'standard',
+	},
+	fields: {
+		style: 'outlined',
+		borderRadius: 6,
+		size: 'small',
+		textSize: 14,
+		hideFieldLabel: false,
+	},
+	additional: {
+		formPosition: 'center',
+		showUspacyBrand: true,
+	},
+};
 
 const initialFormState: IState['form'] = {
 	name: '',
@@ -19,30 +44,7 @@ const initialFormState: IState['form'] = {
 			redirectUrl: null,
 			timeBeforeRedirect: null,
 		},
-		design: {
-			generalColors: {
-				pageBg: '#9155FD0A',
-				formBg: '',
-			},
-			button: {
-				style: 'contained',
-				borderRadius: 6,
-				size: 'medium',
-				textSize: 16,
-				textLetterSpacing: 'standard',
-			},
-			fields: {
-				style: 'outlined',
-				borderRadius: 6,
-				size: 'small',
-				textSize: 14,
-				hideFieldLabel: false,
-			},
-			additional: {
-				formPosition: 'center',
-				showUspacyBrand: true,
-			},
-		},
+		design: initialDesignState,
 	},
 };
 
