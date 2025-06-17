@@ -46,7 +46,7 @@ export const PermissionsControllerViewEnums = [
 			},
 			{
 				id: 2,
-				name: 'department',
+				name: 'Department',
 				key: 'department',
 			},
 		],
