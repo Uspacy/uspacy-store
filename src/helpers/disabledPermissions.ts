@@ -17,6 +17,8 @@ export const disabledPermissions = {
 		'hrm.activity.create.mine.disabled-any',
 		'hrm.employee.create.mine.disabled-any',
 		'hrm.employee.create.department.disabled-any',
+		'hrm.department.create.mine.disabled-any',
+		'hrm.department.create.department.disabled-any',
 		'tasks.task.create.department.disabled-any',
 		'tasks.task.create.mine.disabled-any',
 	],
