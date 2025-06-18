@@ -27,10 +27,10 @@ const initialState = {
 		delete: [],
 	},
 	createPermissions: {
-		create: [...disabledPermissions.create],
-		edit: [...disabledPermissions.edit],
-		view: [...disabledPermissions.view],
-		delete: [...disabledPermissions.delete],
+		create: [...disabledPermissions.create, 'hrm.department.create.allowed'],
+		edit: [...disabledPermissions.edit, 'hrm.department.edit.allowed'],
+		view: [...disabledPermissions.view, 'hrm.department.view.allowed'],
+		delete: [...disabledPermissions.delete, 'hrm.department.delete.allowed'],
 	},
 	createPermissionsModal: {
 		create: [],
