@@ -3,7 +3,7 @@ import { uspacySdk } from '@uspacy/sdk';
 import { ITrashFilter } from '@uspacy/sdk/lib/models/trash-filter';
 
 export const fetchTrashItems = createAsyncThunk(
-	'crm/items/fetchEntityItems',
+	'trashReducer/fetchTrashItems',
 	async (
 		{
 			filters,
