@@ -2,8 +2,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IEntity, IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { ITrashFilter } from '@uspacy/sdk/lib/models/trash-filter';
-import { fetchTrashItems } from 'src/store/trash/actions';
 
+import { fetchTrashItems } from './actions';
 import { IState } from './types';
 
 const initialState = {
