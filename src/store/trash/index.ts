@@ -43,6 +43,7 @@ const normalizeEntities = (dataArray: IEntityData[], code: string): IEntityData[
 					deleted_by: data.changed_by || null,
 					owner: data.responsible_id || null,
 					deleted_at: data.deleted_at || null,
+					created_by: data.created_by || null,
 				};
 				break;
 
@@ -53,12 +54,18 @@ const normalizeEntities = (dataArray: IEntityData[], code: string): IEntityData[
 					deleted_by: +data.changedBy || null,
 					owner: +data.responsibleId || null,
 					deleted_at: +data.deletedAt || null,
+					created_by: +data.createdBy || null,
 				};
 				break;
 
 			default:
 				normalized = {
 					id: data.id,
+					title: '',
+					deleted_by: null,
+					owner: null,
+					deleted_at: null,
+					created_by: null,
 				};
 				break;
 		}
