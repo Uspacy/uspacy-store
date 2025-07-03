@@ -2,6 +2,8 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { ITrashFilter } from '@uspacy/sdk/lib/models/trash-filter';
 
+import { getTrashFilterByEntity } from '../../helpers/getTrashFilterByEntity';
+
 export const fetchTrashItems = createAsyncThunk(
 	'trashReducer/fetchTrashItems',
 	async (
@@ -15,44 +17,18 @@ export const fetchTrashItems = createAsyncThunk(
 		thunkAPI,
 	) => {
 		try {
+			const filtersParams = getTrashFilterByEntity(filters);
 			switch (filters.entity) {
 				case 'tasks': {
-					const filtersTask = {
-						...(!!filters.page && { page: filters.page }),
-						...(!!filters.list && { list: filters.list }),
-						...(!!filters.owner?.length && { responsibleId: filters.owner }),
-						...(!!filters.deleted_by?.length && { changedBy: filters.deleted_by }),
-						...(!!filters.deleted_at?.length && { deletedAt: filters.deleted_at }),
-						...(!!filters.created_at?.length && { createdDate: filters.created_at }),
-						...(!!filters.q && { q: filters.q }),
-					};
-					const res = await uspacySdk.tasksService.getTrashTasks(filtersTask, signal);
+					const res = await uspacySdk.tasksService.getTrashTasks(filtersParams, signal);
 					return res?.data;
 				}
 				case 'activity': {
-					const filtersActivity = {
-						...(!!filters.page && { page: filters.page }),
-						...(!!filters.list && { list: filters.list }),
-						...(!!filters.owner?.length && { responsible_id: filters.owner }),
-						...(!!filters.deleted_by?.length && { changed_by: filters.deleted_by }),
-						...(!!filters.deleted_at?.length && { deleted_at: filters.deleted_at }),
-						...(!!filters.created_at?.length && { created_at: filters.created_at }),
-						...(!!filters.q && { q: filters.q }),
-					};
-					const res = await uspacySdk.crmTasksService.getTrashActivities(filtersActivity, signal);
+					const res = await uspacySdk.crmTasksService.getTrashActivities(filtersParams, signal);
 					return res?.data;
 				}
 				default: {
-					const filtersActivity = {
-						...(!!filters.page && { page: filters.page }),
-						...(!!filters.list && { list: filters.list }),
-						...(!!filters.owner?.length && { responsible_id: filters.owner }),
-						...(!!filters.deleted_by?.length && { changed_by: filters.deleted_by }),
-						...(!!filters.deleted_at?.length && { deleted_at: filters.deleted_at }),
-						...(!!filters.created_at?.length && { created_at: filters.created_at }),
-						...(!!filters.q && { q: filters.q }),
-					};
-					const res = await uspacySdk.crmTasksService.getTrashActivities(filtersActivity, signal);
+					const res = await uspacySdk.crmEntitiesService.getTrashEntities(filtersParams, filters.entity, signal);
 					return res?.data;
 				}
 			}
