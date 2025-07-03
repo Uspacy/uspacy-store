@@ -23,7 +23,7 @@ export const fetchTrashItems = createAsyncThunk(
 					const res = await uspacySdk.tasksService.getTrashTasks(filtersParams, signal);
 					return res?.data;
 				}
-				case 'activity': {
+				case 'activities': {
 					const res = await uspacySdk.crmTasksService.getTrashActivities(filtersParams, signal);
 					return res?.data;
 				}
