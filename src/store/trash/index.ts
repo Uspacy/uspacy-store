@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IEntity, IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
+import { IEntity } from '@uspacy/sdk/lib/models/crm-entities';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { ITrashFilter } from '@uspacy/sdk/lib/models/trash-filter';
 
+import { normalizeEntities } from '../../helpers/normalizeTrash';
 import { fetchTrashItems } from './actions';
 import { IState } from './types';
 
@@ -31,49 +32,6 @@ const initialState = {
 	errorLoadingItems: null,
 } as IState;
 
-const normalizeEntities = (dataArray: IEntityData[], code: string): IEntityData[] => {
-	return dataArray.map((data) => {
-		let normalized = null;
-
-		switch (code) {
-			case 'activities':
-				normalized = {
-					id: data.id,
-					title: data.title || '',
-					deleted_by: data.changed_by || null,
-					owner: data.responsible_id || null,
-					deleted_at: data.deleted_at || null,
-					created_by: data.created_by || null,
-				};
-				break;
-
-			case 'tasks':
-				normalized = {
-					id: +data.id,
-					title: data.title || '',
-					deleted_by: +data.changedBy || null,
-					owner: +data.responsibleId || null,
-					deleted_at: +data.deletedAt || null,
-					created_by: +data.createdBy || null,
-				};
-				break;
-
-			default:
-				normalized = {
-					id: data.id,
-					title: '',
-					deleted_by: null,
-					owner: null,
-					deleted_at: null,
-					created_by: null,
-				};
-				break;
-		}
-
-		return normalized;
-	});
-};
-
 const trashReducer = createSlice({
 	name: 'trashReducer',
 	initialState,
@@ -82,7 +40,7 @@ const trashReducer = createSlice({
 			state.items = initialState.items;
 		},
 		clearFilter: (state) => {
-			state.filter = initialState.filter;
+			state.filter = { ...initialState.filter, entity: state.filter.entity, sortModel: state?.filter?.sortModel || [] };
 		},
 		changeFilter: (state, action: PayloadAction<ITrashFilter>) => {
 			state.filter = action.payload;
