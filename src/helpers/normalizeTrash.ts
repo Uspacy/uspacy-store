@@ -23,7 +23,7 @@ export const normalizeEntities = (dataArray: IEntityData[], code: string): IEnti
 					deleted_by: +data.changedBy || null,
 					owner: +data.responsibleId || null,
 					deleted_at: +data.deletedAt || null,
-					created_at: +data.createdAt || null,
+					created_at: +data.createdDate || null,
 				};
 				break;
 
@@ -34,7 +34,7 @@ export const normalizeEntities = (dataArray: IEntityData[], code: string): IEnti
 					deleted_by: data.changed_by || null,
 					owner: data.owner || null,
 					deleted_at: data.deleted_at || null,
-					created_by: data.created_by || null,
+					created_at: data.created_at || null,
 				};
 				break;
 		}
