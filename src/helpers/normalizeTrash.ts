@@ -8,6 +8,7 @@ export const normalizeEntities = (dataArray: IEntityData[], code: string): IEnti
 			case 'activities':
 				normalized = {
 					id: data.id,
+					id_column: data.id,
 					title: data.title || '',
 					deleted_by: data.changed_by || null,
 					owner: data.responsible_id || null,
@@ -19,6 +20,7 @@ export const normalizeEntities = (dataArray: IEntityData[], code: string): IEnti
 			case 'tasks':
 				normalized = {
 					id: +data.id,
+					id_column: data.id,
 					title: data.title || '',
 					deleted_by: +data.changedBy || null,
 					owner: +data.responsibleId || null,
@@ -30,6 +32,7 @@ export const normalizeEntities = (dataArray: IEntityData[], code: string): IEnti
 			default:
 				normalized = {
 					id: data.id,
+					id_column: data.id,
 					title: data.title || '',
 					deleted_by: data.changed_by || null,
 					owner: data.owner || null,
