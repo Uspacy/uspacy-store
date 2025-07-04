@@ -22,12 +22,12 @@ export const getTrashFilterByEntity = (filters: ITrashFilter, withoutPagination?
 				...(!!filters.owner?.length && { responsibleId: filters.owner }),
 				...(!!filters.deleted_by?.length && { changedBy: filters.deleted_by }),
 				...(!!filters.deleted_at?.length && { deletedAt: filters.deleted_at }),
-				...(!!filters.created_at?.length && { createdDate: filters.created_at }),
+				...(!!filters.created_at?.length && { created_date: filters.created_at }),
 				...mainFilter,
 			};
 			return filtersTask;
 		}
-		case 'activity': {
+		case 'activities': {
 			const filtersActivity = {
 				...(!!filters.owner?.length && { responsible_id: filters.owner }),
 				...(!!filters.deleted_by?.length && { changed_by: filters.deleted_by }),
