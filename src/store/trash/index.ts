@@ -19,6 +19,7 @@ const initialState = {
 		q: '',
 		entity: 'tasks',
 		owner: [],
+		sortModel: [{ deleted_at: 'desc' }],
 		deleted_by: [],
 		created_at: [],
 		deleted_at: [],
