@@ -32,7 +32,7 @@ const getSortByFilter = (sortModel, entity: string) => {
 	const array = isArray(sortModel) ? sortModel : [sortModel];
 	if (array.length === 0) return {};
 	const [field, sort] = Object?.entries(array[0])[0];
-	const checkField = getSortField(field, entity);
+	const checkField = getSortField(entity, field);
 	return { [`sort_by[${checkField}]`]: sort };
 };
 
