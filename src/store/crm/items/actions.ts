@@ -218,6 +218,16 @@ export const massItemsEditing = createAsyncThunk(
 						settings,
 					});
 				}
+				case 'activities': {
+					return await uspacySdk.crmTasksService.massTasksEditing({
+						all,
+						entityIds,
+						exceptIds,
+						params: all && params?.length ? params : undefined,
+						payload,
+						settings,
+					});
+				}
 				default: {
 					return await uspacySdk.crmEntitiesService.massEntityItemsEditing(entityCode, {
 						all,
