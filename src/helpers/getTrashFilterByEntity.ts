@@ -40,8 +40,8 @@ export const getTrashFilterByEntity = (filters: ITrashFilter, withoutPagination?
 	const mainFilter = {
 		...(!!filters.page && !withoutPagination && { page: filters.page }),
 		...(!!filters.list && !withoutPagination && { list: filters.list }),
+		...(!!filters.sortModel?.length && !withoutPagination && getSortByFilter(filters.sortModel, filters.entity)),
 		...(!!filters.q && { q: filters.q }),
-		...(!!filters.sortModel?.length && getSortByFilter(filters.sortModel, filters.entity)),
 	};
 	switch (filters.entity) {
 		case 'tasks': {
