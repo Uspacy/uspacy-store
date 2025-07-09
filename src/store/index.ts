@@ -31,6 +31,7 @@ import files from './files';
 import forms from './forms';
 import groups from './groups';
 import history from './history';
+import marketing from './marketing';
 import messengerReducer from './messenger';
 import migrationsReducer from './migrations';
 import newsfeed from './newsfeed';
@@ -96,6 +97,7 @@ const rootReducer = combineReducers({
 	analytics,
 	forms,
 	transferOfCases,
+	marketing,
 });
 
 export const setupStore = () => {

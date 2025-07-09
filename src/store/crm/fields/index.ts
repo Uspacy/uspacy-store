@@ -29,7 +29,7 @@ const feildsReducer = createSlice({
 			}
 			if (entityCode === 'calls') {
 				data.splice(0, 0, ...fieldForCalls);
-			} else if (!['contacts', 'companies'].includes(entityCode)) {
+			} else if (!['contacts', 'companies', 'tasks', 'activities', 'products'].includes(entityCode)) {
 				const titleIndex = data.findIndex((field) => field.code === 'title');
 				data.splice(titleIndex ? titleIndex + 1 : 2, 0, stageField);
 			}

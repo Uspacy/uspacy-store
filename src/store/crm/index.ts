@@ -8,6 +8,7 @@ import fields from './fields';
 import filters from './filters';
 import funnels from './funnels';
 import items from './items';
+import priceTypes from './priceTypes';
 import taxes from './taxes';
 import units from './units';
 
@@ -21,6 +22,7 @@ const crm = combineReducers({
 	items,
 	taxes,
 	units,
+	priceTypes,
 	dependencies,
 });
 
