@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { INotificationMessage, NotificationAction } from '@uspacy/sdk/lib/models/notifications';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 import { ILinkData, INotification } from 'src/store/notifications/types';
@@ -74,7 +75,11 @@ const getEntityType = (message: INotificationMessage) => {
 export const getNotificationTitle = (message: INotificationMessage, profileId: number): string | undefined => {
 	const service = getServiceName(message.data.service);
 	const mentioned = !!message.data.entity?.mentioned?.users?.includes(profileId);
-	const entityType = getEntityType(message);
+	const isSmartObject =
+		message?.data?.root_parent?.service === 'crm' &&
+		!['leads', 'contacts', 'companies', 'deals'].includes(message?.data?.root_parent?.table_name.toLowerCase());
+	const entityType = isSmartObject ? 'smart_objects' : getEntityType(message);
+
 	if (message.data.entity?.new_kanban_stage_id && message.data.entity?.old_kanban_stage_id) {
 		return `notifications.${service}.${message.data.entity?.table_name || message.type}.${NotificationAction.UPDATE_STAGE}`;
 	}
