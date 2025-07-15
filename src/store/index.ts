@@ -31,6 +31,7 @@ import files from './files';
 import forms from './forms';
 import groups from './groups';
 import history from './history';
+import marketing from './marketing';
 import messengerReducer from './messenger';
 import migrationsReducer from './migrations';
 import newsfeed from './newsfeed';
@@ -45,6 +46,7 @@ import tasksSettings from './tasksSettings';
 import tasksStages from './tasksStages';
 import tasksTimer from './tasksTimer';
 import transferOfCases from './transferOfCases';
+import trash from './trash';
 import users from './users';
 import webhooks from './webhooks';
 
@@ -96,6 +98,8 @@ const rootReducer = combineReducers({
 	analytics,
 	forms,
 	transferOfCases,
+	trash,
+	marketing,
 });
 
 export const setupStore = () => {
