@@ -300,7 +300,7 @@ const marketingReducer = createSlice({
 		},
 
 		[createDomain.fulfilled.type]: (state, action: PayloadAction<IDomain>) => {
-			state.domains.unshift(action.payload);
+			state.domains = [...state.domains, action.payload];
 			state.loadingCreatingDomain = false;
 			state.errorLoadingCreatingDomain = null;
 		},
@@ -313,10 +313,8 @@ const marketingReducer = createSlice({
 			state.errorLoadingCreatingDomain = action.payload;
 		},
 
-		[deleteDomain.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: { id: number } }>) => {
-			const { id } = action.meta.arg;
-
-			state.domains = state.domains.filter((domain) => domain.id !== id);
+		[deleteDomain.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: number }>) => {
+			state.domains = state.domains.filter((domain) => domain.id !== action.meta.arg);
 			state.loadingDeletingDomain = false;
 			state.errorLoadingDeletingDomain = null;
 		},
@@ -358,7 +356,7 @@ const marketingReducer = createSlice({
 		},
 
 		[createSender.fulfilled.type]: (state, action: PayloadAction<ISender>) => {
-			state.senders.unshift(action.payload);
+			state.senders = [...state.senders, action.payload];
 			state.loadingCreatingSender = false;
 			state.errorLoadingCreatingSender = null;
 		},
@@ -390,10 +388,8 @@ const marketingReducer = createSlice({
 			state.errorLoadingUpdatingSender = action.payload;
 		},
 
-		[deleteSender.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: { id: number } }>) => {
-			const { id } = action.meta.arg;
-
-			state.senders = state.senders.filter((sender) => sender.id !== id);
+		[deleteSender.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: number }>) => {
+			state.senders = state.senders.filter((sender) => sender.id !== action.meta.arg);
 			state.loadingDeletingSender = false;
 			state.errorLoadingDeletingSender = null;
 		},
