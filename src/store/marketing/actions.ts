@@ -106,7 +106,7 @@ export const getDomainStatus = createAsyncThunk('marketing/getDomainStatus', asy
 	}
 });
 
-export const createDomain = createAsyncThunk('marketing/createDomain', async ({ domain }: { domain: string }, thunkAPI) => {
+export const createDomain = createAsyncThunk('marketing/createDomain', async (domain: string, thunkAPI) => {
 	try {
 		const res = await uspacySdk.marketingService.createDomain({ domain });
 		return res.data;
@@ -115,7 +115,7 @@ export const createDomain = createAsyncThunk('marketing/createDomain', async ({ 
 	}
 });
 
-export const deleteDomain = createAsyncThunk('marketing/deleteDomain', async ({ id }: { id: number }, thunkAPI) => {
+export const deleteDomain = createAsyncThunk('marketing/deleteDomain', async (id: number, thunkAPI) => {
 	try {
 		return await uspacySdk.marketingService.deleteDomain(id);
 	} catch (e) {
