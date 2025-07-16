@@ -373,7 +373,7 @@ const marketingReducer = createSlice({
 			state.senders = state.senders.map((sender) => {
 				return sender.id === action.payload.id ? action.payload : sender;
 			});
-			if (state.sender.id) {
+			if (state.sender && state.sender.id) {
 				state.sender = action.payload;
 			}
 			state.loadingUpdatingSender = false;
