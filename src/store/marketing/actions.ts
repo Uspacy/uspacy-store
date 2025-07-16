@@ -81,31 +81,35 @@ export const massDeletionEmailTemplates = createAsyncThunk(
 
 export const getDomains = createAsyncThunk('marketing/getDomains', async (_, thunkAPI) => {
 	try {
-		return await uspacySdk.marketingService.getDomains();
+		const res = await uspacySdk.marketingService.getDomains();
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
 });
 
-export const getDomain = createAsyncThunk('marketing/getDomain', async ({ id }: { id: number }, thunkAPI) => {
+export const getDomain = createAsyncThunk('marketing/getDomain', async (id: number, thunkAPI) => {
 	try {
-		return await uspacySdk.marketingService.getDomain(id);
+		const res = await uspacySdk.marketingService.getDomain(id);
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
 });
 
-export const getDomainStatus = createAsyncThunk('marketing/getDomainStatus', async ({ id }: { id: number }, thunkAPI) => {
+export const getDomainStatus = createAsyncThunk('marketing/getDomainStatus', async (id: number, thunkAPI) => {
 	try {
-		return await uspacySdk.marketingService.getDomainStatus(id);
+		const res = await uspacySdk.marketingService.getDomainStatus(id);
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
 });
 
-export const createDomain = createAsyncThunk('marketing/createDomain', async (data: { domain: string }, thunkAPI) => {
+export const createDomain = createAsyncThunk('marketing/createDomain', async ({ domain }: { domain: string }, thunkAPI) => {
 	try {
-		return await uspacySdk.marketingService.createDomain(data);
+		const res = await uspacySdk.marketingService.createDomain({ domain });
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
@@ -121,15 +125,17 @@ export const deleteDomain = createAsyncThunk('marketing/deleteDomain', async ({ 
 
 export const getSenders = createAsyncThunk('marketing/getSenders', async (_, thunkAPI) => {
 	try {
-		return await uspacySdk.marketingService.getSenders();
+		const res = await uspacySdk.marketingService.getSenders();
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
 });
 
-export const getSender = createAsyncThunk('marketing/getSender', async ({ id }: { id: number }, thunkAPI) => {
+export const getSender = createAsyncThunk('marketing/getSender', async (id: number, thunkAPI) => {
 	try {
-		return await uspacySdk.marketingService.getSender(id);
+		const res = await uspacySdk.marketingService.getSender(id);
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
@@ -151,7 +157,7 @@ export const updateSender = createAsyncThunk('marketing/updateSender', async ({ 
 	}
 });
 
-export const deleteSender = createAsyncThunk('marketing/deleteSender', async ({ id }: { id: number }, thunkAPI) => {
+export const deleteSender = createAsyncThunk('marketing/deleteSender', async (id: number, thunkAPI) => {
 	try {
 		return await uspacySdk.marketingService.deleteSender(id);
 	} catch (e) {
