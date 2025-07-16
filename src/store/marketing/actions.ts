@@ -143,7 +143,8 @@ export const getSender = createAsyncThunk('marketing/getSender', async (id: numb
 
 export const createSender = createAsyncThunk('marketing/createSender', async (data: Partial<ISender>, thunkAPI) => {
 	try {
-		return await uspacySdk.marketingService.createSender(data);
+		const res = await uspacySdk.marketingService.createSender(data);
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
@@ -151,7 +152,8 @@ export const createSender = createAsyncThunk('marketing/createSender', async (da
 
 export const updateSender = createAsyncThunk('marketing/updateSender', async ({ id, data }: { id: number; data: Partial<ISender> }, thunkAPI) => {
 	try {
-		return await uspacySdk.marketingService.updateSender(id, data);
+		const res = await uspacySdk.marketingService.updateSender(id, data);
+		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
