@@ -2,16 +2,28 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IEmailTemplate } from '@uspacy/sdk/lib/models/email-template';
 import { IEmailTemplateFilter } from '@uspacy/sdk/lib/models/email-template-filter';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
+import { IDomain } from '@uspacy/sdk/lib/models/newsletters-domain';
+import { ISender } from '@uspacy/sdk/lib/models/newsletters-sender';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 
 import {
+	createDomain,
 	createEmailTemplate,
+	createSender,
+	deleteDomain,
 	deleteEmailTemplate,
+	deleteSender,
+	getDomain,
+	getDomains,
+	getDomainStatus,
 	getEmailTemplate,
 	getEmailTemplates,
+	getSender,
+	getSenders,
 	massDeletionEmailTemplates,
 	massEditingEmailTemplates,
 	updateEmailTemplate,
+	updateSender,
 } from './actions';
 import { IMassActionsEmailTemplatesPayload, IState } from './types';
 
@@ -40,16 +52,38 @@ const initialState = {
 		certainDateOrPeriod_updated_at: [],
 		openCalendar: false,
 	},
+	domains: [],
+	domain: null,
+	senders: [],
+	sender: null,
 	loadingEmailTemplates: false,
 	loadingEmailTemplate: false,
 	loadingCreatingEmailTemplate: false,
 	loadingUpdatingEmailTemplate: false,
 	loadingDeletingEmailTemplate: false,
+	loadingDomains: false,
+	loadingDomain: false,
+	loadingCreatingDomain: false,
+	loadingDeletingDomain: false,
+	loadingSenders: false,
+	loadingSender: false,
+	loadingCreatingSender: false,
+	loadingUpdatingSender: false,
+	loadingDeletingSender: false,
 	errorLoadingEmailTemplates: null,
 	errorLoadingEmailTemplate: null,
 	errorLoadingCreatingEmailTemplate: null,
 	errorLoadingUpdatingEmailTemplate: null,
 	errorLoadingDeletingEmailTemplate: null,
+	errorLoadingDomains: null,
+	errorLoadingDomain: null,
+	errorLoadingCreatingDomain: null,
+	errorLoadingDeletingDomain: null,
+	errorLoadingSenders: null,
+	errorLoadingSender: null,
+	errorLoadingCreatingSender: null,
+	errorLoadingUpdatingSender: null,
+	errorLoadingDeletingSender: null,
 } as IState;
 
 const marketingReducer = createSlice({
@@ -73,6 +107,18 @@ const marketingReducer = createSlice({
 		},
 		setEmailTemplatesFilter: (state, action: PayloadAction<IEmailTemplateFilter>) => {
 			state.emailTemplatesFilter = action.payload;
+		},
+		setDomains: (state, action: PayloadAction<IDomain[]>) => {
+			state.domains = action.payload;
+		},
+		setDomain: (state, action: PayloadAction<IDomain>) => {
+			state.domain = action.payload;
+		},
+		setSenders: (state, action: PayloadAction<ISender[]>) => {
+			state.senders = action.payload;
+		},
+		setSender: (state, action: PayloadAction<ISender>) => {
+			state.sender = action.payload;
 		},
 	},
 	extraReducers: {
@@ -210,6 +256,155 @@ const marketingReducer = createSlice({
 			state.loadingDeletingEmailTemplate = false;
 			state.errorLoadingDeletingEmailTemplate = action.payload;
 		},
+
+		[getDomains.fulfilled.type]: (state, action: PayloadAction<IDomain[]>) => {
+			state.domains = action.payload;
+			state.loadingDomains = false;
+			state.errorLoadingDomains = null;
+		},
+		[getDomains.pending.type]: (state) => {
+			state.loadingDomains = true;
+			state.errorLoadingDomains = null;
+		},
+		[getDomains.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDomains = false;
+			state.errorLoadingDomains = action.payload;
+		},
+
+		[getDomain.fulfilled.type]: (state, action: PayloadAction<IDomain>) => {
+			state.domain = action.payload;
+			state.loadingDomain = false;
+			state.errorLoadingDomain = null;
+		},
+		[getDomain.pending.type]: (state) => {
+			state.loadingDomain = true;
+			state.errorLoadingDomain = null;
+		},
+		[getDomain.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDomain = false;
+			state.errorLoadingDomain = action.payload;
+		},
+
+		[getDomainStatus.fulfilled.type]: (state, action: PayloadAction<IDomain>) => {
+			state.domain = action.payload;
+			state.loadingDomain = false;
+			state.errorLoadingDomain = null;
+		},
+		[getDomainStatus.pending.type]: (state) => {
+			state.loadingDomain = true;
+			state.errorLoadingDomain = null;
+		},
+		[getDomainStatus.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDomain = false;
+			state.errorLoadingDomain = action.payload;
+		},
+
+		[createDomain.fulfilled.type]: (state, action: PayloadAction<IDomain>) => {
+			state.domains.unshift(action.payload);
+			state.loadingCreatingDomain = false;
+			state.errorLoadingCreatingDomain = null;
+		},
+		[createDomain.pending.type]: (state) => {
+			state.loadingCreatingDomain = true;
+			state.errorLoadingCreatingDomain = null;
+		},
+		[createDomain.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreatingDomain = false;
+			state.errorLoadingCreatingDomain = action.payload;
+		},
+
+		[deleteDomain.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: { id: number } }>) => {
+			const { id } = action.meta.arg;
+
+			state.domains = state.domains.filter((domain) => domain.id !== id);
+			state.loadingDeletingDomain = false;
+			state.errorLoadingDeletingDomain = null;
+		},
+		[deleteDomain.pending.type]: (state) => {
+			state.loadingDeletingDomain = true;
+			state.errorLoadingDeletingDomain = null;
+		},
+		[deleteDomain.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDeletingDomain = false;
+			state.errorLoadingDeletingDomain = action.payload;
+		},
+
+		[getSenders.fulfilled.type]: (state, action: PayloadAction<ISender[]>) => {
+			state.senders = action.payload;
+			state.loadingSenders = false;
+			state.errorLoadingSenders = null;
+		},
+		[getSenders.pending.type]: (state) => {
+			state.loadingSenders = true;
+			state.errorLoadingSenders = null;
+		},
+		[getSenders.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingSenders = false;
+			state.errorLoadingSenders = action.payload;
+		},
+
+		[getSender.fulfilled.type]: (state, action: PayloadAction<ISender>) => {
+			state.sender = action.payload;
+			state.loadingSender = false;
+			state.errorLoadingSender = null;
+		},
+		[getSender.pending.type]: (state) => {
+			state.loadingSender = true;
+			state.errorLoadingSender = null;
+		},
+		[getSender.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingSender = false;
+			state.errorLoadingSender = action.payload;
+		},
+
+		[createSender.fulfilled.type]: (state, action: PayloadAction<ISender>) => {
+			state.senders.unshift(action.payload);
+			state.loadingCreatingSender = false;
+			state.errorLoadingCreatingSender = null;
+		},
+		[createSender.pending.type]: (state) => {
+			state.loadingCreatingSender = true;
+			state.errorLoadingCreatingSender = null;
+		},
+		[createSender.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreatingSender = false;
+			state.errorLoadingCreatingSender = action.payload;
+		},
+
+		[updateSender.fulfilled.type]: (state, action: PayloadAction<ISender>) => {
+			state.senders = state.senders.map((sender) => {
+				return sender.id === action.payload.id ? action.payload : sender;
+			});
+			if (state.sender.id) {
+				state.sender = action.payload;
+			}
+			state.loadingUpdatingSender = false;
+			state.errorLoadingUpdatingSender = null;
+		},
+		[updateSender.pending.type]: (state) => {
+			state.loadingUpdatingSender = true;
+			state.errorLoadingUpdatingSender = null;
+		},
+		[updateSender.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingSender = false;
+			state.errorLoadingUpdatingSender = action.payload;
+		},
+
+		[deleteSender.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: { id: number } }>) => {
+			const { id } = action.meta.arg;
+
+			state.senders = state.senders.filter((sender) => sender.id !== id);
+			state.loadingDeletingSender = false;
+			state.errorLoadingDeletingSender = null;
+		},
+		[deleteSender.pending.type]: (state) => {
+			state.loadingDeletingSender = true;
+			state.errorLoadingDeletingSender = null;
+		},
+		[deleteSender.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDeletingSender = false;
+			state.errorLoadingDeletingSender = action.payload;
+		},
 	},
 });
 
@@ -220,5 +415,9 @@ export const {
 	setEmailTemplatesCards,
 	setEmailTemplate,
 	setEmailTemplatesFilter,
+	setDomains,
+	setDomain,
+	setSenders,
+	setSender,
 } = marketingReducer.actions;
 export default marketingReducer.reducer;
