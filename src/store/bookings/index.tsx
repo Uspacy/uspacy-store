@@ -41,7 +41,7 @@ const initialBookingState: IBooking = {
 		language: 'en',
 	},
 	meetHours: {
-		active: false,
+		active: true,
 		values: [],
 	},
 	additionalRestrictions: {
