@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IFields } from '@uspacy/sdk/lib/models/field';
+import { IField, IFields } from '@uspacy/sdk/lib/models/field';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 import { IFilterTasks, ITask, taskType } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
+import cloneDeep from 'lodash/cloneDeep';
 
 import { fillTheString } from '../../helpers/stringsHelper';
 import {
@@ -11,8 +12,11 @@ import {
 	createOneTimeTemplate,
 	createRecurringTemplate,
 	createTask,
+	createTasksField,
 	delegationTask,
 	deleteTask,
+	deleteTasksField,
+	deleteTasksListValues,
 	fetchTaskFields,
 	getHierarchies,
 	getOneTimeTemplates,
@@ -22,6 +26,7 @@ import {
 	getSubtasks,
 	getTask,
 	getTasks,
+	getTasksFields,
 	massCompletion,
 	massTasksDeletion,
 	massTasksEditing,
@@ -33,6 +38,8 @@ import {
 	updateRecurringTemplate,
 	updateSubtask,
 	updateTask,
+	updateTasksField,
+	updateTasksListValues,
 } from './actions';
 import { IDeleteTaskPayload, IState, ITaskCardActions } from './types';
 
@@ -117,6 +124,7 @@ const initialState = {
 		auditors: [],
 	},
 	taskFields: {},
+	fields: [],
 	loadingTasks: true,
 	loadingSubtasks: true,
 	loadingTask: false,
@@ -127,6 +135,10 @@ const initialState = {
 	loadingDeletingTask: false,
 	loadingStatusesTask: false,
 	loadingTaskFields: false,
+	loadingTasksFields: false,
+	loadingCreatingTasksField: false,
+	loadingUpdatingTasksField: false,
+	loadingDeletingTasksField: false,
 	errorLoadingTasks: null,
 	errorLoadingSubtasks: null,
 	errorLoadingTask: null,
@@ -137,6 +149,10 @@ const initialState = {
 	errorLoadingDeletingTask: null,
 	errorLoadingStatusesTask: null,
 	errorLoadingTaskFields: null,
+	errorLoadingTasksFields: null,
+	errorLoadingCreatingTasksField: null,
+	errorLoadingUpdatingTasksField: null,
+	errorLoadingDeletingTasksField: null,
 	meta: {
 		currentPage: 0,
 		perPage: 20,
@@ -878,6 +894,114 @@ const tasksReducer = createSlice({
 		[fetchTaskFields.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingTaskFields = false;
 			state.errorLoadingTaskFields = action.payload;
+		},
+
+		// ! new fields methods
+		[getTasksFields.fulfilled.type]: (state, action: PayloadAction<IField[]>) => {
+			state.loadingTasksFields = false;
+			state.errorLoadingTasksFields = null;
+			state.fields = cloneDeep(action?.payload || []).map((field) => {
+				return {
+					...field,
+					values: Array.isArray(field.values) ? field.values?.sort((a, b) => a.sort - b.sort) : field.values,
+				};
+			});
+		},
+		[getTasksFields.pending.type]: (state) => {
+			state.loadingTasksFields = true;
+			state.errorLoadingTasksFields = null;
+		},
+		[getTasksFields.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingTasksFields = false;
+			state.errorLoadingTasksFields = action.payload;
+		},
+		[createTasksField.fulfilled.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
+			state.loadingCreatingTasksField = false;
+			state.errorLoadingCreatingTasksField = null;
+
+			const newField = action.meta.arg;
+			state.fields.push(newField);
+		},
+		[createTasksField.pending.type]: (state) => {
+			state.loadingCreatingTasksField = true;
+			state.errorLoadingCreatingTasksField = null;
+		},
+		[createTasksField.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreatingTasksField = false;
+			state.errorLoadingCreatingTasksField = action.payload;
+		},
+		[updateTasksField.fulfilled.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
+			state.loadingUpdatingTasksField = false;
+			state.errorLoadingUpdatingTasksField = null;
+
+			const updateField = action.meta.arg;
+			state.fields = state.fields.map((field) => {
+				if (field.code === updateField.code) {
+					return { ...updateField, values: updateField?.values || field?.values };
+				}
+				return field;
+			});
+		},
+		[updateTasksField.pending.type]: (state) => {
+			state.loadingUpdatingTasksField = true;
+			state.errorLoadingUpdatingTasksField = null;
+		},
+		[updateTasksField.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingTasksField = false;
+			state.errorLoadingUpdatingTasksField = action.payload;
+		},
+		[updateTasksListValues.fulfilled.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
+			state.loadingUpdatingTasksField = false;
+			state.errorLoadingUpdatingTasksField = null;
+
+			const updateField = action.meta.arg;
+			state.fields = state.fields.map((field) => {
+				if (field.code === updateField.code) {
+					return { ...field, values: updateField?.values || field?.values };
+				}
+				return field;
+			});
+		},
+		[updateTasksListValues.pending.type]: (state) => {
+			state.loadingUpdatingTasksField = true;
+			state.errorLoadingUpdatingTasksField = null;
+		},
+		[updateTasksListValues.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingTasksField = false;
+			state.errorLoadingUpdatingTasksField = action.payload;
+		},
+		[deleteTasksListValues.fulfilled.type]: (state, action: PayloadAction<string, string, { arg: { fieldCode: string; value: string } }>) => {
+			state.loadingDeletingTasksField = false;
+			state.errorLoadingDeletingTasksField = null;
+
+			state.fields = state.fields.map((field) => {
+				if (field.code === action.meta.arg.fieldCode) {
+					field.values = field.values.filter((value) => value.value !== action.meta.arg.value);
+				}
+				return field;
+			});
+		},
+		[deleteTasksListValues.pending.type]: (state) => {
+			state.loadingDeletingTasksField = true;
+			state.errorLoadingDeletingTasksField = null;
+		},
+		[deleteTasksListValues.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDeletingTasksField = false;
+			state.errorLoadingDeletingTasksField = action.payload;
+		},
+		[deleteTasksField.fulfilled.type]: (state, action: PayloadAction<string, string, { arg: string }>) => {
+			state.loadingDeletingTasksField = false;
+			state.errorLoadingDeletingTasksField = null;
+
+			state.fields = state.fields.filter((field) => field.code !== action.meta.arg);
+		},
+		[deleteTasksField.pending.type]: (state) => {
+			state.loadingDeletingTasksField = true;
+			state.errorLoadingDeletingTasksField = null;
+		},
+		[deleteTasksField.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDeletingTasksField = false;
+			state.errorLoadingDeletingTasksField = action.payload;
 		},
 	},
 });

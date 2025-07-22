@@ -46,6 +46,7 @@ import tasksSettings from './tasksSettings';
 import tasksStages from './tasksStages';
 import tasksTimer from './tasksTimer';
 import transferOfCases from './transferOfCases';
+import trash from './trash';
 import users from './users';
 import webhooks from './webhooks';
 
@@ -97,6 +98,7 @@ const rootReducer = combineReducers({
 	analytics,
 	forms,
 	transferOfCases,
+	trash,
 	marketing,
 });
 
