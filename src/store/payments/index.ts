@@ -46,9 +46,6 @@ const initialState = {
 		contactPersonPhone: '',
 		contactPersonEmail: '',
 		itinCode: '',
-		companyName: '',
-		legalAddress: '',
-		directorsFullName: '',
 	},
 	legalEntityFormEuCom: {
 		firstName: '',
