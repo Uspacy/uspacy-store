@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IField, IFields } from '@uspacy/sdk/lib/models/field';
+import { IField } from '@uspacy/sdk/lib/models/field';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 import { IFilterTasks, ITask, taskType } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
@@ -17,7 +17,6 @@ import {
 	deleteTask,
 	deleteTasksField,
 	deleteTasksListValues,
-	fetchTaskFields,
 	getHierarchies,
 	getOneTimeTemplates,
 	getParentTask,
@@ -123,7 +122,6 @@ const initialState = {
 		accomplices: [],
 		auditors: [],
 	},
-	taskFields: {},
 	fields: [],
 	loadingTasks: true,
 	loadingSubtasks: true,
@@ -134,7 +132,6 @@ const initialState = {
 	loadingUpdatingTask: false,
 	loadingDeletingTask: false,
 	loadingStatusesTask: false,
-	loadingTaskFields: false,
 	loadingTasksFields: false,
 	loadingCreatingTasksField: false,
 	loadingUpdatingTasksField: false,
@@ -148,7 +145,6 @@ const initialState = {
 	errorLoadingUpdatingTask: null,
 	errorLoadingDeletingTask: null,
 	errorLoadingStatusesTask: null,
-	errorLoadingTaskFields: null,
 	errorLoadingTasksFields: null,
 	errorLoadingCreatingTasksField: null,
 	errorLoadingUpdatingTasksField: null,
@@ -882,21 +878,6 @@ const tasksReducer = createSlice({
 			state.loadingStatusesTask = false;
 			state.errorLoadingStatusesTask = action.payload;
 		},
-		[fetchTaskFields.fulfilled.type]: (state, action: PayloadAction<IFields>) => {
-			state.loadingTaskFields = false;
-			state.errorLoadingTaskFields = null;
-			state.taskFields = action.payload;
-		},
-		[fetchTaskFields.pending.type]: (state) => {
-			state.loadingTaskFields = true;
-			state.errorLoadingTaskFields = null;
-		},
-		[fetchTaskFields.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingTaskFields = false;
-			state.errorLoadingTaskFields = action.payload;
-		},
-
-		// ! new fields methods
 		[getTasksFields.fulfilled.type]: (state, action: PayloadAction<IField[]>) => {
 			state.loadingTasksFields = false;
 			state.errorLoadingTasksFields = null;
