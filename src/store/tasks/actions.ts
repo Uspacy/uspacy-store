@@ -329,16 +329,6 @@ export const restartTask = createAsyncThunk('tasks/restartTask', async (id: stri
 	}
 });
 
-// ! old method
-export const fetchTaskFields = createAsyncThunk('tasks/fetchTaskFields', async (_, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.getTasksField();
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
 export const getTasksFields = createAsyncThunk('tasks/getTasksFields', async (_, { rejectWithValue }) => {
 	try {
 		const res = await uspacySdk.tasksService.getTasksFields();
