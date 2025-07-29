@@ -48,11 +48,11 @@ const initialBookingState: IBooking = {
 		specialDays: [],
 		daysBeforeEvent: {
 			active: true,
-			value: 0,
+			value: 60,
 		},
 		hoursBeforeEvent: {
 			active: true,
-			value: 0,
+			value: 4,
 		},
 		maxMeetingsPerDay: {
 			active: false,
