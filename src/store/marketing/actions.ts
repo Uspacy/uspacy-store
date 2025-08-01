@@ -1,14 +1,15 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
+import { IEmailNewsletter } from '@uspacy/sdk/lib/models/email-newsletter';
 import { IEmailTemplate } from '@uspacy/sdk/lib/models/email-template';
-import { IEmailTemplateFilter } from '@uspacy/sdk/lib/models/email-template-filter';
+import { IMarketingFilter } from '@uspacy/sdk/lib/models/marketing-filter';
 import { ISender } from '@uspacy/sdk/lib/models/newsletters-sender';
 
 import { IMassActionsEmailTemplatesPayload } from './types';
 
 export const getEmailTemplates = createAsyncThunk(
 	'marketing/getEmailTemplates',
-	async ({ params, signal }: { params: Partial<IEmailTemplateFilter>; signal?: AbortSignal }, thunkAPI) => {
+	async ({ params, signal }: { params: Partial<IMarketingFilter>; signal?: AbortSignal }, thunkAPI) => {
 		try {
 			const res = await uspacySdk.marketingService.getEmailTemplates(params, signal);
 			return res.data;
@@ -78,6 +79,65 @@ export const massDeletionEmailTemplates = createAsyncThunk(
 		}
 	},
 );
+
+export const getEmailNewsletters = createAsyncThunk(
+	'marketing/getEmailNewsletters',
+	async ({ params, signal }: { params: Partial<IMarketingFilter>; signal?: AbortSignal }, thunkAPI) => {
+		try {
+			const res = await uspacySdk.marketingService.getEmailNewsletters(params, signal);
+			return res.data;
+		} catch (e) {
+			if (signal.aborted) return { aborted: true };
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
+
+export const getEmailNewsletter = createAsyncThunk('marketing/getEmailNewsletter', async (id: number, thunkAPI) => {
+	try {
+		const res = await uspacySdk.marketingService.getEmailNewsletter(id);
+		return res.data;
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
+	}
+});
+
+export const createEmailNewsletter = createAsyncThunk('marketing/createEmailNewsletter', async (data: Partial<IEmailNewsletter>, thunkAPI) => {
+	try {
+		const res = await uspacySdk.marketingService.createEmailNewsletter(data);
+		return res.data;
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
+	}
+});
+
+export const updateEmailNewsletter = createAsyncThunk(
+	'marketing/updateEmailNewsletter',
+	async ({ id, data }: { id: number; data: Partial<IEmailNewsletter> }, thunkAPI) => {
+		try {
+			const res = await uspacySdk.marketingService.updateEmailNewsletter(id, data);
+			return res.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
+
+export const deleteEmailNewsletter = createAsyncThunk('marketing/deleteEmailNewsletter', async (id: number, thunkAPI) => {
+	try {
+		return await uspacySdk.marketingService.deleteEmailNewsletter(id);
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
+	}
+});
+
+export const sendEmailNewsletter = createAsyncThunk('marketing/sendEmailNewsletter', async (id: number, thunkAPI) => {
+	try {
+		return await uspacySdk.marketingService.sendEmailNewsletter(id);
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
+	}
+});
 
 export const getDomains = createAsyncThunk('marketing/getDomains', async (_, thunkAPI) => {
 	try {
