@@ -1,9 +1,34 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FormFieldCode, IForm, IFormField, IFormOther, IPredefinedField } from '@uspacy/sdk/lib/models/forms';
+import { FormFieldCode, IForm, IFormDesign, IFormField, IFormOther, IPredefinedField } from '@uspacy/sdk/lib/models/forms';
 
 import { updateFieldsOrderHelp } from '../../helpers/forms';
 import { getForms } from './actions';
 import { IState, RequireOnlyOne } from './types';
+
+export const initialDesignState: IFormDesign = {
+	generalColors: {
+		pageBg: '#9155FD0A',
+		formBg: '',
+	},
+	button: {
+		style: 'contained',
+		borderRadius: 6,
+		size: 'medium',
+		textSize: 16,
+		textLetterSpacing: 'standard',
+	},
+	fields: {
+		style: 'outlined',
+		borderRadius: 6,
+		size: 'small',
+		textSize: 14,
+		hideFieldLabel: false,
+	},
+	additional: {
+		formPosition: 'center',
+		showUspacyBrand: true,
+	},
+};
 
 const initialFormState: IState['form'] = {
 	name: '',
@@ -19,6 +44,7 @@ const initialFormState: IState['form'] = {
 			redirectUrl: null,
 			timeBeforeRedirect: null,
 		},
+		design: initialDesignState,
 	},
 };
 
@@ -145,6 +171,12 @@ const formsReducer = createSlice({
 		removeAfterScreenField: (state, action: PayloadAction<IFormOther['fieldCode']>) => {
 			state.form.config.after.fields = state.form.config.after.fields.filter((field) => field.fieldCode !== action.payload);
 		},
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		updateDesignSettings: (state, action: PayloadAction<{ groupKey: keyof IForm['config']['design']; value: any }>) => {
+			const { groupKey, value } = action.payload;
+
+			state.form.config.design[groupKey] = { ...state.form.config.design[groupKey], ...value };
+		},
 	},
 	extraReducers: {
 		[getForms.fulfilled.type]: (state, action: PayloadAction<IForm[]>) => {
@@ -179,5 +211,6 @@ export const {
 	updateAfterScreenSettings,
 	updateAfterScreenField,
 	removeAfterScreenField,
+	updateDesignSettings,
 } = formsReducer.actions;
 export default formsReducer.reducer;
