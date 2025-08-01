@@ -117,6 +117,12 @@ const marketingReducer = createSlice({
 		setEmailTemplate: (state, action: PayloadAction<IEmailTemplate>) => {
 			state.emailTemplate = action.payload;
 		},
+		setEmailNewsletters: (state, action: PayloadAction<IResponseWithMeta<IEmailNewsletter>>) => {
+			state.emailNewsletters = action.payload;
+		},
+		setEmailNewsletter: (state, action: PayloadAction<IEmailNewsletter>) => {
+			state.emailNewsletter = action.payload;
+		},
 		setMarketingFilter: (state, action: PayloadAction<IMarketingFilter>) => {
 			state.marketingFilter = action.payload;
 		},
@@ -514,6 +520,8 @@ export const {
 	setEmailTemplates,
 	setEmailTemplatesCards,
 	setEmailTemplate,
+	setEmailNewsletters,
+	setEmailNewsletter,
 	setMarketingFilter,
 	setDomains,
 	setDomain,
