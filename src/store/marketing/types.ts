@@ -1,6 +1,7 @@
+import { IEmailNewsletter } from '@uspacy/sdk/lib/models/email-newsletter';
 import { IEmailTemplate } from '@uspacy/sdk/lib/models/email-template';
-import { IEmailTemplateFilter } from '@uspacy/sdk/lib/models/email-template-filter';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
+import { IMarketingFilter } from '@uspacy/sdk/lib/models/marketing-filter';
 import { IDomain } from '@uspacy/sdk/lib/models/newsletters-domain';
 import { ISender } from '@uspacy/sdk/lib/models/newsletters-sender';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
@@ -9,14 +10,16 @@ export interface IMassActionsEmailTemplatesPayload {
 	id: number[];
 	payload?: Partial<IEmailTemplate>;
 	all?: boolean;
-	params?: Partial<IEmailTemplateFilter>;
+	params?: Partial<IMarketingFilter>;
 }
 
 export interface IState {
 	emailTemplates: IResponseWithMeta<IEmailTemplate>;
 	emailTemplatesCards: IEmailTemplate[];
 	emailTemplate: IEmailTemplate;
-	emailTemplatesFilter: IEmailTemplateFilter;
+	emailNewsletters: IResponseWithMeta<IEmailNewsletter>;
+	emailNewsletter: IEmailNewsletter;
+	marketingFilter: IMarketingFilter;
 	domains: IDomain[];
 	domain: IDomain;
 	domainStatus: IDomain;
@@ -27,6 +30,12 @@ export interface IState {
 	loadingCreatingEmailTemplate: boolean;
 	loadingUpdatingEmailTemplate: boolean;
 	loadingDeletingEmailTemplate: boolean;
+	loadingEmailNewsletters: boolean;
+	loadingEmailNewsletter: boolean;
+	loadingCreatingEmailNewsletter: boolean;
+	loadingUpdatingEmailNewsletter: boolean;
+	loadingDeletingEmailNewsletter: boolean;
+	loadingSendingEmailNewsletter: boolean;
 	loadingDomains: boolean;
 	loadingDomain: boolean;
 	loadingCreatingDomain: boolean;
@@ -41,6 +50,12 @@ export interface IState {
 	errorLoadingCreatingEmailTemplate: IErrorsAxiosResponse;
 	errorLoadingUpdatingEmailTemplate: IErrorsAxiosResponse;
 	errorLoadingDeletingEmailTemplate: IErrorsAxiosResponse;
+	errorLoadingEmailNewsletters: IErrorsAxiosResponse;
+	errorLoadingEmailNewsletter: IErrorsAxiosResponse;
+	errorLoadingCreatingEmailNewsletter: IErrorsAxiosResponse;
+	errorLoadingUpdatingEmailNewsletter: IErrorsAxiosResponse;
+	errorLoadingDeletingEmailNewsletter: IErrorsAxiosResponse;
+	errorLoadingSendingEmailNewsletter: IErrorsAxiosResponse;
 	errorLoadingDomains: IErrorsAxiosResponse;
 	errorLoadingDomain: IErrorsAxiosResponse;
 	errorLoadingCreatingDomain: IErrorsAxiosResponse;
