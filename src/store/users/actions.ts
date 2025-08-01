@@ -1,7 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
-import { IUser, MainRoles } from '@uspacy/sdk/lib/models/user';
+import { IField } from '@uspacy/sdk/lib/models/field';
+import { IUser, IUserFilter, MainRoles } from '@uspacy/sdk/lib/models/user';
 
+import { getFilterParams } from '../../helpers/filterFieldsArrs';
 import { IInvite, IUploadAvatar } from './types';
 
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async (_, thunkAPI) => {
@@ -148,6 +150,36 @@ export const uploadAvatar = createAsyncThunk(
 			return response.data;
 		} catch (e) {
 			return rejectWithValue('Failure');
+		}
+	},
+);
+
+export const fetchUsersByFilters = createAsyncThunk(
+	'users/fetchUsersByFilters',
+	async (
+		{
+			fields,
+			filters,
+			signal,
+		}: {
+			filters: Omit<IUserFilter, 'openDatePicker'>;
+			fields: IField[];
+			signal?: AbortSignal;
+		},
+		{ rejectWithValue },
+	) => {
+		try {
+			const params = getFilterParams(filters, fields || []);
+			const res = await uspacySdk.usersService.getUsersByFilers(params, signal);
+			return res.data;
+		} catch (e) {
+			if (signal.aborted) {
+				return {
+					aborted: true,
+				};
+			} else {
+				return rejectWithValue(e);
+			}
 		}
 	},
 );

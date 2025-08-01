@@ -34,7 +34,7 @@ export const editProductCategory = createAsyncThunk('productsCategory/editProduc
 
 export const deleteProductCategory = createAsyncThunk('productsCategory/deleteProductCategory', async (id: number, thunkAPI) => {
 	try {
-		await uspacySdk?.crmProductsCategoryService?.deleteProductCategory(id);
+		await uspacySdk?.crmProductsCategoryService?.deleteProductCategory(id, null);
 		return id;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);

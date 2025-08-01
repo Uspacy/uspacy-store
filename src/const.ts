@@ -79,6 +79,20 @@ export const requisiteField: IField = {
 	sort: '',
 };
 
+export const headField: IField = {
+	name: 'head',
+	code: 'head',
+	required: false,
+	editable: false,
+	show: false,
+	hidden: true,
+	multiple: false,
+	type: 'user_id',
+	system_field: true,
+	sort: '',
+	default_value: '',
+};
+
 export const OTHER_DEFAULT_FIELDS = {
 	openDatePicker: false,
 	search: '',
@@ -253,10 +267,26 @@ export const fieldForCalls: IField[] = [
 		sort: '',
 		system_field: false,
 		default_value: '',
+		values: [
+			{
+				color: '',
+				selected: false,
+				sort: 0,
+				title: 'outgoing',
+				value: 'outgoing',
+			},
+			{
+				color: '',
+				selected: false,
+				sort: 0,
+				title: 'incoming',
+				value: 'incoming',
+			},
+		],
 	},
 	{
 		name: 'callStatus',
-		code: 'call_status',
+		code: 'ended_call_status',
 		required: false,
 		editable: false,
 		show: true,
@@ -269,7 +299,7 @@ export const fieldForCalls: IField[] = [
 	},
 	{
 		name: 'date',
-		code: 'date',
+		code: 'begin_time',
 		required: false,
 		editable: false,
 		show: true,
@@ -340,7 +370,7 @@ export const fieldForCalls: IField[] = [
 		show: true,
 		hidden: true,
 		multiple: false,
-		type: 'list',
+		type: 'call_duration',
 		sort: '',
 		system_field: false,
 		default_value: '',

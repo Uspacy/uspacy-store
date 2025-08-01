@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
-	ICardCheck,
 	IDiscounts,
 	IIndividualPersonForm,
 	IIndividualPersonFormErrors,
@@ -11,26 +10,9 @@ import {
 	IPrice,
 } from '@uspacy/sdk/lib/models/payments';
 
-import { ICardToken, ICheckCardFill, IState } from './types';
+import { IState } from './types';
 
 const initialState = {
-	cardCheck: {
-		success: false,
-		loading: false,
-		error: '',
-	},
-	checkFillCardNumber: {
-		error: false,
-		complete: false,
-	},
-	checkFillCardExpiry: {
-		error: false,
-		complete: false,
-	},
-	checkFillCardCvv: {
-		error: false,
-		complete: false,
-	},
 	isPaymentButtonPress: false,
 	isPaymentProcess: false,
 	price: {
@@ -52,10 +34,6 @@ const initialState = {
 	typeOfPayer: 'individual',
 	paymentMethod: 'card',
 	tariffActionType: 'changeTheTariff',
-	cardTokens: {
-		gwToken: '',
-		cardToken: '',
-	},
 	vatTaxStatus: '',
 	automaticSubscriptionRenewal: false,
 	individualPersonForm: {
@@ -68,22 +46,12 @@ const initialState = {
 		contactPersonPhone: '',
 		contactPersonEmail: '',
 		itinCode: '',
-		companyName: '',
-		legalAddress: '',
-		directorsFullName: '',
 	},
 	legalEntityFormEuCom: {
 		firstName: '',
 		lastName: '',
 		email: '',
-		companyName: '',
-		vatIdTaxIdForCompaniesOnly: '',
-		country: null,
-		addressLine1: '',
-		addressLine2: '',
-		state: '',
-		city: '',
-		postalZipCode: '',
+		phone: '',
 	},
 	individualPersonFormErrors: {
 		firstNameErr: false,
@@ -95,17 +63,12 @@ const initialState = {
 		contactPersonPhoneErr: false,
 		contactPersonEmailErr: false,
 		itinCodeErr: false,
-		companyNameErr: false,
-		legalAddressErr: false,
-		directorsFullNameErr: false,
 	},
 	legalEntityFormEuComErrors: {
 		firstNameErr: false,
 		lastNameErr: false,
 		emailErr: false,
-		countryErr: false,
-		addressLine1Err: false,
-		cityErr: false,
+		phoneErr: false,
 	},
 	vatTaxIdError: false,
 } as IState;
@@ -114,18 +77,6 @@ const paymentsReducer = createSlice({
 	name: 'paymentsReducer',
 	initialState,
 	reducers: {
-		setCardCheck: (state, action: PayloadAction<ICardCheck>) => {
-			state.cardCheck = action.payload;
-		},
-		setCheckFillCardNumber: (state, action: PayloadAction<ICheckCardFill>) => {
-			state.checkFillCardNumber = action.payload;
-		},
-		setCheckFillCardExpiry: (state, action: PayloadAction<ICheckCardFill>) => {
-			state.checkFillCardExpiry = action.payload;
-		},
-		setCheckFillCardCvv: (state, action: PayloadAction<ICheckCardFill>) => {
-			state.checkFillCardCvv = action.payload;
-		},
 		setIsPaymentButtonPress: (state, action: PayloadAction<boolean>) => {
 			state.isPaymentButtonPress = action.payload;
 		},
@@ -164,9 +115,6 @@ const paymentsReducer = createSlice({
 		setTariffActionType: (state, action: PayloadAction<'extendTheTariff' | 'changeTheTariff'>) => {
 			state.tariffActionType = action.payload;
 		},
-		setCardToken: (state, action: PayloadAction<ICardToken>) => {
-			state.cardTokens = action.payload;
-		},
 		setVatTaxStatus: (state, action: PayloadAction<string>) => {
 			state.vatTaxStatus = action.payload;
 		},
@@ -199,10 +147,6 @@ const paymentsReducer = createSlice({
 });
 
 export const {
-	setCardCheck,
-	setCheckFillCardNumber,
-	setCheckFillCardExpiry,
-	setCheckFillCardCvv,
 	setIsPaymentButtonPress,
 	setIsPaymentProcess,
 	setPrice,
@@ -214,7 +158,6 @@ export const {
 	setTypeOfPayer,
 	setPaymentMethod,
 	setTariffActionType,
-	setCardToken,
 	setVatTaxStatus,
 	setAutomaticSubscriptionRenewal,
 	setIndividualPersonForm,

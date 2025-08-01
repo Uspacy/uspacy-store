@@ -1,5 +1,4 @@
 import {
-	ICardCheck,
 	IDiscounts,
 	IIndividualPersonForm,
 	IIndividualPersonFormErrors,
@@ -15,16 +14,7 @@ export interface ICheckCardFill {
 	complete: boolean;
 }
 
-export interface ICardToken {
-	gwToken: string;
-	cardToken: string;
-}
-
 export interface IState {
-	cardCheck: ICardCheck;
-	checkFillCardNumber: ICheckCardFill;
-	checkFillCardExpiry: ICheckCardFill;
-	checkFillCardCvv: ICheckCardFill;
 	isPaymentButtonPress: boolean;
 	isPaymentProcess: boolean;
 	price: IPrice;
@@ -37,7 +27,6 @@ export interface IState {
 	typeOfPayer: 'individual' | 'legalEntityIndividualEntrepreneur';
 	paymentMethod: 'card' | 'bank_transfer';
 	tariffActionType: 'extendTheTariff' | 'changeTheTariff';
-	cardTokens: ICardToken;
 	vatTaxStatus: string;
 	automaticSubscriptionRenewal: boolean;
 	individualPersonForm: IIndividualPersonForm;
