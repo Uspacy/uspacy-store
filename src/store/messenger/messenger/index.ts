@@ -39,6 +39,7 @@ const initialState: IState = {
 		},
 		loading: false,
 	},
+	AISummaryMessage: [],
 };
 
 interface IPreparedMessage extends IMessage {
@@ -560,6 +561,9 @@ export const chatSlice = createSlice({
 				})
 				.sort(sortChats);
 		},
+		setAISummaryMessage(state, action: PayloadAction<IMessage[]>) {
+			state.AISummaryMessage = action.payload;
+		},
 	},
 	extraReducers: {
 		[fetchChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
@@ -766,6 +770,7 @@ export const {
 	resetMessages,
 	saveDraftMessage,
 	setTimestamp,
+	setAISummaryMessage,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
