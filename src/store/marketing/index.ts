@@ -21,6 +21,7 @@ import {
 	getDomainStatus,
 	getEmailNewsletter,
 	getEmailNewsletters,
+	getEmailNewsletterStatistics,
 	getEmailTemplate,
 	getEmailTemplates,
 	getSender,
@@ -28,6 +29,7 @@ import {
 	massDeletionEmailTemplates,
 	massEditingEmailTemplates,
 	sendEmailNewsletter,
+	startEmailNewsletterMailings,
 	updateEmailNewsletter,
 	updateEmailTemplate,
 	updateSender,
@@ -73,6 +75,13 @@ const initialState = {
 	loadingCreatingEmailTemplate: false,
 	loadingUpdatingEmailTemplate: false,
 	loadingDeletingEmailTemplate: false,
+	loadingEmailNewsletters: false,
+	loadingEmailNewsletter: false,
+	loadingEmailNewsletterStatistics: false,
+	loadingCreatingEmailNewsletter: false,
+	loadingUpdatingEmailNewsletter: false,
+	loadingDeletingEmailNewsletter: false,
+	loadingSendingEmailNewsletter: false,
 	loadingDomains: false,
 	loadingDomain: false,
 	loadingCreatingDomain: false,
@@ -87,6 +96,13 @@ const initialState = {
 	errorLoadingCreatingEmailTemplate: null,
 	errorLoadingUpdatingEmailTemplate: null,
 	errorLoadingDeletingEmailTemplate: null,
+	errorLoadingEmailNewsletters: null,
+	errorLoadingEmailNewsletter: null,
+	errorLoadingEmailNewsletterStatistics: null,
+	errorLoadingCreatingEmailNewsletter: null,
+	errorLoadingUpdatingEmailNewsletter: null,
+	errorLoadingDeletingEmailNewsletter: null,
+	errorLoadingSendingEmailNewsletter: null,
 	errorLoadingDomains: null,
 	errorLoadingDomain: null,
 	errorLoadingCreatingDomain: null,
@@ -303,6 +319,20 @@ const marketingReducer = createSlice({
 			state.errorLoadingEmailNewsletter = action.payload;
 		},
 
+		[getEmailNewsletterStatistics.fulfilled.type]: (state, action: PayloadAction<IEmailNewsletter>) => {
+			state.emailNewsletter = { ...state.emailNewsletter, statistics: action.payload.statistics };
+			state.loadingEmailNewsletterStatistics = false;
+			state.errorLoadingEmailNewsletterStatistics = null;
+		},
+		[getEmailNewsletterStatistics.pending.type]: (state) => {
+			state.loadingEmailNewsletterStatistics = true;
+			state.errorLoadingEmailNewsletterStatistics = null;
+		},
+		[getEmailNewsletterStatistics.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingEmailNewsletterStatistics = false;
+			state.errorLoadingEmailNewsletterStatistics = action.payload;
+		},
+
 		[createEmailNewsletter.fulfilled.type]: (state, action: PayloadAction<IEmailNewsletter>) => {
 			state.emailNewsletters.data.unshift(action.payload);
 			state.emailNewsletters.meta = {
@@ -325,6 +355,9 @@ const marketingReducer = createSlice({
 			state.emailNewsletters.data = state.emailNewsletters.data.map((emailNewsletter) => {
 				return emailNewsletter.id === action.payload.id ? action.payload : emailNewsletter;
 			});
+			if (state.emailNewsletter && state.emailNewsletter.id) {
+				state.emailNewsletter = { ...state.emailNewsletter, ...action.payload };
+			}
 			state.loadingUpdatingEmailNewsletter = false;
 			state.errorLoadingUpdatingEmailNewsletter = null;
 		},
@@ -363,6 +396,22 @@ const marketingReducer = createSlice({
 			state.errorLoadingSendingEmailNewsletter = null;
 		},
 		[sendEmailNewsletter.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingSendingEmailNewsletter = false;
+			state.errorLoadingSendingEmailNewsletter = action.payload;
+		},
+
+		[startEmailNewsletterMailings.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: number }>) => {
+			state.emailNewsletters.data = state.emailNewsletters.data.map((emailNewsletter) => {
+				return emailNewsletter.id === action.meta.arg ? { ...emailNewsletter, status: ENewsletterStatus.SENDING } : emailNewsletter;
+			});
+			state.loadingSendingEmailNewsletter = false;
+			state.errorLoadingSendingEmailNewsletter = null;
+		},
+		[startEmailNewsletterMailings.pending.type]: (state) => {
+			state.loadingSendingEmailNewsletter = true;
+			state.errorLoadingSendingEmailNewsletter = null;
+		},
+		[startEmailNewsletterMailings.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingSendingEmailNewsletter = false;
 			state.errorLoadingSendingEmailNewsletter = action.payload;
 		},

@@ -32,6 +32,7 @@ export interface IState {
 	loadingDeletingEmailTemplate: boolean;
 	loadingEmailNewsletters: boolean;
 	loadingEmailNewsletter: boolean;
+	loadingEmailNewsletterStatistics: boolean;
 	loadingCreatingEmailNewsletter: boolean;
 	loadingUpdatingEmailNewsletter: boolean;
 	loadingDeletingEmailNewsletter: boolean;
@@ -52,6 +53,7 @@ export interface IState {
 	errorLoadingDeletingEmailTemplate: IErrorsAxiosResponse;
 	errorLoadingEmailNewsletters: IErrorsAxiosResponse;
 	errorLoadingEmailNewsletter: IErrorsAxiosResponse;
+	errorLoadingEmailNewsletterStatistics: IErrorsAxiosResponse;
 	errorLoadingCreatingEmailNewsletter: IErrorsAxiosResponse;
 	errorLoadingUpdatingEmailNewsletter: IErrorsAxiosResponse;
 	errorLoadingDeletingEmailNewsletter: IErrorsAxiosResponse;
