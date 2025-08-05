@@ -98,6 +98,7 @@ const rootReducer = combineReducers({
 	announcers,
 	analytics,
 	forms,
+	bookings,
 	transferOfCases,
 	bookings,
 	marketing,
