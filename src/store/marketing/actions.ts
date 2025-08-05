@@ -102,6 +102,15 @@ export const getEmailNewsletter = createAsyncThunk('marketing/getEmailNewsletter
 	}
 });
 
+export const getEmailNewsletterStatistics = createAsyncThunk('marketing/getEmailNewsletterStatistics', async (id: number, thunkAPI) => {
+	try {
+		const res = await uspacySdk.marketingService.getEmailNewsletterStatistics(id);
+		return res.data;
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
+	}
+});
+
 export const createEmailNewsletter = createAsyncThunk('marketing/createEmailNewsletter', async (data: Partial<IEmailNewsletter>, thunkAPI) => {
 	try {
 		const res = await uspacySdk.marketingService.createEmailNewsletter(data);
@@ -134,6 +143,14 @@ export const deleteEmailNewsletter = createAsyncThunk('marketing/deleteEmailNews
 export const sendEmailNewsletter = createAsyncThunk('marketing/sendEmailNewsletter', async (id: number, thunkAPI) => {
 	try {
 		return await uspacySdk.marketingService.sendEmailNewsletter(id);
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
+	}
+});
+
+export const startEmailNewsletterMailings = createAsyncThunk('marketing/startEmailNewsletterMailings', async (_, thunkAPI) => {
+	try {
+		return await uspacySdk.marketingService.startEmailNewsletterMailings();
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
