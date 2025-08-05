@@ -100,7 +100,6 @@ const rootReducer = combineReducers({
 	forms,
 	bookings,
 	transferOfCases,
-	bookings,
 	marketing,
 	trash,
 });
