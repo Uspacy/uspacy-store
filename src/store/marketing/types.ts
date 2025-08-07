@@ -6,7 +6,7 @@ import { IDomain } from '@uspacy/sdk/lib/models/newsletters-domain';
 import { ISender } from '@uspacy/sdk/lib/models/newsletters-sender';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 
-export interface IMassActionsEmailTemplatesPayload {
+export interface IMassActionsMarketingPayload {
 	id: number[];
 	payload?: Partial<IEmailTemplate>;
 	all?: boolean;

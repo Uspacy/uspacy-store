@@ -5,7 +5,7 @@ import { IEmailTemplate } from '@uspacy/sdk/lib/models/email-template';
 import { IMarketingFilter } from '@uspacy/sdk/lib/models/marketing-filter';
 import { ISender } from '@uspacy/sdk/lib/models/newsletters-sender';
 
-import { IMassActionsEmailTemplatesPayload } from './types';
+import { IMassActionsMarketingPayload } from './types';
 
 export const getEmailTemplates = createAsyncThunk(
 	'marketing/getEmailTemplates',
@@ -60,7 +60,7 @@ export const deleteEmailTemplate = createAsyncThunk('marketing/deleteEmailTempla
 
 export const massEditingEmailTemplates = createAsyncThunk(
 	'marketing/massEditingEmailTemplates',
-	async ({ id, payload, all, params }: IMassActionsEmailTemplatesPayload, thunkAPI) => {
+	async ({ id, payload, all, params }: IMassActionsMarketingPayload, thunkAPI) => {
 		try {
 			return await uspacySdk.marketingService.massEditingEmailTemplates(id, payload, all, params);
 		} catch (e) {
@@ -71,7 +71,7 @@ export const massEditingEmailTemplates = createAsyncThunk(
 
 export const massDeletionEmailTemplates = createAsyncThunk(
 	'marketing/massDeletionEmailTemplates',
-	async ({ id, all, params }: IMassActionsEmailTemplatesPayload, thunkAPI) => {
+	async ({ id, all, params }: IMassActionsMarketingPayload, thunkAPI) => {
 		try {
 			return await uspacySdk.marketingService.massDeletionEmailTemplates(id, all, params);
 		} catch (e) {
@@ -155,6 +155,28 @@ export const startEmailNewsletterMailings = createAsyncThunk('marketing/startEma
 		return thunkAPI.rejectWithValue(e);
 	}
 });
+
+export const massSendingEmailNewsletters = createAsyncThunk(
+	'marketing/massSendingEmailNewsletters',
+	async ({ id, all, params }: IMassActionsMarketingPayload, thunkAPI) => {
+		try {
+			return await uspacySdk.marketingService.massSendingEmailNewsletters(id, all, params);
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
+
+export const massDeletionEmailNewsletters = createAsyncThunk(
+	'marketing/massDeletionEmailNewsletters',
+	async ({ id, all, params }: IMassActionsMarketingPayload, thunkAPI) => {
+		try {
+			return await uspacySdk.marketingService.massDeletionEmailNewsletters(id, all, params);
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
 
 export const getDomains = createAsyncThunk('marketing/getDomains', async (_, thunkAPI) => {
 	try {
