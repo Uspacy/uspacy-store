@@ -422,7 +422,7 @@ const marketingReducer = createSlice({
 			const { id, payload } = action.meta.arg;
 
 			state.emailNewsletters.data = state.emailNewsletters.data.map((emailNewsletter) => {
-				if (id?.includes(emailNewsletter.id)) {
+				if (id?.includes(emailNewsletter?.id)) {
 					const copiedEmailNewsletter = { ...emailNewsletter };
 
 					for (const key in payload) {
@@ -452,7 +452,7 @@ const marketingReducer = createSlice({
 		[massDeletionEmailNewsletters.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActionsMarketingPayload }>) => {
 			const { id } = action.meta.arg;
 
-			state.emailNewsletters.data = state.emailNewsletters.data.filter((emailNewsletter) => !id?.includes(emailNewsletter.id));
+			state.emailNewsletters.data = state.emailNewsletters.data.filter((emailNewsletter) => !id?.includes(emailNewsletter?.id));
 			state.loadingDeletingEmailNewsletter = false;
 			state.errorLoadingDeletingEmailNewsletter = null;
 		},
