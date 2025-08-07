@@ -26,15 +26,17 @@ import {
 	getEmailTemplates,
 	getSender,
 	getSenders,
+	massDeletionEmailNewsletters,
 	massDeletionEmailTemplates,
 	massEditingEmailTemplates,
+	massSendingEmailNewsletters,
 	sendEmailNewsletter,
 	startEmailNewsletterMailings,
 	updateEmailNewsletter,
 	updateEmailTemplate,
 	updateSender,
 } from './actions';
-import { IMassActionsEmailTemplatesPayload, IState } from './types';
+import { IMassActionsMarketingPayload, IState } from './types';
 
 const initialState = {
 	emailTemplates: {
@@ -243,7 +245,7 @@ const marketingReducer = createSlice({
 			state.errorLoadingDeletingEmailTemplate = action.payload;
 		},
 
-		[massEditingEmailTemplates.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActionsEmailTemplatesPayload }>) => {
+		[massEditingEmailTemplates.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActionsMarketingPayload }>) => {
 			const { id, payload } = action.meta.arg;
 
 			state.emailTemplates.data = state.emailTemplates.data.map((emailTemplate) => {
@@ -275,7 +277,7 @@ const marketingReducer = createSlice({
 			state.errorLoadingUpdatingEmailTemplate = action.payload;
 		},
 
-		[massDeletionEmailTemplates.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActionsEmailTemplatesPayload }>) => {
+		[massDeletionEmailTemplates.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActionsMarketingPayload }>) => {
 			const { id } = action.meta.arg;
 
 			state.emailTemplates.data = state.emailTemplates.data.filter((emailTemplate) => !id?.includes(emailTemplate.id));
@@ -414,6 +416,53 @@ const marketingReducer = createSlice({
 		[startEmailNewsletterMailings.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingSendingEmailNewsletter = false;
 			state.errorLoadingSendingEmailNewsletter = action.payload;
+		},
+
+		[massSendingEmailNewsletters.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActionsMarketingPayload }>) => {
+			const { id, payload } = action.meta.arg;
+
+			state.emailNewsletters.data = state.emailNewsletters.data.map((emailNewsletter) => {
+				if (id?.includes(emailNewsletter?.id)) {
+					const copiedEmailNewsletter = { ...emailNewsletter };
+
+					for (const key in payload) {
+						if (payload.hasOwnProperty(key)) {
+							if (Array.isArray(payload[key])) {
+								copiedEmailNewsletter[key] = Array.from(new Set([...copiedEmailNewsletter[key], ...payload[key]]));
+							}
+						}
+					}
+
+					return copiedEmailNewsletter;
+				}
+				return emailNewsletter;
+			});
+			state.loadingSendingEmailNewsletter = false;
+			state.errorLoadingSendingEmailNewsletter = null;
+		},
+		[massSendingEmailNewsletters.pending.type]: (state) => {
+			state.loadingSendingEmailNewsletter = true;
+			state.errorLoadingSendingEmailNewsletter = null;
+		},
+		[massSendingEmailNewsletters.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingSendingEmailNewsletter = false;
+			state.errorLoadingSendingEmailNewsletter = action.payload;
+		},
+
+		[massDeletionEmailNewsletters.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActionsMarketingPayload }>) => {
+			const { id } = action.meta.arg;
+
+			state.emailNewsletters.data = state.emailNewsletters.data.filter((emailNewsletter) => !id?.includes(emailNewsletter?.id));
+			state.loadingDeletingEmailNewsletter = false;
+			state.errorLoadingDeletingEmailNewsletter = null;
+		},
+		[massDeletionEmailNewsletters.pending.type]: (state) => {
+			state.loadingDeletingEmailNewsletter = true;
+			state.errorLoadingDeletingEmailNewsletter = null;
+		},
+		[massDeletionEmailNewsletters.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDeletingEmailNewsletter = false;
+			state.errorLoadingDeletingEmailNewsletter = action.payload;
 		},
 
 		[getDomains.fulfilled.type]: (state, action: PayloadAction<IDomain[]>) => {
