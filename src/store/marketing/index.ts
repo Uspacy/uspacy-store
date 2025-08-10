@@ -187,7 +187,9 @@ const marketingReducer = createSlice({
 		},
 
 		[createEmailTemplate.fulfilled.type]: (state, action: PayloadAction<IEmailTemplate>) => {
-			state.emailTemplates.data.unshift(action.payload);
+			if (state.emailTemplates && state.emailTemplates.data) {
+				state.emailTemplates.data.unshift(action.payload);
+			}
 			state.emailTemplatesCards.unshift(action.payload);
 			state.emailTemplates.meta = {
 				...state.emailTemplates.meta,
@@ -206,9 +208,11 @@ const marketingReducer = createSlice({
 		},
 
 		[updateEmailTemplate.fulfilled.type]: (state, action: PayloadAction<IEmailTemplate>) => {
-			state.emailTemplates.data = state.emailTemplates.data.map((emailTemplate) => {
-				return emailTemplate.id === action.payload.id ? action.payload : emailTemplate;
-			});
+			if (state.emailTemplates && state.emailTemplates.data) {
+				state.emailTemplates.data = state.emailTemplates.data.map((emailTemplate) => {
+					return emailTemplate.id === action.payload.id ? action.payload : emailTemplate;
+				});
+			}
 			state.emailTemplatesCards = state.emailTemplatesCards.map((emailTemplate) => {
 				return emailTemplate.id === action.payload.id ? action.payload : emailTemplate;
 			});
@@ -227,12 +231,14 @@ const marketingReducer = createSlice({
 		[deleteEmailTemplate.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: { id: number } }>) => {
 			const { id } = action.meta.arg;
 
-			state.emailTemplates.data = state.emailTemplates.data.filter((emailTemplate) => emailTemplate.id !== id);
+			if (state.emailTemplates && state.emailTemplates.data) {
+				state.emailTemplates.data = state.emailTemplates.data.filter((emailTemplate) => emailTemplate.id !== id);
+				state.emailTemplates.meta = {
+					...state.emailTemplates.meta,
+					total: state.emailTemplates.meta?.total - 1,
+				};
+			}
 			state.emailTemplatesCards = state.emailTemplatesCards.filter((emailTemplate) => emailTemplate.id !== id);
-			state.emailTemplates.meta = {
-				...state.emailTemplates.meta,
-				total: state.emailTemplates.meta?.total - 1,
-			};
 			state.loadingDeletingEmailTemplate = false;
 			state.errorLoadingDeletingEmailTemplate = null;
 		},
@@ -336,11 +342,13 @@ const marketingReducer = createSlice({
 		},
 
 		[createEmailNewsletter.fulfilled.type]: (state, action: PayloadAction<IEmailNewsletter>) => {
-			state.emailNewsletters.data.unshift(action.payload);
-			state.emailNewsletters.meta = {
-				...state.emailNewsletters.meta,
-				total: state.emailNewsletters.meta?.total + 1,
-			};
+			if (state.emailNewsletters && state.emailNewsletters.data) {
+				state.emailNewsletters.data.unshift(action.payload);
+				state.emailNewsletters.meta = {
+					...state.emailNewsletters.meta,
+					total: state.emailNewsletters.meta?.total + 1,
+				};
+			}
 			state.loadingCreatingEmailNewsletter = false;
 			state.errorLoadingCreatingEmailNewsletter = null;
 		},
@@ -354,9 +362,11 @@ const marketingReducer = createSlice({
 		},
 
 		[updateEmailNewsletter.fulfilled.type]: (state, action: PayloadAction<IEmailNewsletter>) => {
-			state.emailNewsletters.data = state.emailNewsletters.data.map((emailNewsletter) => {
-				return emailNewsletter.id === action.payload.id ? action.payload : emailNewsletter;
-			});
+			if (state.emailNewsletters && state.emailNewsletters.data) {
+				state.emailNewsletters.data = state.emailNewsletters.data.map((emailNewsletter) => {
+					return emailNewsletter.id === action.payload.id ? action.payload : emailNewsletter;
+				});
+			}
 			if (state.emailNewsletter && state.emailNewsletter.id) {
 				state.emailNewsletter = { ...state.emailNewsletter, ...action.payload };
 			}
@@ -373,7 +383,13 @@ const marketingReducer = createSlice({
 		},
 
 		[deleteEmailNewsletter.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: number }>) => {
-			state.emailNewsletters.data = state.emailNewsletters.data.filter((emailNewsletter) => emailNewsletter.id !== action.meta.arg);
+			if (state.emailNewsletters && state.emailNewsletters.data) {
+				state.emailNewsletters.data = state.emailNewsletters.data.filter((emailNewsletter) => emailNewsletter.id !== action.meta.arg);
+				state.emailNewsletters.meta = {
+					...state.emailNewsletters.meta,
+					total: state.emailNewsletters.meta?.total - 1,
+				};
+			}
 			state.loadingDeletingEmailNewsletter = false;
 			state.errorLoadingDeletingEmailNewsletter = null;
 		},
