@@ -1,70 +1,10 @@
 import { IEmailNewsletter } from '@uspacy/sdk/lib/models/email-newsletter';
 import { IEmailTemplate } from '@uspacy/sdk/lib/models/email-template';
-import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IMarketingFilter } from '@uspacy/sdk/lib/models/marketing-filter';
-import { IDomain } from '@uspacy/sdk/lib/models/newsletters-domain';
-import { ISender } from '@uspacy/sdk/lib/models/newsletters-sender';
-import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 
 export interface IMassActionsMarketingPayload {
 	id: number[];
-	payload?: Partial<IEmailTemplate>;
+	payload?: Partial<IEmailTemplate | IEmailNewsletter>;
 	all?: boolean;
 	params?: Partial<IMarketingFilter>;
-}
-
-export interface IState {
-	emailTemplates: IResponseWithMeta<IEmailTemplate>;
-	emailTemplatesCards: IEmailTemplate[];
-	emailTemplate: IEmailTemplate;
-	emailNewsletters: IResponseWithMeta<IEmailNewsletter>;
-	emailNewsletter: IEmailNewsletter;
-	marketingFilter: IMarketingFilter;
-	domains: IDomain[];
-	domain: IDomain;
-	domainStatus: IDomain;
-	senders: ISender[];
-	sender: ISender;
-	loadingEmailTemplates: boolean;
-	loadingEmailTemplate: boolean;
-	loadingCreatingEmailTemplate: boolean;
-	loadingUpdatingEmailTemplate: boolean;
-	loadingDeletingEmailTemplate: boolean;
-	loadingEmailNewsletters: boolean;
-	loadingEmailNewsletter: boolean;
-	loadingEmailNewsletterStatistics: boolean;
-	loadingCreatingEmailNewsletter: boolean;
-	loadingUpdatingEmailNewsletter: boolean;
-	loadingDeletingEmailNewsletter: boolean;
-	loadingSendingEmailNewsletter: boolean;
-	loadingDomains: boolean;
-	loadingDomain: boolean;
-	loadingCreatingDomain: boolean;
-	loadingDeletingDomain: boolean;
-	loadingSenders: boolean;
-	loadingSender: boolean;
-	loadingCreatingSender: boolean;
-	loadingUpdatingSender: boolean;
-	loadingDeletingSender: boolean;
-	errorLoadingEmailTemplates: IErrorsAxiosResponse;
-	errorLoadingEmailTemplate: IErrorsAxiosResponse;
-	errorLoadingCreatingEmailTemplate: IErrorsAxiosResponse;
-	errorLoadingUpdatingEmailTemplate: IErrorsAxiosResponse;
-	errorLoadingDeletingEmailTemplate: IErrorsAxiosResponse;
-	errorLoadingEmailNewsletters: IErrorsAxiosResponse;
-	errorLoadingEmailNewsletter: IErrorsAxiosResponse;
-	errorLoadingEmailNewsletterStatistics: IErrorsAxiosResponse;
-	errorLoadingCreatingEmailNewsletter: IErrorsAxiosResponse;
-	errorLoadingUpdatingEmailNewsletter: IErrorsAxiosResponse;
-	errorLoadingDeletingEmailNewsletter: IErrorsAxiosResponse;
-	errorLoadingSendingEmailNewsletter: IErrorsAxiosResponse;
-	errorLoadingDomains: IErrorsAxiosResponse;
-	errorLoadingDomain: IErrorsAxiosResponse;
-	errorLoadingCreatingDomain: IErrorsAxiosResponse;
-	errorLoadingDeletingDomain: IErrorsAxiosResponse;
-	errorLoadingSenders: IErrorsAxiosResponse;
-	errorLoadingSender: IErrorsAxiosResponse;
-	errorLoadingCreatingSender: IErrorsAxiosResponse;
-	errorLoadingUpdatingSender: IErrorsAxiosResponse;
-	errorLoadingDeletingSender: IErrorsAxiosResponse;
 }
