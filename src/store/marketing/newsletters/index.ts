@@ -163,6 +163,9 @@ const newslettersReducer = createSlice({
 			state.items.data = state.items.data.map((emailNewsletter) => {
 				return emailNewsletter.id === action.meta.arg ? { ...emailNewsletter, status: ENewsletterStatus.SENDING } : emailNewsletter;
 			});
+			if (state.item && state.item.id) {
+				state.item = { ...state.item, status: ENewsletterStatus.SENDING };
+			}
 			state.loadingSending = false;
 			state.errorLoadingSending = null;
 		},
