@@ -85,11 +85,13 @@ const templatesReducer = createSlice({
 			if (state.items && state.items.data) {
 				state.items.data.unshift(action.payload);
 			}
+			if (state.items && state.items.meta) {
+				state.items.meta = {
+					...state.items.meta,
+					total: state.items.meta?.total + 1,
+				};
+			}
 			state.cards.unshift(action.payload);
-			state.items.meta = {
-				...state.items.meta,
-				total: state.items.meta?.total + 1,
-			};
 			state.loadingCreating = false;
 			state.errorLoadingCreating = null;
 		},
@@ -128,6 +130,8 @@ const templatesReducer = createSlice({
 
 			if (state.items && state.items.data) {
 				state.items.data = state.items.data.filter((emailTemplate) => emailTemplate.id !== id);
+			}
+			if (state.items && state.items.meta) {
 				state.items.meta = {
 					...state.items.meta,
 					total: state.items.meta?.total - 1,

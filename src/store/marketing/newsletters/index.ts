@@ -101,6 +101,8 @@ const newslettersReducer = createSlice({
 		[createEmailNewsletter.fulfilled.type]: (state, action: PayloadAction<IEmailNewsletter>) => {
 			if (state.items && state.items.data) {
 				state.items.data.unshift(action.payload);
+			}
+			if (state.items && state.items.meta) {
 				state.items.meta = {
 					...state.items.meta,
 					total: state.items.meta?.total + 1,
@@ -142,6 +144,8 @@ const newslettersReducer = createSlice({
 		[deleteEmailNewsletter.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: number }>) => {
 			if (state.items && state.items.data) {
 				state.items.data = state.items.data.filter((emailNewsletter) => emailNewsletter.id !== action.meta.arg);
+			}
+			if (state.items && state.items.meta) {
 				state.items.meta = {
 					...state.items.meta,
 					total: state.items.meta?.total - 1,
