@@ -149,7 +149,9 @@ const itemsReducer = createSlice({
 			action: PayloadAction<IErrors, string, { arg: { entityCode: string; stageId: number } }>,
 		) => {
 			const { entityCode, stageId } = action.meta.arg;
-			state[entityCode].stages[stageId].loading = false;
+			if (state?.[entityCode]?.stages?.[stageId]) {
+				state[entityCode].stages[stageId].loading = false;
+			}
 		},
 
 		[updateEntityItem.fulfilled.type]: (
