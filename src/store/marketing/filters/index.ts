@@ -25,6 +25,7 @@ const initialState = {
 		certainDateOrPeriod_updated_at: [],
 		certainDateOrPeriod_next_run: [],
 		openCalendar: false,
+		sort_by: null,
 	},
 } as IState;
 
