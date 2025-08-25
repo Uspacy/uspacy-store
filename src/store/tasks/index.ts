@@ -166,6 +166,7 @@ const initialState = {
 	isRegularSection: false,
 	tasksCardPermissions: { type: 'task', mode: 'view' },
 	tasksServiceType: 'task',
+	aiTaskData: null,
 } as IState;
 
 const tasksReducer = createSlice({
@@ -307,6 +308,9 @@ const tasksReducer = createSlice({
 		},
 		setTasksServiceType: (state, action: PayloadAction<taskType>) => {
 			state.tasksServiceType = action.payload;
+		},
+		setAiTaskData: (state, action: PayloadAction<Partial<ITask>>) => {
+			state.aiTaskData = action.payload;
 		},
 	},
 	extraReducers: {
@@ -1027,5 +1031,6 @@ export const {
 	setAnEditMode,
 	changeTasksCardViewMode,
 	setTasksServiceType,
+	setAiTaskData,
 } = tasksReducer.actions;
 export default tasksReducer.reducer;
