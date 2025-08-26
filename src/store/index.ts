@@ -50,6 +50,7 @@ import transferOfCases from './transferOfCases';
 import trash from './trash';
 import users from './users';
 import webhooks from './webhooks';
+import workflows from './workflows';
 
 const rootReducer = combineReducers({
 	apps,
@@ -102,6 +103,7 @@ const rootReducer = combineReducers({
 	transferOfCases,
 	marketing,
 	trash,
+	workflows,
 });
 
 export const setupStore = () => {
