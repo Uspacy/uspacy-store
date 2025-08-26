@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { ITrashFilter } from '@uspacy/sdk/lib/models/trash-filter';
-import { IWorkflow, IWorkflowsResponse } from '@uspacy/sdk/lib/models/workflows';
+import { IWorkflow, IWorkflowFilter, IWorkflowsResponse } from '@uspacy/sdk/lib/models/workflows';
 
 import { deleteWorkflow, fetchWorkflows, toggleWorkflow } from './actions';
 import { IState } from './types';
@@ -42,7 +41,7 @@ const workflowReducer = createSlice({
 		clearFilter: (state) => {
 			state.filter = { ...initialState.filter, sortModel: state?.filter?.sortModel || [] };
 		},
-		changeFilter: (state, action: PayloadAction<ITrashFilter>) => {
+		changeFilter: (state, action: PayloadAction<IWorkflowFilter>) => {
 			state.filter = action.payload;
 		},
 	},
