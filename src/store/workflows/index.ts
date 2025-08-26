@@ -38,6 +38,10 @@ const workflowReducer = createSlice({
 		clearItems: (state) => {
 			state.workflows = initialState.workflows;
 		},
+		clearItemsWithLoader: (state) => {
+			state.workflows = initialState.workflows;
+			state.loadingWorkflows = true;
+		},
 		clearFilter: (state) => {
 			state.filter = { ...initialState.filter, sortModel: state?.filter?.sortModel || [] };
 		},
@@ -89,6 +93,6 @@ const workflowReducer = createSlice({
 	},
 });
 
-export const { addWorkflowToEndTable, toggleActiveWorkflow, addWorkflowToStartTable, clearFilter, changeFilter, clearItems } =
+export const { addWorkflowToEndTable, toggleActiveWorkflow, addWorkflowToStartTable, clearFilter, changeFilter, clearItems, clearItemsWithLoader } =
 	workflowReducer.actions;
 export default workflowReducer.reducer;
