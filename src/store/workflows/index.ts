@@ -25,6 +25,9 @@ const workflowReducer = createSlice({
 	name: 'workflows',
 	initialState,
 	reducers: {
+		updateWorkflows: (state, action: PayloadAction<IWorkflowsResponse>) => {
+			state.workflows = action.payload;
+		},
 		addWorkflowToEndTable: (state, action: PayloadAction<IWorkflow>) => {
 			state.workflows.data.push(action.payload);
 		},
@@ -93,6 +96,14 @@ const workflowReducer = createSlice({
 	},
 });
 
-export const { addWorkflowToEndTable, toggleActiveWorkflow, addWorkflowToStartTable, clearFilter, changeFilter, clearItems, clearItemsWithLoader } =
-	workflowReducer.actions;
+export const {
+	addWorkflowToEndTable,
+	toggleActiveWorkflow,
+	addWorkflowToStartTable,
+	clearFilter,
+	changeFilter,
+	clearItems,
+	clearItemsWithLoader,
+	updateWorkflows,
+} = workflowReducer.actions;
 export default workflowReducer.reducer;
