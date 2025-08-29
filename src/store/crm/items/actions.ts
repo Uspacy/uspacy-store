@@ -208,17 +208,8 @@ export const massItemsEditing = createAsyncThunk(
 	) => {
 		try {
 			switch (entityCode) {
+				case 'activities':
 				case 'tasks': {
-					return await uspacySdk.crmTasksService.massTasksEditing({
-						all,
-						entityIds,
-						exceptIds,
-						params: all && params?.length ? params : undefined,
-						payload,
-						settings,
-					});
-				}
-				case 'activities': {
 					if (payload?.status === 'planned') {
 						return await uspacySdk.crmTasksService.massTasksReopen({
 							all,
