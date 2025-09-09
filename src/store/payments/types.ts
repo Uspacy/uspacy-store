@@ -14,19 +14,28 @@ export interface ICheckCardFill {
 	complete: boolean;
 }
 
+export type TariffType = 'newsletter_10000' | 'newsletter_100000' | 'professional' | 'standard' | 'free';
+export type DurationViewType = 'yearly' | 'monthly' | 'custom';
+export type RadioValueTariffStateType = 'professional' | 'standard';
+export type TypeOfPayerType = 'individual' | 'legalEntityIndividualEntrepreneur';
+export type PaymentMethodType = 'card' | 'bank_transfer';
+export type TariffActionType = 'extendTheTariff' | 'changeTheTariff';
+export type DiscountInputType = 'input' | 'season';
+
 export interface IState {
 	isPaymentButtonPress: boolean;
 	isPaymentProcess: boolean;
 	price: IPrice;
 	usersCount: number;
-	durationView: 'yearly' | 'monthly';
-	tariff: 'professional' | 'standard' | 'free';
-	radioValueTariffState: 'professional' | 'standard';
+	newsletter_packs: number;
+	durationView: DurationViewType;
+	tariff: TariffType;
+	radioValueTariffState: RadioValueTariffStateType;
 	discountInput: IDiscounts;
 	discountSeason: IDiscounts;
-	typeOfPayer: 'individual' | 'legalEntityIndividualEntrepreneur';
-	paymentMethod: 'card' | 'bank_transfer';
-	tariffActionType: 'extendTheTariff' | 'changeTheTariff';
+	typeOfPayer: TypeOfPayerType;
+	paymentMethod: PaymentMethodType;
+	tariffActionType: TariffActionType;
 	vatTaxStatus: string;
 	automaticSubscriptionRenewal: boolean;
 	individualPersonForm: IIndividualPersonForm;

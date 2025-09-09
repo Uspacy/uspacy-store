@@ -10,7 +10,16 @@ import {
 	IPrice,
 } from '@uspacy/sdk/lib/models/payments';
 
-import { IState } from './types';
+import {
+	DiscountInputType,
+	DurationViewType,
+	IState,
+	PaymentMethodType,
+	RadioValueTariffStateType,
+	TariffActionType,
+	TariffType,
+	TypeOfPayerType,
+} from './types';
 
 const initialState = {
 	isPaymentButtonPress: false,
@@ -20,6 +29,7 @@ const initialState = {
 		standard: 1,
 	},
 	usersCount: 0,
+	newsletter_packs: 0,
 	durationView: 'yearly',
 	tariff: 'professional',
 	radioValueTariffState: 'professional',
@@ -89,16 +99,19 @@ const paymentsReducer = createSlice({
 		setUsersCount: (state, action: PayloadAction<number>) => {
 			state.usersCount = action.payload;
 		},
-		setDurationView: (state, action: PayloadAction<'yearly' | 'monthly'>) => {
+		setNewsletterPacks: (state, action: PayloadAction<number>) => {
+			state.newsletter_packs = action.payload;
+		},
+		setDurationView: (state, action: PayloadAction<DurationViewType>) => {
 			state.durationView = action.payload;
 		},
-		setTariff: (state, action: PayloadAction<'professional' | 'standard'>) => {
+		setTariff: (state, action: PayloadAction<TariffType>) => {
 			state.tariff = action.payload;
 		},
-		setRadioValueTariffState: (state, action: PayloadAction<'professional' | 'standard'>) => {
+		setRadioValueTariffState: (state, action: PayloadAction<RadioValueTariffStateType>) => {
 			state.radioValueTariffState = action.payload;
 		},
-		setDiscounts: (state, action: PayloadAction<{ discount: IDiscounts; type: 'input' | 'season' }>) => {
+		setDiscounts: (state, action: PayloadAction<{ discount: IDiscounts; type: DiscountInputType }>) => {
 			if (action.payload.type === 'input') {
 				state.discountInput = action.payload.discount;
 			}
@@ -106,13 +119,13 @@ const paymentsReducer = createSlice({
 				state.discountSeason = action.payload.discount;
 			}
 		},
-		setTypeOfPayer: (state, action: PayloadAction<'individual' | 'legalEntityIndividualEntrepreneur'>) => {
+		setTypeOfPayer: (state, action: PayloadAction<TypeOfPayerType>) => {
 			state.typeOfPayer = action.payload;
 		},
-		setPaymentMethod: (state, action: PayloadAction<'card' | 'bank_transfer'>) => {
+		setPaymentMethod: (state, action: PayloadAction<PaymentMethodType>) => {
 			state.paymentMethod = action.payload;
 		},
-		setTariffActionType: (state, action: PayloadAction<'extendTheTariff' | 'changeTheTariff'>) => {
+		setTariffActionType: (state, action: PayloadAction<TariffActionType>) => {
 			state.tariffActionType = action.payload;
 		},
 		setVatTaxStatus: (state, action: PayloadAction<string>) => {
@@ -151,6 +164,7 @@ export const {
 	setIsPaymentProcess,
 	setPrice,
 	setUsersCount,
+	setNewsletterPacks,
 	setDurationView,
 	setTariff,
 	setRadioValueTariffState,
