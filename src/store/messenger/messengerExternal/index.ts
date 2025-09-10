@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IChat, IMessage } from '@uspacy/sdk/lib/models/messenger';
+import { IChat, ICrmConnectEntity, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 import {
@@ -13,7 +13,7 @@ import {
 	updateUnreadCountAndMentionedByChatId,
 } from '../../../helpers/messenger';
 import { fetchExternalChats } from './actions';
-import { ICrmConnectEntity, IState } from './types';
+import { IState } from './types';
 
 const initialConnectEntities = {
 	leads: [],
