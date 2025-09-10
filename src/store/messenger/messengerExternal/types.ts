@@ -1,4 +1,4 @@
-import { IExternalChatsItems } from '@uspacy/sdk/lib/models/messenger';
+import { ICrmConnectEntity, IExternalChatsItems } from '@uspacy/sdk/lib/models/messenger';
 
 export interface IState {
 	externalChats: {
@@ -13,11 +13,4 @@ export interface IState {
 			deals: ICrmConnectEntity[];
 		};
 	};
-}
-
-export interface ICrmConnectEntity {
-	entity: 'leads' | 'contacts' | 'companies' | 'deals';
-	id: number;
-	owner: number;
-	title: string;
 }
