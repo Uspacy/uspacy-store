@@ -29,7 +29,7 @@ const initialState = {
 		standard: 1,
 	},
 	usersCount: 0,
-	newsletter_packs: 0,
+	emailCreditsCount: 0,
 	durationView: 'yearly',
 	tariff: 'professional',
 	radioValueTariffState: 'professional',
@@ -99,8 +99,8 @@ const paymentsReducer = createSlice({
 		setUsersCount: (state, action: PayloadAction<number>) => {
 			state.usersCount = action.payload;
 		},
-		setNewsletterPacks: (state, action: PayloadAction<number>) => {
-			state.newsletter_packs = action.payload;
+		setEmailCreditsCount: (state, action: PayloadAction<number>) => {
+			state.emailCreditsCount = action.payload;
 		},
 		setDurationView: (state, action: PayloadAction<DurationViewType>) => {
 			state.durationView = action.payload;
@@ -164,7 +164,7 @@ export const {
 	setIsPaymentProcess,
 	setPrice,
 	setUsersCount,
-	setNewsletterPacks,
+	setEmailCreditsCount,
 	setDurationView,
 	setTariff,
 	setRadioValueTariffState,

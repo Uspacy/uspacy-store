@@ -14,12 +14,12 @@ export interface ICheckCardFill {
 	complete: boolean;
 }
 
-export type TariffType = 'newsletter_10000' | 'newsletter_100000' | 'professional' | 'standard' | 'free';
+export type TariffType = 'email_credits_10k' | 'email_credits_100k' | 'professional' | 'standard' | 'free';
 export type DurationViewType = 'yearly' | 'monthly' | 'custom';
-export type RadioValueTariffStateType = 'professional' | 'standard';
+export type RadioValueTariffStateType = 'professional' | 'standard' | 'custom';
 export type TypeOfPayerType = 'individual' | 'legalEntityIndividualEntrepreneur';
 export type PaymentMethodType = 'card' | 'bank_transfer';
-export type TariffActionType = 'extendTheTariff' | 'changeTheTariff';
+export type TariffActionType = 'extendTheTariff' | 'changeTheTariff' | 'emailCredits';
 export type DiscountInputType = 'input' | 'season';
 
 export interface IState {
@@ -27,7 +27,7 @@ export interface IState {
 	isPaymentProcess: boolean;
 	price: IPrice;
 	usersCount: number;
-	newsletter_packs: number;
+	emailCreditsCount: number;
 	durationView: DurationViewType;
 	tariff: TariffType;
 	radioValueTariffState: RadioValueTariffStateType;
