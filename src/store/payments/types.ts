@@ -15,8 +15,8 @@ export interface ICheckCardFill {
 }
 
 export type TariffType = 'email_credits_10k' | 'email_credits_100k' | 'professional' | 'standard' | 'free';
-export type DurationViewType = 'yearly' | 'monthly' | 'custom';
-export type RadioValueTariffStateType = 'professional' | 'standard' | 'custom';
+export type DurationViewType = 'yearly' | 'monthly' | 'emailCredits';
+export type RadioValueTariffStateType = 'email_credits_10k' | 'email_credits_100k' | 'professional' | 'standard';
 export type TypeOfPayerType = 'individual' | 'legalEntityIndividualEntrepreneur';
 export type PaymentMethodType = 'card' | 'bank_transfer';
 export type TariffActionType = 'extendTheTariff' | 'changeTheTariff' | 'emailCredits';
