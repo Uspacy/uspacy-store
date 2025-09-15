@@ -27,6 +27,8 @@ const initialState = {
 	price: {
 		professional: 1,
 		standard: 1,
+		email_credits_10k: 1,
+		email_credits_100k: 1,
 	},
 	usersCount: 0,
 	emailCreditsCount: 0,
@@ -56,6 +58,7 @@ const initialState = {
 		contactPersonPhone: '',
 		contactPersonEmail: '',
 		itinCode: '',
+		token: '',
 	},
 	legalEntityFormEuCom: {
 		firstName: '',
