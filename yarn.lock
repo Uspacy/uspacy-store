@@ -2500,24 +2500,10 @@
     lint-staged "15.2.10"
     localforage "1.10.0"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-"@uspacy/sdk@0.0.999-alpha.19":
-  version "0.0.999-alpha.19"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.19/7ab386a080670b3e481290722de317f43f8197fe#7ab386a080670b3e481290722de317f43f8197fe"
-  integrity sha512-UthubxurYBYMJwmt4xDhnyJDWhMVJkUcJFK2aqwZAJUcxhSUVSAfDps1Vvggyr1kaTjc5kmoLuwZwDOhlQaHSQ==
-=======
-"@uspacy/sdk@0.0.999-alpha.21":
-  version "0.0.999-alpha.21"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.21/450dfc66b160679b44a9d4c293c390692d5aed61#450dfc66b160679b44a9d4c293c390692d5aed61"
-  integrity sha512-QFXlIF4VlZ3CcMDQD1Pp9UtGIolf6lMKbdbgPiLzTz9lUGNjpt6103OLu1vgK5/dLeKO+2hPMVIXD5slrAvZZQ==
->>>>>>> ccb92b72b6537275b879f19f8182d4a4684b8323
-=======
 "@uspacy/sdk@0.0.999-alpha.23":
   version "0.0.999-alpha.23"
   resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.23/ee01f8d12ef389beee3ee05a0b15e86b68eb58ac#ee01f8d12ef389beee3ee05a0b15e86b68eb58ac"
   integrity sha512-aNPXqm3iLmZuAiaHPB0mswDGi1l380dQhLZeTEy5B5tySDmcEyTOllSov8mdZEAxAC/AR9ADsrVD6603bqneeA==
->>>>>>> feature/5371_marketing_newsletters_settings
   dependencies:
     axios "^1.9.0"
     js-cookie "3.0.5"
