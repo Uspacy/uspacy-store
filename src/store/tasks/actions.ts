@@ -2,7 +2,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IField } from '@uspacy/sdk/lib/models/field';
-import { ITask, ITasksParams } from '@uspacy/sdk/lib/models/tasks';
+import { IChecklist, IChecklistItem, ITask, ITasksParams } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 
 import { transformKeysToCaseByType } from '../../helpers/objectsUtilities';
@@ -396,3 +396,94 @@ export const deleteTasksField = createAsyncThunk('tasks/deleteTasksField', async
 		return rejectWithValue(e);
 	}
 });
+
+export const getChecklist = createAsyncThunk('tasks/getChecklist', async (id: number, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.tasksService.getChecklist(id);
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const createChecklist = createAsyncThunk(
+	'tasks/createChecklist',
+	async ({ body, taskId }: { taskId: string; body: IChecklist }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.tasksService.createChecklist(taskId, body);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const updateChecklist = createAsyncThunk(
+	'tasks/updateChecklist',
+	async ({ id, body }: { id: number; body: IChecklist }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.tasksService.updateChecklist(id, body);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const deleteChecklist = createAsyncThunk('tasks/deleteChecklist', async (id: number, { rejectWithValue }) => {
+	try {
+		return await uspacySdk.tasksService.deleteChecklist(id);
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const getChecklistItem = createAsyncThunk(
+	'tasks/getChecklistItem',
+	async ({ checklistId, checklistItemId }: { checklistId: number; checklistItemId: number }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.tasksService.getChecklistItem(checklistId, checklistItemId);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const createChecklistItem = createAsyncThunk(
+	'tasks/createChecklistItem',
+	async ({ checklistId, body }: { checklistId: number; body: Partial<IChecklistItem> }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.tasksService.createChecklistItem(checklistId, body);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const updateChecklistItem = createAsyncThunk(
+	'tasks/updateChecklistItem',
+	async (
+		{ checklistId, checklistItemId, body }: { checklistId: number; checklistItemId: number; body: Partial<IChecklistItem> },
+		{ rejectWithValue },
+	) => {
+		try {
+			const res = await uspacySdk.tasksService.updateChecklistItem(checklistId, checklistItemId, body);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const deleteChecklistItem = createAsyncThunk(
+	'tasks/deleteChecklistItem',
+	async ({ checklistId, checklistItemId }: { checklistId: number; checklistItemId: number }, { rejectWithValue }) => {
+		try {
+			return await uspacySdk.tasksService.deleteChecklistItem(checklistId, checklistItemId);
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
