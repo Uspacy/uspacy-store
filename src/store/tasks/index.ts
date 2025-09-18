@@ -2,18 +2,22 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IField } from '@uspacy/sdk/lib/models/field';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
-import { IFilterTasks, ITask, taskType } from '@uspacy/sdk/lib/models/tasks';
+import { IChecklist, IChecklistItem, IFilterTasks, ITask, taskType } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { fillTheString } from '../../helpers/stringsHelper';
 import {
 	completeTask,
+	createChecklist,
+	createChecklistItem,
 	createOneTimeTemplate,
 	createRecurringTemplate,
 	createTask,
 	createTasksField,
 	delegationTask,
+	deleteChecklist,
+	deleteChecklistItem,
 	deleteTask,
 	deleteTasksField,
 	deleteTasksListValues,
@@ -33,6 +37,8 @@ import {
 	replicateTask,
 	restartTask,
 	startTask,
+	updateChecklist,
+	updateChecklistItem,
 	updateOneTimeTemplate,
 	updateRecurringTemplate,
 	updateSubtask,
@@ -136,6 +142,7 @@ const initialState = {
 	loadingCreatingTasksField: false,
 	loadingUpdatingTasksField: false,
 	loadingDeletingTasksField: false,
+	loadingChecklist: false,
 	errorLoadingTasks: null,
 	errorLoadingSubtasks: null,
 	errorLoadingTask: null,
@@ -149,6 +156,7 @@ const initialState = {
 	errorLoadingCreatingTasksField: null,
 	errorLoadingUpdatingTasksField: null,
 	errorLoadingDeletingTasksField: null,
+	errorLoadingChecklist: null,
 	meta: {
 		currentPage: 0,
 		perPage: 20,
@@ -544,7 +552,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 			if (state.isKanban || state.isHierarchy) {
@@ -566,7 +574,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 		},
@@ -585,7 +593,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 		},
@@ -616,7 +624,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 			if (state.isKanban) {
@@ -987,6 +995,117 @@ const tasksReducer = createSlice({
 		[deleteTasksField.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingDeletingTasksField = false;
 			state.errorLoadingDeletingTasksField = action.payload;
+		},
+		[createChecklist.fulfilled.type]: (state, action: PayloadAction<IChecklist>) => {
+			state.loadingChecklist = false;
+			state.errorLoadingChecklist = null;
+			if (state?.task?.id && state?.task?.checklists) {
+				state.task.checklists = [...state.task.checklists, action.payload];
+			}
+		},
+		[createChecklist.pending.type]: (state) => {
+			state.loadingChecklist = true;
+			state.errorLoadingChecklist = null;
+		},
+		[createChecklist.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingChecklist = false;
+			state.errorLoadingChecklist = action.payload;
+		},
+		[updateChecklist.fulfilled.type]: (state, action: PayloadAction<IChecklist>) => {
+			state.loadingChecklist = false;
+			state.errorLoadingChecklist = null;
+			if (state?.task?.id && state?.task?.checklists) {
+				state.task.checklists = state.task.checklists.map((checklist) => (checklist.id === action.payload.id ? action.payload : checklist));
+			}
+		},
+		[updateChecklist.pending.type]: (state) => {
+			state.loadingChecklist = true;
+			state.errorLoadingChecklist = null;
+		},
+		[updateChecklist.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingChecklist = false;
+			state.errorLoadingChecklist = action.payload;
+		},
+		[deleteChecklist.fulfilled.type]: (state, action: PayloadAction<string, string, { arg: number }>) => {
+			state.loadingChecklist = false;
+			state.errorLoadingChecklist = null;
+			if (state?.task?.id && state?.task?.checklists) {
+				state.task.checklists = state.task.checklists.filter((checklist) => checklist.id !== action.meta.arg);
+			}
+		},
+		[deleteChecklist.pending.type]: (state) => {
+			state.loadingChecklist = true;
+			state.errorLoadingChecklist = null;
+		},
+		[deleteChecklist.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingChecklist = false;
+			state.errorLoadingChecklist = action.payload;
+		},
+		[createChecklistItem.fulfilled.type]: (state, action: PayloadAction<IChecklistItem, string, { arg: { checklistId: number } }>) => {
+			state.loadingChecklist = false;
+			state.errorLoadingChecklist = null;
+			if (state?.task?.id && state?.task?.checklists) {
+				state.task.checklists = state.task.checklists.map((checklist) => {
+					if (checklist.id === action.payload.id) {
+						return { ...checklist, items: [...checklist.items, action.payload] };
+					}
+					return checklist;
+				});
+			}
+		},
+		[createChecklistItem.pending.type]: (state) => {
+			state.loadingChecklist = true;
+			state.errorLoadingChecklist = null;
+		},
+		[createChecklistItem.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingChecklist = false;
+			state.errorLoadingChecklist = action.payload;
+		},
+		[updateChecklistItem.fulfilled.type]: (
+			state,
+			action: PayloadAction<IChecklistItem, string, { arg: { checklistId: number; checklistItemId: number } }>,
+		) => {
+			state.loadingChecklist = false;
+			state.errorLoadingChecklist = null;
+			if (state?.task?.id && state?.task?.checklists) {
+				state.task.checklists = state.task.checklists.map((checklist) => {
+					if (checklist.id === action.meta.arg.checklistId) {
+						return { ...checklist, items: checklist.items.map((item) => (item.id === action.payload.id ? action.payload : item)) };
+					}
+					return checklist;
+				});
+			}
+		},
+		[updateChecklistItem.pending.type]: (state) => {
+			state.loadingChecklist = true;
+			state.errorLoadingChecklist = null;
+		},
+		[updateChecklistItem.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingChecklist = false;
+			state.errorLoadingChecklist = action.payload;
+		},
+		[deleteChecklistItem.fulfilled.type]: (
+			state,
+			action: PayloadAction<string, string, { arg: { checklistId: number; checklistItemId: number } }>,
+		) => {
+			state.loadingChecklist = false;
+			state.errorLoadingChecklist = null;
+			if (state?.task?.id && state?.task?.checklists) {
+				state.task.checklists = state.task.checklists.map((checklist) => {
+					if (checklist.id === action.meta.arg.checklistId) {
+						return { ...checklist, items: checklist.items.filter((item) => item.id !== action.meta.arg.checklistItemId) };
+					}
+					return checklist;
+				});
+			}
+		},
+		[deleteChecklistItem.pending.type]: (state) => {
+			state.loadingChecklist = true;
+			state.errorLoadingChecklist = null;
+		},
+		[deleteChecklistItem.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingChecklist = false;
+			state.errorLoadingChecklist = action.payload;
 		},
 	},
 });
