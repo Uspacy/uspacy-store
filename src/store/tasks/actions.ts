@@ -399,7 +399,7 @@ export const deleteTasksField = createAsyncThunk('tasks/deleteTasksField', async
 
 export const createChecklist = createAsyncThunk(
 	'tasks/createChecklist',
-	async ({ body, taskId }: { taskId: string; body: IChecklist }, { rejectWithValue }) => {
+	async ({ body, taskId }: { taskId: string; body: Partial<IChecklist> }, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.createChecklist(taskId, body);
 			return res.data;
@@ -411,7 +411,7 @@ export const createChecklist = createAsyncThunk(
 
 export const updateChecklist = createAsyncThunk(
 	'tasks/updateChecklist',
-	async ({ id, body }: { id: number; body: IChecklist }, { rejectWithValue }) => {
+	async ({ id, body }: { id: number; body: Partial<IChecklist> }, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.updateChecklist(id, body);
 			return res.data;
