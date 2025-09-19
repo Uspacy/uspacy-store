@@ -82,9 +82,9 @@ export const getHierarchies = createAsyncThunk(
 
 export const getSubtasks = createAsyncThunk(
 	'tasks/getSubtasks',
-	async ({ id, page, list, isTemplate = false }: { id: string; page: number; list: number; isTemplate?: boolean }, { rejectWithValue }) => {
+	async ({ id, isTemplate = false, params }: { id: string; isTemplate?: boolean; params: Partial<ITasksParams> }, { rejectWithValue }) => {
 		try {
-			const res = await uspacySdk.tasksService.getSubtasks(id, page, list, isTemplate);
+			const res = await uspacySdk.tasksService.getSubtasks(id, isTemplate, params);
 			return res.data;
 		} catch (e) {
 			return rejectWithValue(e);
@@ -397,15 +397,6 @@ export const deleteTasksField = createAsyncThunk('tasks/deleteTasksField', async
 	}
 });
 
-export const getChecklist = createAsyncThunk('tasks/getChecklist', async (id: number, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.getChecklist(id);
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
 export const createChecklist = createAsyncThunk(
 	'tasks/createChecklist',
 	async ({ body, taskId }: { taskId: string; body: IChecklist }, { rejectWithValue }) => {
@@ -432,23 +423,12 @@ export const updateChecklist = createAsyncThunk(
 
 export const deleteChecklist = createAsyncThunk('tasks/deleteChecklist', async (id: number, { rejectWithValue }) => {
 	try {
-		return await uspacySdk.tasksService.deleteChecklist(id);
+		const res = await uspacySdk.tasksService.deleteChecklist(id);
+		return res.data;
 	} catch (e) {
 		return rejectWithValue(e);
 	}
 });
-
-export const getChecklistItem = createAsyncThunk(
-	'tasks/getChecklistItem',
-	async ({ checklistId, checklistItemId }: { checklistId: number; checklistItemId: number }, { rejectWithValue }) => {
-		try {
-			const res = await uspacySdk.tasksService.getChecklistItem(checklistId, checklistItemId);
-			return res.data;
-		} catch (e) {
-			return rejectWithValue(e);
-		}
-	},
-);
 
 export const createChecklistItem = createAsyncThunk(
 	'tasks/createChecklistItem',
@@ -481,7 +461,8 @@ export const deleteChecklistItem = createAsyncThunk(
 	'tasks/deleteChecklistItem',
 	async ({ checklistId, checklistItemId }: { checklistId: number; checklistItemId: number }, { rejectWithValue }) => {
 		try {
-			return await uspacySdk.tasksService.deleteChecklistItem(checklistId, checklistItemId);
+			const res = await uspacySdk.tasksService.deleteChecklistItem(checklistId, checklistItemId);
+			return res.data;
 		} catch (e) {
 			return rejectWithValue(e);
 		}
