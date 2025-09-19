@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IField } from '@uspacy/sdk/lib/models/field';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
-import { IChecklist, IChecklistItem, IFilterTasks, ITask, taskType } from '@uspacy/sdk/lib/models/tasks';
+import { IFilterTasks, ITask, taskType } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -996,12 +996,10 @@ const tasksReducer = createSlice({
 			state.loadingDeletingTasksField = false;
 			state.errorLoadingDeletingTasksField = action.payload;
 		},
-		[createChecklist.fulfilled.type]: (state, action: PayloadAction<IChecklist>) => {
+		[createChecklist.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingChecklist = false;
 			state.errorLoadingChecklist = null;
-			if (state?.task?.id && state?.task?.checklists) {
-				state.task.checklists = [...state.task.checklists, action.payload];
-			}
+			if (state?.task?.id && state?.task?.checklists) state.task.checklists = action.payload.checklists;
 		},
 		[createChecklist.pending.type]: (state) => {
 			state.loadingChecklist = true;
@@ -1011,12 +1009,10 @@ const tasksReducer = createSlice({
 			state.loadingChecklist = false;
 			state.errorLoadingChecklist = action.payload;
 		},
-		[updateChecklist.fulfilled.type]: (state, action: PayloadAction<IChecklist>) => {
+		[updateChecklist.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingChecklist = false;
 			state.errorLoadingChecklist = null;
-			if (state?.task?.id && state?.task?.checklists) {
-				state.task.checklists = state.task.checklists.map((checklist) => (checklist.id === action.payload.id ? action.payload : checklist));
-			}
+			if (state?.task?.id && state?.task?.checklists) state.task.checklists = action.payload.checklists;
 		},
 		[updateChecklist.pending.type]: (state) => {
 			state.loadingChecklist = true;
@@ -1026,12 +1022,10 @@ const tasksReducer = createSlice({
 			state.loadingChecklist = false;
 			state.errorLoadingChecklist = action.payload;
 		},
-		[deleteChecklist.fulfilled.type]: (state, action: PayloadAction<string, string, { arg: number }>) => {
+		[deleteChecklist.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingChecklist = false;
 			state.errorLoadingChecklist = null;
-			if (state?.task?.id && state?.task?.checklists) {
-				state.task.checklists = state.task.checklists.filter((checklist) => checklist.id !== action.meta.arg);
-			}
+			if (state?.task?.id && state?.task?.checklists) state.task.checklists = action.payload.checklists;
 		},
 		[deleteChecklist.pending.type]: (state) => {
 			state.loadingChecklist = true;
@@ -1041,17 +1035,10 @@ const tasksReducer = createSlice({
 			state.loadingChecklist = false;
 			state.errorLoadingChecklist = action.payload;
 		},
-		[createChecklistItem.fulfilled.type]: (state, action: PayloadAction<IChecklistItem, string, { arg: { checklistId: number } }>) => {
+		[createChecklistItem.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingChecklist = false;
 			state.errorLoadingChecklist = null;
-			if (state?.task?.id && state?.task?.checklists) {
-				state.task.checklists = state.task.checklists.map((checklist) => {
-					if (checklist.id === action.payload.id) {
-						return { ...checklist, items: [...checklist.items, action.payload] };
-					}
-					return checklist;
-				});
-			}
+			if (state?.task?.id && state?.task?.checklists) state.task.checklists = action.payload.checklists;
 		},
 		[createChecklistItem.pending.type]: (state) => {
 			state.loadingChecklist = true;
@@ -1061,20 +1048,10 @@ const tasksReducer = createSlice({
 			state.loadingChecklist = false;
 			state.errorLoadingChecklist = action.payload;
 		},
-		[updateChecklistItem.fulfilled.type]: (
-			state,
-			action: PayloadAction<IChecklistItem, string, { arg: { checklistId: number; checklistItemId: number } }>,
-		) => {
+		[updateChecklistItem.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingChecklist = false;
 			state.errorLoadingChecklist = null;
-			if (state?.task?.id && state?.task?.checklists) {
-				state.task.checklists = state.task.checklists.map((checklist) => {
-					if (checklist.id === action.meta.arg.checklistId) {
-						return { ...checklist, items: checklist.items.map((item) => (item.id === action.payload.id ? action.payload : item)) };
-					}
-					return checklist;
-				});
-			}
+			if (state?.task?.id && state?.task?.checklists) state.task.checklists = action.payload.checklists;
 		},
 		[updateChecklistItem.pending.type]: (state) => {
 			state.loadingChecklist = true;
@@ -1084,20 +1061,10 @@ const tasksReducer = createSlice({
 			state.loadingChecklist = false;
 			state.errorLoadingChecklist = action.payload;
 		},
-		[deleteChecklistItem.fulfilled.type]: (
-			state,
-			action: PayloadAction<string, string, { arg: { checklistId: number; checklistItemId: number } }>,
-		) => {
+		[deleteChecklistItem.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingChecklist = false;
 			state.errorLoadingChecklist = null;
-			if (state?.task?.id && state?.task?.checklists) {
-				state.task.checklists = state.task.checklists.map((checklist) => {
-					if (checklist.id === action.meta.arg.checklistId) {
-						return { ...checklist, items: checklist.items.filter((item) => item.id !== action.meta.arg.checklistItemId) };
-					}
-					return checklist;
-				});
-			}
+			if (state?.task?.id && state?.task?.checklists) state.task.checklists = action.payload.checklists;
 		},
 		[deleteChecklistItem.pending.type]: (state) => {
 			state.loadingChecklist = true;
