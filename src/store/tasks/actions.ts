@@ -82,7 +82,7 @@ export const getHierarchies = createAsyncThunk(
 
 export const getSubtasks = createAsyncThunk(
 	'tasks/getSubtasks',
-	async ({ id, isTemplate = false, params }: { id: string; isTemplate?: boolean; params?: Partial<ITasksParams> }, { rejectWithValue }) => {
+	async ({ id, isTemplate = false, params }: { id: string; isTemplate?: boolean; params: Partial<ITasksParams> }, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.getSubtasks(id, isTemplate, params);
 			return res.data;
