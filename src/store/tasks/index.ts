@@ -999,7 +999,7 @@ const tasksReducer = createSlice({
 		[createChecklist.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingChecklist = false;
 			state.errorLoadingChecklist = null;
-			if (state?.task?.id && state?.task?.checklists) state.task.checklists = action.payload.checklists;
+			if (state?.task?.id) state.task.checklists = action.payload.checklists;
 		},
 		[createChecklist.pending.type]: (state) => {
 			state.loadingChecklist = true;
