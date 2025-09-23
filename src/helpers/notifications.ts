@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { INotificationMessage, NotificationAction } from '@uspacy/sdk/lib/models/notifications';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 import { ILinkData, INotification } from 'src/store/notifications/types';
