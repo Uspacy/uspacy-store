@@ -46,9 +46,6 @@ const initialState = {
 		contactPersonPhone: '',
 		contactPersonEmail: '',
 		itinCode: '',
-		companyName: '',
-		legalAddress: '',
-		directorsFullName: '',
 	},
 	legalEntityFormEuCom: {
 		firstName: '',
@@ -66,9 +63,6 @@ const initialState = {
 		contactPersonPhoneErr: false,
 		contactPersonEmailErr: false,
 		itinCodeErr: false,
-		companyNameErr: false,
-		legalAddressErr: false,
-		directorsFullNameErr: false,
 	},
 	legalEntityFormEuComErrors: {
 		firstNameErr: false,

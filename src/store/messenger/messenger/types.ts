@@ -24,4 +24,9 @@ export interface IState {
 		meta: IMeta;
 		loading: boolean;
 	};
+	AISummaryData: {
+		messages: IMessage[];
+		text: string;
+		loading: boolean;
+	};
 }

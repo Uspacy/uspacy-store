@@ -5,6 +5,7 @@ import announcers from './announcers';
 import apps from './apps';
 import auth from './auth';
 import automations from './automations';
+import bookings from './bookings';
 import crm from './crm';
 import crmCalls from './crmCalls';
 import crmCompanies from './crmCompanies';
@@ -46,6 +47,7 @@ import tasksSettings from './tasksSettings';
 import tasksStages from './tasksStages';
 import tasksTimer from './tasksTimer';
 import transferOfCases from './transferOfCases';
+import trash from './trash';
 import users from './users';
 import webhooks from './webhooks';
 
@@ -96,7 +98,9 @@ const rootReducer = combineReducers({
 	crm,
 	analytics,
 	forms,
+	bookings,
 	transferOfCases,
+	trash,
 	marketing,
 });
 
