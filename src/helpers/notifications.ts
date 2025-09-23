@@ -72,16 +72,22 @@ const getEntityType = (message: INotificationMessage) => {
 };
 
 export const getNotificationTitle = (message: INotificationMessage, profileId: number): string | undefined => {
+	const crmBaseTypes = ['leads', 'contacts', 'companies', 'deals'];
 	const service = getServiceName(message.data.service);
 	const mentioned = !!message.data.entity?.mentioned?.users?.includes(profileId);
-	const entityType = getEntityType(message);
+	const isSmartObject =
+		(message?.data?.root_parent?.service === 'crm' && !crmBaseTypes.includes(message?.data?.root_parent?.table_name.toLowerCase())) ||
+		(message?.data?.service === 'crm' && !crmBaseTypes.includes(message?.data?.entity?.table_name.toLowerCase()));
+	const entityType = isSmartObject ? 'smart_objects' : getEntityType(message);
+	const baseType = isSmartObject ? entityType : message.data.entity?.table_name || message.type;
+
 	if (message.data.entity?.new_kanban_stage_id && message.data.entity?.old_kanban_stage_id) {
-		return `notifications.${service}.${message.data.entity?.table_name || message.type}.${NotificationAction.UPDATE_STAGE}`;
+		return `notifications.${isSmartObject ? entityType : service}.${baseType}.${NotificationAction.UPDATE_STAGE}`;
 	}
 	if (mentioned) return `notifications.${service}.${entityType}.${message.type}.mentioned.${message.data.action}`;
 	if (service === 'comments') return `notifications.${service}.${entityType}.${message.type}.${message.data.action}`;
 
-	return `notifications.${service}.${message.data.entity?.table_name || message.type}.${message.data.action}`;
+	return `notifications.${isSmartObject ? entityType : service}.${baseType}.${message.data.action}`;
 };
 
 export const deleteHtmlFromComment = (text: string) => {
