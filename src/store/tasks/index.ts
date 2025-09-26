@@ -9,15 +9,11 @@ import cloneDeep from 'lodash/cloneDeep';
 import { fillTheString } from '../../helpers/stringsHelper';
 import {
 	completeTask,
-	createChecklist,
-	createChecklistItem,
 	createOneTimeTemplate,
 	createRecurringTemplate,
 	createTask,
 	createTasksField,
 	delegationTask,
-	deleteChecklist,
-	deleteChecklistItem,
 	deleteTask,
 	deleteTasksField,
 	deleteTasksListValues,
@@ -37,8 +33,6 @@ import {
 	replicateTask,
 	restartTask,
 	startTask,
-	updateChecklist,
-	updateChecklistItem,
 	updateOneTimeTemplate,
 	updateRecurringTemplate,
 	updateSubtask,
@@ -142,7 +136,6 @@ const initialState = {
 	loadingCreatingTasksField: false,
 	loadingUpdatingTasksField: false,
 	loadingDeletingTasksField: false,
-	loadingChecklist: false,
 	errorLoadingTasks: null,
 	errorLoadingSubtasks: null,
 	errorLoadingTask: null,
@@ -156,7 +149,6 @@ const initialState = {
 	errorLoadingCreatingTasksField: null,
 	errorLoadingUpdatingTasksField: null,
 	errorLoadingDeletingTasksField: null,
-	errorLoadingChecklist: null,
 	meta: {
 		currentPage: 0,
 		perPage: 20,
@@ -995,84 +987,6 @@ const tasksReducer = createSlice({
 		[deleteTasksField.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingDeletingTasksField = false;
 			state.errorLoadingDeletingTasksField = action.payload;
-		},
-		[createChecklist.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingChecklist = false;
-			state.errorLoadingChecklist = null;
-			if (state?.task?.id) state.task.checklists = action.payload.checklists;
-		},
-		[createChecklist.pending.type]: (state) => {
-			state.loadingChecklist = true;
-			state.errorLoadingChecklist = null;
-		},
-		[createChecklist.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingChecklist = false;
-			state.errorLoadingChecklist = action.payload;
-		},
-		[updateChecklist.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingChecklist = false;
-			state.errorLoadingChecklist = null;
-			if (state?.task?.id && state?.task?.checklists) state.task.checklists = action.payload.checklists;
-		},
-		[updateChecklist.pending.type]: (state) => {
-			state.loadingChecklist = true;
-			state.errorLoadingChecklist = null;
-		},
-		[updateChecklist.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingChecklist = false;
-			state.errorLoadingChecklist = action.payload;
-		},
-		[deleteChecklist.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingChecklist = false;
-			state.errorLoadingChecklist = null;
-			if (state?.task?.id && state?.task?.checklists) state.task.checklists = action.payload.checklists;
-		},
-		[deleteChecklist.pending.type]: (state) => {
-			state.loadingChecklist = true;
-			state.errorLoadingChecklist = null;
-		},
-		[deleteChecklist.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingChecklist = false;
-			state.errorLoadingChecklist = action.payload;
-		},
-		[createChecklistItem.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingChecklist = false;
-			state.errorLoadingChecklist = null;
-			if (state?.task?.id && state?.task?.checklists) state.task.checklists = action.payload.checklists;
-		},
-		[createChecklistItem.pending.type]: (state) => {
-			state.loadingChecklist = true;
-			state.errorLoadingChecklist = null;
-		},
-		[createChecklistItem.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingChecklist = false;
-			state.errorLoadingChecklist = action.payload;
-		},
-		[updateChecklistItem.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingChecklist = false;
-			state.errorLoadingChecklist = null;
-			if (state?.task?.id && state?.task?.checklists) state.task.checklists = action.payload.checklists;
-		},
-		[updateChecklistItem.pending.type]: (state) => {
-			state.loadingChecklist = true;
-			state.errorLoadingChecklist = null;
-		},
-		[updateChecklistItem.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingChecklist = false;
-			state.errorLoadingChecklist = action.payload;
-		},
-		[deleteChecklistItem.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingChecklist = false;
-			state.errorLoadingChecklist = null;
-			if (state?.task?.id && state?.task?.checklists) state.task.checklists = action.payload.checklists;
-		},
-		[deleteChecklistItem.pending.type]: (state) => {
-			state.loadingChecklist = true;
-			state.errorLoadingChecklist = null;
-		},
-		[deleteChecklistItem.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingChecklist = false;
-			state.errorLoadingChecklist = action.payload;
 		},
 	},
 });

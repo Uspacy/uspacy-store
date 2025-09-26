@@ -51,7 +51,6 @@ export interface IState {
 	loadingCreatingTasksField: boolean;
 	loadingUpdatingTasksField: boolean;
 	loadingDeletingTasksField: boolean;
-	loadingChecklist: boolean;
 	errorLoadingTasks: IErrorsAxiosResponse;
 	errorLoadingSubtasks: IErrorsAxiosResponse;
 	errorLoadingTask: IErrorsAxiosResponse;
@@ -65,7 +64,6 @@ export interface IState {
 	errorLoadingCreatingTasksField: IErrorsAxiosResponse;
 	errorLoadingUpdatingTasksField: IErrorsAxiosResponse;
 	errorLoadingDeletingTasksField: IErrorsAxiosResponse;
-	errorLoadingChecklist: IErrorsAxiosResponse;
 	meta: IMeta;
 	popupLinks: ITask[];
 	isSubtasks: boolean;
