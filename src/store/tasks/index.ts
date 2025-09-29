@@ -544,7 +544,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 			if (state.isKanban || state.isHierarchy) {
@@ -566,7 +566,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 		},
@@ -585,7 +585,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 		},
@@ -616,7 +616,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 			if (state.isKanban) {
