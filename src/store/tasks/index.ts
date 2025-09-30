@@ -166,6 +166,7 @@ const initialState = {
 	isRegularSection: false,
 	tasksCardPermissions: { type: 'task', mode: 'view' },
 	tasksServiceType: 'task',
+	aiTaskData: null,
 } as IState;
 
 const tasksReducer = createSlice({
@@ -307,6 +308,9 @@ const tasksReducer = createSlice({
 		},
 		setTasksServiceType: (state, action: PayloadAction<taskType>) => {
 			state.tasksServiceType = action.payload;
+		},
+		setAiTaskData: (state, action: PayloadAction<Partial<ITask>>) => {
+			state.aiTaskData = action.payload;
 		},
 	},
 	extraReducers: {
@@ -540,7 +544,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 			if (state.isKanban || state.isHierarchy) {
@@ -562,7 +566,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 		},
@@ -581,7 +585,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 		},
@@ -612,7 +616,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 			if (state.isKanban) {
@@ -1027,5 +1031,6 @@ export const {
 	setAnEditMode,
 	changeTasksCardViewMode,
 	setTasksServiceType,
+	setAiTaskData,
 } = tasksReducer.actions;
 export default tasksReducer.reducer;

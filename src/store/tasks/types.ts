@@ -76,4 +76,5 @@ export interface IState {
 	isRegularSection: boolean;
 	tasksCardPermissions: ITaskCardActions;
 	tasksServiceType: taskType;
+	aiTaskData: Partial<ITask>;
 }
