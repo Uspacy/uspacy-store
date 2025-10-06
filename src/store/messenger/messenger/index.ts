@@ -39,6 +39,11 @@ const initialState: IState = {
 		},
 		loading: false,
 	},
+	AISummaryData: {
+		messages: [],
+		text: '',
+		loading: false,
+	},
 };
 
 interface IPreparedMessage extends IMessage {
@@ -191,12 +196,12 @@ export const chatSlice = createSlice({
 				return chat;
 			});
 		},
-		deleteMembers(state, action: PayloadAction<{ id: string; members: number[] }>) {
+		deleteMembers(state, action: PayloadAction<{ id: string; members: number[]; isOnHandle: boolean }>) {
 			state.chats.items = state.chats.items.map((chat) => {
 				if (chat.id === action.payload.id) {
 					return {
 						...chat,
-						members: chat.members.filter((m) => !action.payload.members.includes(m)),
+						members: chat.members.filter((m) => action.payload.members.includes(m) === action.payload.isOnHandle),
 					};
 				}
 				return chat;
@@ -560,6 +565,10 @@ export const chatSlice = createSlice({
 				})
 				.sort(sortChats);
 		},
+		setAISummaryData(state, action: PayloadAction<{ key: keyof IState['AISummaryData']; value: never }>) {
+			const { key, value } = action.payload;
+			state.AISummaryData[key] = value;
+		},
 	},
 	extraReducers: {
 		[fetchChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
@@ -766,6 +775,7 @@ export const {
 	resetMessages,
 	saveDraftMessage,
 	setTimestamp,
+	setAISummaryData,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

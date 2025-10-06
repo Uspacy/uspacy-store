@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
-	ICardCheck,
 	IDiscounts,
 	IIndividualPersonForm,
 	IIndividualPersonFormErrors,
@@ -11,33 +10,28 @@ import {
 	IPrice,
 } from '@uspacy/sdk/lib/models/payments';
 
-import { ICardToken, ICheckCardFill, IState } from './types';
+import {
+	DiscountInputType,
+	DurationViewType,
+	IState,
+	PaymentMethodType,
+	RadioValueTariffStateType,
+	TariffActionType,
+	TariffType,
+	TypeOfPayerType,
+} from './types';
 
 const initialState = {
-	cardCheck: {
-		success: false,
-		loading: false,
-		error: '',
-	},
-	checkFillCardNumber: {
-		error: false,
-		complete: false,
-	},
-	checkFillCardExpiry: {
-		error: false,
-		complete: false,
-	},
-	checkFillCardCvv: {
-		error: false,
-		complete: false,
-	},
 	isPaymentButtonPress: false,
 	isPaymentProcess: false,
 	price: {
 		professional: 1,
 		standard: 1,
+		email_credits_10k: 1,
+		email_credits_100k: 1,
 	},
 	usersCount: 0,
+	emailCreditsCount: 0,
 	durationView: 'yearly',
 	tariff: 'professional',
 	radioValueTariffState: 'professional',
@@ -52,10 +46,6 @@ const initialState = {
 	typeOfPayer: 'individual',
 	paymentMethod: 'card',
 	tariffActionType: 'changeTheTariff',
-	cardTokens: {
-		gwToken: '',
-		cardToken: '',
-	},
 	vatTaxStatus: '',
 	automaticSubscriptionRenewal: false,
 	individualPersonForm: {
@@ -68,22 +58,13 @@ const initialState = {
 		contactPersonPhone: '',
 		contactPersonEmail: '',
 		itinCode: '',
-		companyName: '',
-		legalAddress: '',
-		directorsFullName: '',
+		token: '',
 	},
 	legalEntityFormEuCom: {
 		firstName: '',
 		lastName: '',
 		email: '',
-		companyName: '',
-		vatIdTaxIdForCompaniesOnly: '',
-		country: null,
-		addressLine1: '',
-		addressLine2: '',
-		state: '',
-		city: '',
-		postalZipCode: '',
+		phone: '',
 	},
 	individualPersonFormErrors: {
 		firstNameErr: false,
@@ -95,17 +76,12 @@ const initialState = {
 		contactPersonPhoneErr: false,
 		contactPersonEmailErr: false,
 		itinCodeErr: false,
-		companyNameErr: false,
-		legalAddressErr: false,
-		directorsFullNameErr: false,
 	},
 	legalEntityFormEuComErrors: {
 		firstNameErr: false,
 		lastNameErr: false,
 		emailErr: false,
-		countryErr: false,
-		addressLine1Err: false,
-		cityErr: false,
+		phoneErr: false,
 	},
 	vatTaxIdError: false,
 } as IState;
@@ -114,18 +90,6 @@ const paymentsReducer = createSlice({
 	name: 'paymentsReducer',
 	initialState,
 	reducers: {
-		setCardCheck: (state, action: PayloadAction<ICardCheck>) => {
-			state.cardCheck = action.payload;
-		},
-		setCheckFillCardNumber: (state, action: PayloadAction<ICheckCardFill>) => {
-			state.checkFillCardNumber = action.payload;
-		},
-		setCheckFillCardExpiry: (state, action: PayloadAction<ICheckCardFill>) => {
-			state.checkFillCardExpiry = action.payload;
-		},
-		setCheckFillCardCvv: (state, action: PayloadAction<ICheckCardFill>) => {
-			state.checkFillCardCvv = action.payload;
-		},
 		setIsPaymentButtonPress: (state, action: PayloadAction<boolean>) => {
 			state.isPaymentButtonPress = action.payload;
 		},
@@ -138,16 +102,19 @@ const paymentsReducer = createSlice({
 		setUsersCount: (state, action: PayloadAction<number>) => {
 			state.usersCount = action.payload;
 		},
-		setDurationView: (state, action: PayloadAction<'yearly' | 'monthly'>) => {
+		setEmailCreditsCount: (state, action: PayloadAction<number>) => {
+			state.emailCreditsCount = action.payload;
+		},
+		setDurationView: (state, action: PayloadAction<DurationViewType>) => {
 			state.durationView = action.payload;
 		},
-		setTariff: (state, action: PayloadAction<'professional' | 'standard'>) => {
+		setTariff: (state, action: PayloadAction<TariffType>) => {
 			state.tariff = action.payload;
 		},
-		setRadioValueTariffState: (state, action: PayloadAction<'professional' | 'standard'>) => {
+		setRadioValueTariffState: (state, action: PayloadAction<RadioValueTariffStateType>) => {
 			state.radioValueTariffState = action.payload;
 		},
-		setDiscounts: (state, action: PayloadAction<{ discount: IDiscounts; type: 'input' | 'season' }>) => {
+		setDiscounts: (state, action: PayloadAction<{ discount: IDiscounts; type: DiscountInputType }>) => {
 			if (action.payload.type === 'input') {
 				state.discountInput = action.payload.discount;
 			}
@@ -155,17 +122,14 @@ const paymentsReducer = createSlice({
 				state.discountSeason = action.payload.discount;
 			}
 		},
-		setTypeOfPayer: (state, action: PayloadAction<'individual' | 'legalEntityIndividualEntrepreneur'>) => {
+		setTypeOfPayer: (state, action: PayloadAction<TypeOfPayerType>) => {
 			state.typeOfPayer = action.payload;
 		},
-		setPaymentMethod: (state, action: PayloadAction<'card' | 'bank_transfer'>) => {
+		setPaymentMethod: (state, action: PayloadAction<PaymentMethodType>) => {
 			state.paymentMethod = action.payload;
 		},
-		setTariffActionType: (state, action: PayloadAction<'extendTheTariff' | 'changeTheTariff'>) => {
+		setTariffActionType: (state, action: PayloadAction<TariffActionType>) => {
 			state.tariffActionType = action.payload;
-		},
-		setCardToken: (state, action: PayloadAction<ICardToken>) => {
-			state.cardTokens = action.payload;
 		},
 		setVatTaxStatus: (state, action: PayloadAction<string>) => {
 			state.vatTaxStatus = action.payload;
@@ -199,14 +163,11 @@ const paymentsReducer = createSlice({
 });
 
 export const {
-	setCardCheck,
-	setCheckFillCardNumber,
-	setCheckFillCardExpiry,
-	setCheckFillCardCvv,
 	setIsPaymentButtonPress,
 	setIsPaymentProcess,
 	setPrice,
 	setUsersCount,
+	setEmailCreditsCount,
 	setDurationView,
 	setTariff,
 	setRadioValueTariffState,
@@ -214,7 +175,6 @@ export const {
 	setTypeOfPayer,
 	setPaymentMethod,
 	setTariffActionType,
-	setCardToken,
 	setVatTaxStatus,
 	setAutomaticSubscriptionRenewal,
 	setIndividualPersonForm,

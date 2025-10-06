@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
+import { IEntityAmount, IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
 import { IErrors } from '@uspacy/sdk/lib/models/crm-errors';
 import { IEntityFilters } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
@@ -13,6 +13,7 @@ import {
 	fetchEntityItems,
 	fetchEntityItemsByStage,
 	fetchEntityItemsByTimePeriod,
+	getEntitiesCurrenciesAmount,
 	massItemsDeletion,
 	massItemsEditing,
 	moveItemFromStageToStage,
@@ -159,55 +160,10 @@ const itemsReducer = createSlice({
 			action: PayloadAction<IErrors, string, { arg: { entityCode: string; stageId: number } }>,
 		) => {
 			const { entityCode, stageId } = action.meta.arg;
-			state[entityCode].stages[stageId].loading = false;
-		},
-
-		[fetchEntityItemsByTimePeriod.fulfilled.type]: (
-			state,
-			action: PayloadAction<IResponseWithMeta<IEntityData>, string, { arg: { entityCode: string; timePeriod: string } }>,
-		) => {
-			const { entityCode, timePeriod } = action.meta.arg;
-
-			state[entityCode].timePeriods[timePeriod].data = [...state[entityCode].timePeriods[timePeriod].data, ...action.payload.data];
-			state[entityCode].timePeriods[timePeriod].loading = false;
-			state[entityCode].timePeriods[timePeriod].meta = action.payload.meta;
-		},
-		[fetchEntityItemsByTimePeriod.pending.type]: (
-			state,
-			action: PayloadAction<
-				unknown,
-				string,
-				{ arg: { entityCode: string; timePeriod: string; filters: Omit<IEntityFilters, 'openDatePicker'> } }
-			>,
-		) => {
-			const { entityCode, timePeriod, filters } = action.meta.arg;
-			if (!state[entityCode]) {
-				state[entityCode] = {
-					...initialData,
-					timePeriods: {},
-				};
+			if (state?.[entityCode]?.stages?.[stageId]) {
+				state[entityCode].stages[stageId].loading = false;
 			}
-			state[entityCode].timePeriods[timePeriod] = {
-				...initialData,
-				...state[entityCode].timePeriods[timePeriod],
-				// page 1 means that we are fetching data for the first time and we need to clear the data
-				...(filters.page === 1 && {
-					data: [],
-					meta: undefined,
-				}),
-				loading: true,
-				errorMessage: null,
-			};
 		},
-		[fetchEntityItemsByTimePeriod.rejected.type]: (
-			state,
-			action: PayloadAction<IErrors, string, { arg: { entityCode: string; timePeriod: string } }>,
-		) => {
-			const { entityCode, timePeriod } = action.meta.arg;
-
-			state[entityCode].timePeriods[timePeriod].loading = false;
-		},
-
 		[updateEntityItem.fulfilled.type]: (
 			state,
 			action: PayloadAction<IEntityData, string, { arg: { data: IEntityData; entityCode: string; stageId?: number; timePeriod?: string } }>,
@@ -516,6 +472,89 @@ const itemsReducer = createSlice({
 			if (!state?.[entityCode]) return;
 			state[entityCode].loading = false;
 			state[entityCode].errorMessage = action.payload;
+		},
+		[getEntitiesCurrenciesAmount.fulfilled.type]: (
+			state,
+			action: PayloadAction<IEntityAmount, string, { arg: { entityCode: string; stageId: number } }>,
+		) => {
+			const { entityCode, stageId } = action.meta.arg;
+
+			state[entityCode].stages[stageId].currencyAmount = action.payload;
+			state[entityCode].stages[stageId].loadingCurrencyAmount = false;
+			state[entityCode].stages[stageId].errorCurrencyAmount = null;
+		},
+		[getEntitiesCurrenciesAmount.pending.type]: (
+			state,
+			action: PayloadAction<
+				unknown,
+				string,
+				{ arg: { entityCode: string; stageId?: number; filters: Omit<IEntityFilters, 'openDatePicker'> } }
+			>,
+		) => {
+			const { entityCode, stageId } = action.meta.arg;
+			if (!state[entityCode]) {
+				state[entityCode] = {
+					...initialData,
+					stages: {},
+				};
+			}
+			state[entityCode].stages[stageId] = {
+				...state[entityCode].stages[stageId],
+				loadingCurrencyAmount: true,
+				errorCurrencyAmount: null,
+			};
+		},
+		[getEntitiesCurrenciesAmount.rejected.type]: (
+			state,
+			action: PayloadAction<IErrors, string, { arg: { entityCode: string; stageId: number } }>,
+		) => {
+			const { entityCode, stageId } = action.meta.arg;
+			state[entityCode].stages[stageId].loadingCurrencyAmount = false;
+		},
+		[fetchEntityItemsByTimePeriod.fulfilled.type]: (
+			state,
+			action: PayloadAction<IResponseWithMeta<IEntityData>, string, { arg: { entityCode: string; timePeriod: string } }>,
+		) => {
+			const { entityCode, timePeriod } = action.meta.arg;
+
+			state[entityCode].timePeriods[timePeriod].data = [...state[entityCode].timePeriods[timePeriod].data, ...action.payload.data];
+			state[entityCode].timePeriods[timePeriod].loading = false;
+			state[entityCode].timePeriods[timePeriod].meta = action.payload.meta;
+		},
+		[fetchEntityItemsByTimePeriod.pending.type]: (
+			state,
+			action: PayloadAction<
+				unknown,
+				string,
+				{ arg: { entityCode: string; timePeriod: string; filters: Omit<IEntityFilters, 'openDatePicker'> } }
+			>,
+		) => {
+			const { entityCode, timePeriod, filters } = action.meta.arg;
+			if (!state[entityCode]) {
+				state[entityCode] = {
+					...initialData,
+					timePeriods: {},
+				};
+			}
+			state[entityCode].timePeriods[timePeriod] = {
+				...initialData,
+				...state[entityCode].timePeriods[timePeriod],
+				// page 1 means that we are fetching data for the first time and we need to clear the data
+				...(filters.page === 1 && {
+					data: [],
+					meta: undefined,
+				}),
+				loading: true,
+				errorMessage: null,
+			};
+		},
+		[fetchEntityItemsByTimePeriod.rejected.type]: (
+			state,
+			action: PayloadAction<IErrors, string, { arg: { entityCode: string; timePeriod: string } }>,
+		) => {
+			const { entityCode, timePeriod } = action.meta.arg;
+
+			state[entityCode].timePeriods[timePeriod].loading = false;
 		},
 	},
 });

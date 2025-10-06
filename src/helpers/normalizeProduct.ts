@@ -97,7 +97,8 @@ export const normalizeCategories = (categoriesIds?: number) => {
 export const normalizeProductField = (resField, defaultFields) => {
 	const connectedField = defaultFields.find((defField) => resField.code === defField.code);
 	const galleryField = connectedField?.code === 'files';
-	if (connectedField) return { ...connectedField, code: galleryField ? 'preview_image_id' : connectedField.code, name: resField.name };
+	const fieldName = resField?.name === 'activity' && resField?.code === 'is_active' ? 'activityProductFilter' : resField?.name;
+	if (connectedField) return { ...connectedField, code: galleryField ? 'preview_image_id' : connectedField.code, name: fieldName };
 	return resField;
 };
 
@@ -140,7 +141,8 @@ export const defaultDataColumns = [
 	{ ...defColumn, name: 'remainder', code: 'remainder', type: 'productRemind' },
 	{ ...defColumn, name: 'description', code: 'description', type: 'textarea' },
 	{ ...defColumn, name: 'tax', code: 'tax', type: 'productTax' },
-	{ ...defColumn, name: 'activity', code: 'is_active', type: 'productActivity' },
+	{ ...defColumn, name: 'tax', code: 'price_type_id', type: 'productPriceType' },
+	{ ...defColumn, name: 'activityProductFilter', code: 'is_active', type: 'productActivity' },
 	{ ...defColumn, name: 'productGallery', code: 'files', type: 'productGallery' },
 	{ ...defColumn, name: 'productLink', code: 'link', type: 'productLink' },
 	{ ...defColumn, name: 'commentProduct', code: 'comment', type: 'textarea' },
