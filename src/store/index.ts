@@ -26,6 +26,7 @@ import crmProductsUnit from './crmProductsUnit';
 import crmRequisite from './crmRequisite';
 import crmTasks from './crmTasks';
 import departments from './departments';
+import drawers from './drawers';
 import drawersManagement from './drawersManagement';
 import email from './email';
 import files from './files';
@@ -104,6 +105,7 @@ const rootReducer = combineReducers({
 	marketing,
 	trash,
 	workflows,
+	drawers,
 });
 
 export const setupStore = () => {
