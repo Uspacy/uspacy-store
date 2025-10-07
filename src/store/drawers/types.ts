@@ -12,6 +12,7 @@ export interface IDrawerNavItem {
 }
 
 export interface IState {
+	open: boolean;
 	activeId: string;
 	drawers: IDrawerNavItem[];
 }
