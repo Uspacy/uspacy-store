@@ -9,7 +9,7 @@ const initialState: IState = {
 	errorLoading: false,
 	isBannerExists: false,
 	isShowBanner: false,
-	isShowtariffBanner: false,
+	isShowTariffBanner: false,
 	notifications: [],
 	widgets: [],
 	banner: null,
@@ -35,7 +35,7 @@ export const announcersSlice = createSlice({
 			state.isShowBanner = action.payload;
 		},
 		setIsShowTariffBanner: (state, action: PayloadAction<boolean>) => {
-			state.isShowtariffBanner = action.payload;
+			state.isShowTariffBanner = action.payload;
 		},
 	},
 	extraReducers: {
