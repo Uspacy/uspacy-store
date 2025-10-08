@@ -828,8 +828,8 @@ const tasksReducer = createSlice({
 			state.errorLoadingStatusesTask = action.payload;
 		},
 		[massCompletion.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = null;
+			state.loadingMassActionsTasks = false;
+			state.errorLoadingMassActionsTasks = null;
 			state.tasks.data = state.tasks.data.map((task) => {
 				const responsibleUser = task?.responsibleId === String(action.payload.profile?.id);
 				const setterTaskUser = task?.setterId === String(action.payload.profile.id);
@@ -851,12 +851,12 @@ const tasksReducer = createSlice({
 			});
 		},
 		[massCompletion.pending.type]: (state) => {
-			state.loadingUpdatingTask = true;
-			state.errorLoadingUpdatingTask = null;
+			state.loadingMassActionsTasks = true;
+			state.errorLoadingMassActionsTasks = null;
 		},
 		[massCompletion.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = action.payload;
+			state.loadingMassActionsTasks = false;
+			state.errorLoadingMassActionsTasks = action.payload;
 		},
 		[restartTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingStatusesTask = false;
