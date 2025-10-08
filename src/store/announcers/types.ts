@@ -10,7 +10,7 @@ export interface IState {
 	meta: Meta;
 	isBannerExists: boolean;
 	isShowBanner: boolean;
-	isShowtariffBanner: boolean;
+	isShowTariffBanner: boolean;
 }
 
 export interface Meta {
