@@ -59,6 +59,6 @@ export const announcersSlice = createSlice({
 	},
 });
 
-export const { setBannerExists } = announcersSlice.actions;
+export const { setBannerExists, setIsShowBanner, setIsShowTariffBanner } = announcersSlice.actions;
 
 export default announcersSlice.reducer;
