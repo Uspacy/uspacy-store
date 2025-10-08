@@ -27,7 +27,7 @@ export const multiDrawersSlice = createSlice({
 			}
 		},
 		closeAll(state) {
-			state.open = true;
+			state.open = false;
 			state.drawers = initialState.drawers;
 			state.activeId = initialState.activeId;
 		},
