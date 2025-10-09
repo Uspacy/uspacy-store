@@ -8,7 +8,8 @@ export interface IDrawerNavItem {
 	disabled?: boolean;
 	entityCode?: string;
 	entityId?: string;
-	service?: 'task' | 'crm';
+	service?: 'task' | 'crm' | 'messenger';
+	mode?: 'view' | 'create' | 'edit';
 }
 
 export interface IState {

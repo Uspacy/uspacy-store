@@ -20,11 +20,17 @@ export const multiDrawersSlice = createSlice({
 			state.activeId = `${action?.payload.entityCode}-${action.payload.entityId}`;
 		},
 		removeItem(state, action: PayloadAction<IDrawerNavItem>) {
-			state.drawers = state.drawers?.filter((it) => it.entityCode !== action?.payload?.entityCode && it.entityId !== action?.payload?.entityId);
+			state.drawers = state.drawers?.filter((it) => it.id !== action?.payload?.id);
 			state.activeId = !!state.drawers?.[0]?.entityCode ? `${state.drawers?.[0]?.entityCode}-${state.drawers?.[0]?.entityId}` : null;
 			if (!state?.drawers?.length) {
 				state.open = false;
 			}
+		},
+		updateItem(state, action: PayloadAction<IDrawerNavItem>) {
+			state.drawers = state.drawers?.map((it) => (it.id === action?.payload?.id ? { ...it, ...action.payload } : it));
+		},
+		updateActiveId(state, action: PayloadAction<string | null>) {
+			state.activeId = action.payload;
 		},
 		closeAll(state) {
 			state.open = false;
@@ -35,6 +41,6 @@ export const multiDrawersSlice = createSlice({
 	extraReducers: {},
 });
 
-export const { addItem, removeItem, closeAll } = multiDrawersSlice.actions;
+export const { addItem, removeItem, closeAll, updateItem, updateActiveId } = multiDrawersSlice.actions;
 
 export default multiDrawersSlice.reducer;
