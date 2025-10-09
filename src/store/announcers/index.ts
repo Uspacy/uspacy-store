@@ -8,6 +8,8 @@ const initialState: IState = {
 	loadingAnnouncers: false,
 	errorLoading: false,
 	isBannerExists: false,
+	isShowBanner: false,
+	isShowTariffBanner: false,
 	notifications: [],
 	widgets: [],
 	banner: null,
@@ -28,6 +30,12 @@ export const announcersSlice = createSlice({
 	reducers: {
 		setBannerExists: (state, action: PayloadAction<boolean>) => {
 			state.isBannerExists = action.payload;
+		},
+		setIsShowBanner: (state, action: PayloadAction<boolean>) => {
+			state.isShowBanner = action.payload;
+		},
+		setIsShowTariffBanner: (state, action: PayloadAction<boolean>) => {
+			state.isShowTariffBanner = action.payload;
 		},
 	},
 	extraReducers: {
@@ -51,6 +59,6 @@ export const announcersSlice = createSlice({
 	},
 });
 
-export const { setBannerExists } = announcersSlice.actions;
+export const { setBannerExists, setIsShowBanner, setIsShowTariffBanner } = announcersSlice.actions;
 
 export default announcersSlice.reducer;
