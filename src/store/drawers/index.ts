@@ -29,6 +29,16 @@ export const multiDrawersSlice = createSlice({
 		updateItem(state, action: PayloadAction<IDrawerNavItem>) {
 			state.drawers = state.drawers?.map((it) => (it.id === action?.payload?.id ? { ...it, ...action.payload } : it));
 		},
+		updateItemWhenCreate(state, action: PayloadAction<IDrawerNavItem>) {
+			state.drawers = state.drawers?.map((it) =>
+				it.mode === 'create' && action.payload.service === it.service && action.payload.entityCode === it.entityCode
+					? { ...it, ...action.payload }
+					: it,
+			);
+			if (!!action.payload.id) {
+				state.activeId = action.payload.id;
+			}
+		},
 		updateActiveId(state, action: PayloadAction<string | null>) {
 			state.activeId = action.payload;
 		},
