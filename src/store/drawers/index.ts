@@ -51,6 +51,6 @@ export const multiDrawersSlice = createSlice({
 	extraReducers: {},
 });
 
-export const { addItem, removeItem, closeAll, updateItem, updateActiveId } = multiDrawersSlice.actions;
+export const { addItem, removeItem, closeAll, updateItem, updateActiveId, updateItemWhenCreate } = multiDrawersSlice.actions;
 
 export default multiDrawersSlice.reducer;
