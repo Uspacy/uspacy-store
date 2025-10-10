@@ -17,7 +17,7 @@ export const multiDrawersSlice = createSlice({
 				state.drawers = [action.payload, ...(state?.drawers || [])];
 			}
 			state.open = true;
-			state.activeId = `${action?.payload.entityCode}-${action.payload.entityId}`;
+			state.activeId = action?.payload.id;
 		},
 		removeItem(state, action: PayloadAction<IDrawerNavItem>) {
 			state.drawers = state.drawers?.filter((it) => it.id !== action?.payload?.id);

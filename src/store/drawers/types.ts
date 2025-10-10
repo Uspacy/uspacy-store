@@ -1,15 +1,13 @@
-import { ReactNode } from 'react';
+import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
 
 export interface IDrawerNavItem {
 	id: string;
-	label: string;
-	icon?: ReactNode;
-	render: ReactNode | (() => ReactNode);
-	disabled?: boolean;
+	title: string;
 	entityCode?: string;
 	entityId?: string;
 	service?: 'task' | 'crm' | 'messenger';
 	mode?: 'view' | 'create' | 'edit';
+	initialValue?: IEntityData;
 }
 
 export interface IState {
