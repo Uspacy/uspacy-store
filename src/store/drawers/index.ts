@@ -13,6 +13,9 @@ export const multiDrawersSlice = createSlice({
 	initialState,
 	reducers: {
 		addItem(state, action: PayloadAction<IDrawerNavItem>) {
+			if (action?.payload?.service === 'messenger') {
+				state.drawers = [action?.payload, ...state.drawers?.filter((it) => it.service !== 'messenger')];
+			}
 			if (!state.drawers?.some((it) => it.entityCode === action.payload.entityCode && it.entityId === action.payload.entityId)) {
 				state.drawers = [action.payload, ...(state?.drawers || [])];
 			}
