@@ -6,6 +6,7 @@ const initialState: IState = {
 	open: false,
 	drawers: [],
 	activeId: null,
+	initialLink: '',
 };
 
 export const multiDrawersSlice = createSlice({
@@ -13,8 +14,16 @@ export const multiDrawersSlice = createSlice({
 	initialState,
 	reducers: {
 		addItem(state, action: PayloadAction<IDrawerNavItem>) {
+			if (!state.open) {
+				state.initialLink = window.location.href;
+			}
 			state.open = true;
 			state.activeId = action?.payload.id;
+			if (action?.payload?.service === 'crm') {
+				const cardLink = `crm/${action?.payload?.entityCode}/${action?.payload?.entityId}`;
+				const url = new URL(cardLink, location.origin + location.pathname + '/');
+				history.pushState(null, '', url);
+			}
 			if (action?.payload?.service === 'messenger') {
 				state.drawers = [action?.payload, ...state.drawers?.filter((it) => it.service !== 'messenger')];
 				return;
@@ -33,6 +42,14 @@ export const multiDrawersSlice = createSlice({
 			state.activeId = !!state.drawers?.[0]?.entityCode ? `${state.drawers?.[0]?.entityCode}-${state.drawers?.[0]?.entityId}` : null;
 			if (!state?.drawers?.length) {
 				state.open = false;
+				history.pushState(null, '', state.initialLink);
+				state.initialLink = '';
+			} else {
+				if (state.drawers?.[0]?.service === 'crm') {
+					const cardLink = `crm/${state.drawers?.[0]?.entityCode}/${state.drawers?.[0]?.entityId}`;
+					const url = new URL(cardLink, location.origin + location.pathname + '/');
+					history.pushState(null, '', url);
+				}
 			}
 		},
 		updateItem(state, action: PayloadAction<IDrawerNavItem>) {
@@ -44,6 +61,11 @@ export const multiDrawersSlice = createSlice({
 					? { ...it, ...action.payload }
 					: it,
 			);
+			if (action.payload.service === 'crm') {
+				const cardLink = `crm/${action.payload.entityCode}/${action.payload.entityId}`;
+				const url = new URL(cardLink, location.origin + location.pathname + '/');
+				history.pushState(null, '', url);
+			}
 			if (!!action.payload.id) {
 				state.activeId = action.payload.id;
 			}
@@ -53,6 +75,8 @@ export const multiDrawersSlice = createSlice({
 		},
 		closeAll(state) {
 			state.open = false;
+			history.pushState(null, '', state.initialLink);
+			state.initialLink = '';
 			state.drawers = initialState.drawers;
 			state.activeId = initialState.activeId;
 		},
