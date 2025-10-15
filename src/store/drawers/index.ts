@@ -21,7 +21,7 @@ export const multiDrawersSlice = createSlice({
 			state.activeId = action?.payload.id;
 			if (action?.payload?.service === 'crm') {
 				const cardLink = `/crm/${action?.payload?.entityCode}/${action?.payload?.entityId}`;
-				const url = new URL(cardLink, location.origin + location.pathname + '/');
+				const url = new URL(cardLink, location.origin + '/');
 				history.pushState(null, '', url);
 			}
 			if (action?.payload?.service === 'messenger') {
@@ -47,7 +47,7 @@ export const multiDrawersSlice = createSlice({
 			} else {
 				if (state.drawers?.[0]?.service === 'crm') {
 					const cardLink = `/crm/${state.drawers?.[0]?.entityCode}/${state.drawers?.[0]?.entityId}`;
-					const url = new URL(cardLink, location.origin + location.pathname + '/');
+					const url = new URL(cardLink, location.origin + '/');
 					history.pushState(null, '', url);
 				}
 			}
@@ -63,7 +63,7 @@ export const multiDrawersSlice = createSlice({
 			);
 			if (action.payload.service === 'crm') {
 				const cardLink = `/crm/${action.payload.entityCode}/${action.payload.entityId}`;
-				const url = new URL(cardLink, location.origin + location.pathname + '/');
+				const url = new URL(cardLink, location.origin + '/');
 				history.pushState(null, '', url);
 			}
 			if (!!action.payload.id) {
