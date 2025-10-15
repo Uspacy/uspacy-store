@@ -13,4 +13,5 @@ export interface IState {
 	open: boolean;
 	activeId: string;
 	drawers: IDrawerNavItem[];
+	initialLink: string;
 }
