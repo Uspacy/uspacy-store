@@ -2,7 +2,7 @@ import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
 
 export interface IDrawerNavItem {
 	id: string;
-	title: string;
+	title?: string;
 	entityCode?: string;
 	entityId?: string;
 	service?: 'task' | 'crm' | 'messenger';
