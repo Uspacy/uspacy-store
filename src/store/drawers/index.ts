@@ -20,8 +20,14 @@ export const multiDrawersSlice = createSlice({
 			state.open = true;
 			state.activeId = action?.payload.id;
 			if (action?.payload?.service === 'crm') {
-				const cardLink = `/crm/${action?.payload?.entityCode}/${action?.payload?.entityId}`;
-				const url = new URL(cardLink, location.origin + '/');
+				const entityCodeCheckActivity = action.payload.entityCode === 'activities' ? 'tasks' : action.payload.entityCode;
+				const cardLink = `/crm/${entityCodeCheckActivity}/${action?.payload?.entityId}`;
+				const url = new URL(cardLink, location.origin + location.pathname + '/');
+				history.pushState(null, '', url);
+			}
+			if (action?.payload?.service === 'task') {
+				const cardLink = `/tasks/${action?.payload?.entityId}`;
+				const url = new URL(cardLink, location.origin + location.pathname + '/');
 				history.pushState(null, '', url);
 			}
 			if (action?.payload?.service === 'messenger') {
@@ -46,8 +52,14 @@ export const multiDrawersSlice = createSlice({
 				state.initialLink = '';
 			} else {
 				if (state.drawers?.[0]?.service === 'crm') {
-					const cardLink = `/crm/${state.drawers?.[0]?.entityCode}/${state.drawers?.[0]?.entityId}`;
-					const url = new URL(cardLink, location.origin + '/');
+					const entityCodeCheckActivity = state.drawers?.[0]?.entityCode === 'activities' ? 'tasks' : action.payload.entityCode;
+					const cardLink = `/crm/${entityCodeCheckActivity}/${state.drawers?.[0]?.entityId}`;
+					const url = new URL(cardLink, location.origin + location.pathname + '/');
+					history.pushState(null, '', url);
+				}
+				if (state.drawers?.[0]?.service === 'task') {
+					const cardLink = `/tasks/${state.drawers?.[0]?.entityId}`;
+					const url = new URL(cardLink, location.origin + location.pathname + '/');
 					history.pushState(null, '', url);
 				}
 			}
@@ -62,8 +74,14 @@ export const multiDrawersSlice = createSlice({
 					: it,
 			);
 			if (action.payload.service === 'crm') {
-				const cardLink = `/crm/${action.payload.entityCode}/${action.payload.entityId}`;
-				const url = new URL(cardLink, location.origin + '/');
+				const entityCodeCheckActivity = action.payload.entityCode === 'activities' ? 'tasks' : action.payload.entityCode;
+				const cardLink = `/crm/${entityCodeCheckActivity}/${action.payload.entityId}`;
+				const url = new URL(cardLink, location.origin + location.pathname + '/');
+				history.pushState(null, '', url);
+			}
+			if (action.payload.service === 'task') {
+				const cardLink = `/tasks/${action.payload.entityId}`;
+				const url = new URL(cardLink, location.origin + location.pathname + '/');
 				history.pushState(null, '', url);
 			}
 			if (!!action.payload.id) {
