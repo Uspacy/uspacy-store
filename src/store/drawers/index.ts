@@ -26,7 +26,7 @@ export const multiDrawersSlice = createSlice({
 				history.pushState(null, '', url);
 			}
 			if (action?.payload?.service === 'task') {
-				const cardLink = `/tasks/${action?.payload?.entityId}`;
+				const cardLink = `/tasks/${!!action?.payload?.entityId ? action?.payload?.entityId : 'create'}`;
 				const url = new URL(cardLink, location.origin + location.pathname + '/');
 				history.pushState(null, '', url);
 			}
@@ -45,7 +45,7 @@ export const multiDrawersSlice = createSlice({
 		},
 		removeItem(state, action: PayloadAction<IDrawerNavItem>) {
 			state.drawers = state.drawers?.filter((it) => it.id !== action?.payload?.id);
-			state.activeId = !!state.drawers?.[0]?.entityCode ? `${state.drawers?.[0]?.entityCode}-${state.drawers?.[0]?.entityId}` : null;
+			state.activeId = !!state.drawers?.[0]?.entityCode ? state.drawers?.[0]?.id : null;
 			if (!state?.drawers?.length) {
 				state.open = false;
 				history.pushState(null, '', state.initialLink);
@@ -58,7 +58,7 @@ export const multiDrawersSlice = createSlice({
 					history.pushState(null, '', url);
 				}
 				if (state.drawers?.[0]?.service === 'task') {
-					const cardLink = `/tasks/${state.drawers?.[0]?.entityId}`;
+					const cardLink = `/tasks/${!!state.drawers?.[0]?.entityId ? state.drawers?.[0]?.entityId : 'create'}`;
 					const url = new URL(cardLink, location.origin + location.pathname + '/');
 					history.pushState(null, '', url);
 				}
@@ -80,7 +80,7 @@ export const multiDrawersSlice = createSlice({
 				history.pushState(null, '', url);
 			}
 			if (action.payload.service === 'task') {
-				const cardLink = `/tasks/${action.payload.entityId}`;
+				const cardLink = `/tasks/${!!action.payload.entityId ? action.payload.entityId : 'create'}`;
 				const url = new URL(cardLink, location.origin + location.pathname + '/');
 				history.pushState(null, '', url);
 			}
