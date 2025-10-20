@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+import { getParentUrl } from '../../helpers/getParentUrl';
 import { IDrawerNavItem, IState } from './types';
 
 const initialState: IState = {
@@ -48,7 +49,7 @@ export const multiDrawersSlice = createSlice({
 			state.activeId = !!state.drawers?.[0]?.entityCode ? state.drawers?.[0]?.id : null;
 			if (!state?.drawers?.length) {
 				state.open = false;
-				history.pushState(null, '', state.initialLink);
+				history.pushState(null, '', getParentUrl(state.initialLink));
 				state.initialLink = '';
 			} else {
 				if (state.drawers?.[0]?.service === 'crm') {
@@ -93,7 +94,7 @@ export const multiDrawersSlice = createSlice({
 		},
 		closeAll(state) {
 			state.open = false;
-			history.pushState(null, '', state.initialLink);
+			history.pushState(null, '', getParentUrl(state.initialLink));
 			state.initialLink = '';
 			state.drawers = initialState.drawers;
 			state.activeId = initialState.activeId;
