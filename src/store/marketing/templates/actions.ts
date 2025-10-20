@@ -1,13 +1,13 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IEmailTemplate } from '@uspacy/sdk/lib/models/email-template';
-import { IEmailTemplateFilter } from '@uspacy/sdk/lib/models/email-template-filter';
+import { IMarketingFilter } from '@uspacy/sdk/lib/models/marketing-filter';
 
-import { IMassActionsEmailTemplatesPayload } from './types';
+import { IMassActionsMarketingPayload } from '../types';
 
 export const getEmailTemplates = createAsyncThunk(
-	'marketing/getEmailTemplates',
-	async ({ params, signal }: { params: Partial<IEmailTemplateFilter>; signal?: AbortSignal }, thunkAPI) => {
+	'marketing/templates/getEmailTemplates',
+	async ({ params, signal }: { params: Partial<IMarketingFilter>; signal?: AbortSignal }, thunkAPI) => {
 		try {
 			const res = await uspacySdk.marketingService.getEmailTemplates(params, signal);
 			return res.data;
@@ -18,7 +18,7 @@ export const getEmailTemplates = createAsyncThunk(
 	},
 );
 
-export const getEmailTemplate = createAsyncThunk('marketing/getEmailTemplate', async ({ id }: { id: number }, thunkAPI) => {
+export const getEmailTemplate = createAsyncThunk('marketing/templates/getEmailTemplate', async ({ id }: { id: number }, thunkAPI) => {
 	try {
 		const res = await uspacySdk.marketingService.getEmailTemplate(id);
 		return res.data;
@@ -27,7 +27,7 @@ export const getEmailTemplate = createAsyncThunk('marketing/getEmailTemplate', a
 	}
 });
 
-export const createEmailTemplate = createAsyncThunk('marketing/createEmailTemplate', async (data: Partial<IEmailTemplate>, thunkAPI) => {
+export const createEmailTemplate = createAsyncThunk('marketing/templates/createEmailTemplate', async (data: Partial<IEmailTemplate>, thunkAPI) => {
 	try {
 		const res = await uspacySdk.marketingService.createEmailTemplate(data);
 		return res.data;
@@ -37,7 +37,7 @@ export const createEmailTemplate = createAsyncThunk('marketing/createEmailTempla
 });
 
 export const updateEmailTemplate = createAsyncThunk(
-	'marketing/updateEmailTemplate',
+	'marketing/templates/updateEmailTemplate',
 	async ({ id, data }: { id: number; data: Partial<IEmailTemplate> }, thunkAPI) => {
 		try {
 			const res = await uspacySdk.marketingService.updateEmailTemplate(id, data);
@@ -48,7 +48,7 @@ export const updateEmailTemplate = createAsyncThunk(
 	},
 );
 
-export const deleteEmailTemplate = createAsyncThunk('marketing/deleteEmailTemplate', async ({ id }: { id: number }, thunkAPI) => {
+export const deleteEmailTemplate = createAsyncThunk('marketing/templates/deleteEmailTemplate', async ({ id }: { id: number }, thunkAPI) => {
 	try {
 		return await uspacySdk.marketingService.deleteEmailTemplate(id);
 	} catch (e) {
@@ -57,8 +57,8 @@ export const deleteEmailTemplate = createAsyncThunk('marketing/deleteEmailTempla
 });
 
 export const massEditingEmailTemplates = createAsyncThunk(
-	'marketing/massEditingEmailTemplates',
-	async ({ id, payload, all, params }: IMassActionsEmailTemplatesPayload, thunkAPI) => {
+	'marketing/templates/massEditingEmailTemplates',
+	async ({ id, payload, all, params }: IMassActionsMarketingPayload, thunkAPI) => {
 		try {
 			return await uspacySdk.marketingService.massEditingEmailTemplates(id, payload, all, params);
 		} catch (e) {
@@ -68,8 +68,8 @@ export const massEditingEmailTemplates = createAsyncThunk(
 );
 
 export const massDeletionEmailTemplates = createAsyncThunk(
-	'marketing/massDeletionEmailTemplates',
-	async ({ id, all, params }: IMassActionsEmailTemplatesPayload, thunkAPI) => {
+	'marketing/templates/massDeletionEmailTemplates',
+	async ({ id, all, params }: IMassActionsMarketingPayload, thunkAPI) => {
 		try {
 			return await uspacySdk.marketingService.massDeletionEmailTemplates(id, all, params);
 		} catch (e) {

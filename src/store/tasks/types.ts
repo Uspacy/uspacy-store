@@ -47,6 +47,7 @@ export interface IState {
 	loadingUpdatingTask: boolean;
 	loadingDeletingTask: boolean;
 	loadingStatusesTask: boolean;
+	loadingMassActionsTasks: boolean;
 	loadingTasksFields: boolean;
 	loadingCreatingTasksField: boolean;
 	loadingUpdatingTasksField: boolean;
@@ -60,6 +61,7 @@ export interface IState {
 	errorLoadingUpdatingTask: IErrorsAxiosResponse;
 	errorLoadingDeletingTask: IErrorsAxiosResponse;
 	errorLoadingStatusesTask: IErrorsAxiosResponse;
+	errorLoadingMassActionsTasks: IErrorsAxiosResponse;
 	errorLoadingTasksFields: IErrorsAxiosResponse;
 	errorLoadingCreatingTasksField: IErrorsAxiosResponse;
 	errorLoadingUpdatingTasksField: IErrorsAxiosResponse;

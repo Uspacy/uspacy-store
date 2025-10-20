@@ -24,6 +24,15 @@ const funnelsReducer = createSlice({
 	name: 'crm/funnels',
 	initialState,
 	reducers: {
+		replaceStages: (state, action: PayloadAction<{ data: IStage[]; funnelId: number; entityCode: string }>) => {
+			const entityCode = action.payload.entityCode;
+			state[entityCode].data = state[entityCode].data.map((funnel) => {
+				if (funnel.id === action.payload.funnelId) {
+					return { ...funnel, stages: action.payload.data };
+				}
+				return funnel;
+			});
+		},
 		replaceReasons: (state, action: PayloadAction<{ data: IReason[]; funnelId: number; stageId: number; entityCode: string }>) => {
 			const entityCode = action.payload.entityCode;
 			state[entityCode].data = state[entityCode].data.map((funnel) => {
@@ -234,5 +243,5 @@ const funnelsReducer = createSlice({
 		},
 	},
 });
-export const { replaceReasons } = funnelsReducer.actions;
+export const { replaceStages, replaceReasons } = funnelsReducer.actions;
 export default funnelsReducer.reducer;
