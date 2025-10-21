@@ -4,9 +4,14 @@ const STRIP_QUERY_RE = /\?.*$/;
 const TRIM_SLASHES_RE = /^\/+|\/+$/g;
 const LAST_SEGMENT_RE = /\/[^/]+$/;
 
-const COMPANY_GROUP_TASK_RE = /^company\/groups\/[^/]+\/tasks\/[^/]+$/;
-const CRM_ACTIVITIES_RE = /^crm\/activities\/[^/]+$/;
-const CRM_ENTITY_EDIT_CREATE_RE = /^crm\/[^/]+\/(?:create|edit)(?:\/[^/]+)?$/;
+const ALREADY_CRM_ENTITY_RE = /^crm\/[^/]+\/?$/;
+const ALREADY_CRM_TASKS_RE = /^crm\/tasks\/?$/;
+const ALREADY_TASKS_RE = /^tasks\/?$/;
+const ALREADY_GROUP_TASKS_RE = /^company\/groups\/[^/]+\/tasks\/?$/;
+
+const COMPANY_GROUP_TASK_WITH_ID = /^company\/groups\/[^/]+\/tasks\/[^/]+$/;
+const CRM_ACTIVITIES_WITH_ID = /^crm\/activities\/[^/]+$/;
+const CRM_ENTITY_CREATE_EDIT_RE = /^crm\/[^/]+\/(?:create|edit)(?:\/[^/]+)?$/;
 const CRM_ENTITY_WITH_ID_RE = /^crm\/[^/]+\/[^/]+$/;
 const TASKS_WITH_ID_RE = /^tasks\/[^/]+$/;
 
@@ -21,37 +26,38 @@ export const getParentUrl = (rawUrl: string, { keepOrigin = true, keepQuery = fa
 
 	const noHash = afterOrigin.replace(STRIP_HASH_RE, '');
 	const query = (noHash.match(STRIP_QUERY_RE) ?? [''])[0];
-	const pathOnly = noHash.replace(STRIP_QUERY_RE, '');
+	const noQuery = noHash.replace(STRIP_QUERY_RE, '');
 
-	const clean = pathOnly.replace(TRIM_SLASHES_RE, '');
-	if (!clean) return keepOrigin && origin ? origin + '/' : '/';
+	const clean = noQuery.replace(TRIM_SLASHES_RE, '');
+	const base = (p: string) => (keepOrigin && origin ? origin : '') + p + (keepQuery ? query : '');
 
-	if (COMPANY_GROUP_TASK_RE.test(clean)) {
-		const path = '/' + clean.replace(LAST_SEGMENT_RE, '/');
-		return (keepOrigin && origin ? origin : '') + path + (keepQuery ? query : '');
+	if (!clean) return base('/');
+
+	if (ALREADY_CRM_ENTITY_RE.test(clean)) return base('/' + clean.replace(/\/$/, ''));
+	if (ALREADY_CRM_TASKS_RE.test(clean)) return base('/crm/tasks');
+	if (ALREADY_TASKS_RE.test(clean)) return base('/tasks');
+	if (ALREADY_GROUP_TASKS_RE.test(clean)) return base('/' + clean.replace(/\/?$/, '/'));
+
+	if (COMPANY_GROUP_TASK_WITH_ID.test(clean)) {
+		return base('/' + clean.replace(LAST_SEGMENT_RE, '/'));
 	}
 
-	if (CRM_ACTIVITIES_RE.test(clean)) {
-		const path = '/crm/tasks';
-		return (keepOrigin && origin ? origin : '') + path + (keepQuery ? query : '');
+	if (CRM_ACTIVITIES_WITH_ID.test(clean)) {
+		return base('/crm/tasks');
 	}
 
-	if (CRM_ENTITY_EDIT_CREATE_RE.test(clean)) {
-		const path = '/' + clean.replace(/^(crm\/[^/]+)\/.*$/, '$1');
-		return (keepOrigin && origin ? origin : '') + path + (keepQuery ? query : '');
+	if (CRM_ENTITY_CREATE_EDIT_RE.test(clean)) {
+		return base('/' + clean.replace(/^(crm\/[^/]+)\/.*$/, '$1'));
 	}
 
 	if (CRM_ENTITY_WITH_ID_RE.test(clean)) {
-		const path = '/' + clean.replace(/^(crm\/[^/]+)\/[^/]+$/, '$1');
-		return (keepOrigin && origin ? origin : '') + path + (keepQuery ? query : '');
+		return base('/' + clean.replace(/^(crm\/[^/]+)\/[^/]+$/, '$1'));
 	}
 
 	if (TASKS_WITH_ID_RE.test(clean)) {
-		const path = '/tasks';
-		return (keepOrigin && origin ? origin : '') + path + (keepQuery ? query : '');
+		return base('/tasks');
 	}
 
 	const trimmed = clean.replace(LAST_SEGMENT_RE, '');
-	const path = trimmed ? '/' + trimmed : '/';
-	return (keepOrigin && origin ? origin : '') + path + (keepQuery ? query : '');
+	return base(trimmed ? '/' + trimmed : '/');
 };
