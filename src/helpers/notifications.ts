@@ -58,6 +58,78 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 	}
 };
 
+export const getDrawersInfo = (message: INotificationMessage) => {
+	if (message.data.action === NotificationAction.DELETE) return undefined;
+	const service = getServiceName(message.data.service);
+	switch (service) {
+		case 'activities': {
+			return {
+				entityCode: 'activities',
+				service: 'crm',
+				entityId: +message.data.entity.id,
+				commentId: null,
+			};
+		}
+		case 'crm':
+			return {
+				entityCode: message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'activities' : message.type}`,
+				service: 'crm',
+				entityId: +message.data.entity.id,
+				commentId: null,
+			};
+		// return `/crm/${message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'tasks/task' : message.type}`}/${
+		// 	message.data.entity.id
+		// }`;
+		case 'comments':
+			if (!message.data.entity?.entity_type) return undefined;
+			const isWithParent = message.data.root_parent && Object.keys(message.data.root_parent).length;
+			const isWithEntityParent = message.data.entity.parent;
+			const entityParentLink = isWithEntityParent ? message.data.entity.parent : message.data.entity;
+			const linkData = isWithParent ? message.data.root_parent : entityParentLink;
+			// const tasksEmptyFilters = 'tasksView=list&page=1&perPage=20&boolean_operator=XOR';
+			//
+			// const prefix = ['lead', 'deal', 'company', 'contact'].includes(linkData?.entity_type) ? '/crm' : '';
+			const entityBase = getEntityBase(linkData);
+
+			if (message.data.root_parent?.service === 'tasks') {
+				return {
+					entityCode: entityBase,
+					service: 'task',
+					entityId: +message.data?.root_parent?.data?.id,
+					commentId: message.data?.entity?.id,
+				};
+				// return `${prefix}/${entityBase}/${message.data?.root_parent?.data?.id}
+				// ?${tasksEmptyFilters}&comment_id=${message.data?.entity?.id}`;
+			}
+
+			if (message.data.root_parent?.service === 'news_feed') {
+				return {
+					entityCode: entityBase,
+					service: '',
+					entityId: +message.data?.root_parent?.data?.id,
+					commentId: message.data?.entity?.id,
+				};
+			}
+
+			return {
+				entityCode: entityBase,
+				service: 'crm',
+				entityId: isWithParent ? +linkData.data?.id : +linkData.entity_id,
+				commentId: null,
+			};
+
+		// return `${prefix}/${entityBase}/${isWithParent ? linkData.data?.id : linkData.entity_id}`;
+		default: {
+			return {
+				entityCode: entityBase,
+				service: '',
+				entityId: null,
+				commentId: null,
+			};
+		}
+	}
+};
+
 const checkIfSmartObject = (type: string) => {
 	return !AVAILABLE_ENTITY_TYPES.includes(type) ? 'crm.activity' : type;
 };
@@ -119,6 +191,7 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 		date: timestamp,
 		link: getLinkEntity(message),
 		author: user,
+		drawerInfo: getDrawersInfo(message),
 		mentioned,
 		commentEntityTitle,
 		read: message.read || false,
