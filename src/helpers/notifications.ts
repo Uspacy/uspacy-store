@@ -121,7 +121,7 @@ export const getDrawersInfo = (message: INotificationMessage) => {
 		// return `${prefix}/${entityBase}/${isWithParent ? linkData.data?.id : linkData.entity_id}`;
 		default: {
 			return {
-				entityCode: entityBase,
+				entityCode: service,
 				service: '',
 				entityId: null,
 				commentId: null,

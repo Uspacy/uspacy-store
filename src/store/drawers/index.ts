@@ -20,14 +20,15 @@ export const multiDrawersSlice = createSlice({
 			}
 			state.open = true;
 			state.activeId = action?.payload.id;
+			const commentLink = !!action?.payload?.initialValue?.commentId ? `?comment_id=${action?.payload?.initialValue?.commentId}` : '';
 			if (action?.payload?.service === 'crm') {
 				const entityCodeCheckActivity = action.payload.entityCode === 'activities' ? 'tasks' : action.payload.entityCode;
-				const cardLink = `/crm/${entityCodeCheckActivity}/${action?.payload?.entityId}`;
+				const cardLink = `/crm/${entityCodeCheckActivity}/${action?.payload?.entityId}${commentLink}`;
 				const url = new URL(cardLink, location.origin + location.pathname + '/');
 				history.pushState(null, '', url);
 			}
 			if (action?.payload?.service === 'task') {
-				const cardLink = `/tasks/${!!action?.payload?.entityId ? action?.payload?.entityId : 'create'}`;
+				const cardLink = `/tasks/${!!action?.payload?.entityId ? action?.payload?.entityId : 'create'}${commentLink}`;
 				const url = new URL(cardLink, location.origin + location.pathname + '/');
 				history.pushState(null, '', url);
 			}
