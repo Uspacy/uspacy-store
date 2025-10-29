@@ -68,6 +68,16 @@ export const getDrawersInfo = (message: INotificationMessage) => {
 				entityCode: 'activities',
 				service: 'crm',
 				entityId: +message.data.entity.id,
+				title: message?.data?.entity?.title,
+				commentId: null,
+			};
+		}
+		case 'tasks': {
+			return {
+				entityCode: 'task',
+				service: 'task',
+				entityId: +message.data.entity.id,
+				title: message?.data?.entity?.title,
 				commentId: null,
 			};
 		}
@@ -76,6 +86,7 @@ export const getDrawersInfo = (message: INotificationMessage) => {
 				entityCode: message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'activities' : message.type}`,
 				service: 'crm',
 				entityId: +message.data.entity.id,
+				title: message?.data?.entity?.title,
 				commentId: null,
 			};
 		// return `/crm/${message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'tasks/task' : message.type}`}/${
@@ -98,6 +109,7 @@ export const getDrawersInfo = (message: INotificationMessage) => {
 					service: 'task',
 					entityId: +message.data?.root_parent?.data?.id,
 					commentId: message.data?.entity?.id,
+					title: message?.data?.entity?.title,
 				};
 				// return `${prefix}/${entityBase}/${message.data?.root_parent?.data?.id}
 				// ?${tasksEmptyFilters}&comment_id=${message.data?.entity?.id}`;
@@ -109,6 +121,7 @@ export const getDrawersInfo = (message: INotificationMessage) => {
 					service: '',
 					entityId: +message.data?.root_parent?.data?.id,
 					commentId: message.data?.entity?.id,
+					title: message?.data?.entity?.title,
 				};
 			}
 
@@ -117,6 +130,7 @@ export const getDrawersInfo = (message: INotificationMessage) => {
 				service: 'crm',
 				entityId: isWithParent ? +linkData.data?.id : +linkData.entity_id,
 				commentId: null,
+				title: message?.data?.entity?.title,
 			};
 
 		// return `${prefix}/${entityBase}/${isWithParent ? linkData.data?.id : linkData.entity_id}`;

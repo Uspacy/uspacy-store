@@ -33,16 +33,21 @@ export const multiDrawersSlice = createSlice({
 				history.pushState(null, '', url);
 			}
 			if (action?.payload?.service === 'messenger') {
-				state.drawers = [action?.payload, ...state.drawers?.filter((it) => it.service !== 'messenger')];
+				const findItem = state.drawers?.find((it) => it.entityCode === action.payload.entityCode && it.entityId === action.payload.entityId);
+				if (!findItem?.id) {
+					state.drawers = [action?.payload, ...state.drawers?.filter((it) => it.service !== 'messenger')];
+				}
 				return;
 			}
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { commentId, ...res } = action.payload?.initialValue ?? {};
 			if (state.drawers?.some((it) => it.entityCode === action.payload.entityCode && it.entityId === action.payload.entityId)) {
 				const findItem = state.drawers?.find((it) => it.entityCode === action.payload.entityCode && it.entityId === action.payload.entityId);
 				if (findItem?.mode !== action?.payload?.mode) {
-					state.drawers = state?.drawers?.map((it) => (it?.id === findItem?.id ? { ...it, ...action.payload } : it));
+					state.drawers = state?.drawers?.map((it) => (it?.id === findItem?.id ? { ...it, ...action.payload, initialValue: res } : it));
 				}
 			} else {
-				state.drawers = [action.payload, ...(state?.drawers || [])];
+				state.drawers = [{ ...action.payload, initialValue: res }, ...(state?.drawers || [])];
 			}
 		},
 		removeItem(state, action: PayloadAction<IDrawerNavItem>) {
