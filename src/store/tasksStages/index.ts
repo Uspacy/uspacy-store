@@ -3,10 +3,21 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IStages } from '@uspacy/sdk/lib/models/tasks-stages';
 
 import { fetchStages } from './actions';
-import { IState } from './types';
+import { IMoveCard, IState } from './types';
+
+const initialDndItem = {
+	fromColumnId: '',
+	toColumnId: '',
+	cardId: '',
+	item: null,
+	fromCard: false,
+	isSameColumn: false,
+	isComplete: false,
+};
 
 const initialState = {
-	stages: { data: [] },
+	stages: null,
+	dndItem: initialDndItem,
 	loadingStages: false,
 	addingStage: false,
 	editingStage: false,
@@ -24,7 +35,10 @@ const stagesReducer = createSlice({
 	initialState,
 	reducers: {
 		clearStages: (state) => {
-			state.stages = {} as IStages;
+			state.stages = initialState.stages;
+		},
+		setDndItem: (state, action: PayloadAction<IMoveCard>) => {
+			state.dndItem = action.payload;
 		},
 	},
 	extraReducers: {
@@ -44,5 +58,5 @@ const stagesReducer = createSlice({
 	},
 });
 
-export const { clearStages } = stagesReducer.actions;
+export const { clearStages, setDndItem } = stagesReducer.actions;
 export default stagesReducer.reducer;
