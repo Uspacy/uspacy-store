@@ -89,18 +89,12 @@ export const getDrawersInfo = (message: INotificationMessage) => {
 				title: message?.data?.entity?.title,
 				commentId: null,
 			};
-		// return `/crm/${message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'tasks/task' : message.type}`}/${
-		// 	message.data.entity.id
-		// }`;
 		case 'comments':
 			if (!message.data.entity?.entity_type) return undefined;
 			const isWithParent = message.data.root_parent && Object.keys(message.data.root_parent).length;
 			const isWithEntityParent = message.data.entity.parent;
 			const entityParentLink = isWithEntityParent ? message.data.entity.parent : message.data.entity;
 			const linkData = isWithParent ? message.data.root_parent : entityParentLink;
-			// const tasksEmptyFilters = 'tasksView=list&page=1&perPage=20&boolean_operator=XOR';
-			//
-			// const prefix = ['lead', 'deal', 'company', 'contact'].includes(linkData?.entity_type) ? '/crm' : '';
 			const entityBase = getEntityBase(linkData);
 
 			if (message.data.root_parent?.service === 'tasks') {
@@ -111,8 +105,6 @@ export const getDrawersInfo = (message: INotificationMessage) => {
 					commentId: message.data?.entity?.id,
 					title: message?.data?.entity?.title,
 				};
-				// return `${prefix}/${entityBase}/${message.data?.root_parent?.data?.id}
-				// ?${tasksEmptyFilters}&comment_id=${message.data?.entity?.id}`;
 			}
 
 			if (message.data.root_parent?.service === 'news_feed') {
@@ -133,7 +125,6 @@ export const getDrawersInfo = (message: INotificationMessage) => {
 				title: message?.data?.entity?.title,
 			};
 
-		// return `${prefix}/${entityBase}/${isWithParent ? linkData.data?.id : linkData.entity_id}`;
 		default: {
 			return {
 				entityCode: service,
