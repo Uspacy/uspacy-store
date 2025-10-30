@@ -43,7 +43,7 @@ const initialState = {
 		type: 'percentage',
 		value: 0,
 	},
-	typeOfPayer: 'individual',
+	typeOfPayer: 'legalEntityIndividualEntrepreneur',
 	paymentMethod: 'card',
 	tariffActionType: 'changeTheTariff',
 	vatTaxStatus: '',
