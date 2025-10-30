@@ -21,24 +21,36 @@ export const multiDrawersSlice = createSlice({
 			state.open = true;
 			state.activeId = action?.payload.id;
 			const commentLink = !!action?.payload?.initialValue?.commentId ? `?comment_id=${action?.payload?.initialValue?.commentId}` : '';
-			if (action?.payload?.service === 'crm') {
-				const entityCodeCheckActivity = action.payload.entityCode === 'activities' ? 'tasks' : action.payload.entityCode;
-				const cardLink = `/crm/${entityCodeCheckActivity}/${action?.payload?.entityId}${commentLink}`;
-				const url = new URL(cardLink, location.origin + location.pathname + '/');
-				history.pushState(null, '', url);
-			}
-			if (action?.payload?.service === 'task') {
-				const cardLink = `/tasks/${!!action?.payload?.entityId ? action?.payload?.entityId : 'create'}${commentLink}`;
-				const url = new URL(cardLink, location.origin + location.pathname + '/');
-				history.pushState(null, '', url);
-			}
-			if (action?.payload?.service === 'messenger') {
-				const findItem = state.drawers?.find((it) => it.entityCode === action.payload.entityCode && it.entityId === action.payload.entityId);
-				if (!findItem?.id) {
-					state.drawers = [action?.payload, ...state.drawers?.filter((it) => it?.id !== 'messenger')];
+			switch (action?.payload?.service) {
+				case 'crm': {
+					const entityCodeCheckActivity = action.payload.entityCode === 'activities' ? 'tasks' : action.payload.entityCode;
+					const cardLink = `/crm/${entityCodeCheckActivity}/${action?.payload?.entityId}${commentLink}`;
+					const url = new URL(cardLink, location.origin + location.pathname + '/');
+					history.pushState(null, '', url);
+					break;
 				}
-				return;
+
+				case 'task': {
+					const cardLink = `/tasks/${action?.payload?.entityId ? action?.payload?.entityId : 'create'}${commentLink}`;
+					const url = new URL(cardLink, location.origin + location.pathname + '/');
+					history.pushState(null, '', url);
+					break;
+				}
+
+				case 'messenger': {
+					const findItem = state.drawers?.find(
+						(it) => it.entityCode === action.payload.entityCode && it.entityId === action.payload.entityId,
+					);
+					if (!findItem?.id) {
+						state.drawers = [action?.payload, ...state.drawers?.filter((it) => it?.id !== 'messenger')];
+					}
+					return;
+				}
+
+				default:
+					break;
 			}
+
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { commentId, ...res } = action.payload?.initialValue ?? {};
 			if (state.drawers?.some((it) => it.entityCode === action.payload.entityCode && it.entityId === action.payload.entityId)) {
