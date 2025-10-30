@@ -107,6 +107,18 @@ export const getDrawersInfo = (message: INotificationMessage) => {
 				};
 			}
 
+			if (['activities', 'crm'].includes(message.data.root_parent?.service)) {
+				{
+					return {
+						entityCode: message.data.root_parent?.table_name,
+						service: 'crm',
+						entityId: +message.data?.root_parent?.data?.id,
+						commentId: message.data?.entity?.id,
+						title: message?.data?.entity?.title,
+					};
+				}
+			}
+
 			if (message.data.root_parent?.service === 'news_feed') {
 				return {
 					entityCode: entityBase,
@@ -119,10 +131,9 @@ export const getDrawersInfo = (message: INotificationMessage) => {
 
 			return {
 				entityCode: entityBase,
-				service: 'crm',
-				entityId: isWithParent ? +linkData.data?.id : +linkData.entity_id,
+				service: '',
+				entityId: null,
 				commentId: null,
-				title: message?.data?.entity?.title,
 			};
 
 		default: {
