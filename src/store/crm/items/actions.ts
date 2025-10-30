@@ -327,7 +327,6 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 					return res?.data;
 				}
 				case 'deals': {
-					// eslint-disable-next-line camelcase
 					const dealsParams = getDealsParams(filters, getFilterParams(filters, fields || []));
 
 					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, dealsParams, stageId);
@@ -372,11 +371,10 @@ export const fetchEntityItemsByTimePeriod = createAsyncThunk(
 		thunkAPI,
 	) => {
 		try {
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, camelcase
-			const { table_fields, ...filtersParams } = filters as any;
-			const params = getFilterParams(filtersParams as IEntityFilters & { activities: number[][] }, fields || []);
-
-			const res = await uspacySdk.crmEntitiesService.getEntityItemsWithFilters(entityCode, params);
+			const res = await uspacySdk.crmEntitiesService.getEntityItemsWithFilters(
+				entityCode,
+				getFilterParams(filters as IEntityFilters & { activities: number[][] }, fields || []),
+			);
 			return res?.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
