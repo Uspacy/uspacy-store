@@ -58,6 +58,94 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 	}
 };
 
+export const getDrawersInfo = (message: INotificationMessage) => {
+	if (message.data.action === NotificationAction.DELETE) return undefined;
+	const service = getServiceName(message.data.service);
+	switch (service) {
+		case 'activities': {
+			return {
+				entityCode: 'activities',
+				service: 'crm',
+				entityId: +message.data.entity.id,
+				title: message?.data?.entity?.title,
+				commentId: null,
+			};
+		}
+		case 'tasks': {
+			return {
+				entityCode: 'task',
+				service: 'task',
+				entityId: +message.data.entity.id,
+				title: message?.data?.entity?.title,
+				commentId: null,
+			};
+		}
+		case 'crm':
+			return {
+				entityCode: message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'activities' : message.type}`,
+				service: 'crm',
+				entityId: +message.data.entity.id,
+				title: message?.data?.entity?.title,
+				commentId: null,
+			};
+		case 'comments':
+			if (!message.data.entity?.entity_type) return undefined;
+			const isWithParent = message.data.root_parent && Object.keys(message.data.root_parent).length;
+			const isWithEntityParent = message.data.entity.parent;
+			const entityParentLink = isWithEntityParent ? message.data.entity.parent : message.data.entity;
+			const linkData = isWithParent ? message.data.root_parent : entityParentLink;
+			const entityBase = getEntityBase(linkData);
+
+			if (message.data.root_parent?.service === 'tasks') {
+				return {
+					entityCode: entityBase,
+					service: 'task',
+					entityId: +message.data?.root_parent?.data?.id,
+					commentId: message.data?.entity?.id,
+					title: message?.data?.entity?.title,
+				};
+			}
+
+			if (['activities', 'crm'].includes(message.data.root_parent?.service)) {
+				{
+					return {
+						entityCode: message.data.root_parent?.table_name,
+						service: 'crm',
+						entityId: +message.data?.root_parent?.data?.id,
+						commentId: message.data?.entity?.id,
+						title: message?.data?.entity?.title,
+					};
+				}
+			}
+
+			if (message.data.root_parent?.service === 'news_feed') {
+				return {
+					entityCode: entityBase,
+					service: '',
+					entityId: +message.data?.root_parent?.data?.id,
+					commentId: message.data?.entity?.id,
+					title: message?.data?.entity?.title,
+				};
+			}
+
+			return {
+				entityCode: entityBase,
+				service: '',
+				entityId: null,
+				commentId: null,
+			};
+
+		default: {
+			return {
+				entityCode: service,
+				service: '',
+				entityId: null,
+				commentId: null,
+			};
+		}
+	}
+};
+
 const checkIfSmartObject = (type: string) => {
 	return !AVAILABLE_ENTITY_TYPES.includes(type) ? 'crm.activity' : type;
 };
@@ -119,6 +207,7 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 		date: timestamp,
 		link: getLinkEntity(message),
 		author: user,
+		drawerInfo: getDrawersInfo(message),
 		mentioned,
 		commentEntityTitle,
 		read: message.read || false,
