@@ -132,6 +132,7 @@ const initialState = {
 	loadingUpdatingTask: false,
 	loadingDeletingTask: false,
 	loadingStatusesTask: false,
+	loadingMassActionsTasks: false,
 	loadingTasksFields: false,
 	loadingCreatingTasksField: false,
 	loadingUpdatingTasksField: false,
@@ -145,6 +146,7 @@ const initialState = {
 	errorLoadingUpdatingTask: null,
 	errorLoadingDeletingTask: null,
 	errorLoadingStatusesTask: null,
+	errorLoadingMassActionsTasks: null,
 	errorLoadingTasksFields: null,
 	errorLoadingCreatingTasksField: null,
 	errorLoadingUpdatingTasksField: null,
@@ -544,7 +546,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 			if (state.isKanban || state.isHierarchy) {
@@ -566,7 +568,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 		},
@@ -585,7 +587,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 		},
@@ -616,7 +618,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 			if (state.isKanban) {
@@ -632,8 +634,8 @@ const tasksReducer = createSlice({
 			state.errorLoadingUpdatingTask = action.payload;
 		},
 		[massTasksEditing.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = null;
+			state.loadingMassActionsTasks = false;
+			state.errorLoadingMassActionsTasks = null;
 
 			const admin = action.payload.admin;
 
@@ -676,16 +678,16 @@ const tasksReducer = createSlice({
 			});
 		},
 		[massTasksEditing.pending.type]: (state) => {
-			state.loadingUpdatingTask = true;
-			state.errorLoadingUpdatingTask = null;
+			state.loadingMassActionsTasks = true;
+			state.errorLoadingMassActionsTasks = null;
 		},
 		[massTasksEditing.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = action.payload;
+			state.loadingMassActionsTasks = false;
+			state.errorLoadingMassActionsTasks = action.payload;
 		},
 		[deleteTask.fulfilled.type]: (state, action: PayloadAction<IDeleteTaskPayload>) => {
-			state.loadingDeletingTask = false;
-			state.errorLoadingDeletingTask = null;
+			state.loadingMassActionsTasks = false;
+			state.errorLoadingMassActionsTasks = null;
 			if (state.isKanban || state.isHierarchy) {
 				state.deleteTaskId = +action?.payload?.id;
 			}
@@ -826,8 +828,8 @@ const tasksReducer = createSlice({
 			state.errorLoadingStatusesTask = action.payload;
 		},
 		[massCompletion.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = null;
+			state.loadingMassActionsTasks = false;
+			state.errorLoadingMassActionsTasks = null;
 			state.tasks.data = state.tasks.data.map((task) => {
 				const responsibleUser = task?.responsibleId === String(action.payload.profile?.id);
 				const setterTaskUser = task?.setterId === String(action.payload.profile.id);
@@ -849,12 +851,12 @@ const tasksReducer = createSlice({
 			});
 		},
 		[massCompletion.pending.type]: (state) => {
-			state.loadingUpdatingTask = true;
-			state.errorLoadingUpdatingTask = null;
+			state.loadingMassActionsTasks = true;
+			state.errorLoadingMassActionsTasks = null;
 		},
 		[massCompletion.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = action.payload;
+			state.loadingMassActionsTasks = false;
+			state.errorLoadingMassActionsTasks = action.payload;
 		},
 		[restartTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingStatusesTask = false;
