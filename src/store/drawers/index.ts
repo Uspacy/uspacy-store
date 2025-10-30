@@ -34,9 +34,7 @@ export const multiDrawersSlice = createSlice({
 			}
 			if (action?.payload?.service === 'messenger') {
 				const findItem = state.drawers?.find((it) => it.entityCode === action.payload.entityCode && it.entityId === action.payload.entityId);
-				console.log(findItem, 'findItem');
 				if (!findItem?.id) {
-					console.log(state.drawers?.filter((it) => it?.id !== 'messenger'), 'test 1');
 					state.drawers = [action?.payload, ...state.drawers?.filter((it) => it?.id !== 'messenger')];
 				}
 				return;
