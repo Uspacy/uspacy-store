@@ -73,7 +73,7 @@ export const multiDrawersSlice = createSlice({
 				state.initialLink = '';
 			} else {
 				if (state.drawers?.[0]?.service === 'crm') {
-					const entityCodeCheckActivity = state.drawers?.[0]?.entityCode === 'activities' ? 'tasks' : action.payload.entityCode;
+					const entityCodeCheckActivity = state.drawers?.[0]?.entityCode === 'activities' ? 'tasks' : state.drawers?.[0]?.entityCode;
 					const cardLink = `/crm/${entityCodeCheckActivity}/${state.drawers?.[0]?.entityId}`;
 					const url = new URL(cardLink, location.origin + location.pathname + '/');
 					history.pushState(null, '', url);
