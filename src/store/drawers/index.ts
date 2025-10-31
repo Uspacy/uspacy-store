@@ -24,7 +24,9 @@ export const multiDrawersSlice = createSlice({
 			switch (action?.payload?.service) {
 				case 'crm': {
 					const entityCodeCheckActivity = action.payload.entityCode === 'activities' ? 'tasks' : action.payload.entityCode;
-					const cardLink = `/crm/${entityCodeCheckActivity}/${action?.payload?.entityId}${commentLink}`;
+					const cardLink = `/crm/${entityCodeCheckActivity}/${
+						action?.payload?.mode === 'create' ? 'create' : action?.payload?.entityId
+					}${commentLink}`;
 					const url = new URL(cardLink, location.origin + location.pathname + '/');
 					history.pushState(null, '', url);
 					break;
