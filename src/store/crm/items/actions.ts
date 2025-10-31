@@ -131,6 +131,7 @@ export const createEntityItem = createAsyncThunk(
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					return normalizeProductForView(resData as any);
 				}
+				case 'activities':
 				case 'tasks': {
 					// eslint-disable-next-line @typescript-eslint/no-unused-vars
 					const { id, ...rest } = data;
@@ -163,6 +164,7 @@ export const updateEntityItem = createAsyncThunk(
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					return normalizeProductForView(resData as any);
 				}
+				case 'activities':
 				case 'tasks': {
 					const res = await uspacySdk.crmTasksService.updateTask(data.id, data);
 					return res?.data;
@@ -187,6 +189,7 @@ export const deleteEntityItem = createAsyncThunk(
 				case 'products': {
 					return await uspacySdk?.crmProductsService?.deleteProduct(id);
 				}
+				case 'activities':
 				case 'tasks': {
 					return await uspacySdk.crmTasksService.deleteTask(id);
 				}
@@ -270,6 +273,7 @@ export const massItemsDeletion = createAsyncThunk(
 	async ({ entityCode, entityIds, exceptIds, all, params }: IMassActions & { entityCode: string; stageId?: number }, { rejectWithValue }) => {
 		try {
 			switch (entityCode) {
+				case 'activities':
 				case 'tasks': {
 					return await uspacySdk.crmTasksService.massTasksDeletion({
 						all,
@@ -322,6 +326,7 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 			const { table_fields, ...filtersParams } = filters as any;
 			const params = getFilterParams(filtersParams as IEntityFilters, fields || []);
 			switch (entityCode) {
+				case 'activities':
 				case 'tasks': {
 					const res = await uspacySdk.crmTasksService.getTasksWithFilters(params);
 					return res?.data;
