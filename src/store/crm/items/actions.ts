@@ -306,13 +306,13 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 					return res?.data;
 				}
 				case 'deals': {
-					const dealsParams = getDealsParams(filters, getFilterParams(filters, fields || []));
+					const dealsParams = getDealsParams(filters, params);
 
 					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, dealsParams, stageId);
 					return res?.data;
 				}
 				default: {
-					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, getFilterParams(filters, fields || []), stageId);
+					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, params, stageId);
 					return res?.data;
 				}
 			}
@@ -328,33 +328,6 @@ export const getEntitiesCurrenciesAmount = createAsyncThunk(
 		try {
 			const res = await uspacySdk.crmEntitiesService.getEntitiesCurrenciesAmount(params, entityCode, stageId);
 			return res.data;
-		} catch (e) {
-			return thunkAPI.rejectWithValue(e);
-		}
-	},
-);
-
-export const fetchEntityItemsByTimePeriod = createAsyncThunk(
-	'crm/items/fetchEntityItemsByTimePeriod',
-	async (
-		{
-			fields,
-			filters,
-			entityCode,
-		}: {
-			filters: Omit<IEntityFilters, 'openDatePicker'>;
-			entityCode: string;
-			fields: IField[];
-			timePeriod?: string;
-		},
-		thunkAPI,
-	) => {
-		try {
-			const res = await uspacySdk.crmEntitiesService.getEntityItemsWithFilters(
-				entityCode,
-				getFilterParams(filters as IEntityFilters & { activities: number[][] }, fields || []),
-			);
-			return res?.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
 		}
