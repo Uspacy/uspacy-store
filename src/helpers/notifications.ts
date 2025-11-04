@@ -98,7 +98,7 @@ export const getDrawersInfo = (message: INotificationMessage) => {
 
 			if (message.data.root_parent?.service === 'tasks') {
 				return {
-					entityCode: entityBase,
+					entityCode: 'task',
 					service: 'task',
 					entityId: +message.data?.root_parent?.data?.id,
 					commentId: message.data?.entity?.id,
