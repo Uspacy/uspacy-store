@@ -43,8 +43,6 @@ import profile from './profile';
 import roles from './roles';
 import settings from './settings';
 import tasks from './tasks';
-import tasksFilters from './tasksFilters';
-import tasksSettings from './tasksSettings';
 import tasksStages from './tasksStages';
 import tasksTimer from './tasksTimer';
 import transferOfCases from './transferOfCases';
@@ -68,8 +66,6 @@ const rootReducer = combineReducers({
 	profile,
 	roles,
 	tasks,
-	tasksFilters,
-	tasksSettings,
 	tasksStages,
 	tasksTimer,
 	users,

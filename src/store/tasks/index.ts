@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IField } from '@uspacy/sdk/lib/models/field';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
-import { IFilterTasks, ITask, taskType } from '@uspacy/sdk/lib/models/tasks';
+import { ITask, ITasksParams, taskType } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -67,60 +67,17 @@ const initialState = {
 	deleteAllFromKanban: false,
 	filters: {
 		page: 0,
-		perPage: 0,
-		status: [],
-		time_label_deadline: [],
-		time_label_closed_date: [],
-		time_label_created_date: [],
-		certainDateOrPeriod_deadline: [],
-		certainDateOrPeriod_closed_date: [],
-		certainDateOrPeriod_created_date: [],
-		priority: [],
-		createdBy: [],
-		closed_by: [],
-		closed_date: [],
-		group_id: [],
-		parent_id: [],
-		created_date: [],
-		responsible: [],
-		deadline: [],
-		accomplices_ids: [],
-		auditors_ids: [],
-		accept_result: [],
-		time_tracking: [],
-		sortModel: [],
-		openCalendar: false,
-		search: '',
+		list: 0,
+		q: '',
 		boolean_operator: 'XOR',
-		// ! its temporary, i'll be removed it
-		time_label: [],
-		accomplices: [],
-		auditors: [],
+		openCalendar: false,
 	},
 	regularFilter: {
 		page: 0,
-		perPage: 0,
-		status: [],
-		time_label_created_date: [],
-		certainDateOrPeriod_created_date: [],
-		priority: [],
-		createdBy: [],
-		closed_by: [],
-		group_id: [],
-		parent_id: [],
-		created_date: [],
-		responsible: [],
-		accomplices_ids: [],
-		auditors_ids: [],
-		accept_result: [],
-		time_tracking: [],
-		sortModel: [],
-		openCalendar: false,
-		search: '',
+		list: 0,
+		q: '',
 		boolean_operator: 'XOR',
-		// ! its temporary, i'll be removed it
-		accomplices: [],
-		auditors: [],
+		openCalendar: false,
 	},
 	fields: [],
 	loadingTasks: true,
@@ -208,10 +165,10 @@ const tasksReducer = createSlice({
 		changeRegularFilter: (state, action: PayloadAction<{ key: string; value }>) => {
 			state.regularFilter[action.payload.key] = action.payload.value;
 		},
-		changeItemsFilterTasks: (state, action: PayloadAction<IFilterTasks>) => {
+		changeItemsFilterTasks: (state, action: PayloadAction<ITasksParams>) => {
 			state.filters = action.payload;
 		},
-		changeItemsFilterRegularTasks: (state, action: PayloadAction<IFilterTasks>) => {
+		changeItemsFilterRegularTasks: (state, action: PayloadAction<ITasksParams>) => {
 			state.regularFilter = action.payload;
 		},
 		setAllSubtasks: (state, action: PayloadAction<ITask[]>) => {
