@@ -40,6 +40,8 @@ export const fetchEntityItems = createAsyncThunk(
 						duration_by: durationBy,
 						duration_from: durationFrom,
 						duration_to: durationTo,
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						boolean_operator: booleanOperator,
 						...otherParams
 					} = params;
 					const filter = {
