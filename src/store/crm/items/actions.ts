@@ -353,7 +353,19 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 export const getEntitiesCurrenciesAmount = createAsyncThunk(
 	'deals/getEntitiesCurrenciesAmount',
 	async (
-		{ filters, fields, entityCode, stageId }: { filters: IFilterCurrenciesAmount; fields: IField[]; entityCode: string; stageId: number },
+		{
+			filters,
+			currenciesParams,
+			fields,
+			entityCode,
+			stageId,
+		}: {
+			filters: Omit<IEntityFilters, 'openDatePicker'>;
+			currenciesParams: IFilterCurrenciesAmount;
+			fields: IField[];
+			entityCode: string;
+			stageId: number;
+		},
 		thunkAPI,
 	) => {
 		try {
@@ -366,7 +378,7 @@ export const getEntitiesCurrenciesAmount = createAsyncThunk(
 				return params;
 			};
 
-			const res = await uspacySdk.crmEntitiesService.getEntitiesCurrenciesAmount(getParams(), entityCode, stageId);
+			const res = await uspacySdk.crmEntitiesService.getEntitiesCurrenciesAmount({ ...getParams(), ...currenciesParams }, entityCode, stageId);
 			return res.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
