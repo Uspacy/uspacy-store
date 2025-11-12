@@ -357,7 +357,11 @@ export const getEntitiesCurrenciesAmount = createAsyncThunk(
 				return params;
 			};
 
-			const res = await uspacySdk.crmEntitiesService.getEntitiesCurrenciesAmount({ ...getParams(), ...currenciesParams }, entityCode, stageId);
+			const res = await uspacySdk.crmEntitiesService.getEntitiesCurrenciesAmount(
+				{ filter: { ...getParams() }, ...currenciesParams },
+				entityCode,
+				stageId,
+			);
 			return res.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
