@@ -1,18 +1,21 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IChat, ICrmConnectEntity, IMessage } from '@uspacy/sdk/lib/models/messenger';
+import { EActiveEntity, IChat, ICrmConnectEntity, IMessage } from '@uspacy/sdk/lib/models/messenger';
+import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 import {
+	checkExtChatStatus,
 	onlyUnique,
 	readLastMessageInChat,
 	readLastMessagesInChat,
 	separateExternalChats,
 	sortChats,
+	updateChatById,
 	updateExternalChat,
 	updateLastMessageInExternalChat,
 	updateUnreadCountAndMentionedByChatId,
 } from '../../../helpers/messenger';
-import { fetchExternalChats } from './actions';
+import { fetchAllExternalChats, fetchExternalChats } from './actions';
 import { IState } from './types';
 
 const initialConnectEntities = {
@@ -29,6 +32,9 @@ const initialState: IState = {
 			active: [],
 			undistributed: [],
 			inactive: [],
+		},
+		journalList: {
+			data: [],
 		},
 		externalChatsLength: 0,
 		crmConnectEntities: initialConnectEntities,
@@ -47,15 +53,19 @@ export const externalChatSlice = createSlice({
 		},
 		updateChat(state, action: PayloadAction<IChat>) {
 			state.externalChats.items = updateExternalChat(state.externalChats.items, action.payload);
+			state.externalChats.journalList.data = updateChatById(state.externalChats.journalList.data, action.payload);
 		},
 		addChatToActive(state, action: PayloadAction<IChat>) {
 			state.externalChats.items.active = [action.payload, ...state.externalChats.items.active];
+			state.externalChats.journalList.data = updateChatById(state.externalChats.journalList.data, action.payload);
 		},
 		addChatToInactive(state, action: PayloadAction<IChat>) {
 			state.externalChats.items.inactive = [action.payload, ...state.externalChats.items.inactive];
+			state.externalChats.journalList.data = updateChatById(state.externalChats.journalList.data, action.payload);
 		},
 		addChatToUndistributed(state, action: PayloadAction<IChat>) {
 			state.externalChats.items.undistributed = [action.payload, ...state.externalChats.items.undistributed];
+			state.externalChats.journalList.data = updateChatById(state.externalChats.journalList.data, action.payload);
 		},
 		removeChatFromUndistributed(state, action: PayloadAction<IChat['id']>) {
 			state.externalChats.items.undistributed = state.externalChats.items.undistributed.filter((chat) => chat.id !== action.payload);
@@ -89,6 +99,7 @@ export const externalChatSlice = createSlice({
 					return chat;
 				}),
 			};
+			state.externalChats.journalList.data = updateChatById(state.externalChats.journalList.data, action.payload);
 		},
 		deleteExternalMembersAction(state, action: PayloadAction<{ id: string; members: number[] }>) {
 			state.externalChats.items = {
@@ -103,6 +114,7 @@ export const externalChatSlice = createSlice({
 					return chat;
 				}),
 			};
+			state.externalChats.journalList.data = updateChatById(state.externalChats.journalList.data, action.payload);
 		},
 		readLastMessageInExternalChat(state, action: PayloadAction<{ message: IMessage; userId: number }>) {
 			const { message, userId } = action.payload;
@@ -199,6 +211,24 @@ export const externalChatSlice = createSlice({
 		},
 		[fetchExternalChats.rejected.type]: (state) => {
 			state.externalChats.loading = false;
+		},
+		[fetchAllExternalChats.fulfilled.type]: (state, action: PayloadAction<{ data: IChat[]; meta: IMeta }>) => {
+			const preparedChats: IChat[] = action.payload.data.map((chat) => {
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				const [isActive, isUndistributed, isInactive] = checkExtChatStatus(chat);
+				return {
+					...chat,
+					externalChatStatus: isActive
+						? EActiveEntity.ACTIVE_EXTERNAL
+						: isInactive
+						? EActiveEntity.INACTIVE_EXTERNAL
+						: EActiveEntity.UNDISTRIBUTED_EXTERNAL,
+				};
+			});
+			state.externalChats.journalList = {
+				data: preparedChats,
+				meta: action.payload.meta,
+			};
 		},
 	},
 });
