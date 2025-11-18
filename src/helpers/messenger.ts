@@ -142,7 +142,7 @@ export const separateExternalChats = (items: IChat[]) =>
 		},
 	);
 
-const updateChatById = (chats: IChat[], newChat: IChat) =>
+export const updateChatById = (chats: IChat[], newChat: Partial<IChat>) =>
 	chats.map((chat) => {
 		if (chat.id === newChat.id) {
 			return {
