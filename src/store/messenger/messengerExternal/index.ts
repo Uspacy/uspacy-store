@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { EActiveEntity, IChat, ICrmConnectEntity, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
@@ -87,6 +88,7 @@ export const externalChatSlice = createSlice({
 			state.externalChats.items.undistributed = [action.payload, ...state.externalChats.items.undistributed];
 		},
 		addExternalMembersAction(state, action: PayloadAction<{ id: string; members: number[] }>) {
+			// Add members to active chat
 			state.externalChats.items = {
 				...state.externalChats.items,
 				active: state.externalChats.items.active.map((chat) => {
@@ -99,9 +101,16 @@ export const externalChatSlice = createSlice({
 					return chat;
 				}),
 			};
-			state.externalChats.journalList.data = updateChatById(state.externalChats.journalList.data, action.payload);
+
+			// Add members to journal list
+			const currentMembers = state.externalChats.journalList.data.find((chat) => chat.id === action.payload.id)?.members || [];
+			state.externalChats.journalList.data = updateChatById(state.externalChats.journalList.data, {
+				id: action.payload.id,
+				members: [...currentMembers, ...action.payload.members].filter(onlyUnique),
+			});
 		},
 		deleteExternalMembersAction(state, action: PayloadAction<{ id: string; members: number[] }>) {
+			// Remove members from active chat
 			state.externalChats.items = {
 				...state.externalChats.items,
 				active: state.externalChats.items.active.map((chat) => {
@@ -114,7 +123,13 @@ export const externalChatSlice = createSlice({
 					return chat;
 				}),
 			};
-			state.externalChats.journalList.data = updateChatById(state.externalChats.journalList.data, action.payload);
+
+			// Remove members from journal list
+			const currentMembers = state.externalChats.journalList.data.find((chat) => chat.id === action.payload.id)?.members || [];
+			state.externalChats.journalList.data = updateChatById(state.externalChats.journalList.data, {
+				id: action.payload.id,
+				members: currentMembers.filter((m) => !action.payload.members.includes(m)),
+			});
 		},
 		readLastMessageInExternalChat(state, action: PayloadAction<{ message: IMessage; userId: number }>) {
 			const { message, userId } = action.payload;
