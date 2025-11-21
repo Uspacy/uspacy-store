@@ -18,6 +18,7 @@ import {
 	massItemsEditing,
 	moveItemFromStageToStage,
 	updateEntityItem,
+	uploadEntityItemAvatar,
 } from './actions';
 import { EntityItems, IMoveCardsData, IState } from './types';
 
@@ -555,6 +556,90 @@ const itemsReducer = createSlice({
 			const { entityCode, timePeriod } = action.meta.arg;
 
 			state[entityCode].timePeriods[timePeriod].loading = false;
+		},
+		[uploadEntityItemAvatar.fulfilled.type]: (
+			state,
+			action: PayloadAction<IEntityData, string, { arg: { data: IEntityData; entityCode: string; stageId?: number; timePeriod?: string } }>,
+		) => {
+			const { entityCode, timePeriod } = action.meta.arg;
+			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].errorMessage = null;
+				state[entityCode].data = state[entityCode].data.map((item) => {
+					if (item.id === action.payload.id) {
+						return {
+							...item,
+							avatar: action.payload?.avatar,
+						};
+					}
+					return item;
+				});
+			}
+
+			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
+				state[entityCode].stages[stageId].loading = false;
+				state[entityCode].stages[stageId].errorMessage = null;
+				state[entityCode].stages[stageId].data = state[entityCode].stages[stageId].data.map((item) => {
+					if (item.id === action.payload.id) {
+						return {
+							...item,
+							avatar: action.payload?.avatar,
+						};
+					}
+					return item;
+				});
+			}
+
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod].loading = false;
+				state[entityCode].timePeriods[timePeriod].errorMessage = null;
+				state[entityCode].timePeriods[timePeriod].data = state[entityCode].timePeriods[timePeriod].data.map((item) => {
+					if (item.id === action.payload.id) {
+						return {
+							...item,
+							avatar: action.payload.avatar,
+						};
+					}
+					return item;
+				});
+			}
+		},
+		[uploadEntityItemAvatar.pending.type]: (
+			state,
+			action: PayloadAction<IEntityData, string, { arg: { entityCode: string; data: IEntityData; stageId?: number; timePeriod?: string } }>,
+		) => {
+			const { entityCode, timePeriod } = action.meta.arg;
+			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].errorMessage = null;
+			}
+			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
+				state[entityCode].stages[stageId].loading = true;
+				state[entityCode].stages[stageId].errorMessage = null;
+			}
+
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod].loading = true;
+				state[entityCode].timePeriods[timePeriod].errorMessage = null;
+			}
+		},
+		[uploadEntityItemAvatar.rejected.type]: (
+			state,
+			action: PayloadAction<IErrors, string, { arg: { entityCode: string; data: IEntityData; stageId?: number; timePeriod?: string } }>,
+		) => {
+			const { entityCode, timePeriod } = action.meta.arg;
+			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].errorMessage = action.payload;
+			}
+			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
+				state[entityCode].stages[stageId].loading = false;
+				state[entityCode].stages[stageId].errorMessage = action.payload;
+			}
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod].loading = false;
+				state[entityCode].timePeriods[timePeriod].errorMessage = action.payload;
+			}
 		},
 	},
 });
