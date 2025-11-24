@@ -409,6 +409,10 @@ export const fetchEntityItemsByTimePeriod = createAsyncThunk(
 			const res = await uspacySdk.crmEntitiesService.getEntityItemsWithFilters(
 				entityCode,
 				getFilterParams(filters as IEntityFilters & { activities: number[][] }, fields || []),
+				null,
+				null,
+				null,
+				true,
 			);
 			return res?.data;
 		} catch (e) {
