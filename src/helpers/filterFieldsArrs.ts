@@ -176,9 +176,6 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			if (key === 'search') {
 				return { ...acc, q: value };
 			}
-			if (key === 'table_fields') {
-				return { ...acc, table_fields: [...(value || []), 'avatar'] };
-			}
 			if (key === 'perPage') {
 				return { ...acc, list: value };
 			}
