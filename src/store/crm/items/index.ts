@@ -585,7 +585,7 @@ const itemsReducer = createSlice({
 					if (item.id === action.payload.id) {
 						return {
 							...item,
-							avatar: action.payload?.avatar,
+							crm_avatar: action.payload?.crm_avatar,
 						};
 					}
 					return item;
