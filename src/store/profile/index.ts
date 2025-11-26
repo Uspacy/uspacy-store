@@ -71,7 +71,7 @@ export const profileSlice = createSlice({
 	extraReducers: {
 		[fetchProfile.fulfilled.type]: (state: IState, action: PayloadAction<IUser>) => {
 			state.loading = false;
-			state.data = { ...action.payload, roles: [...(action.payload?.roles || []), 'EXTERNAL_GUEST'] };
+			state.data = { ...action.payload, roles: [...(action.payload?.roles || []), MainRoles.EXTERNAL_GUEST] };
 			state.currentRequestId = undefined;
 		},
 		[fetchProfile.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
