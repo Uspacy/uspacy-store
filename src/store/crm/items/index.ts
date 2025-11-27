@@ -18,6 +18,7 @@ import {
 	massItemsEditing,
 	moveItemFromStageToStage,
 	updateEntityItem,
+	uploadEntityItemAvatar,
 } from './actions';
 import { EntityItems, IMoveCardsData, IState } from './types';
 
@@ -555,6 +556,42 @@ const itemsReducer = createSlice({
 			const { entityCode, timePeriod } = action.meta.arg;
 
 			state[entityCode].timePeriods[timePeriod].loading = false;
+		},
+		[uploadEntityItemAvatar.fulfilled.type]: (
+			state,
+			action: PayloadAction<IEntityData, string, { arg: { data: IEntityData; entityCode: string } }>,
+		) => {
+			const { entityCode } = action.meta.arg;
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].errorMessage = null;
+				state[entityCode].data = state[entityCode].data.map((item) => {
+					if (item.id === action.payload.id) {
+						return {
+							...item,
+							crm_avatar: action.payload?.crm_avatar,
+						};
+					}
+					return item;
+				});
+			}
+		},
+		[uploadEntityItemAvatar.pending.type]: (
+			state,
+			action: PayloadAction<IEntityData, string, { arg: { entityCode: string; data: IEntityData } }>,
+		) => {
+			const { entityCode } = action.meta.arg;
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].errorMessage = null;
+			}
+		},
+		[uploadEntityItemAvatar.rejected.type]: (
+			state,
+			action: PayloadAction<IErrors, string, { arg: { entityCode: string; data: IEntityData } }>,
+		) => {
+			const { entityCode } = action.meta.arg;
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].errorMessage = action.payload;
+			}
 		},
 	},
 });

@@ -399,3 +399,15 @@ export const fetchEntityItemsByTimePeriod = createAsyncThunk(
 		}
 	},
 );
+
+export const uploadEntityItemAvatar = createAsyncThunk(
+	'crm/items/uploadEntityItemAvatar',
+	async ({ file, entityCode, id }: { file: File | null; entityCode: string; id: number }, thunkAPI) => {
+		try {
+			const res = await uspacySdk.crmEntitiesService.uploadAvatar({ file, code: entityCode, id });
+			return res?.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
