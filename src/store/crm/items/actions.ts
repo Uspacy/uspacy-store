@@ -40,6 +40,8 @@ export const fetchEntityItems = createAsyncThunk(
 						duration_by: durationBy,
 						duration_from: durationFrom,
 						duration_to: durationTo,
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						boolean_operator: booleanOperator,
 						...otherParams
 					} = params;
 					const filter = {
@@ -329,10 +331,50 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 
 export const getEntitiesCurrenciesAmount = createAsyncThunk(
 	'deals/getEntitiesCurrenciesAmount',
-	async ({ params, entityCode, stageId }: { params: IFilterCurrenciesAmount; entityCode: string; stageId: number }, thunkAPI) => {
+	async (
+		{
+			filters,
+			currenciesParams,
+			fields,
+			entityCode,
+			stageId,
+		}: {
+			filters: Omit<IEntityFilters, 'openDatePicker'>;
+			currenciesParams: IFilterCurrenciesAmount;
+			fields: IField[];
+			entityCode: string;
+			stageId: number;
+		},
+		thunkAPI,
+	) => {
 		try {
-			const res = await uspacySdk.crmEntitiesService.getEntitiesCurrenciesAmount(params, entityCode, stageId);
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars, camelcase
+			const { table_fields, ...filtersParams } = filters;
+			const params = getFilterParams(filtersParams as IEntityFilters, fields || []) as IFilterCurrenciesAmount;
+
+			const getParams = () => {
+				if (entityCode === 'deals') return getDealsParams(filters, params) as IFilterCurrenciesAmount;
+				return params;
+			};
+
+			const res = await uspacySdk.crmEntitiesService.getEntitiesCurrenciesAmount(
+				{ filter: { ...getParams() }, ...currenciesParams },
+				entityCode,
+				stageId,
+			);
 			return res.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
+
+export const uploadEntityItemAvatar = createAsyncThunk(
+	'crm/items/uploadEntityItemAvatar',
+	async ({ file, entityCode, id }: { file: File | null; entityCode: string; id: number }, thunkAPI) => {
+		try {
+			const res = await uspacySdk.crmEntitiesService.uploadAvatar({ file, code: entityCode, id });
+			return res?.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
 		}
