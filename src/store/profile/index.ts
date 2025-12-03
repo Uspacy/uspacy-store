@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IField } from '@uspacy/sdk/lib/models/field';
 import { ICountryTemplates, IRequisite, IRequisitesResponse, ITemplate, ITemplateResponse } from '@uspacy/sdk/lib/models/requisites';
-import { IUser, MainRoles } from '@uspacy/sdk/lib/models/user';
+import { IUser } from '@uspacy/sdk/lib/models/user';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { headField } from '../../const';
@@ -71,7 +71,7 @@ export const profileSlice = createSlice({
 	extraReducers: {
 		[fetchProfile.fulfilled.type]: (state: IState, action: PayloadAction<IUser>) => {
 			state.loading = false;
-			state.data = { ...action.payload, roles: [...(action.payload?.roles || []), MainRoles.EXTERNAL_GUEST] };
+			state.data = action.payload;
 			state.currentRequestId = undefined;
 		},
 		[fetchProfile.pending.type]: (state: IState, action: PayloadAction<string, string, { requestId: string }>) => {
