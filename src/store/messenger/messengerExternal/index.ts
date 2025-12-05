@@ -60,6 +60,12 @@ export const externalChatSlice = createSlice({
 			state.externalChats.items.active = [action.payload, ...state.externalChats.items.active];
 			state.externalChats.journalList.data = updateChatById(state.externalChats.journalList.data, action.payload);
 		},
+		addChatToActiveIfDontExists(state, action: PayloadAction<IChat>) {
+			if (state.externalChats.items.active.findIndex((chat) => chat.id === action.payload.id) !== -1) {
+				return;
+			}
+			state.externalChats.items.active = [action.payload, ...state.externalChats.items.active];
+		},
 		addChatToInactive(state, action: PayloadAction<IChat>) {
 			state.externalChats.items.inactive = [action.payload, ...state.externalChats.items.inactive];
 			state.externalChats.journalList.data = updateChatById(state.externalChats.journalList.data, action.payload);
@@ -252,6 +258,7 @@ export const {
 	setCurrentChat,
 	unsetCurrentChat,
 	addChatToActive,
+	addChatToActiveIfDontExists,
 	addChatToInactive,
 	removeChatFromUndistributed,
 	removeChatFromActive,
