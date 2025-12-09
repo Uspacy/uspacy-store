@@ -90,9 +90,6 @@ export const externalChatSlice = createSlice({
 			const { chatId, item, profile } = action.payload;
 			state.externalChats.items = updateLastMessageInExternalChat(state.externalChats.items, chatId, item, profile);
 		},
-		appendChatsToUndistributed(state, action: PayloadAction<IChat>) {
-			state.externalChats.items.undistributed = [action.payload, ...state.externalChats.items.undistributed];
-		},
 		addExternalMembersAction(state, action: PayloadAction<{ id: string; members: number[] }>) {
 			// Add members to active chat
 			state.externalChats.items = {
@@ -266,7 +263,6 @@ export const {
 	removeChatFromInactive,
 	updateChat,
 	addChatToUndistributed,
-	appendChatsToUndistributed,
 	addExternalMembersAction,
 	deleteExternalMembersAction,
 	readLastMessageInExternalChat,
