@@ -27,10 +27,10 @@ const initialState = {
 		delete: [],
 	},
 	createPermissions: {
-		create: [...disabledPermissions.create],
-		edit: [...disabledPermissions.edit],
-		view: [...disabledPermissions.view],
-		delete: [...disabledPermissions.delete],
+		create: [...disabledPermissions.create, 'hrm.department.create.allowed'],
+		edit: [...disabledPermissions.edit, 'hrm.department.edit.allowed'],
+		view: [...disabledPermissions.view, 'hrm.department.view.allowed'],
+		delete: [...disabledPermissions.delete, 'hrm.department.delete.allowed'],
 	},
 	createPermissionsModal: {
 		create: [],
@@ -275,6 +275,9 @@ const rolesReducer = createSlice({
 		clearPermissionsFunnels(state) {
 			state.permissionsFunnels = initialState.permissionsFunnels;
 		},
+		clearCreatePermission(state) {
+			state.createPermissions = initialState.createPermissions;
+		},
 	},
 	extraReducers: {
 		[fetchPermissions.fulfilled.type]: (state, action: PayloadAction<IPermissions>) => {
@@ -426,6 +429,7 @@ export const {
 	addPermissionsForColAction,
 	mergeCreatePermissions,
 	clearPermissionsFunnels,
+	clearCreatePermission,
 } = rolesReducer.actions;
 
 export default rolesReducer.reducer;

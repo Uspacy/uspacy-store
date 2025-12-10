@@ -1,7 +1,7 @@
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IFields } from '@uspacy/sdk/lib/models/field';
+import { IField } from '@uspacy/sdk/lib/models/field';
 import { IMeta, IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
-import { IFilterTasks, ITask, taskType } from '@uspacy/sdk/lib/models/tasks';
+import { ITask, ITasksParams, taskType } from '@uspacy/sdk/lib/models/tasks';
 
 export interface ITaskCardActions {
 	type: taskType;
@@ -34,9 +34,9 @@ export interface IState {
 	deleteTaskId: number;
 	deleteTaskIds: string[];
 	deleteAllFromKanban: boolean;
-	filters: IFilterTasks;
-	regularFilter: IFilterTasks;
-	taskFields: IFields;
+	filters: ITasksParams;
+	regularFilter: ITasksParams;
+	fields: IField[];
 	isEditMode: boolean;
 	loadingTasks: boolean;
 	loadingSubtasks: boolean;
@@ -47,7 +47,11 @@ export interface IState {
 	loadingUpdatingTask: boolean;
 	loadingDeletingTask: boolean;
 	loadingStatusesTask: boolean;
-	loadingTaskFields: boolean;
+	loadingMassActionsTasks: boolean;
+	loadingTasksFields: boolean;
+	loadingCreatingTasksField: boolean;
+	loadingUpdatingTasksField: boolean;
+	loadingDeletingTasksField: boolean;
 	errorLoadingTasks: IErrorsAxiosResponse;
 	errorLoadingSubtasks: IErrorsAxiosResponse;
 	errorLoadingTask: IErrorsAxiosResponse;
@@ -57,7 +61,11 @@ export interface IState {
 	errorLoadingUpdatingTask: IErrorsAxiosResponse;
 	errorLoadingDeletingTask: IErrorsAxiosResponse;
 	errorLoadingStatusesTask: IErrorsAxiosResponse;
-	errorLoadingTaskFields: IErrorsAxiosResponse;
+	errorLoadingMassActionsTasks: IErrorsAxiosResponse;
+	errorLoadingTasksFields: IErrorsAxiosResponse;
+	errorLoadingCreatingTasksField: IErrorsAxiosResponse;
+	errorLoadingUpdatingTasksField: IErrorsAxiosResponse;
+	errorLoadingDeletingTasksField: IErrorsAxiosResponse;
 	meta: IMeta;
 	popupLinks: ITask[];
 	isSubtasks: boolean;
@@ -70,4 +78,5 @@ export interface IState {
 	isRegularSection: boolean;
 	tasksCardPermissions: ITaskCardActions;
 	tasksServiceType: taskType;
+	aiTaskData: Partial<ITask>;
 }

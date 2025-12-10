@@ -5,6 +5,7 @@ import announcers from './announcers';
 import apps from './apps';
 import auth from './auth';
 import automations from './automations';
+import bookings from './bookings';
 import crm from './crm';
 import crmCalls from './crmCalls';
 import crmCompanies from './crmCompanies';
@@ -25,12 +26,14 @@ import crmProductsUnit from './crmProductsUnit';
 import crmRequisite from './crmRequisite';
 import crmTasks from './crmTasks';
 import departments from './departments';
+import drawers from './drawers';
 import drawersManagement from './drawersManagement';
 import email from './email';
 import files from './files';
 import forms from './forms';
 import groups from './groups';
 import history from './history';
+import marketing from './marketing';
 import messengerReducer from './messenger';
 import migrationsReducer from './migrations';
 import newsfeed from './newsfeed';
@@ -40,10 +43,10 @@ import profile from './profile';
 import roles from './roles';
 import settings from './settings';
 import tasks from './tasks';
-import tasksFilters from './tasksFilters';
-import tasksSettings from './tasksSettings';
 import tasksStages from './tasksStages';
 import tasksTimer from './tasksTimer';
+import transferOfCases from './transferOfCases';
+import trash from './trash';
 import users from './users';
 import webhooks from './webhooks';
 
@@ -63,8 +66,6 @@ const rootReducer = combineReducers({
 	profile,
 	roles,
 	tasks,
-	tasksFilters,
-	tasksSettings,
 	tasksStages,
 	tasksTimer,
 	users,
@@ -94,6 +95,11 @@ const rootReducer = combineReducers({
 	crm,
 	analytics,
 	forms,
+	bookings,
+	transferOfCases,
+	trash,
+	marketing,
+	drawers,
 });
 
 export const setupStore = () => {

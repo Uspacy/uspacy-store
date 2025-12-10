@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IFields } from '@uspacy/sdk/lib/models/field';
+import { IField } from '@uspacy/sdk/lib/models/field';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
-import { IFilterTasks, ITask, taskType } from '@uspacy/sdk/lib/models/tasks';
+import { ITask, ITasksParams, taskType } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
+import cloneDeep from 'lodash/cloneDeep';
 
 import { fillTheString } from '../../helpers/stringsHelper';
 import {
@@ -11,9 +12,11 @@ import {
 	createOneTimeTemplate,
 	createRecurringTemplate,
 	createTask,
+	createTasksField,
 	delegationTask,
 	deleteTask,
-	fetchTaskFields,
+	deleteTasksField,
+	deleteTasksListValues,
 	getHierarchies,
 	getOneTimeTemplates,
 	getParentTask,
@@ -22,6 +25,7 @@ import {
 	getSubtasks,
 	getTask,
 	getTasks,
+	getTasksFields,
 	massCompletion,
 	massTasksDeletion,
 	massTasksEditing,
@@ -33,6 +37,8 @@ import {
 	updateRecurringTemplate,
 	updateSubtask,
 	updateTask,
+	updateTasksField,
+	updateTasksListValues,
 } from './actions';
 import { IDeleteTaskPayload, IState, ITaskCardActions } from './types';
 
@@ -61,62 +67,19 @@ const initialState = {
 	deleteAllFromKanban: false,
 	filters: {
 		page: 0,
-		perPage: 0,
-		status: [],
-		time_label_deadline: [],
-		time_label_closed_date: [],
-		time_label_created_date: [],
-		certainDateOrPeriod_deadline: [],
-		certainDateOrPeriod_closed_date: [],
-		certainDateOrPeriod_created_date: [],
-		priority: [],
-		createdBy: [],
-		closed_by: [],
-		closed_date: [],
-		group_id: [],
-		parent_id: [],
-		created_date: [],
-		responsible: [],
-		deadline: [],
-		accomplices_ids: [],
-		auditors_ids: [],
-		accept_result: [],
-		time_tracking: [],
-		sortModel: [],
-		openCalendar: false,
-		search: '',
+		list: 0,
+		q: '',
 		boolean_operator: 'XOR',
-		// ! its temporary, i'll be removed it
-		time_label: [],
-		accomplices: [],
-		auditors: [],
+		openCalendar: false,
 	},
 	regularFilter: {
 		page: 0,
-		perPage: 0,
-		status: [],
-		time_label_created_date: [],
-		certainDateOrPeriod_created_date: [],
-		priority: [],
-		createdBy: [],
-		closed_by: [],
-		group_id: [],
-		parent_id: [],
-		created_date: [],
-		responsible: [],
-		accomplices_ids: [],
-		auditors_ids: [],
-		accept_result: [],
-		time_tracking: [],
-		sortModel: [],
-		openCalendar: false,
-		search: '',
+		list: 0,
+		q: '',
 		boolean_operator: 'XOR',
-		// ! its temporary, i'll be removed it
-		accomplices: [],
-		auditors: [],
+		openCalendar: false,
 	},
-	taskFields: {},
+	fields: [],
 	loadingTasks: true,
 	loadingSubtasks: true,
 	loadingTask: false,
@@ -126,7 +89,11 @@ const initialState = {
 	loadingUpdatingTask: false,
 	loadingDeletingTask: false,
 	loadingStatusesTask: false,
-	loadingTaskFields: false,
+	loadingMassActionsTasks: false,
+	loadingTasksFields: false,
+	loadingCreatingTasksField: false,
+	loadingUpdatingTasksField: false,
+	loadingDeletingTasksField: false,
 	errorLoadingTasks: null,
 	errorLoadingSubtasks: null,
 	errorLoadingTask: null,
@@ -136,7 +103,11 @@ const initialState = {
 	errorLoadingUpdatingTask: null,
 	errorLoadingDeletingTask: null,
 	errorLoadingStatusesTask: null,
-	errorLoadingTaskFields: null,
+	errorLoadingMassActionsTasks: null,
+	errorLoadingTasksFields: null,
+	errorLoadingCreatingTasksField: null,
+	errorLoadingUpdatingTasksField: null,
+	errorLoadingDeletingTasksField: null,
 	meta: {
 		currentPage: 0,
 		perPage: 20,
@@ -154,6 +125,7 @@ const initialState = {
 	isRegularSection: false,
 	tasksCardPermissions: { type: 'task', mode: 'view' },
 	tasksServiceType: 'task',
+	aiTaskData: null,
 } as IState;
 
 const tasksReducer = createSlice({
@@ -193,10 +165,10 @@ const tasksReducer = createSlice({
 		changeRegularFilter: (state, action: PayloadAction<{ key: string; value }>) => {
 			state.regularFilter[action.payload.key] = action.payload.value;
 		},
-		changeItemsFilterTasks: (state, action: PayloadAction<IFilterTasks>) => {
+		changeItemsFilterTasks: (state, action: PayloadAction<ITasksParams>) => {
 			state.filters = action.payload;
 		},
-		changeItemsFilterRegularTasks: (state, action: PayloadAction<IFilterTasks>) => {
+		changeItemsFilterRegularTasks: (state, action: PayloadAction<ITasksParams>) => {
 			state.regularFilter = action.payload;
 		},
 		setAllSubtasks: (state, action: PayloadAction<ITask[]>) => {
@@ -295,6 +267,9 @@ const tasksReducer = createSlice({
 		},
 		setTasksServiceType: (state, action: PayloadAction<taskType>) => {
 			state.tasksServiceType = action.payload;
+		},
+		setAiTaskData: (state, action: PayloadAction<Partial<ITask>>) => {
+			state.aiTaskData = action.payload;
 		},
 	},
 	extraReducers: {
@@ -528,7 +503,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 			if (state.isKanban || state.isHierarchy) {
@@ -550,7 +525,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 		},
@@ -569,7 +544,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 		},
@@ -600,7 +575,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state.task.id) {
+			if (state?.task?.id) {
 				state.task = action.payload;
 			}
 			if (state.isKanban) {
@@ -616,8 +591,8 @@ const tasksReducer = createSlice({
 			state.errorLoadingUpdatingTask = action.payload;
 		},
 		[massTasksEditing.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = null;
+			state.loadingMassActionsTasks = false;
+			state.errorLoadingMassActionsTasks = null;
 
 			const admin = action.payload.admin;
 
@@ -660,16 +635,16 @@ const tasksReducer = createSlice({
 			});
 		},
 		[massTasksEditing.pending.type]: (state) => {
-			state.loadingUpdatingTask = true;
-			state.errorLoadingUpdatingTask = null;
+			state.loadingMassActionsTasks = true;
+			state.errorLoadingMassActionsTasks = null;
 		},
 		[massTasksEditing.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = action.payload;
+			state.loadingMassActionsTasks = false;
+			state.errorLoadingMassActionsTasks = action.payload;
 		},
 		[deleteTask.fulfilled.type]: (state, action: PayloadAction<IDeleteTaskPayload>) => {
-			state.loadingDeletingTask = false;
-			state.errorLoadingDeletingTask = null;
+			state.loadingMassActionsTasks = false;
+			state.errorLoadingMassActionsTasks = null;
 			if (state.isKanban || state.isHierarchy) {
 				state.deleteTaskId = +action?.payload?.id;
 			}
@@ -810,8 +785,8 @@ const tasksReducer = createSlice({
 			state.errorLoadingStatusesTask = action.payload;
 		},
 		[massCompletion.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = null;
+			state.loadingMassActionsTasks = false;
+			state.errorLoadingMassActionsTasks = null;
 			state.tasks.data = state.tasks.data.map((task) => {
 				const responsibleUser = task?.responsibleId === String(action.payload.profile?.id);
 				const setterTaskUser = task?.setterId === String(action.payload.profile.id);
@@ -833,12 +808,12 @@ const tasksReducer = createSlice({
 			});
 		},
 		[massCompletion.pending.type]: (state) => {
-			state.loadingUpdatingTask = true;
-			state.errorLoadingUpdatingTask = null;
+			state.loadingMassActionsTasks = true;
+			state.errorLoadingMassActionsTasks = null;
 		},
 		[massCompletion.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = action.payload;
+			state.loadingMassActionsTasks = false;
+			state.errorLoadingMassActionsTasks = action.payload;
 		},
 		[restartTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingStatusesTask = false;
@@ -866,18 +841,111 @@ const tasksReducer = createSlice({
 			state.loadingStatusesTask = false;
 			state.errorLoadingStatusesTask = action.payload;
 		},
-		[fetchTaskFields.fulfilled.type]: (state, action: PayloadAction<IFields>) => {
-			state.loadingTaskFields = false;
-			state.errorLoadingTaskFields = null;
-			state.taskFields = action.payload;
+		[getTasksFields.fulfilled.type]: (state, action: PayloadAction<IField[]>) => {
+			state.loadingTasksFields = false;
+			state.errorLoadingTasksFields = null;
+			state.fields = cloneDeep(action?.payload || []).map((field) => {
+				return {
+					...field,
+					values: Array.isArray(field.values) ? field.values?.sort((a, b) => a.sort - b.sort) : field.values,
+				};
+			});
 		},
-		[fetchTaskFields.pending.type]: (state) => {
-			state.loadingTaskFields = true;
-			state.errorLoadingTaskFields = null;
+		[getTasksFields.pending.type]: (state) => {
+			state.loadingTasksFields = true;
+			state.errorLoadingTasksFields = null;
 		},
-		[fetchTaskFields.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingTaskFields = false;
-			state.errorLoadingTaskFields = action.payload;
+		[getTasksFields.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingTasksFields = false;
+			state.errorLoadingTasksFields = action.payload;
+		},
+		[createTasksField.fulfilled.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
+			state.loadingCreatingTasksField = false;
+			state.errorLoadingCreatingTasksField = null;
+
+			const newField = action.meta.arg;
+			state.fields.push(newField);
+		},
+		[createTasksField.pending.type]: (state) => {
+			state.loadingCreatingTasksField = true;
+			state.errorLoadingCreatingTasksField = null;
+		},
+		[createTasksField.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreatingTasksField = false;
+			state.errorLoadingCreatingTasksField = action.payload;
+		},
+		[updateTasksField.fulfilled.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
+			state.loadingUpdatingTasksField = false;
+			state.errorLoadingUpdatingTasksField = null;
+
+			const updateField = action.meta.arg;
+			state.fields = state.fields.map((field) => {
+				if (field.code === updateField.code) {
+					return { ...updateField, values: updateField?.values || field?.values };
+				}
+				return field;
+			});
+		},
+		[updateTasksField.pending.type]: (state) => {
+			state.loadingUpdatingTasksField = true;
+			state.errorLoadingUpdatingTasksField = null;
+		},
+		[updateTasksField.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingTasksField = false;
+			state.errorLoadingUpdatingTasksField = action.payload;
+		},
+		[updateTasksListValues.fulfilled.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
+			state.loadingUpdatingTasksField = false;
+			state.errorLoadingUpdatingTasksField = null;
+
+			const updateField = action.meta.arg;
+			state.fields = state.fields.map((field) => {
+				if (field.code === updateField.code) {
+					return { ...field, values: updateField?.values || field?.values };
+				}
+				return field;
+			});
+		},
+		[updateTasksListValues.pending.type]: (state) => {
+			state.loadingUpdatingTasksField = true;
+			state.errorLoadingUpdatingTasksField = null;
+		},
+		[updateTasksListValues.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingUpdatingTasksField = false;
+			state.errorLoadingUpdatingTasksField = action.payload;
+		},
+		[deleteTasksListValues.fulfilled.type]: (state, action: PayloadAction<string, string, { arg: { fieldCode: string; value: string } }>) => {
+			state.loadingDeletingTasksField = false;
+			state.errorLoadingDeletingTasksField = null;
+
+			state.fields = state.fields.map((field) => {
+				if (field.code === action.meta.arg.fieldCode) {
+					field.values = field.values.filter((value) => value.value !== action.meta.arg.value);
+				}
+				return field;
+			});
+		},
+		[deleteTasksListValues.pending.type]: (state) => {
+			state.loadingDeletingTasksField = true;
+			state.errorLoadingDeletingTasksField = null;
+		},
+		[deleteTasksListValues.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDeletingTasksField = false;
+			state.errorLoadingDeletingTasksField = action.payload;
+		},
+		[deleteTasksField.fulfilled.type]: (state, action: PayloadAction<string, string, { arg: string }>) => {
+			state.loadingDeletingTasksField = false;
+			state.errorLoadingDeletingTasksField = null;
+
+			state.fields = state.fields.filter((field) => field.code !== action.meta.arg);
+		},
+		[deleteTasksField.pending.type]: (state) => {
+			state.loadingDeletingTasksField = true;
+			state.errorLoadingDeletingTasksField = null;
+		},
+		[deleteTasksField.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingDeletingTasksField = false;
+			state.errorLoadingDeletingTasksField = action.payload;
 		},
 	},
 });
@@ -922,5 +990,6 @@ export const {
 	setAnEditMode,
 	changeTasksCardViewMode,
 	setTasksServiceType,
+	setAiTaskData,
 } = tasksReducer.actions;
 export default tasksReducer.reducer;
