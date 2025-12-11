@@ -313,7 +313,6 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 					return res?.data;
 				}
 				case 'deals': {
-					// eslint-disable-next-line camelcase
 					const dealsParams = getDealsParams(filters, getFilterParams(filters, fields || []));
 
 					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, dealsParams, stageId);
