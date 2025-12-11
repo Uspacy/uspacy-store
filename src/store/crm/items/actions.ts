@@ -313,13 +313,13 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 					return res?.data;
 				}
 				case 'deals': {
-					const dealsParams = getDealsParams(filters, getFilterParams(filters, fields || []));
+					const dealsParams = getDealsParams(filters, params);
 
 					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, dealsParams, stageId);
 					return res?.data;
 				}
 				default: {
-					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, getFilterParams(filters, fields || []), stageId);
+					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, params, stageId);
 					return res?.data;
 				}
 			}
