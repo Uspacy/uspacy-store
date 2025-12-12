@@ -80,6 +80,7 @@ export const sendUserInvites = createAsyncThunk(
 											email: curr.email,
 											firstName: curr.firstName,
 											lastName: curr.lastName,
+											external_user: curr.external_user,
 										},
 								  ]
 								: acc,
