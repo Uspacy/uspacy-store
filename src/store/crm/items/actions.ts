@@ -313,13 +313,13 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 					return res?.data;
 				}
 				case 'deals': {
-					const dealsParams = getDealsParams(filters, params);
+					const dealsParams = getDealsParams(filters, getFilterParams(filters, fields || []));
 
 					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, dealsParams, stageId);
 					return res?.data;
 				}
 				default: {
-					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, params, stageId);
+					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, getFilterParams(filters, fields || []), stageId);
 					return res?.data;
 				}
 			}
@@ -363,6 +363,18 @@ export const getEntitiesCurrenciesAmount = createAsyncThunk(
 				stageId,
 			);
 			return res.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
+
+export const uploadEntityItemAvatar = createAsyncThunk(
+	'crm/items/uploadEntityItemAvatar',
+	async ({ file, entityCode, id }: { file: File | null; entityCode: string; id: number }, thunkAPI) => {
+		try {
+			const res = await uspacySdk.crmEntitiesService.uploadAvatar({ file, code: entityCode, id });
+			return res?.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
 		}
