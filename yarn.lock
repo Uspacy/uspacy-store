@@ -2500,10 +2500,17 @@
     lint-staged "15.2.10"
     localforage "1.10.0"
 
+<<<<<<< HEAD
 "@uspacy/sdk@0.0.999-alpha.53":
   version "0.0.999-alpha.53"
   resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.53/7e182ae564d9181aa991fcfca9ebdcc7561617aa#7e182ae564d9181aa991fcfca9ebdcc7561617aa"
   integrity sha512-bm7Xvnp4YCMcWAAOamumF5EoOSame649say1RLju/n3ZInb3jZEKDctQbCHcocAsfz6KmQALo0RnonaonIa1Yw==
+=======
+"@uspacy/sdk@0.0.999-alpha.54":
+  version "0.0.999-alpha.54"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.54/57f1b0404ae2241610b0f28436afde03605c4511#57f1b0404ae2241610b0f28436afde03605c4511"
+  integrity sha512-X69SveN5hDHQxIoVD4qwk0D0PXLzgW12RVRM9kYAaGV+bwKvORyWFy75qataHMwHYylLKEKfzGGl+Mzmc8IDpg==
+>>>>>>> feature/4201_smart_filters
   dependencies:
     axios "^1.9.0"
     js-cookie "3.0.5"
