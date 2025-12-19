@@ -72,6 +72,10 @@ const feildsReducer = createSlice({
 
 		[updateField.pending.type]: (state, action: PayloadAction<string, string, { arg: { entityCode: string; data: IField } }>) => {
 			const entityCode = action.meta.arg.entityCode;
+			console.log(state[entityCode], 'state[entityCode]');
+			console.log(state[entityCode].data, ' state[entityCode].data');
+			console.log(action.meta.arg, 'action.meta.arg');
+			console.log(action.meta.arg.data.code, 'action.meta.arg.data.code');
 			state[entityCode].data = state[entityCode].data.map((field) => {
 				if (field.code === action.meta.arg.data.code) {
 					return { ...field, ...action.meta.arg.data };
