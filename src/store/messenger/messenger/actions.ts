@@ -1,6 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
-import { FetchMessagesRequest, GoToMessageRequest, IChat, ICreateWidgetData } from '@uspacy/sdk/lib/models/messenger';
+import {
+	FetchMessagesRequest,
+	GoToMessageRequest,
+	IChat,
+	ICreateQuickAnswerDTO,
+	ICreateWidgetData,
+	IGetQuickAnswerParams,
+	IQuickAnswer,
+} from '@uspacy/sdk/lib/models/messenger';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 import { formatChats } from '../../../helpers/messenger';
@@ -85,6 +93,41 @@ export const deleteWidget = createAsyncThunk('messenger/deleteWidget', async (id
 export const updateWidget = createAsyncThunk('messenger/updateWidget', async (data: ICreateWidgetData, { rejectWithValue }) => {
 	try {
 		return (await uspacySdk.messengerService.updateWidget(data)).data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const getQuickAnswers = createAsyncThunk('messenger/getQuickAnswers', async (params: IGetQuickAnswerParams, { rejectWithValue }) => {
+	try {
+		return (await uspacySdk.messengerService.getQuickAnswers(params)).data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const createQuickAnswer = createAsyncThunk('messenger/createQuickAnswer', async (data: ICreateQuickAnswerDTO, { rejectWithValue }) => {
+	try {
+		return (await uspacySdk.messengerService.createQuickAnswer(data)).data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const updateQuickAnswer = createAsyncThunk(
+	'messenger/updateQuickAnswer',
+	async (params: { id: IQuickAnswer['id']; data: Partial<IQuickAnswer> }, { rejectWithValue }) => {
+		try {
+			return (await uspacySdk.messengerService.updateQuickAnswer(params.id, params.data)).data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const deleteQuickAnswer = createAsyncThunk('messenger/deleteQuickAnswer', async (params: { id: IQuickAnswer['id'] }, { rejectWithValue }) => {
+	try {
+		return (await uspacySdk.messengerService.deleteQuickAnswer(params.id)).data.id;
 	} catch (e) {
 		return rejectWithValue(e);
 	}
