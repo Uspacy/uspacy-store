@@ -1,18 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {
-	IDiscounts,
-	IIndividualPersonForm,
-	IIndividualPersonFormErrors,
-	ILegalEntityForm,
-	ILegalEntityFormErrors,
-	ILegalEntityFormEuCom,
-	ILegalEntityFormEuComErrors,
-	IPrice,
-} from '@uspacy/sdk/lib/models/payments';
 
 import {
 	DiscountInputType,
 	DurationViewType,
+	IDiscounts,
+	IIndividualPersonForm,
+	IIndividualPersonFormErrors,
+	IIndividualPersonFormErrorsEu,
+	ILegalForm,
+	ILegalFormErrors,
+	ILegalFormErrorsEu,
+	ILegalFormEu,
+	IPrice,
 	IState,
 	PaymentMethodType,
 	RadioValueTariffStateType,
@@ -58,13 +57,22 @@ const initialState = {
 		contactPersonPhone: '',
 		contactPersonEmail: '',
 		itinCode: '',
-		token: '',
 	},
-	legalEntityFormEuCom: {
+	individualPersonFormEu: {
 		firstName: '',
 		lastName: '',
 		email: '',
 		phone: '',
+	},
+	legalEntityFormEu: {
+		firstName: '',
+		lastName: '',
+		email: '',
+		phone: '',
+		registryCode: '',
+		country: '',
+		vatNumber: '',
+		region: '',
 	},
 	individualPersonFormErrors: {
 		firstNameErr: false,
@@ -77,13 +85,21 @@ const initialState = {
 		contactPersonEmailErr: false,
 		itinCodeErr: false,
 	},
-	legalEntityFormEuComErrors: {
+	individualPersonFormErrorsEu: {
 		firstNameErr: false,
 		lastNameErr: false,
 		emailErr: false,
 		phoneErr: false,
 	},
-	vatTaxIdError: false,
+	legalEntityFormErrorsEu: {
+		firstNameErr: false,
+		lastNameErr: false,
+		emailErr: false,
+		registryCodeErr: false,
+		countryErr: false,
+		vatNumberErr: false,
+		regionErr: false,
+	},
 } as IState;
 
 const paymentsReducer = createSlice({
@@ -137,26 +153,31 @@ const paymentsReducer = createSlice({
 		setAutomaticSubscriptionRenewal: (state, action: PayloadAction<boolean>) => {
 			state.automaticSubscriptionRenewal = action.payload;
 		},
+
 		setIndividualPersonForm: (state, action: PayloadAction<IIndividualPersonForm>) => {
 			state.individualPersonForm = action.payload;
 		},
+		setLegalEntityForm: (state, action: PayloadAction<ILegalForm>) => {
+			state.legalEntityForm = action.payload;
+		},
+		setIndividualPersonFormEu: (state, action: PayloadAction<IIndividualPersonForm>) => {
+			state.individualPersonFormEu = action.payload;
+		},
+		setLegalEntityFormEu: (state, action: PayloadAction<ILegalFormEu>) => {
+			state.legalEntityFormEu = action.payload;
+		},
+
 		setIndividualPersonFormErrors: (state, action: PayloadAction<IIndividualPersonFormErrors>) => {
 			state.individualPersonFormErrors = action.payload;
 		},
-		setLegalEntityForm: (state, action: PayloadAction<ILegalEntityForm>) => {
-			state.legalEntityForm = action.payload;
-		},
-		setLegalEntityFormErrors: (state, action: PayloadAction<ILegalEntityFormErrors>) => {
+		setLegalEntityFormErrors: (state, action: PayloadAction<ILegalFormErrors>) => {
 			state.legalEntityFormErrors = action.payload;
 		},
-		setLegalEntityFormEuCom: (state, action: PayloadAction<ILegalEntityFormEuCom>) => {
-			state.legalEntityFormEuCom = action.payload;
+		setIndividualPersonFormErrorsEu: (state, action: PayloadAction<IIndividualPersonFormErrorsEu>) => {
+			state.individualPersonFormErrorsEu = action.payload;
 		},
-		setLegalEntityFormEuComErrors: (state, action: PayloadAction<ILegalEntityFormEuComErrors>) => {
-			state.legalEntityFormEuComErrors = action.payload;
-		},
-		setVatTaxIdError: (state, action: PayloadAction<boolean>) => {
-			state.vatTaxIdError = action.payload;
+		setLegalEntityFormErrorsEu: (state, action: PayloadAction<ILegalFormErrorsEu>) => {
+			state.legalEntityFormErrorsEu = action.payload;
 		},
 	},
 	extraReducers: {},
@@ -178,11 +199,12 @@ export const {
 	setVatTaxStatus,
 	setAutomaticSubscriptionRenewal,
 	setIndividualPersonForm,
-	setIndividualPersonFormErrors,
 	setLegalEntityForm,
+	setIndividualPersonFormEu,
+	setLegalEntityFormEu,
+	setIndividualPersonFormErrors,
 	setLegalEntityFormErrors,
-	setLegalEntityFormEuCom,
-	setLegalEntityFormEuComErrors,
-	setVatTaxIdError,
+	setIndividualPersonFormErrorsEu,
+	setLegalEntityFormErrorsEu,
 } = paymentsReducer.actions;
 export default paymentsReducer.reducer;
