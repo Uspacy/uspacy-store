@@ -53,7 +53,7 @@ const initialState = {
 		phone: '',
 		email: '',
 	},
-	legalEntityForm: {
+	legalForm: {
 		contactPersonPhone: '',
 		contactPersonEmail: '',
 		itinCode: '',
@@ -64,7 +64,7 @@ const initialState = {
 		email: '',
 		phone: '',
 	},
-	legalEntityFormEu: {
+	legalFormEu: {
 		firstName: '',
 		lastName: '',
 		email: '',
@@ -80,7 +80,7 @@ const initialState = {
 		phoneErr: false,
 		emailErr: false,
 	},
-	legalEntityFormErrors: {
+	legalFormErrors: {
 		contactPersonPhoneErr: false,
 		contactPersonEmailErr: false,
 		itinCodeErr: false,
@@ -91,7 +91,7 @@ const initialState = {
 		emailErr: false,
 		phoneErr: false,
 	},
-	legalEntityFormErrorsEu: {
+	legalFormErrorsEu: {
 		firstNameErr: false,
 		lastNameErr: false,
 		emailErr: false,
@@ -153,31 +153,29 @@ const paymentsReducer = createSlice({
 		setAutomaticSubscriptionRenewal: (state, action: PayloadAction<boolean>) => {
 			state.automaticSubscriptionRenewal = action.payload;
 		},
-
 		setIndividualPersonForm: (state, action: PayloadAction<IIndividualPersonForm>) => {
 			state.individualPersonForm = action.payload;
 		},
-		setLegalEntityForm: (state, action: PayloadAction<ILegalForm>) => {
-			state.legalEntityForm = action.payload;
+		setLegalForm: (state, action: PayloadAction<ILegalForm>) => {
+			state.legalForm = action.payload;
 		},
 		setIndividualPersonFormEu: (state, action: PayloadAction<IIndividualPersonForm>) => {
 			state.individualPersonFormEu = action.payload;
 		},
-		setLegalEntityFormEu: (state, action: PayloadAction<ILegalFormEu>) => {
-			state.legalEntityFormEu = action.payload;
+		setLegalFormEu: (state, action: PayloadAction<ILegalFormEu>) => {
+			state.legalFormEu = action.payload;
 		},
-
 		setIndividualPersonFormErrors: (state, action: PayloadAction<IIndividualPersonFormErrors>) => {
 			state.individualPersonFormErrors = action.payload;
 		},
-		setLegalEntityFormErrors: (state, action: PayloadAction<ILegalFormErrors>) => {
-			state.legalEntityFormErrors = action.payload;
+		setLegalFormErrors: (state, action: PayloadAction<ILegalFormErrors>) => {
+			state.legalFormErrors = action.payload;
 		},
 		setIndividualPersonFormErrorsEu: (state, action: PayloadAction<IIndividualPersonFormErrorsEu>) => {
 			state.individualPersonFormErrorsEu = action.payload;
 		},
-		setLegalEntityFormErrorsEu: (state, action: PayloadAction<ILegalFormErrorsEu>) => {
-			state.legalEntityFormErrorsEu = action.payload;
+		setLegalFormErrorsEu: (state, action: PayloadAction<ILegalFormErrorsEu>) => {
+			state.legalFormErrorsEu = action.payload;
 		},
 	},
 	extraReducers: {},
@@ -199,12 +197,12 @@ export const {
 	setVatTaxStatus,
 	setAutomaticSubscriptionRenewal,
 	setIndividualPersonForm,
-	setLegalEntityForm,
+	setLegalForm,
 	setIndividualPersonFormEu,
-	setLegalEntityFormEu,
+	setLegalFormEu,
 	setIndividualPersonFormErrors,
-	setLegalEntityFormErrors,
+	setLegalFormErrors,
 	setIndividualPersonFormErrorsEu,
-	setLegalEntityFormErrorsEu,
+	setLegalFormErrorsEu,
 } = paymentsReducer.actions;
 export default paymentsReducer.reducer;
