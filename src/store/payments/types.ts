@@ -95,11 +95,11 @@ export interface IState {
 	vatTaxStatus: string;
 	automaticSubscriptionRenewal: boolean;
 	individualPersonForm: IIndividualPersonForm;
-	legalEntityForm: ILegalForm;
+	legalForm: ILegalForm;
 	individualPersonFormEu: IIndividualPersonForm;
-	legalEntityFormEu: ILegalFormEu;
+	legalFormEu: ILegalFormEu;
 	individualPersonFormErrors: IIndividualPersonFormErrors;
-	legalEntityFormErrors: ILegalFormErrors;
+	legalFormErrors: ILegalFormErrors;
 	individualPersonFormErrorsEu: IIndividualPersonFormErrorsEu;
-	legalEntityFormErrorsEu: ILegalFormErrorsEu;
+	legalFormErrorsEu: ILegalFormErrorsEu;
 }
