@@ -32,6 +32,7 @@ export interface ILegalFormEu {
 	email?: string;
 	phone?: string;
 	registryCode: string;
+	companyName: string;
 	country: string;
 	vatNumber?: string;
 }
@@ -61,6 +62,7 @@ export interface ILegalFormErrorsEu {
 	emailErr?: boolean;
 	phoneErr?: boolean;
 	registryCodeErr: boolean;
+	companyNameErr: boolean;
 	countryErr: boolean;
 	vatNumberErr?: boolean;
 }
