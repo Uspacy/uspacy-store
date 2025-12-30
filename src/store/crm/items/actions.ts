@@ -2,7 +2,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
-import { ICallFilters, IEntityFilters, IFilterCurrenciesAmount } from '@uspacy/sdk/lib/models/crm-filters';
+import { ICallFilters, IEntityFilters, IFilter, IFilterCurrenciesAmount } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IProduct } from '@uspacy/sdk/lib/models/crm-products';
 import { IField } from '@uspacy/sdk/lib/models/field';
@@ -53,24 +53,13 @@ export const fetchEntityItems = createAsyncThunk(
 					return res?.data;
 				}
 				case 'products': {
-					// TODO refactor this mess
-					// eslint-disable-next-line camelcase, @typescript-eslint/no-explicit-any
-					const filterCopy = { ...filters } as any;
 					const productCategoryIds = normalizeCategories(filters.select);
 					const withoutCategories = productCategoryIds === null;
 					const newParams = {
 						...params,
-						currency: (filterCopy.price_from || filterCopy.price_to) && filterCopy.currency,
-						...(filterCopy.price_from ? { price_from: Math.round(filterCopy.price_from * 100) } : {}),
-						...(filterCopy.price_to ? { price_to: Math.round(filterCopy.price_to * 100) } : {}),
-						is_active: filterCopy.is_active.map((it) => {
-							if (typeof it !== 'boolean') return it;
-							if (it) return 1;
-							return 0;
-						}),
 						product_category_ids: withoutCategories ? ' ' : normalizeCategories(filters.select),
 					};
-					const res = await uspacySdk.crmProductsService.getProductsWithFilters(newParams);
+					const res = await uspacySdk.crmProductsService.getProductsWithFilters(newParams as IFilter);
 					return res?.data;
 				}
 				case 'tasks':
