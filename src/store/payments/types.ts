@@ -25,10 +25,10 @@ export interface IIndividualPersonFormEu {
 	lastName: string;
 	email: string;
 	phone: string;
+	country: string;
 }
 
 export interface ILegalFormEu {
-	firstName?: string;
 	email?: string;
 	phone?: string;
 	registryCode: string;
@@ -55,10 +55,10 @@ export interface IIndividualPersonFormErrorsEu {
 	lastNameErr: boolean;
 	emailErr: boolean;
 	phoneErr: boolean;
+	countryErr: boolean;
 }
 
 export interface ILegalFormErrorsEu {
-	firstNameErr?: boolean;
 	emailErr?: boolean;
 	phoneErr?: boolean;
 	registryCodeErr: boolean;
@@ -98,7 +98,7 @@ export interface IState {
 	automaticSubscriptionRenewal: boolean;
 	individualPersonForm: IIndividualPersonForm;
 	legalForm: ILegalForm;
-	individualPersonFormEu: IIndividualPersonForm;
+	individualPersonFormEu: IIndividualPersonFormEu;
 	legalFormEu: ILegalFormEu;
 	individualPersonFormErrors: IIndividualPersonFormErrors;
 	legalFormErrors: ILegalFormErrors;
