@@ -7,6 +7,7 @@ import {
 	IIndividualPersonForm,
 	IIndividualPersonFormErrors,
 	IIndividualPersonFormErrorsEu,
+	IIndividualPersonFormEu,
 	ILegalForm,
 	ILegalFormErrors,
 	ILegalFormErrorsEu,
@@ -63,17 +64,15 @@ const initialState = {
 		lastName: '',
 		email: '',
 		phone: '',
+		country: '',
 	},
 	legalFormEu: {
-		firstName: '',
-		lastName: '',
 		email: '',
 		phone: '',
 		registryCode: '',
+		vatNumber: '',
 		companyName: '',
 		country: '',
-		vatNumber: '',
-		region: '',
 	},
 	individualPersonFormErrors: {
 		firstNameErr: false,
@@ -91,16 +90,15 @@ const initialState = {
 		lastNameErr: false,
 		emailErr: false,
 		phoneErr: false,
+		countryErr: false,
 	},
 	legalFormErrorsEu: {
-		firstNameErr: false,
-		lastNameErr: false,
 		emailErr: false,
+		phoneErr: false,
 		registryCodeErr: false,
+		vatNumberErr: false,
 		companyNameErr: false,
 		countryErr: false,
-		vatNumberErr: false,
-		regionErr: false,
 	},
 } as IState;
 
@@ -161,7 +159,7 @@ const paymentsReducer = createSlice({
 		setLegalForm: (state, action: PayloadAction<ILegalForm>) => {
 			state.legalForm = action.payload;
 		},
-		setIndividualPersonFormEu: (state, action: PayloadAction<IIndividualPersonForm>) => {
+		setIndividualPersonFormEu: (state, action: PayloadAction<IIndividualPersonFormEu>) => {
 			state.individualPersonFormEu = action.payload;
 		},
 		setLegalFormEu: (state, action: PayloadAction<ILegalFormEu>) => {
