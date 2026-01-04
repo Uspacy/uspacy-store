@@ -65,6 +65,7 @@ const initialState = {
 		lastName: '',
 		email: '',
 		phone: '',
+		country: '',
 	},
 	individualPersonFormErrors: {
 		firstNameErr: false,
@@ -82,6 +83,7 @@ const initialState = {
 		lastNameErr: false,
 		emailErr: false,
 		phoneErr: false,
+		countryErr: false,
 	},
 	vatTaxIdError: false,
 } as IState;
