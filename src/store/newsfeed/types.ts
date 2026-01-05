@@ -30,6 +30,7 @@ export interface ISendPost {
 	recipients: RecipientsPost;
 	group_id?: number;
 	notify?: INotify;
+	visibility?: string;
 }
 
 export interface IEditPost {
@@ -50,6 +51,7 @@ export interface INewPost {
 	recipients: RecipientsPost;
 	group_id?: number;
 	notify?: INotify;
+	visibility?: string;
 }
 
 export interface IEditPostItem {
