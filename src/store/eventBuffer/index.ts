@@ -16,10 +16,8 @@ const eventBufferReducer = createSlice({
 			state.events = {
 				...state.events,
 				[eventEntity]: {
-					...state?.[entity],
-					[`${eventId}`]: {
-						events: [...(state?.events?.[eventEntity]?.[entity]?.[eventId]?.events || []), event],
-					},
+					...state?.events?.[eventEntity],
+					[`${eventId}`]: [...(state?.events?.[eventEntity]?.[eventId] || []), event],
 				},
 			};
 		},
@@ -28,8 +26,8 @@ const eventBufferReducer = createSlice({
 			state.events = {
 				...state.events,
 				[eventEntity]: {
-					...state.events?.[eventEntity],
-					[eventId]: { events: state.events?.[eventEntity]?.[eventId]?.filter((it) => it?.id !== entityId) },
+					...state?.events?.[eventEntity],
+					[`${eventId}`]: state.events?.[eventEntity]?.[eventId]?.filter((it) => it?.id !== entityId),
 				},
 			};
 		},
@@ -39,7 +37,7 @@ const eventBufferReducer = createSlice({
 				...state.events,
 				[eventEntity]: {
 					...state.events?.[eventEntity],
-					[eventId]: { events: [] },
+					[eventId]: [],
 				},
 			};
 		},
