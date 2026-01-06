@@ -1,18 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {
-	IDiscounts,
-	IIndividualPersonForm,
-	IIndividualPersonFormErrors,
-	ILegalEntityForm,
-	ILegalEntityFormErrors,
-	ILegalEntityFormEuCom,
-	ILegalEntityFormEuComErrors,
-	IPrice,
-} from '@uspacy/sdk/lib/models/payments';
 
 import {
 	DiscountInputType,
 	DurationViewType,
+	IDiscounts,
+	IIndividualPersonForm,
+	IIndividualPersonFormErrors,
+	IIndividualPersonFormErrorsEu,
+	IIndividualPersonFormEu,
+	ILegalForm,
+	ILegalFormErrors,
+	ILegalFormErrorsEu,
+	ILegalFormEu,
+	IPrice,
 	IState,
 	PaymentMethodType,
 	RadioValueTariffStateType,
@@ -54,17 +54,25 @@ const initialState = {
 		phone: '',
 		email: '',
 	},
-	legalEntityForm: {
+	legalForm: {
 		contactPersonPhone: '',
 		contactPersonEmail: '',
 		itinCode: '',
-		token: '',
 	},
-	legalEntityFormEuCom: {
+	individualPersonFormEu: {
 		firstName: '',
 		lastName: '',
 		email: '',
 		phone: '',
+		country: '',
+	},
+	legalFormEu: {
+		email: '',
+		phone: '',
+		registryCode: '',
+		vatNumber: '',
+		companyName: '',
+		country: '',
 	},
 	individualPersonFormErrors: {
 		firstNameErr: false,
@@ -72,18 +80,26 @@ const initialState = {
 		phoneErr: false,
 		emailErr: false,
 	},
-	legalEntityFormErrors: {
+	legalFormErrors: {
 		contactPersonPhoneErr: false,
 		contactPersonEmailErr: false,
 		itinCodeErr: false,
 	},
-	legalEntityFormEuComErrors: {
+	individualPersonFormErrorsEu: {
 		firstNameErr: false,
 		lastNameErr: false,
 		emailErr: false,
 		phoneErr: false,
+		countryErr: false,
 	},
-	vatTaxIdError: false,
+	legalFormErrorsEu: {
+		emailErr: false,
+		phoneErr: false,
+		registryCodeErr: false,
+		vatNumberErr: false,
+		companyNameErr: false,
+		countryErr: false,
+	},
 } as IState;
 
 const paymentsReducer = createSlice({
@@ -140,23 +156,26 @@ const paymentsReducer = createSlice({
 		setIndividualPersonForm: (state, action: PayloadAction<IIndividualPersonForm>) => {
 			state.individualPersonForm = action.payload;
 		},
+		setLegalForm: (state, action: PayloadAction<ILegalForm>) => {
+			state.legalForm = action.payload;
+		},
+		setIndividualPersonFormEu: (state, action: PayloadAction<IIndividualPersonFormEu>) => {
+			state.individualPersonFormEu = action.payload;
+		},
+		setLegalFormEu: (state, action: PayloadAction<ILegalFormEu>) => {
+			state.legalFormEu = action.payload;
+		},
 		setIndividualPersonFormErrors: (state, action: PayloadAction<IIndividualPersonFormErrors>) => {
 			state.individualPersonFormErrors = action.payload;
 		},
-		setLegalEntityForm: (state, action: PayloadAction<ILegalEntityForm>) => {
-			state.legalEntityForm = action.payload;
+		setLegalFormErrors: (state, action: PayloadAction<ILegalFormErrors>) => {
+			state.legalFormErrors = action.payload;
 		},
-		setLegalEntityFormErrors: (state, action: PayloadAction<ILegalEntityFormErrors>) => {
-			state.legalEntityFormErrors = action.payload;
+		setIndividualPersonFormErrorsEu: (state, action: PayloadAction<IIndividualPersonFormErrorsEu>) => {
+			state.individualPersonFormErrorsEu = action.payload;
 		},
-		setLegalEntityFormEuCom: (state, action: PayloadAction<ILegalEntityFormEuCom>) => {
-			state.legalEntityFormEuCom = action.payload;
-		},
-		setLegalEntityFormEuComErrors: (state, action: PayloadAction<ILegalEntityFormEuComErrors>) => {
-			state.legalEntityFormEuComErrors = action.payload;
-		},
-		setVatTaxIdError: (state, action: PayloadAction<boolean>) => {
-			state.vatTaxIdError = action.payload;
+		setLegalFormErrorsEu: (state, action: PayloadAction<ILegalFormErrorsEu>) => {
+			state.legalFormErrorsEu = action.payload;
 		},
 	},
 	extraReducers: {},
@@ -178,11 +197,12 @@ export const {
 	setVatTaxStatus,
 	setAutomaticSubscriptionRenewal,
 	setIndividualPersonForm,
+	setLegalForm,
+	setIndividualPersonFormEu,
+	setLegalFormEu,
 	setIndividualPersonFormErrors,
-	setLegalEntityForm,
-	setLegalEntityFormErrors,
-	setLegalEntityFormEuCom,
-	setLegalEntityFormEuComErrors,
-	setVatTaxIdError,
+	setLegalFormErrors,
+	setIndividualPersonFormErrorsEu,
+	setLegalFormErrorsEu,
 } = paymentsReducer.actions;
 export default paymentsReducer.reducer;

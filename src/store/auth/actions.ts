@@ -5,6 +5,7 @@ import { IResponseOauthData } from '@uspacy/sdk/lib/services/AuthService/dto/res
 import {
 	IIndividualPayload,
 	ILegalPayload,
+	ILegalPayloadEu,
 	ISubscriptionPayload,
 	ISubscriptionStripePayload,
 } from '@uspacy/sdk/lib/services/AuthService/dto/subscription.dto';
@@ -60,6 +61,18 @@ export const createSubscriptionLegal = createAsyncThunk('auth/createSubscription
 		return rejectWithValue(e);
 	}
 });
+
+export const createSubscriptionLegalEu = createAsyncThunk(
+	'auth/createSubscriptionLegalEu',
+	async (body: Partial<ILegalPayloadEu>, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.authService.createSubscriptionLegalEu(body);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
 
 export const redirectToStripe = createAsyncThunk('auth/redirectToStripe', async (body: ISubscriptionStripePayload, { rejectWithValue }) => {
 	try {
