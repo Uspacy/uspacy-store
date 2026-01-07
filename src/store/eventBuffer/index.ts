@@ -21,7 +21,7 @@ const eventBufferReducer = createSlice({
 				},
 			};
 		},
-		removeEventById(state: IState, action: PayloadAction<{ eventId: number; entityId: string | number; eventEntity: string }>) {
+		removeEventById(state: IState, action: PayloadAction<{ eventId: string; entityId: string | number; eventEntity: string }>) {
 			const { entityId, eventId, eventEntity } = action.payload;
 			state.events = {
 				...state.events,
@@ -31,7 +31,16 @@ const eventBufferReducer = createSlice({
 				},
 			};
 		},
-		removeEventsByEventId(state: IState, action: PayloadAction<{ eventId: number; entityId: string; eventEntity: string }>) {
+		removeEventByEntityKey(state: IState, action: PayloadAction<{ eventEntityKey: string; entityId: string | number; eventEntity: string }>) {
+			const { eventEntityKey, eventEntity } = action.payload;
+			const prevEntityEvents = state.events?.[eventEntity] ?? {};
+
+			state.events = {
+				...state.events,
+				[eventEntity]: Object.fromEntries(Object.entries(prevEntityEvents).filter(([key]) => !key.startsWith(`${eventEntityKey}-`))),
+			};
+		},
+		removeEventsByEventId(state: IState, action: PayloadAction<{ eventId: string; entityId: string; eventEntity: string }>) {
 			const { eventId, eventEntity } = action.payload;
 			state.events = {
 				...state.events,
@@ -45,6 +54,6 @@ const eventBufferReducer = createSlice({
 	extraReducers: {},
 });
 
-export const { addEvents, removeEventsByEventId, removeEventById } = eventBufferReducer.actions;
+export const { addEvents, removeEventsByEventId, removeEventById, removeEventByEntityKey } = eventBufferReducer.actions;
 
 export default eventBufferReducer.reducer;
