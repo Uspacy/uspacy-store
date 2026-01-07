@@ -31,7 +31,7 @@ const eventBufferReducer = createSlice({
 				},
 			};
 		},
-		removeEventByEntityKey(state: IState, action: PayloadAction<{ eventEntityKey: string; entityId: string | number; eventEntity: string }>) {
+		removeEventByEntityKey(state: IState, action: PayloadAction<{ eventEntityKey: string; eventEntity: string }>) {
 			const { eventEntityKey, eventEntity } = action.payload;
 			const prevEntityEvents = state.events?.[eventEntity] ?? {};
 
@@ -40,7 +40,7 @@ const eventBufferReducer = createSlice({
 				[eventEntity]: Object.fromEntries(Object.entries(prevEntityEvents).filter(([key]) => !key.startsWith(`${eventEntityKey}-`))),
 			};
 		},
-		removeEventsByEventId(state: IState, action: PayloadAction<{ eventId: string; entityId: string; eventEntity: string }>) {
+		removeEventsByEventId(state: IState, action: PayloadAction<{ eventId: string; eventEntity: string }>) {
 			const { eventId, eventEntity } = action.payload;
 			state.events = {
 				...state.events,
