@@ -10,24 +10,23 @@ const eventBufferReducer = createSlice({
 	name: 'eventBuffer',
 	initialState,
 	reducers: {
-		addEvents(state: IState, action: PayloadAction<{ event: IEvents; eventEntity: string; entity: string; id: number }>) {
-			const { entity, id, event, eventEntity } = action.payload;
-			const eventId = `${entity}-${id}`;
+		addEvents(state: IState, action: PayloadAction<{ event: IEvents; eventEntity: string; eventIdKey: string }>) {
+			const { eventIdKey, event, eventEntity } = action.payload;
 			state.events = {
 				...state.events,
 				[eventEntity]: {
 					...state?.events?.[eventEntity],
-					[`${eventId}`]: [...(state?.events?.[eventEntity]?.[eventId] || []), event],
+					[`${eventIdKey}`]: [...(state?.events?.[eventEntity]?.[eventIdKey] || []), event],
 				},
 			};
 		},
-		removeEventById(state: IState, action: PayloadAction<{ eventId: string; entityId: string | number; eventEntity: string }>) {
-			const { entityId, eventId, eventEntity } = action.payload;
+		removeEventById(state: IState, action: PayloadAction<{ eventIdKey: string; entityId: string | number; eventEntity: string }>) {
+			const { entityId, eventIdKey, eventEntity } = action.payload;
 			state.events = {
 				...state.events,
 				[eventEntity]: {
 					...state?.events?.[eventEntity],
-					[`${eventId}`]: state.events?.[eventEntity]?.[eventId]?.filter((it) => it?.id !== entityId),
+					[`${eventIdKey}`]: state.events?.[eventEntity]?.[eventIdKey]?.filter((it) => it?.id !== entityId),
 				},
 			};
 		},
@@ -40,13 +39,13 @@ const eventBufferReducer = createSlice({
 				[eventEntity]: Object.fromEntries(Object.entries(prevEntityEvents).filter(([key]) => !key.startsWith(eventEntityKey))),
 			};
 		},
-		removeEventsByEventId(state: IState, action: PayloadAction<{ eventId: string; eventEntity: string }>) {
-			const { eventId, eventEntity } = action.payload;
+		removeEventsByEventId(state: IState, action: PayloadAction<{ eventIdKey: string; eventEntity: string }>) {
+			const { eventIdKey, eventEntity } = action.payload;
 			state.events = {
 				...state.events,
 				[eventEntity]: {
 					...state.events?.[eventEntity],
-					[eventId]: [],
+					[eventIdKey]: [],
 				},
 			};
 		},
