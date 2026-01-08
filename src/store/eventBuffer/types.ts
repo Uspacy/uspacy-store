@@ -1,5 +1,4 @@
 export interface IEvents {
-	id: number;
 	notifId: string;
 	action: string;
 	payload: any;

@@ -20,13 +20,13 @@ const eventBufferReducer = createSlice({
 				},
 			};
 		},
-		removeEventById(state: IState, action: PayloadAction<{ eventIdKey: string; entityId: string | number; eventEntity: string }>) {
-			const { entityId, eventIdKey, eventEntity } = action.payload;
+		removeEventById(state: IState, action: PayloadAction<{ eventIdKey: string; notifId: string; eventEntity: string }>) {
+			const { notifId, eventIdKey, eventEntity } = action.payload;
 			state.events = {
 				...state.events,
 				[eventEntity]: {
 					...state?.events?.[eventEntity],
-					[`${eventIdKey}`]: state.events?.[eventEntity]?.[eventIdKey]?.filter((it) => it?.id !== entityId),
+					[`${eventIdKey}`]: state.events?.[eventEntity]?.[eventIdKey]?.filter((it) => it?.notifId !== notifId),
 				},
 			};
 		},
