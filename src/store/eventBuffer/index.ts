@@ -37,7 +37,7 @@ const eventBufferReducer = createSlice({
 
 			state.events = {
 				...state.events,
-				[eventEntity]: Object.fromEntries(Object.entries(prevEntityEvents).filter(([key]) => !key.startsWith(`${eventEntityKey}-`))),
+				[eventEntity]: Object.fromEntries(Object.entries(prevEntityEvents).filter(([key]) => !key.startsWith(eventEntityKey))),
 			};
 		},
 		removeEventsByEventId(state: IState, action: PayloadAction<{ eventId: string; eventEntity: string }>) {
