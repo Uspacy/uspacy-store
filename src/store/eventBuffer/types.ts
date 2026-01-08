@@ -1,8 +1,8 @@
 export interface IEvents {
 	id: number;
+	notifId: string;
 	action: string;
 	payload: any;
-	ts: number;
 }
 
 export interface IState {
