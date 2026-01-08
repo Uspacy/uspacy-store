@@ -55,4 +55,18 @@ const eventBufferReducer = createSlice({
 
 export const { addEvents, removeEventsByEventId, removeEventById, removeEventByEntityKey } = eventBufferReducer.actions;
 
+export const consumeEvents = (eventIdKey: string, eventEntity: string) => (dispatch, getState) => {
+	const state = getState();
+	const events = state.eventBuffer.events?.[eventEntity]?.[eventIdKey] || [];
+
+	dispatch(
+		removeEventsByEventId({
+			eventEntity,
+			eventIdKey,
+		}),
+	);
+
+	return events;
+};
+
 export default eventBufferReducer.reducer;
