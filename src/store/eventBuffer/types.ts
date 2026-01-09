@@ -4,10 +4,19 @@ export interface IEvents {
 	payload: any;
 }
 
+export enum EEventEntity {
+	comment = 'comment',
+	crm = 'crm',
+}
+
+type EventEntities = 'comment' | 'crm';
+
+type EventEntity = EventEntities | (string & {});
+
 export interface IState {
 	events: {
-		[key: string]: {
-			[key: string]: IEvents[];
+		[key in EventEntity]?: {
+			[id: string]: IEvents[];
 		};
 	};
 }
