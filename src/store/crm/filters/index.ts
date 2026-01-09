@@ -94,18 +94,20 @@ const filtersReducer = createSlice({
 		},
 		pinFilterPreset: (state, action: PayloadAction<{ entityCode: string; presetId: IFilterPreset['id'] }>) => {
 			let needChangeFilter = false;
-			const newItems = state[action.payload.entityCode].presets?.map((item) => {
+			const newItems = state[action.payload.entityCode].presets?.map((item, idx) => {
 				if (item.id === action.payload.presetId && !item.pinned) {
 					needChangeFilter = true;
 					return {
 						...item,
 						pinned: true,
 						current: true,
+						sort: 10,
 					};
 				}
 				return {
 					...item,
 					pinned: false,
+					sort: item?.pinned ? 10 : item?.sort || (idx + 1) * 10,
 				};
 			});
 			state[action.payload.entityCode].presets = sortPresets(newItems);
@@ -116,17 +118,19 @@ const filtersReducer = createSlice({
 			}
 		},
 		unpinFilterPreset: (state, action: PayloadAction<{ entityCode: string; presetId: IFilterPreset['id'] }>) => {
-			const newItems = state[action.payload.entityCode].presets?.map((item) => {
+			const newItems = state[action.payload.entityCode].presets?.map((item, idx) => {
 				if (item.id === action.payload.presetId && item.pinned)
 					return {
 						...item,
 						pinned: false,
+						sort: item?.pinned ? 10 : item?.sort || (idx + 1) * 10,
 					};
 				if (item.default && !item.pinned) {
 					return {
 						...item,
 						pinned: true,
 						current: true,
+						sort: 10,
 					};
 				}
 				return item;
