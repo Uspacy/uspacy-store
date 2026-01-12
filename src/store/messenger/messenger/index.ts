@@ -33,6 +33,7 @@ import {
 	getWidgets,
 	goToMessage,
 	updateQuickAnswer,
+	updateQuickAnswerStatus,
 	updateWidget,
 } from './actions';
 import { IState } from './types';
@@ -790,6 +791,12 @@ export const chatSlice = createSlice({
 		[updateQuickAnswer.fulfilled.type]: (state, action: PayloadAction<IQuickAnswer>) => {
 			state.quickAnswers.data = state.quickAnswers.data.map((it) => {
 				if (it.id === action.payload.id) return action.payload;
+				return it;
+			});
+		},
+		[updateQuickAnswerStatus.fulfilled.type]: (state, action: PayloadAction<{ id: IQuickAnswer['id']; status: string }>) => {
+			state.quickAnswers.data = state.quickAnswers.data.map((it) => {
+				if (it.id === action.payload.id) return { ...it, status: action.payload.status };
 				return it;
 			});
 		},
