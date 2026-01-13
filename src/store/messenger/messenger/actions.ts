@@ -126,7 +126,7 @@ export const updateQuickAnswer = createAsyncThunk(
 );
 
 export const updateQuickAnswerStatus = createAsyncThunk(
-	'messenger/updateQuickAnswerStatus',
+	'messenger/updateQuickAnswer',
 	async (params: { id: IQuickAnswer['id']; status: string }, { rejectWithValue }) => {
 		try {
 			return (await uspacySdk.messengerService.updateQuickAnswerStatus(params.id, params.status)).data;
