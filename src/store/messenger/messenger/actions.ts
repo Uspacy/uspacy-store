@@ -125,16 +125,13 @@ export const updateQuickAnswer = createAsyncThunk(
 	},
 );
 
-export const updateQuickAnswerStatus = createAsyncThunk(
-	'messenger/updateQuickAnswer',
-	async (params: { id: IQuickAnswer['id']; status: string }, { rejectWithValue }) => {
-		try {
-			return (await uspacySdk.messengerService.updateQuickAnswerStatus(params.id, params.status)).data;
-		} catch (e) {
-			return rejectWithValue(e);
-		}
-	},
-);
+export const updateQuickAnswerStatus = createAsyncThunk('messenger/updateQuickAnswer', async (params: { id: IQuickAnswer['id']; status: string }) => {
+	try {
+		return (await uspacySdk.messengerService.updateQuickAnswerStatus(params.id, params.status)).data;
+	} catch (e) {
+		return e;
+	}
+});
 
 export const deleteQuickAnswer = createAsyncThunk('messenger/deleteQuickAnswer', async (params: { id: IQuickAnswer['id'] }, { rejectWithValue }) => {
 	try {
