@@ -60,7 +60,7 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 };
 
 export const getDrawersInfo = (message: INotificationMessage) => {
-	if (message.data.action === NotificationAction.DELETE) return undefined;
+	if (message.data.action === NotificationAction.DELETE && message?.type !== 'comment') return undefined;
 	const service = getServiceName(message.data.service);
 	switch (service) {
 		case 'activities': {
