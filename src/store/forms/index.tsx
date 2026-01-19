@@ -28,6 +28,9 @@ export const initialDesignState: IFormDesign = {
 		formPosition: 'center',
 		showUspacyBrand: true,
 	},
+	otherSettings: {
+		logoIsInTheFormHeader: false,
+	},
 };
 
 const initialFormState: IState['form'] = {
