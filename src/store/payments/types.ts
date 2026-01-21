@@ -1,71 +1,13 @@
-export interface IPrice {
-	[key: string]: number;
-}
-
-export interface IDiscounts {
-	type: 'percentage' | 'amount';
-	value: number;
-}
-
-export interface IIndividualPersonForm {
-	firstName: string;
-	lastName: string;
-	phone: string;
-	email: string;
-}
-
-export interface ILegalForm {
-	contactPersonPhone: string;
-	contactPersonEmail: string;
-	itinCode: string;
-}
-
-export interface IIndividualPersonFormEu {
-	firstName: string;
-	lastName: string;
-	email: string;
-	phone: string;
-	country: string;
-}
-
-export interface ILegalFormEu {
-	email?: string;
-	phone?: string;
-	registryCode: string;
-	companyName: string;
-	country: string;
-	vatNumber?: string;
-}
-
-export interface IIndividualPersonFormErrors {
-	firstNameErr: boolean;
-	lastNameErr: boolean;
-	phoneErr: boolean;
-	emailErr: boolean;
-}
-
-export interface ILegalFormErrors {
-	contactPersonPhoneErr: boolean;
-	contactPersonEmailErr: boolean;
-	itinCodeErr: boolean;
-}
-
-export interface IIndividualPersonFormErrorsEu {
-	firstNameErr: boolean;
-	lastNameErr: boolean;
-	emailErr: boolean;
-	phoneErr: boolean;
-	countryErr: boolean;
-}
-
-export interface ILegalFormErrorsEu {
-	emailErr?: boolean;
-	phoneErr?: boolean;
-	registryCodeErr: boolean;
-	companyNameErr: boolean;
-	countryErr: boolean;
-	vatNumberErr?: boolean;
-}
+import {
+	IDiscounts,
+	IIndividualPersonForm,
+	IIndividualPersonFormErrors,
+	ILegalEntityForm,
+	ILegalEntityFormErrors,
+	ILegalEntityFormEuCom,
+	ILegalEntityFormEuComErrors,
+	IPrice,
+} from '@uspacy/sdk/lib/models/payments';
 
 export interface ICheckCardFill {
 	error: boolean;
@@ -97,11 +39,10 @@ export interface IState {
 	vatTaxStatus: string;
 	automaticSubscriptionRenewal: boolean;
 	individualPersonForm: IIndividualPersonForm;
-	legalForm: ILegalForm;
-	individualPersonFormEu: IIndividualPersonFormEu;
-	legalFormEu: ILegalFormEu;
+	legalEntityForm: ILegalEntityForm;
+	legalEntityFormEuCom: ILegalEntityFormEuCom;
 	individualPersonFormErrors: IIndividualPersonFormErrors;
-	legalFormErrors: ILegalFormErrors;
-	individualPersonFormErrorsEu: IIndividualPersonFormErrorsEu;
-	legalFormErrorsEu: ILegalFormErrorsEu;
+	legalEntityFormErrors: ILegalEntityFormErrors;
+	legalEntityFormEuComErrors: ILegalEntityFormEuComErrors;
+	vatTaxIdError: boolean;
 }
