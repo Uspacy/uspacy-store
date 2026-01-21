@@ -13,6 +13,7 @@ const initialState = {
 	app: {},
 	error: null,
 	loading: true,
+	loadingByApp: {},
 } as IState;
 
 const appsReducer = createSlice({
@@ -34,6 +35,7 @@ const appsReducer = createSlice({
 			state.allApps = state.allApps.map((it) => (it.id === action.payload.id ? { ...it, installed: action.payload.status } : it));
 		},
 		handlerInstallApp: (state, action: PayloadAction<{ id: number; status: boolean }>) => {
+			state.loadingByApp = { ...state.loadingByApp, [action.payload.id]: action.payload.status };
 			state.app = state.app.id === action.payload.id ? { ...state.app, installed: action.payload.status } : state.app;
 		},
 	},
