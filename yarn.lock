@@ -2519,10 +2519,10 @@
     lint-staged "15.2.10"
     localforage "1.10.0"
 
-"@uspacy/sdk@0.0.999-alpha.79":
-  version "0.0.999-alpha.79"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.79/951b5cc29ddc0617b86817be7e41342690bdba51#951b5cc29ddc0617b86817be7e41342690bdba51"
-  integrity sha512-UCySVTE+zdZtBMHPOwahlIBPjsWaahSBMZhfjEQK6N6XkrTKnCI0XsNtkk5SbMELNSWEn4HvF+xCrCnoCqE9yA==
+"@uspacy/sdk@0.0.999-alpha.80":
+  version "0.0.999-alpha.80"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.80/80240d85aa5f882e6d1c1cc23a88d938378b3b50#80240d85aa5f882e6d1c1cc23a88d938378b3b50"
+  integrity sha512-AIas3+4xN+pvZQGOWplc1ytyDv3a8y/GCLpLzLFDYvB+URRp4AKQdydO0XekH4buXKb9GcAmtjURQHS5/KMENw==
   dependencies:
     axios "^1.9.0"
     js-cookie "3.0.5"
@@ -8047,6 +8047,7 @@ string-argv@^0.3.1, string-argv@~0.3.2:
   integrity sha512-aqD2Q0144Z+/RqG52NeHEkZauTAUWJO8c6yTftGJKO3Tja5tUgIfmIl6kExvhtxSDP7fXB6DvzkfMpCd/F3G+Q==
 
 "string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0, string-width@^4.2.0:
+  name string-width-cjs
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -8931,6 +8932,7 @@ word-wrap@^1.2.5:
   integrity sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==
 
 "wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+  name wrap-ansi-cjs
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
