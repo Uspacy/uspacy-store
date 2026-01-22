@@ -178,10 +178,12 @@ const filtersReducer = createSlice({
 		},
 		updateCurrentFilters: (state, action: PayloadAction<{ entityCode: string; filters: Partial<IFilter>; smartFilters?: Partial<IFilter> }>) => {
 			state[action.payload.entityCode].filters = { ...state[action.payload.entityCode]?.filters, ...action.payload.filters };
-			state[action.payload.entityCode].smartFilters = { ...state[action.payload.entityCode]?.smartFilters, ...action.payload?.smartFilters };
 		},
 		updateCurrentFilterFields: (state, action: PayloadAction<{ entityCode: string; filterFields: Partial<IFilterField[]> }>) => {
 			state[action.payload.entityCode].filterFields = action.payload.filterFields;
+		},
+		updateCurrentSmartFilters: (state, action: PayloadAction<{ entityCode: string; smartFilters: Partial<IFilter> }>) => {
+			state[action.payload.entityCode].smartFilters = action.payload.smartFilters;
 		},
 	},
 });
@@ -196,5 +198,6 @@ export const {
 	unpinFilterPreset,
 	setCurrentFilterPreset,
 	updateCurrentFilterFields,
+	updateCurrentSmartFilters,
 } = filtersReducer.actions;
 export default filtersReducer.reducer;
