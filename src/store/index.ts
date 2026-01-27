@@ -29,6 +29,7 @@ import departments from './departments';
 import drawers from './drawers';
 import drawersManagement from './drawersManagement';
 import email from './email';
+import eventBuffer from './eventBuffer';
 import files from './files';
 import forms from './forms';
 import groups from './groups';
@@ -100,6 +101,7 @@ const rootReducer = combineReducers({
 	trash,
 	marketing,
 	drawers,
+	eventBuffer,
 });
 
 export const setupStore = () => {
