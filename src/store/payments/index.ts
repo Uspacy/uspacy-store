@@ -58,6 +58,7 @@ const initialState = {
 		contactPersonPhone: '',
 		contactPersonEmail: '',
 		itinCode: '',
+		edoEmail: '',
 	},
 	individualPersonFormEu: {
 		firstName: '',
@@ -84,6 +85,7 @@ const initialState = {
 		contactPersonPhoneErr: false,
 		contactPersonEmailErr: false,
 		itinCodeErr: false,
+		edoEmailErr: false,
 	},
 	individualPersonFormErrorsEu: {
 		firstNameErr: false,
