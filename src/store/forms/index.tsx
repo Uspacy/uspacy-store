@@ -218,5 +218,6 @@ export const {
 	updateAfterScreenField,
 	removeAfterScreenField,
 	updateDesignSettings,
+	updatePredefinedFieldsList,
 } = formsReducer.actions;
 export default formsReducer.reducer;
