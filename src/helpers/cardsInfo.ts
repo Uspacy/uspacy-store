@@ -68,6 +68,5 @@ export class CardsByEvents {
 	}
 }
 
-const cardsByEvents = new CardsByEvents();
-
+export const cardsByEvents = new CardsByEvents();
 export default cardsByEvents;
