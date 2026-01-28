@@ -62,6 +62,10 @@ export class CardsByEvents {
 		});
 		return total;
 	}
+
+	getListenersByEntityKey(): Map<string, Set<CardEventListener>> {
+		return this.listenersByEntityKey;
+	}
 }
 
 const cardsByEvents = new CardsByEvents();
