@@ -105,6 +105,66 @@ const itemsReducer = createSlice({
 				});
 			}
 		},
+		moveItemFromStageToStageLocal: (state, action: PayloadAction<IMoveCardsData>) => {
+			const { entityCode, entityId, stageId, reason_id, item } = action.payload;
+			if (state[entityCode]?.stages) {
+				state[entityCode].data = state[entityCode].data.map((item) => {
+					if (item.id === entityId) {
+						return {
+							...item,
+							kanban_stage_id: stageId,
+							updated_at: Math.floor(new Date().valueOf() / 1000),
+							kanban_reason_id: reason_id,
+							changed_by: item?.changed_by,
+							// ...(action.meta.arg.isFinishedStage && {
+							// 	first_closed_at: item?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
+							// 	closed_at: Math.floor(new Date().valueOf() / 1000),
+							// 	first_closed_by: item?.first_closed_by || action.meta.arg.profileId,
+							// 	closed_by: action.meta.arg.profileId,
+							// }),
+						};
+					}
+					return item;
+				});
+				// let foundEntityItem;
+				// for (const stage of Object.values(state[entityCode].stages)) {
+				// 	foundEntityItem = stage.data.find((item) => item.id === entityId);
+				// 	if (foundEntityItem) {
+				// 		break;
+				// 	}
+				// }
+				// if (!foundEntityItem) {
+				// 	return;
+				// }
+				// state[entityCode].stages = Object.fromEntries(
+				// 	Object.entries(state[entityCode].stages).map(([key, value]) => {
+				// 		if (+key === stageId) {
+				// 			const data = value.data;
+				// 			data.splice(destinationIndex || 0, 0, {
+				// 				...foundEntityItem,
+				// 				...(action.meta.arg.isFinishedStage && {
+				// 					first_closed_at: foundEntityItem?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
+				// 					closed_at: Math.floor(new Date().valueOf() / 1000),
+				// 					first_closed_by: foundEntityItem?.first_closed_by || action.meta.arg.profileId,
+				// 					closed_by: action.meta.arg.profileId,
+				// 				}),
+				// 			});
+				// 			return [
+				// 				key,
+				// 				{
+				// 					...value,
+				// 					data,
+				// 					meta: { ...value.meta, total: (value?.meta?.total || 0) + 1 },
+				// 				},
+				// 			];
+				// 		}
+				// 		const filteredData = value.data.filter((item) => item.id !== entityId);
+				// 		const total = filteredData.length === value.data.length ? value.meta?.total : value.meta?.total - 1;
+				// 		return [key, { ...value, data: filteredData, meta: { ...value.meta, total: total || 0 } }];
+				// 	}),
+				// );
+			}
+		},
 	},
 	extraReducers: {
 		[fetchEntityItems.fulfilled.type]: (
@@ -535,5 +595,13 @@ const itemsReducer = createSlice({
 		},
 	},
 });
-export const { changeReason, clearItems, setViewModalOpen, setCreateModalOpen, setCompleteModalOpen, updateEntityItemLocal } = itemsReducer.actions;
+export const {
+	changeReason,
+	clearItems,
+	setViewModalOpen,
+	setCreateModalOpen,
+	setCompleteModalOpen,
+	updateEntityItemLocal,
+	moveItemFromStageToStageLocal,
+} = itemsReducer.actions;
 export default itemsReducer.reducer;
