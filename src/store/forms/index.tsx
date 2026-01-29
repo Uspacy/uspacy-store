@@ -150,6 +150,12 @@ const formsReducer = createSlice({
 				state.form.config.predefinedFields.push(action.payload);
 			}
 		},
+		addPredefinedField: (state, action: PayloadAction<IPredefinedField>) => {
+			state.form.config.predefinedFields.push(action.payload);
+		},
+		removePredefinedField: (state, action: PayloadAction<IPredefinedField['type']>) => {
+			state.form.config.predefinedFields = state.form.config.predefinedFields.filter((field) => field.type !== action.payload);
+		},
 		updateFieldsOrder: (state, action: PayloadAction<{ sortedArr: string[]; isScreenAfterSend?: boolean; isOutsideSort?: boolean }>) => {
 			const { sortedArr, isScreenAfterSend, isOutsideSort } = action.payload;
 
@@ -215,5 +221,7 @@ export const {
 	updateAfterScreenField,
 	removeAfterScreenField,
 	updateDesignSettings,
+	removePredefinedField,
+	addPredefinedField,
 } = formsReducer.actions;
 export default formsReducer.reducer;
