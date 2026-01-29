@@ -106,7 +106,7 @@ const itemsReducer = createSlice({
 			}
 		},
 		moveItemFromStageToStageLocal: (state, action: PayloadAction<IMoveCardsData>) => {
-			const { entityCode, entityId, stageId, reason_id, item } = action.payload;
+			const { entityCode, entityId, stageId, reason_id: reasonId } = action.payload;
 			if (state[entityCode]?.stages) {
 				state[entityCode].data = state[entityCode].data.map((item) => {
 					if (item.id === entityId) {
@@ -114,7 +114,7 @@ const itemsReducer = createSlice({
 							...item,
 							kanban_stage_id: stageId,
 							updated_at: Math.floor(new Date().valueOf() / 1000),
-							kanban_reason_id: reason_id,
+							kanban_reason_id: reasonId ?? null,
 							changed_by: item?.changed_by,
 							// ...(action.meta.arg.isFinishedStage && {
 							// 	first_closed_at: item?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
