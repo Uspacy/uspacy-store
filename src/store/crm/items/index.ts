@@ -75,6 +75,36 @@ const itemsReducer = createSlice({
 			const { entityCode, value } = action.payload;
 			state[entityCode].completeModalOpen = value;
 		},
+		updateEntityItemLocal: (state, action: PayloadAction<{ data: IEntityData; entityCode: string; stageId?: number }>) => {
+			const { entityCode } = action.payload;
+			const stageId = action.payload?.stageId;
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].errorMessage = null;
+				state[entityCode].data = state[entityCode].data.map((item) => {
+					if (item.id === action.payload.data.id) {
+						return {
+							...item,
+							...action.payload.data,
+						};
+					}
+					return item;
+				});
+			}
+
+			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
+				state[entityCode].stages[stageId].loading = false;
+				state[entityCode].stages[stageId].errorMessage = null;
+				state[entityCode].stages[stageId].data = state[entityCode].stages[stageId].data.map((item) => {
+					if (item.id === action.payload.data.id) {
+						return {
+							...item,
+							...action.payload.data,
+						};
+					}
+					return item;
+				});
+			}
+		},
 	},
 	extraReducers: {
 		[fetchEntityItems.fulfilled.type]: (
@@ -505,5 +535,5 @@ const itemsReducer = createSlice({
 		},
 	},
 });
-export const { changeReason, clearItems, setViewModalOpen, setCreateModalOpen, setCompleteModalOpen } = itemsReducer.actions;
+export const { changeReason, clearItems, setViewModalOpen, setCreateModalOpen, setCompleteModalOpen, updateEntityItemLocal } = itemsReducer.actions;
 export default itemsReducer.reducer;
