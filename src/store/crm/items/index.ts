@@ -223,6 +223,17 @@ const itemsReducer = createSlice({
 				);
 			}
 		},
+		deleteEntityItemLocal: (state, action: PayloadAction<{ id: number; entityCode: string; stageId?: number }>) => {
+			const { entityCode, stageId, id } = action.payload;
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].data = state[entityCode].data.filter((item) => item.id !== id);
+				state[entityCode].meta.total--;
+			}
+			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
+				state[entityCode].stages[stageId].data = state[entityCode].stages[stageId].data.filter((item) => item.id !== id);
+				state[entityCode].stages[stageId].meta.total--;
+			}
+		},
 	},
 	extraReducers: {
 		[fetchEntityItems.fulfilled.type]: (
@@ -757,5 +768,6 @@ export const {
 	setCompleteModalOpen,
 	updateEntityItemLocal,
 	moveItemFromStageToStageLocal,
+	deleteEntityItemLocal,
 } = itemsReducer.actions;
 export default itemsReducer.reducer;
