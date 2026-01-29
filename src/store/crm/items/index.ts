@@ -126,43 +126,43 @@ const itemsReducer = createSlice({
 					}
 					return item;
 				});
-				// let foundEntityItem;
-				// for (const stage of Object.values(state[entityCode].stages)) {
-				// 	foundEntityItem = stage.data.find((item) => item.id === entityId);
-				// 	if (foundEntityItem) {
-				// 		break;
-				// 	}
-				// }
-				// if (!foundEntityItem) {
-				// 	return;
-				// }
-				// state[entityCode].stages = Object.fromEntries(
-				// 	Object.entries(state[entityCode].stages).map(([key, value]) => {
-				// 		if (+key === stageId) {
-				// 			const data = value.data;
-				// 			data.splice(destinationIndex || 0, 0, {
-				// 				...foundEntityItem,
-				// 				...(action.meta.arg.isFinishedStage && {
-				// 					first_closed_at: foundEntityItem?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
-				// 					closed_at: Math.floor(new Date().valueOf() / 1000),
-				// 					first_closed_by: foundEntityItem?.first_closed_by || action.meta.arg.profileId,
-				// 					closed_by: action.meta.arg.profileId,
-				// 				}),
-				// 			});
-				// 			return [
-				// 				key,
-				// 				{
-				// 					...value,
-				// 					data,
-				// 					meta: { ...value.meta, total: (value?.meta?.total || 0) + 1 },
-				// 				},
-				// 			];
-				// 		}
-				// 		const filteredData = value.data.filter((item) => item.id !== entityId);
-				// 		const total = filteredData.length === value.data.length ? value.meta?.total : value.meta?.total - 1;
-				// 		return [key, { ...value, data: filteredData, meta: { ...value.meta, total: total || 0 } }];
-				// 	}),
-				// );
+				let foundEntityItem;
+				for (const stage of Object.values(state[entityCode].stages)) {
+					foundEntityItem = stage.data.find((item) => item.id === entityId);
+					if (foundEntityItem) {
+						break;
+					}
+				}
+				if (!foundEntityItem) {
+					return;
+				}
+				state[entityCode].stages = Object.fromEntries(
+					Object.entries(state[entityCode].stages).map(([key, value]) => {
+						if (+key === stageId) {
+							const data = value.data;
+							data.splice(0, 0, {
+								...foundEntityItem,
+								// ...(action.meta.arg.isFinishedStage && {
+								// 	first_closed_at: foundEntityItem?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
+								// 	closed_at: Math.floor(new Date().valueOf() / 1000),
+								// 	first_closed_by: foundEntityItem?.first_closed_by || action.meta.arg.profileId,
+								// 	closed_by: action.meta.arg.profileId,
+								// }),
+							});
+							return [
+								key,
+								{
+									...value,
+									data,
+									meta: { ...value.meta, total: (value?.meta?.total || 0) + 1 },
+								},
+							];
+						}
+						const filteredData = value.data.filter((item) => item.id !== entityId);
+						const total = filteredData.length === value.data.length ? value.meta?.total : value.meta?.total - 1;
+						return [key, { ...value, data: filteredData, meta: { ...value.meta, total: total || 0 } }];
+					}),
+				);
 			}
 		},
 	},
