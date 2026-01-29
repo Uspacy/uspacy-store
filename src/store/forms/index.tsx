@@ -30,6 +30,7 @@ export const initialDesignState: IFormDesign = {
 	},
 	otherSettings: {
 		logoIsInTheFormHeader: false,
+		currenciesOptions: [],
 	},
 };
 
