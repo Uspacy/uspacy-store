@@ -51,6 +51,14 @@ export const externalChatSlice = createSlice({
 		addChatToActive(state, action: PayloadAction<IChat>) {
 			state.externalChats.items.active = [action.payload, ...state.externalChats.items.active];
 		},
+		addChatToActiveIfDontExists(state, action: PayloadAction<IChat>) {
+			if (state.externalChats.items.active.findIndex((chat) => chat.id === action.payload.id) !== -1) {
+				return;
+			}
+			state.externalChats.items.active = [action.payload, ...state.externalChats.items.active];
+			state.externalChats.items.undistributed = state.externalChats.items.undistributed.filter((chat) => chat.id !== action.payload.id);
+			state.externalChats.items.inactive = state.externalChats.items.inactive.filter((chat) => chat.id !== action.payload.id);
+		},
 		addChatToInactive(state, action: PayloadAction<IChat>) {
 			state.externalChats.items.inactive = [action.payload, ...state.externalChats.items.inactive];
 		},
@@ -72,9 +80,6 @@ export const externalChatSlice = createSlice({
 		unshiftLastMessage(state, action: PayloadAction<{ chatId: string; item: IMessage; profile: IUser }>) {
 			const { chatId, item, profile } = action.payload;
 			state.externalChats.items = updateLastMessageInExternalChat(state.externalChats.items, chatId, item, profile);
-		},
-		appendChatsToUndistributed(state, action: PayloadAction<IChat>) {
-			state.externalChats.items.undistributed = [action.payload, ...state.externalChats.items.undistributed];
 		},
 		addExternalMembersAction(state, action: PayloadAction<{ id: string; members: number[] }>) {
 			state.externalChats.items = {
@@ -207,6 +212,7 @@ export const {
 	setCurrentChat,
 	unsetCurrentChat,
 	addChatToActive,
+	addChatToActiveIfDontExists,
 	addChatToInactive,
 	removeChatFromUndistributed,
 	removeChatFromActive,
@@ -214,7 +220,6 @@ export const {
 	removeChatFromInactive,
 	updateChat,
 	addChatToUndistributed,
-	appendChatsToUndistributed,
 	addExternalMembersAction,
 	deleteExternalMembersAction,
 	readLastMessageInExternalChat,
