@@ -368,7 +368,7 @@ export const getEntitiesCurrenciesAmount = createAsyncThunk(
 			};
 
 			const res = await uspacySdk.crmEntitiesService.getEntitiesCurrenciesAmount(
-				{ filter: { ...getParams() }, ...currenciesParams },
+				{ filters: { ...getParams() }, ...currenciesParams },
 				entityCode,
 				stageId,
 			);
