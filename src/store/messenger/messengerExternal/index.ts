@@ -68,6 +68,14 @@ export const externalChatSlice = createSlice({
 			state.externalChats.items.undistributed = state.externalChats.items.undistributed.filter((chat) => chat.id !== action.payload.id);
 			state.externalChats.items.inactive = state.externalChats.items.inactive.filter((chat) => chat.id !== action.payload.id);
 		},
+		addChatToActiveIfDontExists(state, action: PayloadAction<IChat>) {
+			if (state.externalChats.items.active.findIndex((chat) => chat.id === action.payload.id) !== -1) {
+				return;
+			}
+			state.externalChats.items.active = [action.payload, ...state.externalChats.items.active];
+			state.externalChats.items.undistributed = state.externalChats.items.undistributed.filter((chat) => chat.id !== action.payload.id);
+			state.externalChats.items.inactive = state.externalChats.items.inactive.filter((chat) => chat.id !== action.payload.id);
+		},
 		addChatToInactive(state, action: PayloadAction<IChat>) {
 			state.externalChats.items.inactive = [action.payload, ...state.externalChats.items.inactive];
 			state.externalChats.journalList.data = updateChatById(state.externalChats.journalList.data, action.payload);
