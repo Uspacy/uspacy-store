@@ -133,4 +133,5 @@ export class CardsByEvents {
 	}
 }
 
-export default new CardsByEvents();
+export const cardsByEvents = new CardsByEvents();
+export default cardsByEvents;
