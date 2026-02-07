@@ -30,7 +30,6 @@ import drawers from './drawers';
 import drawersManagement from './drawersManagement';
 import email from './email';
 import eventBuffer from './eventBuffer';
-import eventBufferUpdate from './eventBufferUpdate';
 import files from './files';
 import forms from './forms';
 import groups from './groups';
@@ -103,7 +102,6 @@ const rootReducer = combineReducers({
 	marketing,
 	drawers,
 	eventBuffer,
-	eventBufferUpdate,
 });
 
 export const setupStore = () => {
