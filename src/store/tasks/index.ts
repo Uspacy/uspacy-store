@@ -278,14 +278,8 @@ const tasksReducer = createSlice({
 			if (state?.task?.id) {
 				state.task = action.payload;
 			}
-			if (state.isKanban || state.isHierarchy) {
-				state.changeTask = action?.payload;
-			}
 		},
 		deleteItemLocal: (state, action: PayloadAction<IDeleteTaskPayload>) => {
-			if (state.isKanban || state.isHierarchy) {
-				state.deleteTaskId = +action?.payload?.id;
-			}
 			if (state.isTable) {
 				state.meta.total = state.meta.total - 1;
 			}
