@@ -74,9 +74,9 @@ export interface ICheckCardFill {
 	complete: boolean;
 }
 
-export type TariffType = 'email_credits_10k' | 'email_credits_100k' | 'professional' | 'standard' | 'free';
+export type TariffType = 'mail_10' | 'mail_100' | 'professional' | 'standard' | 'free';
 export type DurationViewType = 'yearly' | 'monthly' | 'emailCredits';
-export type RadioValueTariffStateType = 'email_credits_10k' | 'email_credits_100k' | 'professional' | 'standard';
+export type RadioValueTariffStateType = 'mail_10' | 'mail_100' | 'professional' | 'standard';
 export type TypeOfPayerType = 'individual' | 'legalEntityIndividualEntrepreneur';
 export type PaymentMethodType = 'card' | 'bank_transfer';
 export type TariffActionType = 'extendTheTariff' | 'changeTheTariff' | 'emailCredits';
