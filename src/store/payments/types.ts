@@ -18,6 +18,7 @@ export interface ILegalForm {
 	contactPersonPhone: string;
 	contactPersonEmail: string;
 	itinCode: string;
+	edoEmail: string;
 }
 
 export interface IIndividualPersonFormEu {
@@ -48,6 +49,7 @@ export interface ILegalFormErrors {
 	contactPersonPhoneErr: boolean;
 	contactPersonEmailErr: boolean;
 	itinCodeErr: boolean;
+	edoEmailErr: boolean;
 }
 
 export interface IIndividualPersonFormErrorsEu {
