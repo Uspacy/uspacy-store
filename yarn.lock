@@ -2519,10 +2519,17 @@
     lint-staged "15.2.10"
     localforage "1.10.0"
 
+<<<<<<< HEAD
 "@uspacy/sdk@0.0.999-alpha.91":
   version "0.0.999-alpha.91"
   resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.91/1661e5035cf42ced164f20846c38d267068e8ab2#1661e5035cf42ced164f20846c38d267068e8ab2"
   integrity sha512-jPC4keVJIUmL0geczCqDa3AqF2kq9Cwu+Z+yN6cmor1dYRTKnQePgcq9cQ8vyC9/9/j0mZ/896ZLqp1+XNgcaw==
+=======
+"@uspacy/sdk@0.0.999-alpha.92":
+  version "0.0.999-alpha.92"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.92/99c107d0b13e66fe45957108c7c031544167be89#99c107d0b13e66fe45957108c7c031544167be89"
+  integrity sha512-LXWvDCANHDiQm8WGa7toJS8xOChhlIqs1wldrzeVkv8ODXUE67is7UogyTl9Jl+9jZ+Wi/NA9+pJFDBAuA4NlA==
+>>>>>>> feature/7659_entity_reminders
   dependencies:
     axios "^1.9.0"
     js-cookie "3.0.5"
@@ -8051,6 +8058,7 @@ string-argv@^0.3.1, string-argv@~0.3.2:
   resolved "https://registry.yarnpkg.com/string-argv/-/string-argv-0.3.2.tgz#2b6d0ef24b656274d957d54e0a4bbf6153dc02b6"
   integrity sha512-aqD2Q0144Z+/RqG52NeHEkZauTAUWJO8c6yTftGJKO3Tja5tUgIfmIl6kExvhtxSDP7fXB6DvzkfMpCd/F3G+Q==
 
+<<<<<<< HEAD
 "string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0, string-width@^4.2.0:
   name string-width-cjs
   version "4.2.3"
@@ -8065,6 +8073,12 @@ string-width@4.2.2:
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.2.tgz#dafd4f9559a7585cfba529c6a0a4f73488ebd4c5"
   integrity sha512-XBJbT3N4JhVumXE0eoLU9DCjcaF92KLNqTmFCnG1pf8duUxFGwtP6AD6nkjw9a3IdiRtL3E2w3JDiE/xi3vOeA==
+=======
+"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+>>>>>>> feature/7659_entity_reminders
   dependencies:
     emoji-regex "^8.0.0"
     is-fullwidth-code-point "^3.0.0"
@@ -8138,6 +8152,7 @@ string_decoder@~1.1.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+<<<<<<< HEAD
   dependencies:
     ansi-regex "^5.0.1"
 
@@ -8145,6 +8160,8 @@ strip-ansi@5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-5.2.0.tgz#8c9a536feb6afc962bdfa5b104a5091c1ad9c0ae"
   integrity sha512-DuRs1gKbBqsMKIZlrffwlug8MHkcnpjs5VPmL1PAh+mA30U0DTotfDZ0d2UUsXpPmPmMMJ6W773MaA3J+lbiWA==
+=======
+>>>>>>> feature/7659_entity_reminders
   dependencies:
     ansi-regex "^4.1.0"
 
@@ -8952,8 +8969,12 @@ word-wrap@^1.2.5:
   resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.5.tgz#d2c45c6dd4fbce621a66f136cbe328afd0410b34"
   integrity sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==
 
+<<<<<<< HEAD
 "wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@7.0.0, wrap-ansi@^7.0.0:
   name wrap-ansi-cjs
+=======
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+>>>>>>> feature/7659_entity_reminders
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
