@@ -9,3 +9,12 @@ export const fetchStages = createAsyncThunk('stages/fetchStages', async (groupId
 		return thunkAPI.rejectWithValue('Failure');
 	}
 });
+
+export const getTasksAllGroupsStages = createAsyncThunk('stages/getTasksAllGroupsStages', async (_, thunkAPI) => {
+	try {
+		const res = await uspacySdk.tasksStagesService.getTasksAllGroupsStages();
+		return res.data;
+	} catch (e) {
+		return thunkAPI.rejectWithValue('Failure');
+	}
+});
