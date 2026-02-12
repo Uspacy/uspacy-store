@@ -201,9 +201,9 @@ export const redirectToOauthLink = createAsyncThunk(
 
 export const receiveToOauthLink = createAsyncThunk(
 	'email/receiveToOauthLink',
-	async ({ code, service }: { code: string; service: string }, thunkAPI) => {
+	async ({ code, service, state }: { code: string; service: string; state?: string }, thunkAPI) => {
 		try {
-			const res = await uspacySdk.emailService.receiveToOauthLink(code, service);
+			const res = await uspacySdk.emailService.receiveToOauthLink(code, service, state);
 			return res.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
