@@ -1,28 +1,10 @@
+import { IEmailNewsletter } from '@uspacy/sdk/lib/models/email-newsletter';
 import { IEmailTemplate } from '@uspacy/sdk/lib/models/email-template';
-import { IEmailTemplateFilter } from '@uspacy/sdk/lib/models/email-template-filter';
-import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
+import { IMarketingFilter } from '@uspacy/sdk/lib/models/marketing-filter';
 
-export interface IMassActionsEmailTemplatesPayload {
+export interface IMassActionsMarketingPayload {
 	id: number[];
-	payload?: Partial<IEmailTemplate>;
+	payload?: Partial<IEmailTemplate | IEmailNewsletter>;
 	all?: boolean;
-	params?: Partial<IEmailTemplateFilter>;
-}
-
-export interface IState {
-	emailTemplates: IResponseWithMeta<IEmailTemplate>;
-	emailTemplatesCards: IEmailTemplate[];
-	emailTemplate: IEmailTemplate;
-	emailTemplatesFilter: IEmailTemplateFilter;
-	loadingEmailTemplates: boolean;
-	loadingEmailTemplate: boolean;
-	loadingCreatingEmailTemplate: boolean;
-	loadingUpdatingEmailTemplate: boolean;
-	loadingDeletingEmailTemplate: boolean;
-	errorLoadingEmailTemplates: IErrorsAxiosResponse;
-	errorLoadingEmailTemplate: IErrorsAxiosResponse;
-	errorLoadingCreatingEmailTemplate: IErrorsAxiosResponse;
-	errorLoadingUpdatingEmailTemplate: IErrorsAxiosResponse;
-	errorLoadingDeletingEmailTemplate: IErrorsAxiosResponse;
+	params?: Partial<IMarketingFilter>;
 }

@@ -11,6 +11,12 @@ export interface INotification {
 	mentioned?: boolean;
 	createdAt: number;
 	commentEntityTitle?: string;
+	drawerInfo: {
+		entityCode: string;
+		service: string;
+		entityId: number;
+		commentId: number | null;
+	};
 }
 
 export interface IState {

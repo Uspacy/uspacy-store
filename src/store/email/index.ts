@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
 import {

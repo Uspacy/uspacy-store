@@ -23,6 +23,7 @@ export interface IInvite {
 	firstName?: string;
 	lastName?: string;
 	email: string;
+	external_user: boolean;
 }
 
 export interface IUploadAvatar {

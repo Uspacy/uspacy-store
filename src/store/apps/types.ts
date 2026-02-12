@@ -9,4 +9,5 @@ export interface IState {
 	app: IApp;
 	loading: boolean;
 	error: IErrorsAxiosResponse;
+	loadingByApp?: Record<string, boolean>;
 }

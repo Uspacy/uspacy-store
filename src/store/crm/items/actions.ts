@@ -2,7 +2,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
-import { ICallFilters, IEntityFilters, IFilterCurrenciesAmount } from '@uspacy/sdk/lib/models/crm-filters';
+import { ICallFilters, IEntityFilters, IFilter, IFilterCurrenciesAmount } from '@uspacy/sdk/lib/models/crm-filters';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IProduct } from '@uspacy/sdk/lib/models/crm-products';
 import { IField } from '@uspacy/sdk/lib/models/field';
@@ -40,6 +40,8 @@ export const fetchEntityItems = createAsyncThunk(
 						duration_by: durationBy,
 						duration_from: durationFrom,
 						duration_to: durationTo,
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						boolean_operator: booleanOperator,
 						...otherParams
 					} = params;
 					const filter = {
@@ -51,24 +53,13 @@ export const fetchEntityItems = createAsyncThunk(
 					return res?.data;
 				}
 				case 'products': {
-					// TODO refactor this mess
-					// eslint-disable-next-line camelcase, @typescript-eslint/no-explicit-any
-					const filterCopy = { ...filters } as any;
 					const productCategoryIds = normalizeCategories(filters.select);
 					const withoutCategories = productCategoryIds === null;
 					const newParams = {
 						...params,
-						currency: (filterCopy.price_from || filterCopy.price_to) && filterCopy.currency,
-						...(filterCopy.price_from ? { price_from: Math.round(filterCopy.price_from * 100) } : {}),
-						...(filterCopy.price_to ? { price_to: Math.round(filterCopy.price_to * 100) } : {}),
-						is_active: filterCopy.is_active.map((it) => {
-							if (typeof it !== 'boolean') return it;
-							if (it) return 1;
-							return 0;
-						}),
 						product_category_ids: withoutCategories ? ' ' : normalizeCategories(filters.select),
 					};
-					const res = await uspacySdk.crmProductsService.getProductsWithFilters(newParams);
+					const res = await uspacySdk.crmProductsService.getProductsWithFilters(newParams as IFilter);
 					return res?.data;
 				}
 				case 'tasks':
@@ -131,6 +122,7 @@ export const createEntityItem = createAsyncThunk(
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					return normalizeProductForView(resData as any);
 				}
+				case 'activities':
 				case 'tasks': {
 					// eslint-disable-next-line @typescript-eslint/no-unused-vars
 					const { id, ...rest } = data;
@@ -163,6 +155,7 @@ export const updateEntityItem = createAsyncThunk(
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					return normalizeProductForView(resData as any);
 				}
+				case 'activities':
 				case 'tasks': {
 					const res = await uspacySdk.crmTasksService.updateTask(data.id, data);
 					return res?.data;
@@ -187,6 +180,7 @@ export const deleteEntityItem = createAsyncThunk(
 				case 'products': {
 					return await uspacySdk?.crmProductsService?.deleteProduct(id);
 				}
+				case 'activities':
 				case 'tasks': {
 					return await uspacySdk.crmTasksService.deleteTask(id);
 				}
@@ -208,17 +202,16 @@ export const massItemsEditing = createAsyncThunk(
 	) => {
 		try {
 			switch (entityCode) {
+				case 'activities':
 				case 'tasks': {
-					return await uspacySdk.crmTasksService.massTasksEditing({
-						all,
-						entityIds,
-						exceptIds,
-						params: all && params?.length ? params : undefined,
-						payload,
-						settings,
-					});
-				}
-				case 'activities': {
+					if (payload?.status === 'planned') {
+						return await uspacySdk.crmTasksService.massTasksReopen({
+							all,
+							entityIds,
+							exceptIds,
+							params: all && params?.length ? params : undefined,
+						});
+					}
 					return await uspacySdk.crmTasksService.massTasksEditing({
 						all,
 						entityIds,
@@ -250,6 +243,7 @@ export const massItemsDeletion = createAsyncThunk(
 	async ({ entityCode, entityIds, exceptIds, all, params }: IMassActions & { entityCode: string; stageId?: number }, { rejectWithValue }) => {
 		try {
 			switch (entityCode) {
+				case 'activities':
 				case 'tasks': {
 					return await uspacySdk.crmTasksService.massTasksDeletion({
 						all,
@@ -302,18 +296,19 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 			const { table_fields, ...filtersParams } = filters as any;
 			const params = getFilterParams(filtersParams as IEntityFilters, fields || []);
 			switch (entityCode) {
+				case 'activities':
 				case 'tasks': {
 					const res = await uspacySdk.crmTasksService.getTasksWithFilters(params);
 					return res?.data;
 				}
 				case 'deals': {
-					const dealsParams = getDealsParams(filters, params);
+					const dealsParams = getDealsParams(filters, getFilterParams(filters, fields || []));
 
 					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, dealsParams, stageId);
 					return res?.data;
 				}
 				default: {
-					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, params, stageId);
+					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, getFilterParams(filters, fields || []), stageId);
 					return res?.data;
 				}
 			}
@@ -325,10 +320,50 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 
 export const getEntitiesCurrenciesAmount = createAsyncThunk(
 	'deals/getEntitiesCurrenciesAmount',
-	async ({ params, entityCode, stageId }: { params: IFilterCurrenciesAmount; entityCode: string; stageId: number }, thunkAPI) => {
+	async (
+		{
+			filters,
+			currenciesParams,
+			fields,
+			entityCode,
+			stageId,
+		}: {
+			filters: Omit<IEntityFilters, 'openDatePicker'>;
+			currenciesParams: IFilterCurrenciesAmount;
+			fields: IField[];
+			entityCode: string;
+			stageId: number;
+		},
+		thunkAPI,
+	) => {
 		try {
-			const res = await uspacySdk.crmEntitiesService.getEntitiesCurrenciesAmount(params, entityCode, stageId);
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars, camelcase
+			const { table_fields, ...filtersParams } = filters;
+			const params = getFilterParams(filtersParams as IEntityFilters, fields || []) as IFilterCurrenciesAmount;
+
+			const getParams = () => {
+				if (entityCode === 'deals') return getDealsParams(filters, params) as IFilterCurrenciesAmount;
+				return params;
+			};
+
+			const res = await uspacySdk.crmEntitiesService.getEntitiesCurrenciesAmount(
+				{ filter: { ...getParams() }, ...currenciesParams },
+				entityCode,
+				stageId,
+			);
 			return res.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
+
+export const uploadEntityItemAvatar = createAsyncThunk(
+	'crm/items/uploadEntityItemAvatar',
+	async ({ file, entityCode, id }: { file: File | null; entityCode: string; id: number }, thunkAPI) => {
+		try {
+			const res = await uspacySdk.crmEntitiesService.uploadAvatar({ file, code: entityCode, id });
+			return res?.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
 		}
