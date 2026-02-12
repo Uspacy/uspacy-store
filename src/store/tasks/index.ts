@@ -280,6 +280,9 @@ const tasksReducer = createSlice({
 			}
 		},
 		deleteItemLocal: (state, action: PayloadAction<IDeleteTaskPayload>) => {
+			if (state.isHierarchy) {
+				state.deleteTaskId = +action?.payload?.id;
+			}
 			if (state.isTable) {
 				state.meta.total = state.meta.total - 1;
 			}
