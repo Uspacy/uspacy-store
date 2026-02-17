@@ -1,5 +1,5 @@
 import { IChat, ICrmConnectEntity, IExternalChatsItems } from '@uspacy/sdk/lib/models/messenger';
-import { IMeta } from '@uspacy/sdk/lib/models/tasks';
+import { IMeta, ITask } from '@uspacy/sdk/lib/models/tasks';
 
 export interface IState {
 	externalChats: {
@@ -14,5 +14,7 @@ export interface IState {
 			companies: ICrmConnectEntity[];
 			deals: ICrmConnectEntity[];
 		};
+		connectedTasks: ITask[];
+		isLoadingConnectedTasks: boolean;
 	};
 }
