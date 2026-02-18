@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IStages } from '@uspacy/sdk/lib/models/tasks-stages';
 
-import { fetchStages } from './actions';
+import { fetchStages, getTasksAllGroupsStages } from './actions';
 import { IMoveCard, IState } from './types';
 
 const initialDndItem = {
@@ -17,17 +18,19 @@ const initialDndItem = {
 
 const initialState = {
 	stages: null,
+	allGroupsStages: null,
 	dndItem: initialDndItem,
 	loadingStages: false,
 	addingStage: false,
 	editingStage: false,
 	deletingStage: false,
 	loadingMoveTask: false,
-	errorLoadingStages: '',
-	errorAddingStage: '',
-	errorEditingStage: '',
-	errorDeletingStage: '',
-	errorLoadingMoveTask: '',
+	errorLoadingStages: null,
+	errorLoadingAllGroupsStages: null,
+	errorAddingStage: null,
+	errorEditingStage: null,
+	errorDeletingStage: null,
+	errorLoadingMoveTask: null,
 } as IState;
 
 const stagesReducer = createSlice({
@@ -44,16 +47,26 @@ const stagesReducer = createSlice({
 	extraReducers: {
 		[fetchStages.fulfilled.type]: (state, action: PayloadAction<IStages>) => {
 			state.loadingStages = false;
-			state.errorLoadingStages = '';
+			state.errorLoadingStages = null;
 			state.stages = action.payload;
 		},
 		[fetchStages.pending.type]: (state) => {
 			state.loadingStages = true;
-			state.errorLoadingStages = '';
+			state.errorLoadingStages = null;
 		},
-		[fetchStages.rejected.type]: (state, action: PayloadAction<string>) => {
+		[fetchStages.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingStages = false;
 			state.errorLoadingStages = action.payload;
+		},
+		[getTasksAllGroupsStages.fulfilled.type]: (state, action: PayloadAction<IStages>) => {
+			state.errorLoadingAllGroupsStages = null;
+			state.allGroupsStages = action.payload;
+		},
+		[getTasksAllGroupsStages.pending.type]: (state) => {
+			state.errorLoadingAllGroupsStages = null;
+		},
+		[getTasksAllGroupsStages.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.errorLoadingAllGroupsStages = action.payload;
 		},
 	},
 });
