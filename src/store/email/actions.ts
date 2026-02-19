@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
-import { IConnectEmailBox } from '@uspacy/sdk/lib/services/EmailService/connect-email-box.dto';
+import { IEmailBox } from '@uspacy/sdk/lib/models/email';
 import { ICreateLetterPayload } from '@uspacy/sdk/lib/services/EmailService/create-email.dto';
 import { ISignaturePayload } from '@uspacy/sdk/lib/services/EmailService/signature.dto';
 
@@ -25,7 +25,7 @@ export const getEmailBox = createAsyncThunk('email/getEmailBox', async (id: numb
 	}
 });
 
-export const connectEmailBox = createAsyncThunk('email/connectEmailBox', async (data: IConnectEmailBox, thunkAPI) => {
+export const connectEmailBox = createAsyncThunk('email/connectEmailBox', async (data: Partial<IEmailBox>, thunkAPI) => {
 	try {
 		const res = await uspacySdk.emailService.connectEmailBox(data);
 		return res.data;
