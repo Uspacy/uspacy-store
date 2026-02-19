@@ -27,8 +27,8 @@ const initialState = {
 	price: {
 		professional: 1,
 		standard: 1,
-		email_credits_10k: 1,
-		email_credits_100k: 1,
+		mail_10: 1,
+		mail_100: 1,
 	},
 	usersCount: 0,
 	emailCreditsCount: 0,
@@ -58,6 +58,7 @@ const initialState = {
 		contactPersonPhone: '',
 		contactPersonEmail: '',
 		itinCode: '',
+		edoEmail: '',
 	},
 	individualPersonFormEu: {
 		firstName: '',
@@ -84,6 +85,7 @@ const initialState = {
 		contactPersonPhoneErr: false,
 		contactPersonEmailErr: false,
 		itinCodeErr: false,
+		edoEmailErr: false,
 	},
 	individualPersonFormErrorsEu: {
 		firstNameErr: false,
