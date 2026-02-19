@@ -175,7 +175,7 @@ const emailReducer = createSlice({
 		setCrmConnectStatus: (state, action: PayloadAction<number>) => {
 			state.emailBox = {
 				...state.emailBox,
-				crm_integration_enabled: action.payload,
+				crm_integration_enabled: !!action.payload,
 			};
 		},
 		setCrmSetting: (state, action: PayloadAction<{ key: ESettingName; value: ICrmSetting['setting_value'] }>) => {
