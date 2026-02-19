@@ -353,7 +353,6 @@ const emailReducer = createSlice({
 			state.loadingConnectEmailBox = false;
 			state.errorLoadingConnectEmailBox = null;
 			state.connectedEmailBox = action.payload;
-			state.emailBoxes.data = [...state.emailBoxes.data, action.payload];
 		},
 		[receiveToOauthLink.pending.type]: (state) => {
 			state.loadingConnectEmailBox = true;
