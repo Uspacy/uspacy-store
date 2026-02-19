@@ -271,6 +271,25 @@ const tasksReducer = createSlice({
 		setAiTaskData: (state, action: PayloadAction<Partial<ITask>>) => {
 			state.aiTaskData = action.payload;
 		},
+		updateItemLocal: (state, action: PayloadAction<ITask>) => {
+			if (state.isTable) {
+				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
+			}
+			if (state?.task?.id) {
+				state.task = action.payload;
+			}
+		},
+		deleteItemLocal: (state, action: PayloadAction<IDeleteTaskPayload>) => {
+			if (state.isHierarchy) {
+				state.deleteTaskId = +action?.payload?.id;
+			}
+			if (state.isTable) {
+				state.meta.total = state.meta.total - 1;
+				if (state.tasksServiceType === action.payload.type) {
+					state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload?.id));
+				}
+			}
+		},
 	},
 	extraReducers: {
 		[getTasks.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<ITask>>) => {
@@ -991,5 +1010,7 @@ export const {
 	changeTasksCardViewMode,
 	setTasksServiceType,
 	setAiTaskData,
+	updateItemLocal,
+	deleteItemLocal,
 } = tasksReducer.actions;
 export default tasksReducer.reducer;
