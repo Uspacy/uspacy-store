@@ -141,7 +141,7 @@ export const getField = (field: IField) => {
 export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = false) => {
 	return Object?.entries(filters)
 		?.filter(([key, value]) => {
-			if (key === 'time_label_start_time' && value.includes('expiredtask')) {
+			if (['time_label_start_time', 'time_label_end_time']?.includes(key) && value.includes('expiredtask')) {
 				return true;
 			}
 			if (
@@ -179,7 +179,7 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			if (key === 'perPage') {
 				return { ...acc, list: value };
 			}
-			if (key === 'time_label_start_time' && value?.includes('expiredtask')) {
+			if (['time_label_start_time', 'time_label_end_time']?.includes(key) && value?.includes('expiredtask')) {
 				return { ...acc, expired: Math.floor(new Date().getTime() / 1000) };
 			}
 			if (key === 'select') {
