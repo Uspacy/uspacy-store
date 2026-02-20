@@ -174,12 +174,6 @@ const itemsReducer = createSlice({
 							updated_at: Math.floor(new Date().valueOf() / 1000),
 							kanban_reason_id: reasonId ?? null,
 							changed_by: item?.changed_by,
-							// ...(action.meta.arg.isFinishedStage && {
-							// 	first_closed_at: item?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
-							// 	closed_at: Math.floor(new Date().valueOf() / 1000),
-							// 	first_closed_by: item?.first_closed_by || action.meta.arg.profileId,
-							// 	closed_by: action.meta.arg.profileId,
-							// }),
 						};
 					}
 					return item;
@@ -198,15 +192,7 @@ const itemsReducer = createSlice({
 					Object.entries(state[entityCode].stages).map(([key, value]) => {
 						if (+key === stageId) {
 							const data = value.data;
-							data.splice(0, 0, {
-								...foundEntityItem,
-								// ...(action.meta.arg.isFinishedStage && {
-								// 	first_closed_at: foundEntityItem?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
-								// 	closed_at: Math.floor(new Date().valueOf() / 1000),
-								// 	first_closed_by: foundEntityItem?.first_closed_by || action.meta.arg.profileId,
-								// 	closed_by: action.meta.arg.profileId,
-								// }),
-							});
+							data.splice(0, 0, foundEntityItem);
 							return [
 								key,
 								{
