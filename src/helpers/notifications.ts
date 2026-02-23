@@ -26,6 +26,7 @@ const getEntityBase = (linkData: ILinkData) => {
 export const getLinkEntity = (message: INotificationMessage): string | undefined => {
 	if (message.data.action === NotificationAction.DELETE) return undefined;
 	const service = getServiceName(message.data.service);
+	if (message.topic === 'custom' && !message?.data?.entity?.id) return '';
 	switch (service) {
 		case 'crm':
 			return `/crm/${message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'tasks/task' : message.type}`}/${
@@ -59,6 +60,7 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 };
 
 export const getDrawersInfo = (message: INotificationMessage) => {
+	if (message.topic === 'custom' && !message?.data?.entity?.id) return undefined;
 	if (message.data.action === NotificationAction.DELETE && message?.type !== 'comment') return undefined;
 	const service = getServiceName(message.data.service);
 	switch (service) {
@@ -160,6 +162,9 @@ const getEntityType = (message: INotificationMessage) => {
 };
 
 export const getNotificationTitle = (message: INotificationMessage, profileId: number): string | undefined => {
+	if (message.topic === 'custom') {
+		return message?.data?.entity?.title;
+	}
 	const crmBaseTypes = ['leads', 'contacts', 'companies', 'deals'];
 	const service = getServiceName(message.data.service);
 	const mentioned = !!message.data.entity?.mentioned?.users?.includes(profileId);
@@ -185,6 +190,9 @@ export const deleteHtmlFromComment = (text: string) => {
 };
 
 export const getNotificationSubTitle = (message: INotificationMessage): string | undefined => {
+	if (message.topic === 'custom') {
+		return message?.data?.entity?.description;
+	}
 	const service = getServiceName(message.data.service);
 	switch (service) {
 		case 'comments':
