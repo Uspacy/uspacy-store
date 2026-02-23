@@ -27,7 +27,7 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 	if (message.data.action === NotificationAction.DELETE) return undefined;
 	const service = getServiceName(message.data.service);
 	const itemId = message?.data?.entity?.id || message?.data?.entity?.entity_id;
-	if (message.topic === 'custom' && !itemId) return '';
+	if (message.topic === 'custom' && (message.data.service === 'custom' || !itemId)) return '';
 	switch (service) {
 		case 'crm':
 			return `/crm/${message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'tasks/task' : message.type}`}/${itemId}`;
@@ -59,7 +59,8 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 };
 
 export const getDrawersInfo = (message: INotificationMessage) => {
-	if (message.topic === 'custom' && !message?.data?.entity?.id) return undefined;
+	if (message.topic === 'custom' && (message.data.service === 'custom' || !(message?.data?.entity?.id || message?.data?.entity?.entity_id)))
+		return undefined;
 	if (message.data.action === NotificationAction.DELETE && message?.type !== 'comment') return undefined;
 	const service = getServiceName(message.data.service);
 	switch (service) {
