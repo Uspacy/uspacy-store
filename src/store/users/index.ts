@@ -44,6 +44,9 @@ export const usersSlice = createSlice({
 	name: 'users',
 	initialState,
 	reducers: {
+		setUsers: (state, action: PayloadAction<IUser[]>) => {
+			state.data = action.payload;
+		},
 		addUserRoleFromTable(state, action) {
 			state.data = state.data.filter((item) => {
 				if (item.id === action.payload.id) {
@@ -420,6 +423,7 @@ export const usersSlice = createSlice({
 });
 
 export const {
+	setUsers,
 	addUserRoleFromTable,
 	addDepartmentToUsers,
 	removeDepartmentFromUsers,
