@@ -27,12 +27,11 @@ const getEntityBase = (linkData: ILinkData) => {
 export const getLinkEntity = (message: INotificationMessage): string | undefined => {
 	if (message.data.action === NotificationAction.DELETE) return undefined;
 	const service = getServiceName(message.data.service);
-	if (message.topic === 'custom' && !message?.data?.entity?.id) return '';
+	const itemId = message?.data?.entity?.id || message?.data?.entity?.entity_id;
+	if (message.topic === 'custom' && !itemId) return '';
 	switch (service) {
 		case 'crm':
-			return `/crm/${message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'tasks/task' : message.type}`}/${
-				message.data.entity.id
-			}`;
+			return `/crm/${message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'tasks/task' : message.type}`}/${itemId}`;
 		case 'comments':
 			if (!message.data.entity?.entity_type) return undefined;
 			const isWithParent = message.data.root_parent && Object.keys(message.data.root_parent).length;
@@ -55,7 +54,7 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 			return `${prefix}/${entityBase}/${isWithParent ? linkData.data?.id : linkData.entity_id}`;
 		default: {
 			const serviceName = service === 'activities' ? 'crm/tasks' : service;
-			return `/${serviceName}/${message.data.entity.id}`;
+			return `/${serviceName}/${itemId}`;
 		}
 	}
 };
