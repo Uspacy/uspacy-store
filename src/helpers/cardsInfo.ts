@@ -17,6 +17,7 @@ interface TypeSubscription {
 export class CardsByEvents {
 	private readonly listenersByEntityKey = new Map<string, Set<CardEventListener>>();
 	private readonly listenersByType = new Map<string, Set<TypeSubscription>>();
+	private readonly registeredEntities = new Set<string>();
 	private readonly ENTITY_KEY_SEPARATOR = '-';
 
 	private buildEntityKey(entityType: string, entityId: string): string {
@@ -41,6 +42,15 @@ export class CardsByEvents {
 		};
 	}
 
+	registerEntity(entityType: string, entityId: string): () => void {
+		const entityKey = this.buildEntityKey(entityType, entityId);
+		this.registeredEntities.add(entityKey);
+
+		return () => {
+			this.registeredEntities.delete(entityKey);
+		};
+	}
+
 	subscribeToType(entityType: string, handler: CardEventListener, filter?: (event: CardEvent) => boolean): () => void {
 		const listeners = this.listenersByType.get(entityType) ?? new Set<TypeSubscription>();
 		const subscription: TypeSubscription = { handler, filter };
@@ -61,7 +71,10 @@ export class CardsByEvents {
 
 	hasSubscribers(entityType: string, entityId: string): boolean {
 		const entityKey = this.buildEntityKey(entityType, entityId);
-		return (this.listenersByEntityKey.get(entityKey)?.size ?? 0) > 0;
+		const hasListeners = (this.listenersByEntityKey.get(entityKey)?.size ?? 0) > 0;
+		const isRegistered = this.registeredEntities.has(entityKey);
+
+		return hasListeners || isRegistered;
 	}
 
 	hasTypeSubscribers(entityType: string): boolean {
