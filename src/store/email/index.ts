@@ -175,7 +175,7 @@ const emailReducer = createSlice({
 		setCrmConnectStatus: (state, action: PayloadAction<number>) => {
 			state.emailBox = {
 				...state.emailBox,
-				crm_integration_enabled: action.payload,
+				crm_integration_enabled: !!action.payload,
 			};
 		},
 		setCrmSetting: (state, action: PayloadAction<{ key: ESettingName; value: ICrmSetting['setting_value'] }>) => {
@@ -353,7 +353,6 @@ const emailReducer = createSlice({
 			state.loadingConnectEmailBox = false;
 			state.errorLoadingConnectEmailBox = null;
 			state.connectedEmailBox = action.payload;
-			state.emailBoxes.data = [...state.emailBoxes.data, action.payload];
 		},
 		[receiveToOauthLink.pending.type]: (state) => {
 			state.loadingConnectEmailBox = true;
