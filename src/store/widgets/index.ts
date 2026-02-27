@@ -18,6 +18,7 @@ const initialState: IState = {
 			operatorAvatar: '',
 		},
 	},
+	fields: [],
 	widgetsList: [],
 	meta: {
 		currentPage: 1,
@@ -47,6 +48,9 @@ export const widgetsSlice = createSlice({
 			} else if (type === 'settings') {
 				state.widgetData.settings = { ...state.widgetData.settings, ...data };
 			}
+		},
+		setWidgetFields: (state, action: PayloadAction<IState['fields']>) => {
+			state.fields = action.payload;
 		},
 	},
 	extraReducers: {
@@ -84,6 +88,6 @@ export const widgetsSlice = createSlice({
 	},
 });
 
-export const { setWidgetData, updateWidgetData } = widgetsSlice.actions;
+export const { setWidgetData, updateWidgetData, setWidgetFields } = widgetsSlice.actions;
 
 export default widgetsSlice.reducer;
