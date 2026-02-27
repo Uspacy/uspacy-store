@@ -14,7 +14,6 @@ import {
 } from '@uspacy/sdk/lib/models/email';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
-import { IUpdateEmailBox } from '@uspacy/sdk/lib/services/EmailService/connect-email-box.dto';
 
 export type createNewLetterModeType = 'window' | 'fullScreen' | 'fromLetter' | 'fromCRM';
 export interface IState {
@@ -94,7 +93,7 @@ export interface ILettersParams {
 
 export interface IUpdateEmailBoxPayload {
 	id: number;
-	data: IUpdateEmailBox;
+	data: Partial<IEmailBox>;
 }
 
 export interface IEmailMassActionsResponse {
