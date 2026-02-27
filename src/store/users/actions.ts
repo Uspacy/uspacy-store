@@ -184,3 +184,12 @@ export const fetchUsersByFilters = createAsyncThunk(
 		}
 	},
 );
+
+export const getUsersOnlineStatuses = createAsyncThunk('users/getUsersOnlineStatuses', async (_, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.usersService.getUsersOnlineStatuses();
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});

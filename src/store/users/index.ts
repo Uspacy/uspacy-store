@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFilterField, IFilterPreset } from '@uspacy/sdk/lib/models/filter-preset';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
-import { IUser, IUserFilter } from '@uspacy/sdk/lib/models/user';
+import { IUser, IUserFilter, IUserOnlineStatuses } from '@uspacy/sdk/lib/models/user';
 
 import {
 	activateUser,
@@ -10,6 +10,7 @@ import {
 	deleteInvitation,
 	fetchUsers,
 	fetchUsersByFilters,
+	getUsersOnlineStatuses,
 	repeatInvitation,
 	sendUserInvites,
 	updateUser,
@@ -36,7 +37,9 @@ const initialState: IState = {
 	loading: true,
 	loadingUsersByFilter: true,
 	loadingUpdatingUser: false,
+	loadingOnlineStatuses: false,
 	errorLoadingUpdatingUser: null,
+	errorLoadingOnlineStatuses: null,
 	userFilter: null,
 };
 
@@ -44,6 +47,9 @@ export const usersSlice = createSlice({
 	name: 'users',
 	initialState,
 	reducers: {
+		setUsers: (state, action: PayloadAction<IUser[]>) => {
+			state.data = action.payload;
+		},
 		addUserRoleFromTable(state, action) {
 			state.data = state.data.filter((item) => {
 				if (item.id === action.payload.id) {
@@ -416,10 +422,30 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = action.payload;
 		},
+		[getUsersOnlineStatuses.fulfilled.type]: (state, action: PayloadAction<IUserOnlineStatuses>) => {
+			state.loadingOnlineStatuses = false;
+			state.errorLoadingOnlineStatuses = null;
+			state.data = state.data.map((user) => {
+				return {
+					...user,
+					isOnline: action?.payload?.[user?.id]?.isOnline || false,
+					lastSeenAt: action?.payload?.[user?.id]?.lastSeenAt * 1000 || null,
+				};
+			});
+		},
+		[getUsersOnlineStatuses.pending.type]: (state) => {
+			state.loadingOnlineStatuses = true;
+			state.errorLoadingOnlineStatuses = null;
+		},
+		[getUsersOnlineStatuses.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingOnlineStatuses = false;
+			state.errorLoadingOnlineStatuses = action.payload;
+		},
 	},
 });
 
 export const {
+	setUsers,
 	addUserRoleFromTable,
 	addDepartmentToUsers,
 	removeDepartmentFromUsers,
