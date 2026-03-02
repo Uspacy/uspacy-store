@@ -167,6 +167,20 @@ export class CardsByEvents {
 	getTypeSubscriptionsCount(entityType: string): number {
 		return this.listenersByType.get(entityType)?.size ?? 0;
 	}
+
+	getAllSubscribers(): {
+		registeredEntities: string[];
+		entitySubscribers: Record<string, number>;
+		typeSubscribers: Record<string, number>;
+		kanbanStages: Record<string, string[]>;
+	} {
+		return {
+			registeredEntities: Array.from(this.registeredEntities),
+			entitySubscribers: Object.fromEntries(Array.from(this.listenersByEntityKey.entries()).map(([key, listeners]) => [key, listeners.size])),
+			typeSubscribers: Object.fromEntries(Array.from(this.listenersByType.entries()).map(([type, listeners]) => [type, listeners.size])),
+			kanbanStages: Object.fromEntries(Array.from(this.kanbanStages.entries()).map(([entityCode, stages]) => [entityCode, Array.from(stages)])),
+		};
+	}
 }
 
 export const cardsByEvents = new CardsByEvents();
