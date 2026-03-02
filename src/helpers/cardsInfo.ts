@@ -18,6 +18,7 @@ export class CardsByEvents {
 	private readonly listenersByEntityKey = new Map<string, Set<CardEventListener>>();
 	private readonly listenersByType = new Map<string, Set<TypeSubscription>>();
 	private readonly registeredEntities = new Set<string>();
+	private readonly kanbanStages = new Map<string, Set<string>>();
 	private readonly ENTITY_KEY_SEPARATOR = '-';
 
 	private buildEntityKey(entityType: string, entityId: string): string {
@@ -69,6 +70,26 @@ export class CardsByEvents {
 		};
 	}
 
+	registerKanbanStage(entityCode: string, stageId: string): () => void {
+		const stages = this.kanbanStages.get(entityCode) ?? new Set<string>();
+		stages.add(stageId);
+		this.kanbanStages.set(entityCode, stages);
+
+		return () => {
+			const currentStages = this.kanbanStages.get(entityCode);
+			if (!currentStages) return;
+
+			currentStages.delete(stageId);
+			if (currentStages.size === 0) {
+				this.kanbanStages.delete(entityCode);
+			}
+		};
+	}
+
+	hasKanbanStageSubscriber(entityCode: string, stageId: string): boolean {
+		return this.kanbanStages.get(entityCode)?.has(stageId) ?? false;
+	}
+
 	hasSubscribers(entityType: string, entityId: string): boolean {
 		const entityKey = this.buildEntityKey(entityType, entityId);
 		const hasListeners = (this.listenersByEntityKey.get(entityKey)?.size ?? 0) > 0;
@@ -114,6 +135,7 @@ export class CardsByEvents {
 	clearAllSubscriptions(): void {
 		this.listenersByEntityKey.clear();
 		this.listenersByType.clear();
+		this.kanbanStages.clear();
 	}
 
 	getActiveSubscriptionsCount(): number {
