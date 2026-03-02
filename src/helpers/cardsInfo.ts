@@ -135,6 +135,7 @@ export class CardsByEvents {
 	clearAllSubscriptions(): void {
 		this.listenersByEntityKey.clear();
 		this.listenersByType.clear();
+		this.registeredEntities.clear();
 		this.kanbanStages.clear();
 	}
 
