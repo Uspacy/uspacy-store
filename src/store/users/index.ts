@@ -429,7 +429,7 @@ export const usersSlice = createSlice({
 				return {
 					...user,
 					isOnline: action?.payload?.[user?.id]?.isOnline || false,
-					lastSeenAt: action?.payload?.[user?.id]?.lastSeenAt * 1000 || null,
+					lastSeenAt: action?.payload?.[user?.id]?.lastSeenAt || null,
 				};
 			});
 		},
