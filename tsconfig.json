@@ -22,7 +22,8 @@
     "noFallthroughCasesInSwitch": true,
     "declaration": true,
     "noImplicitAny": false,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "types": ["node"],
   },
   "include": ["./src"],
   "exclude": ["./lib", "node_modules"],
