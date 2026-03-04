@@ -50,6 +50,15 @@ export const usersSlice = createSlice({
 		setUsers: (state, action: PayloadAction<IUser[]>) => {
 			state.data = action.payload;
 		},
+		updateUserPresence: (state, action: PayloadAction<{ userId: number; lastSeen?: number }>) => {
+			const { userId, lastSeen } = action.payload;
+			state.data = state.data.map((user) => {
+				if (user?.authUserId === userId) {
+					return { ...user, isOnline: !lastSeen, lastSeenAt: lastSeen ? Math.floor(lastSeen / 1000) : null };
+				}
+				return user;
+			});
+		},
 		addUserRoleFromTable(state, action) {
 			state.data = state.data.filter((item) => {
 				if (item.id === action.payload.id) {
@@ -446,6 +455,7 @@ export const usersSlice = createSlice({
 
 export const {
 	setUsers,
+	updateUserPresence,
 	addUserRoleFromTable,
 	addDepartmentToUsers,
 	removeDepartmentFromUsers,
