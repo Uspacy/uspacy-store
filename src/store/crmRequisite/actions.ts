@@ -2,6 +2,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IBankRequisiteCreate, IBankUpdateData, IRequisite } from '@uspacy/sdk/lib/models/crm-requisite';
+import { IRequisiteParams } from '@uspacy/sdk/lib/services/CrmRequisitesService/dto/requisite-params.dto';
 
 import { getSeparateCardId } from './../../helpers/requisites';
 
@@ -16,8 +17,8 @@ export const fetchTemplates = createAsyncThunk('requisite/fetchTemplates', async
 
 export const fetchCardRequisites = createAsyncThunk(
 	'requisite/fetchCardRequisites',
-	async (data: { cardId: string; refContext: boolean }, thunkAPI) => {
-		const { cardId, refContext } = data;
+	async (data: { cardId?: string; refContext?: boolean; forceParams?: IRequisiteParams }, thunkAPI) => {
+		const { cardId, refContext, forceParams } = data;
 		const [cardType, id] = getSeparateCardId(cardId);
 		try {
 			const params = {
@@ -25,7 +26,7 @@ export const fetchCardRequisites = createAsyncThunk(
 				entity_id: id,
 				...(refContext && { is_reference_context: true }),
 			};
-			const res = await uspacySdk?.crmRequisitesService?.getCardRequisites(params);
+			const res = await uspacySdk?.crmRequisitesService?.getCardRequisites(forceParams ?? params);
 			const resData = res?.data;
 			return { cardId, requisites: resData?.data };
 		} catch (e) {

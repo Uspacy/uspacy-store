@@ -8,10 +8,11 @@ export interface IEvents {
 
 export enum EEventEntity {
 	comment = 'comment',
-	crm = 'crm',
+	entity_crm = 'entity_crm',
+	task = 'task',
 }
 
-type EventEntities = 'comment' | 'crm';
+type EventEntities = 'comment' | 'entity_crm' | 'task';
 
 type EventEntity = EventEntities | (string & {});
 

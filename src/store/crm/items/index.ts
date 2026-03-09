@@ -75,6 +75,140 @@ const itemsReducer = createSlice({
 			const { entityCode, value } = action.payload;
 			state[entityCode].completeModalOpen = value;
 		},
+		updateEntityItemLocal: (state, action: PayloadAction<{ data: IEntityData; entityCode: string; stageId?: number; isMoveStage: boolean }>) => {
+			const { entityCode } = action.payload;
+			const stageId = action.payload?.stageId;
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].errorMessage = null;
+				state[entityCode].data = state[entityCode].data.map((item) => {
+					if (item.id === action.payload.data.id) {
+						return {
+							...item,
+							...action.payload.data,
+						};
+					}
+					return item;
+				});
+			}
+
+			if (action?.payload?.isMoveStage) {
+				if (state[entityCode]?.stages) {
+					state[entityCode].data = state[entityCode].data.map((item) => {
+						if (item.id === action.payload.data.id) {
+							return {
+								...item,
+								...action.payload.data,
+								kanban_stage_id: stageId,
+								kanban_reason_id: action.payload.data.kanban_reason_id ?? null,
+							};
+						}
+						return item;
+					});
+					let foundEntityItem;
+					for (const stage of Object.values(state[entityCode].stages)) {
+						foundEntityItem = stage.data.find((item) => item.id === action.payload.data.id);
+						if (foundEntityItem) {
+							break;
+						}
+					}
+					if (!foundEntityItem) {
+						return;
+					}
+					state[entityCode].stages = Object.fromEntries(
+						Object.entries(state[entityCode].stages).map(([key, value]) => {
+							if (+key === stageId) {
+								const data = value.data;
+								data.splice(0, 0, {
+									...foundEntityItem,
+								});
+								return [
+									key,
+									{
+										...value,
+										data,
+										meta: { ...value.meta, total: (value?.meta?.total || 0) + 1 },
+									},
+								];
+							}
+							const filteredData = value.data.filter((item) => item.id !== action?.payload?.data?.id);
+							const total = filteredData.length === value.data.length ? value.meta?.total : value.meta?.total - 1;
+							return [key, { ...value, data: filteredData, meta: { ...value.meta, total: total || 0 } }];
+						}),
+					);
+				}
+			} else {
+				if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
+					state[entityCode].stages[stageId].loading = false;
+					state[entityCode].stages[stageId].errorMessage = null;
+					state[entityCode].stages[stageId].data = state[entityCode].stages[stageId].data.map((item) => {
+						if (item.id === action.payload.data.id) {
+							return {
+								...item,
+								...action.payload.data,
+							};
+						}
+						return item;
+					});
+				}
+			}
+		},
+		moveItemFromStageToStageLocal: (state, action: PayloadAction<IMoveCardsData>) => {
+			const { entityCode, entityId, stageId, reason_id: reasonId } = action.payload;
+			if (state[entityCode]?.stages) {
+				state[entityCode].data = state[entityCode].data.map((item) => {
+					if (item.id === entityId) {
+						return {
+							...item,
+							kanban_stage_id: stageId,
+							updated_at: Math.floor(new Date().valueOf() / 1000),
+							kanban_reason_id: reasonId ?? null,
+							changed_by: item?.changed_by,
+						};
+					}
+					return item;
+				});
+				let foundEntityItem;
+				for (const stage of Object.values(state[entityCode].stages)) {
+					foundEntityItem = stage.data.find((item) => item.id === entityId);
+					if (foundEntityItem) {
+						break;
+					}
+				}
+				if (!foundEntityItem) {
+					return;
+				}
+				state[entityCode].stages = Object.fromEntries(
+					Object.entries(state[entityCode].stages).map(([key, value]) => {
+						if (+key === stageId) {
+							const data = value.data;
+							data.splice(0, 0, foundEntityItem);
+							return [
+								key,
+								{
+									...value,
+									data,
+									meta: { ...value.meta, total: (value?.meta?.total || 0) + 1 },
+								},
+							];
+						}
+						const filteredData = value.data.filter((item) => item.id !== entityId);
+						const total = filteredData.length === value.data.length ? value.meta?.total : value.meta?.total - 1;
+						return [key, { ...value, data: filteredData, meta: { ...value.meta, total: total || 0 } }];
+					}),
+				);
+			}
+		},
+		deleteEntityItemLocal: (state, action: PayloadAction<{ id: number; entityCode: string; stageId?: number }>) => {
+			const { entityCode, stageId, id } = action.payload;
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].data = state[entityCode].data.filter((item) => item.id !== id);
+				state[entityCode].meta.total--;
+			}
+			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
+				state[entityCode].stages[stageId].data = state[entityCode].stages[stageId].data.filter((item) => item.id !== id);
+				state[entityCode].stages[stageId].meta.total--;
+			}
+		},
 	},
 	extraReducers: {
 		[fetchEntityItems.fulfilled.type]: (
@@ -505,5 +639,14 @@ const itemsReducer = createSlice({
 		},
 	},
 });
-export const { changeReason, clearItems, setViewModalOpen, setCreateModalOpen, setCompleteModalOpen } = itemsReducer.actions;
+export const {
+	changeReason,
+	clearItems,
+	setViewModalOpen,
+	setCreateModalOpen,
+	setCompleteModalOpen,
+	updateEntityItemLocal,
+	moveItemFromStageToStageLocal,
+	deleteEntityItemLocal,
+} = itemsReducer.actions;
 export default itemsReducer.reducer;

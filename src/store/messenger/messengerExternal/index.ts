@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IChat, ICrmConnectEntity, IMessage } from '@uspacy/sdk/lib/models/messenger';
+import { ITask } from '@uspacy/sdk/lib/models/tasks';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 import {
@@ -32,6 +33,8 @@ const initialState: IState = {
 		},
 		externalChatsLength: 0,
 		crmConnectEntities: initialConnectEntities,
+		connectedTasks: [],
+		isLoadingConnectedTasks: false,
 	},
 };
 
@@ -192,6 +195,20 @@ export const externalChatSlice = createSlice({
 				});
 			}
 		},
+		setConnectedTasks(state, action: PayloadAction<ITask[]>) {
+			state.externalChats.connectedTasks = action.payload;
+		},
+		addConnectedTask(state, action: PayloadAction<ITask>) {
+			if (!state.externalChats.connectedTasks.find((task) => task.id === action.payload.id)) {
+				state.externalChats.connectedTasks.push(action.payload);
+			}
+		},
+		removeConnectedTask(state, action: PayloadAction<ITask['id']>) {
+			state.externalChats.connectedTasks = state.externalChats.connectedTasks.filter((task) => task.id !== action.payload);
+		},
+		setIsLoadingConnectedTasks(state, action: PayloadAction<boolean>) {
+			state.externalChats.isLoadingConnectedTasks = action.payload;
+		},
 	},
 	extraReducers: {
 		[fetchExternalChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
@@ -230,6 +247,10 @@ export const {
 	addConnectedCrmEntities,
 	updateConnectedCrmEntitiesByKey,
 	readExtChat,
+	setConnectedTasks,
+	addConnectedTask,
+	removeConnectedTask,
+	setIsLoadingConnectedTasks,
 } = externalChatSlice.actions;
 
 export default externalChatSlice.reducer;
