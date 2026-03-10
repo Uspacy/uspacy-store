@@ -8,4 +8,5 @@ export interface IState {
 	meta: IMeta;
 	loading: boolean;
 	fields: IFormField[];
+	showSaveButton: boolean;
 }

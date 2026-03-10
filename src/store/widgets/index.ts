@@ -1,7 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ICreateWidgetData } from '@uspacy/sdk/lib/models/messenger';
+import { FormFieldCode, IFormField, IPredefinedField } from '@uspacy/sdk/lib/models/forms';
+import { ETimeFormShow, ICreateWidgetData } from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 
+import { updateFieldsOrderHelp } from '../../helpers/forms';
+import { RequireOnlyOne } from '../forms/types';
 import { createWidget, deleteWidget, getWidgets, updateWidget } from './actions';
 import { IState } from './types';
 
@@ -17,6 +20,14 @@ const initialState: IState = {
 			operatorName: '',
 			operatorAvatar: '',
 		},
+		config: {
+			crmEntity: 'lead',
+			fields: [],
+			predefinedFields: [],
+			showForm: false,
+			timeShowForm: ETimeFormShow.FIRST_TIME,
+			formWelcomeMessage: '',
+		},
 	},
 	fields: [],
 	widgetsList: [],
@@ -29,6 +40,7 @@ const initialState: IState = {
 		total: 0,
 	},
 	loading: false,
+	showSaveButton: false,
 };
 
 export const widgetsSlice = createSlice({
@@ -36,7 +48,7 @@ export const widgetsSlice = createSlice({
 	initialState,
 	reducers: {
 		setWidgetData: (state, action: PayloadAction<ICreateWidgetData>) => {
-			state.widgetData = action.payload;
+			state.widgetData = { ...state.widgetData, ...action.payload };
 		},
 		updateWidgetData: (
 			state,
@@ -51,6 +63,73 @@ export const widgetsSlice = createSlice({
 		},
 		setWidgetFields: (state, action: PayloadAction<IState['fields']>) => {
 			state.fields = action.payload;
+		},
+		setShowSaveButton: (state, action: PayloadAction<boolean>) => {
+			state.showSaveButton = action.payload;
+		},
+		clearWidgetConfigFields: (state) => {
+			state.widgetData.config.fields = [];
+		},
+		toggleSelected: (state, action: PayloadAction<{ fieldCode: FormFieldCode; isRemove?: boolean }>) => {
+			const { fieldCode, isRemove } = action.payload;
+			const fieldIndex = state.fields.findIndex((field) => field.fieldCode === fieldCode);
+
+			if (fieldIndex > -1) {
+				const fieldData = state.fields[fieldIndex];
+				const nextSelectedStatus = !fieldData.selected;
+				fieldData.selected = isRemove ? false : nextSelectedStatus;
+
+				if (nextSelectedStatus && !isRemove) {
+					let maxFieldOrder = Math.max(...state.widgetData.config.fields.map((field) => field.order), -1);
+					state.widgetData.config.fields.push({ ...fieldData, order: ++maxFieldOrder } as IFormField);
+				} else {
+					state.widgetData.config.fields = state.widgetData.config.fields.filter((field) => field.fieldCode !== fieldCode);
+				}
+			}
+		},
+		addLocalWidgetField: (state, action: PayloadAction<IFormField>) => {
+			let maxFieldOrder = Math.max(...state.widgetData.config.fields.map((field) => field.order), -1);
+			state.widgetData.config.fields.push({ ...action.payload, order: ++maxFieldOrder } as IFormField);
+		},
+		removeLocalWidgetField: (state, action: PayloadAction<FormFieldCode>) => {
+			state.widgetData.config.fields = state.widgetData.config.fields.filter((field) => field.fieldCode !== action.payload);
+		},
+		updateWidgetSettings: (state, action: PayloadAction<RequireOnlyOne<IFormField, 'fieldCode'>>) => {
+			const fieldIndex = state.widgetData.config.fields.findIndex((field) => field.fieldCode === action.payload.fieldCode);
+			if (fieldIndex > -1) {
+				state.widgetData.config.fields[fieldIndex] = { ...state.widgetData.config.fields[fieldIndex], ...action.payload };
+			}
+		},
+		updateWidgetFieldsOrder: (state, action: PayloadAction<{ sortedArr: string[] }>) => {
+			const { sortedArr } = action.payload;
+
+			state.widgetData.config.fields = updateFieldsOrderHelp(state.widgetData.config.fields, sortedArr);
+		},
+		setPredefinedWidgetFields: (state, action: PayloadAction<IPredefinedField>) => {
+			const findIndex = state.widgetData.config.predefinedFields.findIndex((field) => field.type === action.payload.type);
+			if (findIndex !== -1) {
+				state.widgetData.config.predefinedFields[findIndex] = action.payload;
+			} else {
+				state.widgetData.config.predefinedFields.push(action.payload);
+			}
+		},
+		addPredefinedWidgetField: (state, action: PayloadAction<IPredefinedField>) => {
+			state.widgetData.config.predefinedFields.push(action.payload);
+		},
+		removePredefinedWidgetField: (state, action: PayloadAction<IPredefinedField['type']>) => {
+			state.widgetData.config.predefinedFields = state.widgetData.config.predefinedFields.filter((field) => field.type !== action.payload);
+		},
+		updateConfigShowForm: (state, action: PayloadAction<ICreateWidgetData['config']['showForm']>) => {
+			state.widgetData.config.showForm = action.payload;
+		},
+		updateConfigTimeShowForm: (state, action: PayloadAction<ICreateWidgetData['config']['timeShowForm']>) => {
+			state.widgetData.config.timeShowForm = action.payload;
+		},
+		updateConfigFormWelcomeMessage: (state, action: PayloadAction<ICreateWidgetData['config']['formWelcomeMessage']>) => {
+			state.widgetData.config.formWelcomeMessage = action.payload;
+		},
+		updateCrmEntity: (state, action: PayloadAction<ICreateWidgetData['config']['crmEntity']>) => {
+			state.widgetData.config.crmEntity = action.payload;
 		},
 	},
 	extraReducers: {
@@ -88,6 +167,24 @@ export const widgetsSlice = createSlice({
 	},
 });
 
-export const { setWidgetData, updateWidgetData, setWidgetFields } = widgetsSlice.actions;
+export const {
+	setWidgetData,
+	updateWidgetData,
+	setWidgetFields,
+	toggleSelected,
+	setShowSaveButton,
+	clearWidgetConfigFields,
+	updateWidgetSettings,
+	updateWidgetFieldsOrder,
+	setPredefinedWidgetFields,
+	addPredefinedWidgetField,
+	removePredefinedWidgetField,
+	updateConfigShowForm,
+	updateConfigTimeShowForm,
+	updateConfigFormWelcomeMessage,
+	addLocalWidgetField,
+	removeLocalWidgetField,
+	updateCrmEntity,
+} = widgetsSlice.actions;
 
 export default widgetsSlice.reducer;
