@@ -110,6 +110,7 @@ const itemsReducer = createSlice({
 
 			state[entityCode].data = state[entityCode].data.map((item) => {
 				if (item.id === entityId) {
+					if (payloadItem?.updated_at && item.updated_at && payloadItem.updated_at < item.updated_at) return item;
 					return {
 						...item,
 						kanban_stage_id: stageId,
@@ -134,6 +135,8 @@ const itemsReducer = createSlice({
 			if (!foundEntityItem) {
 				foundEntityItem = state[entityCode].data.find((item) => item.id === entityId) ?? payloadItem;
 			}
+
+			if (payloadItem?.updated_at && foundEntityItem?.updated_at && payloadItem.updated_at < foundEntityItem.updated_at) return;
 
 			if (funnelHasChanged) {
 				if (foundInStageKey !== undefined) {
