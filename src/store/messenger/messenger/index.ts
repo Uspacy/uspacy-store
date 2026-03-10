@@ -1,13 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {
-	EMessengerType,
-	FetchMessagesRequest,
-	GoToMessageRequest,
-	IChat,
-	ICreateWidgetData,
-	IMessage,
-	IQuickAnswer,
-} from '@uspacy/sdk/lib/models/messenger';
+import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, IMessage, IQuickAnswer } from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 import differenceInMinutes from 'date-fns/differenceInMinutes';
@@ -23,17 +15,13 @@ import {
 } from '../../../helpers/messenger';
 import {
 	createQuickAnswer,
-	createWidget,
 	deleteQuickAnswer,
-	deleteWidget,
 	fetchChats,
 	fetchMessages,
 	fetchPinedMessages,
 	getQuickAnswers,
-	getWidgets,
 	goToMessage,
 	updateQuickAnswer,
-	updateWidget,
 } from './actions';
 import { IState } from './types';
 
@@ -48,18 +36,6 @@ const initialState: IState = {
 	selectedMessages: [],
 	selectNotMyMessageCount: 0,
 	pinedMessages: [],
-	widgets: {
-		data: [],
-		meta: {
-			currentPage: 1,
-			from: 0,
-			lastPage: 1,
-			perPage: 0,
-			to: 0,
-			total: 0,
-		},
-		loading: false,
-	},
 	AISummaryData: {
 		messages: [],
 		text: '',
@@ -736,37 +712,6 @@ export const chatSlice = createSlice({
 
 		[fetchPinedMessages.fulfilled.type]: (state, action: PayloadAction<{ chatId: IChat['id']; items: IMessage[] }>) => {
 			state.pinedMessages = [...state.pinedMessages, action.payload];
-		},
-		[createWidget.pending.type]: (state) => {
-			state.widgets.loading = true;
-		},
-		[createWidget.rejected.type]: (state) => {
-			state.widgets.loading = false;
-		},
-		[createWidget.fulfilled.type]: (state, action: PayloadAction<ICreateWidgetData>) => {
-			state.widgets.data = [...state.widgets.data, action.payload];
-			state.widgets.meta.total = state.widgets.meta.total + 1;
-			state.widgets.loading = false;
-		},
-		[getWidgets.pending.type]: (state) => {
-			state.widgets.loading = true;
-		},
-		[getWidgets.rejected.type]: (state) => {
-			state.widgets.loading = false;
-		},
-		[getWidgets.fulfilled.type]: (state, action: PayloadAction<{ data: ICreateWidgetData[]; meta: IMeta }>) => {
-			state.widgets.data = action.payload.data;
-			state.widgets.meta = action.payload.meta;
-			state.widgets.loading = false;
-		},
-		[deleteWidget.fulfilled.type]: (state, action: PayloadAction<ICreateWidgetData>) => {
-			state.widgets.data = state.widgets.data.filter((it) => it.id !== action.payload.id);
-		},
-		[updateWidget.fulfilled.type]: (state, action: PayloadAction<ICreateWidgetData>) => {
-			state.widgets.data = state.widgets.data.map((it) => {
-				if (it.id === action.payload.id) return action.payload;
-				return it;
-			});
 		},
 		[getQuickAnswers.pending.type]: (state) => {
 			state.quickAnswers.loading = true;
