@@ -117,7 +117,6 @@ const itemsReducer = createSlice({
 		},
 		moveItemFromStageToStageLocal: (state, action: PayloadAction<IMoveCardsData>) => {
 			const { entityCode, entityId, stageId, reason_id: reasonId, funnelHasChanged, sourceStageId, item: payloadItem } = action.payload;
-			if (!state[entityCode]?.stages) return;
 
 			state[entityCode].data = state[entityCode].data.map((item) => {
 				if (item.id === entityId) {
@@ -125,13 +124,15 @@ const itemsReducer = createSlice({
 					return {
 						...item,
 						kanban_stage_id: stageId,
-						updated_at: Math.floor(new Date().valueOf() / 1000),
+						updated_at: payloadItem?.updated_at || Math.floor(new Date().valueOf() / 1000),
 						kanban_reason_id: reasonId ?? null,
-						changed_by: item?.changed_by,
+						changed_by: payloadItem?.changed_by || item?.changed_by,
 					};
 				}
 				return item;
 			});
+
+			if (!state[entityCode]?.stages) return;
 
 			let foundEntityItem: IEntityData | undefined;
 			let foundInStageKey: string | undefined;
@@ -147,7 +148,7 @@ const itemsReducer = createSlice({
 				foundEntityItem = state[entityCode].data.find((item) => item.id === entityId) ?? payloadItem;
 			}
 
-			if (payloadItem?.updated_at && foundEntityItem?.updated_at && payloadItem.updated_at < foundEntityItem.updated_at) return;
+			if (payloadItem?.updated_at && foundEntityItem?.updated_at && payloadItem?.updated_at < foundEntityItem?.updated_at) return;
 
 			if (funnelHasChanged) {
 				if (foundInStageKey !== undefined) {
@@ -172,7 +173,16 @@ const itemsReducer = createSlice({
 					if (+key === stageId) {
 						const alreadyInStage = value.data.some((item) => item.id === entityId);
 						if (!alreadyInStage && foundEntityItem) {
-							const data = [{ ...foundEntityItem, kanban_stage_id: stageId, kanban_reason_id: reasonId ?? null }, ...value.data];
+							const data = [
+								{
+									...foundEntityItem,
+									kanban_stage_id: stageId,
+									kanban_reason_id: reasonId ?? null,
+									updated_at: payloadItem?.updated_at || foundEntityItem?.updated_at,
+									changed_by: payloadItem?.changed_by || foundEntityItem?.changed_by,
+								},
+								...value.data,
+							];
 							return [key, { ...value, data, meta: { ...value.meta, total: (value?.meta?.total || 0) + 1 } }];
 						}
 						return [key, value];
