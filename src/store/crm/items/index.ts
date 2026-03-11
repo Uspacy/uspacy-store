@@ -78,13 +78,15 @@ const itemsReducer = createSlice({
 		updateEntityItemLocal: (state, action: PayloadAction<{ data: IEntityData; entityCode: string; stageId?: number }>) => {
 			const { entityCode } = action.payload;
 			const stageId = action.payload?.stageId;
+			const payloadData = action.payload.data;
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].errorMessage = null;
 				state[entityCode].data = state[entityCode].data.map((item) => {
-					if (item.id === action.payload.data.id) {
+					if (item.id === payloadData.id) {
+						if (payloadData?.updated_at && item?.updated_at && payloadData?.updated_at < item?.updated_at) return item;
 						return {
 							...item,
-							...action.payload.data,
+							...payloadData,
 						};
 					}
 					return item;
@@ -94,10 +96,11 @@ const itemsReducer = createSlice({
 				state[entityCode].stages[stageId].loading = false;
 				state[entityCode].stages[stageId].errorMessage = null;
 				state[entityCode].stages[stageId].data = state[entityCode].stages[stageId].data.map((item) => {
-					if (item.id === action.payload.data.id) {
+					if (item.id === payloadData.id) {
+						if (payloadData?.updated_at && item?.updated_at && payloadData?.updated_at < item?.updated_at) return item;
 						return {
 							...item,
-							...action.payload.data,
+							...payloadData,
 						};
 					}
 					return item;
