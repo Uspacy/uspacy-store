@@ -65,6 +65,7 @@ export const multiDrawersSlice = createSlice({
 			}
 		},
 		removeItem(state, action: PayloadAction<IDrawerNavItem>) {
+			if (!state?.drawers?.length) return;
 			state.drawers = state.drawers?.filter((it) => it.id !== action?.payload?.id);
 			state.activeId = !!state.drawers?.[0]?.entityCode ? state.drawers?.[0]?.id : null;
 			if (!state?.drawers?.length) {
