@@ -141,6 +141,9 @@ export const getField = (field: IField) => {
 export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = false) => {
 	return Object?.entries(filters)
 		?.filter(([key, value]) => {
+			if (['time_label_start_time', 'time_label_end_time'].includes(key) && value.includes('expiredtask')) {
+				return true;
+			}
 			if (
 				key?.includes('certainDateOrPeriod_') ||
 				key?.includes('time_label_') ||
@@ -168,13 +171,19 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			}
 			return true;
 		})
-		.reduce((acc, [key, value]) => {
+		.reduce((acc: Record<string, unknown> & { expired?: Record<string, number> }, [key, value]) => {
 			const findField = fields?.find((it) => it?.code === key);
 			if (key === 'search') {
 				return { ...acc, q: value };
 			}
 			if (key === 'perPage') {
 				return { ...acc, list: value };
+			}
+			if (key === 'time_label_start_time' && value?.includes('expiredtask')) {
+				return { ...acc, expired: { ...acc?.expired, start_time: Math.floor(new Date().getTime() / 1000) } };
+			}
+			if (key === 'time_label_end_time' && value?.includes('expiredtask')) {
+				return { ...acc, expired: { ...acc?.expired, end_time: Math.floor(new Date().getTime() / 1000) } };
 			}
 			if (key === 'select') {
 				return { ...acc, ['funnel_id']: value };
