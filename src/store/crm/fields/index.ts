@@ -64,23 +64,36 @@ const feildsReducer = createSlice({
 			state[action.meta.arg].errorMessage = action.payload;
 		},
 
-		[createField.pending.type]: (state, action: PayloadAction<IField, string, { arg: { entityCode: string; data: IField } }>) => {
+		[createField.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string; data: Partial<IField> } }>) => {
 			const entityCode = action.meta.arg.entityCode;
 			state[entityCode] ??= { loading: true, data: [] } as EntityFields;
-			state[entityCode].data.push(action.meta.arg.data);
+			state[entityCode].loading = true;
+		},
+		[createField.fulfilled.type]: (state, action: PayloadAction<IField, string, { arg: { entityCode: string; data: Partial<IField> } }>) => {
+			const entityCode = action.meta.arg.entityCode;
+			state[entityCode].loading = false;
+			state[entityCode].data.push(action.payload);
 		},
 
-		[updateField.pending.type]: (state, action: PayloadAction<string, string, { arg: { entityCode: string; data: IField } }>) => {
+		[updateField.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string; data: IField } }>) => {
+			state[action.meta.arg.entityCode].loading = true;
+		},
+		[updateField.fulfilled.type]: (state, action: PayloadAction<IField, string, { arg: { entityCode: string; data: IField } }>) => {
 			const entityCode = action.meta.arg.entityCode;
+			state[entityCode].loading = false;
 			state[entityCode].data = state[entityCode].data.map((field) => {
-				if (field.code === action.meta.arg.data.code) {
-					return { ...field, ...action.meta.arg.data };
+				if (field.code === action.payload.code) {
+					return { ...field, ...action.payload };
 				}
 				return field;
 			});
 		},
 
-		[deleteField.pending.type]: (state, action: PayloadAction<string, string, { arg: { entityCode: string; fieldCode: string } }>) => {
+		[deleteField.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string; fieldCode: string } }>) => {
+			state[action.meta.arg.entityCode].loading = true;
+		},
+		[deleteField.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string; fieldCode: string } }>) => {
+			state[action.meta.arg.entityCode].loading = false;
 			state[action.meta.arg.entityCode].data = state[action.meta.arg.entityCode].data.filter(
 				(field) => field.code !== action.meta.arg.fieldCode,
 			);
@@ -88,9 +101,16 @@ const feildsReducer = createSlice({
 
 		[updateListValues.pending.type]: (
 			state,
-			action: PayloadAction<string, string, { arg: { entityCode: string; data: Pick<IField, 'code' | 'values'> } }>,
+			action: PayloadAction<unknown, string, { arg: { entityCode: string; data: Pick<IField, 'code' | 'values'> } }>,
+		) => {
+			state[action.meta.arg.entityCode].loading = true;
+		},
+		[updateListValues.fulfilled.type]: (
+			state,
+			action: PayloadAction<IField, string, { arg: { entityCode: string; data: Pick<IField, 'code' | 'values'> } }>,
 		) => {
 			const entityCode = action.meta.arg.entityCode;
+			state[entityCode].loading = false;
 			state[entityCode].data = state[entityCode].data.map((field) => {
 				if (field.code === action.meta.arg.data.code) {
 					return { ...field, ...action.meta.arg.data };
@@ -101,9 +121,16 @@ const feildsReducer = createSlice({
 
 		[deleteListValue.pending.type]: (
 			state,
-			action: PayloadAction<string, string, { arg: { entityCode: string; fieldCode: string; value: string } }>,
+			action: PayloadAction<unknown, string, { arg: { entityCode: string; fieldCode: string; value: string } }>,
+		) => {
+			state[action.meta.arg.entityCode].loading = true;
+		},
+		[deleteListValue.fulfilled.type]: (
+			state,
+			action: PayloadAction<unknown, string, { arg: { entityCode: string; fieldCode: string; value: string } }>,
 		) => {
 			const entityCode = action.meta.arg.entityCode;
+			state[entityCode].loading = false;
 			state[entityCode].data = state[entityCode].data.map((field) => {
 				if (field.code === action.meta.arg.fieldCode) {
 					return { ...field, values: field.values.filter(({ value }) => value !== action.meta.arg.value) };
