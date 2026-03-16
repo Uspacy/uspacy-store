@@ -112,8 +112,8 @@ const feildsReducer = createSlice({
 			const entityCode = action.meta.arg.entityCode;
 			state[entityCode].loading = false;
 			state[entityCode].data = state[entityCode].data.map((field) => {
-				if (field.code === action.payload.code) {
-					return { ...field, ...action.payload };
+				if (field.code === action.meta.arg.data.code) {
+					return { ...field, ...action.meta.arg.data };
 				}
 				return field;
 			});
