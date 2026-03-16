@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 export interface INotification {
@@ -11,6 +12,13 @@ export interface INotification {
 	mentioned?: boolean;
 	createdAt: number;
 	commentEntityTitle?: string;
+	drawerInfo: {
+		entityCode: string;
+		service: string;
+		entityId: number;
+		commentId: number | null;
+	};
+	metadata?: any[];
 }
 
 export interface IState {

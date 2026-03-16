@@ -162,6 +162,7 @@ export enum FieldType {
 	ID_COLUMN = 'id_column',
 	REQUISITE = 'requisite',
 	PRIORITY = 'priority',
+	ENTITY_REFERENCE_TASKS = 'entity_reference_tasks',
 }
 
 export const unreadMessagesValue = 'unreadMessages';

@@ -1,5 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, ICreateWidgetData, IMessage } from '@uspacy/sdk/lib/models/messenger';
+import {
+	EMessengerType,
+	FetchMessagesRequest,
+	GoToMessageRequest,
+	IChat,
+	ICreateWidgetData,
+	IMessage,
+	IQuickAnswer,
+} from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 import differenceInMinutes from 'date-fns/differenceInMinutes';
@@ -13,7 +21,20 @@ import {
 	sortChats,
 	updateUnreadCountAndMentionedByChatId,
 } from '../../../helpers/messenger';
-import { createWidget, deleteWidget, fetchChats, fetchMessages, fetchPinedMessages, getWidgets, goToMessage, updateWidget } from './actions';
+import {
+	createQuickAnswer,
+	createWidget,
+	deleteQuickAnswer,
+	deleteWidget,
+	fetchChats,
+	fetchMessages,
+	fetchPinedMessages,
+	getQuickAnswers,
+	getWidgets,
+	goToMessage,
+	updateQuickAnswer,
+	updateWidget,
+} from './actions';
 import { IState } from './types';
 
 const initialState: IState = {
@@ -42,6 +63,18 @@ const initialState: IState = {
 	AISummaryData: {
 		messages: [],
 		text: '',
+		loading: false,
+	},
+	quickAnswers: {
+		data: [],
+		meta: {
+			currentPage: 1,
+			from: 0,
+			lastPage: 1,
+			perPage: 0,
+			to: 0,
+			total: 0,
+		},
 		loading: false,
 	},
 };
@@ -585,7 +618,6 @@ export const chatSlice = createSlice({
 		[fetchChats.rejected.type]: (state) => {
 			state.chats.loading = false;
 		},
-
 		[fetchMessages.fulfilled.type]: (
 			state,
 			action: PayloadAction<{ items: IMessage[]; profile: IUser }, string, { arg: FetchMessagesRequest }>,
@@ -735,6 +767,38 @@ export const chatSlice = createSlice({
 				if (it.id === action.payload.id) return action.payload;
 				return it;
 			});
+		},
+		[getQuickAnswers.pending.type]: (state) => {
+			state.quickAnswers.loading = true;
+		},
+		[getQuickAnswers.rejected.type]: (state) => {
+			state.quickAnswers.loading = false;
+		},
+		[getQuickAnswers.fulfilled.type]: (state, action: PayloadAction<{ data: IQuickAnswer[]; meta: IMeta }>) => {
+			const { data, meta } = action.payload;
+			state.quickAnswers.data = data;
+			state.quickAnswers.meta = meta;
+			state.quickAnswers.loading = false;
+		},
+		[createQuickAnswer.fulfilled.type]: (state, action: PayloadAction<IQuickAnswer>) => {
+			state.quickAnswers.data = [action.payload, ...state.quickAnswers.data];
+			state.quickAnswers.meta.total += 1;
+		},
+		[createQuickAnswer.rejected.type]: () => {
+			throw new Error('Failed to create quick answer');
+		},
+		[updateQuickAnswer.fulfilled.type]: (state, action: PayloadAction<IQuickAnswer>) => {
+			state.quickAnswers.data = state.quickAnswers.data.map((it) => {
+				if (it.id === action.payload.id) return action.payload;
+				return it;
+			});
+		},
+		[updateQuickAnswer.rejected.type]: () => {
+			throw new Error('Failed to update quick answer');
+		},
+		[deleteQuickAnswer.fulfilled.type]: (state, action: PayloadAction<IQuickAnswer['id']>) => {
+			state.quickAnswers.data = state.quickAnswers.data.filter((it) => it.id !== action.payload);
+			state.quickAnswers.meta.total -= 1;
 		},
 	},
 });

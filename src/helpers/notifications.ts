@@ -26,11 +26,11 @@ const getEntityBase = (linkData: ILinkData) => {
 export const getLinkEntity = (message: INotificationMessage): string | undefined => {
 	if (message.data.action === NotificationAction.DELETE) return undefined;
 	const service = getServiceName(message.data.service);
+	const itemId = message?.data?.entity?.id || message?.data?.entity?.entity_id;
+	if (message.topic === 'custom' && (message.data.service === 'custom' || !itemId)) return '';
 	switch (service) {
 		case 'crm':
-			return `/crm/${message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'tasks/task' : message.type}`}/${
-				message.data.entity.id
-			}`;
+			return `/crm/${message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'tasks/task' : message.type}`}/${itemId}`;
 		case 'comments':
 			if (!message.data.entity?.entity_type) return undefined;
 			const isWithParent = message.data.root_parent && Object.keys(message.data.root_parent).length;
@@ -53,7 +53,97 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 			return `${prefix}/${entityBase}/${isWithParent ? linkData.data?.id : linkData.entity_id}`;
 		default: {
 			const serviceName = service === 'activities' ? 'crm/tasks' : service;
-			return `/${serviceName}/${message.data.entity.id}`;
+			return `/${serviceName}/${itemId}`;
+		}
+	}
+};
+
+export const getDrawersInfo = (message: INotificationMessage) => {
+	if (message.topic === 'custom' && (message.data.service === 'custom' || !(message?.data?.entity?.id || message?.data?.entity?.entity_id)))
+		return undefined;
+	if (message.data.action === NotificationAction.DELETE && message?.type !== 'comment') return undefined;
+	const service = getServiceName(message.data.service);
+	switch (service) {
+		case 'activities': {
+			return {
+				entityCode: 'activities',
+				service: 'crm',
+				entityId: +message.data.entity.id,
+				title: message?.data?.entity?.title,
+				commentId: null,
+			};
+		}
+		case 'tasks': {
+			return {
+				entityCode: 'task',
+				service: 'task',
+				entityId: +message.data.entity.id,
+				title: message?.data?.entity?.title,
+				commentId: null,
+			};
+		}
+		case 'crm':
+			return {
+				entityCode: message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'activities' : message.type}`,
+				service: 'crm',
+				entityId: +message.data.entity.id,
+				title: message?.data?.entity?.title,
+				commentId: null,
+			};
+		case 'comments':
+			if (!message.data.entity?.entity_type) return undefined;
+			const isWithParent = message.data.root_parent && Object.keys(message.data.root_parent).length;
+			const isWithEntityParent = message.data.entity.parent;
+			const entityParentLink = isWithEntityParent ? message.data.entity.parent : message.data.entity;
+			const linkData = isWithParent ? message.data.root_parent : entityParentLink;
+			const entityBase = getEntityBase(linkData);
+
+			if (message.data.root_parent?.service === 'tasks') {
+				return {
+					entityCode: 'task',
+					service: 'task',
+					entityId: +message.data?.root_parent?.data?.id,
+					commentId: message.data?.entity?.id,
+					title: message?.data?.entity?.title,
+				};
+			}
+
+			if (['activities', 'crm'].includes(message.data.root_parent?.service)) {
+				{
+					return {
+						entityCode: message.data.root_parent?.table_name,
+						service: 'crm',
+						entityId: +message.data?.root_parent?.data?.id,
+						commentId: message.data?.entity?.id,
+						title: message?.data?.entity?.title,
+					};
+				}
+			}
+
+			if (message.data.root_parent?.service === 'news_feed') {
+				return {
+					entityCode: entityBase,
+					service: '',
+					entityId: +message.data?.root_parent?.data?.id,
+					commentId: message.data?.entity?.id,
+					title: message?.data?.entity?.title,
+				};
+			}
+
+			return {
+				entityCode: entityBase,
+				service: '',
+				entityId: null,
+				commentId: null,
+			};
+
+		default: {
+			return {
+				entityCode: service,
+				service: '',
+				entityId: null,
+				commentId: null,
+			};
 		}
 	}
 };
@@ -72,16 +162,25 @@ const getEntityType = (message: INotificationMessage) => {
 };
 
 export const getNotificationTitle = (message: INotificationMessage, profileId: number): string | undefined => {
+	if (message.topic === 'custom') {
+		return message?.data?.entity?.title;
+	}
+	const crmBaseTypes = ['leads', 'contacts', 'companies', 'deals'];
 	const service = getServiceName(message.data.service);
 	const mentioned = !!message.data.entity?.mentioned?.users?.includes(profileId);
-	const entityType = getEntityType(message);
+	const isSmartObject =
+		(message?.data?.root_parent?.service === 'crm' && !crmBaseTypes.includes(message?.data?.root_parent?.table_name.toLowerCase())) ||
+		(message?.data?.service === 'crm' && !crmBaseTypes.includes(message?.data?.entity?.table_name.toLowerCase()));
+	const entityType = isSmartObject ? 'smart_objects' : getEntityType(message);
+	const baseType = isSmartObject ? entityType : message.data.entity?.table_name || message.type;
+
 	if (message.data.entity?.new_kanban_stage_id && message.data.entity?.old_kanban_stage_id) {
-		return `notifications.${service}.${message.data.entity?.table_name || message.type}.${NotificationAction.UPDATE_STAGE}`;
+		return `notifications.${isSmartObject ? entityType : service}.${baseType}.${NotificationAction.UPDATE_STAGE}`;
 	}
 	if (mentioned) return `notifications.${service}.${entityType}.${message.type}.mentioned.${message.data.action}`;
 	if (service === 'comments') return `notifications.${service}.${entityType}.${message.type}.${message.data.action}`;
 
-	return `notifications.${service}.${message.data.entity?.table_name || message.type}.${message.data.action}`;
+	return `notifications.${isSmartObject ? entityType : service}.${baseType}.${message.data.action}`;
 };
 
 export const deleteHtmlFromComment = (text: string) => {
@@ -91,6 +190,9 @@ export const deleteHtmlFromComment = (text: string) => {
 };
 
 export const getNotificationSubTitle = (message: INotificationMessage): string | undefined => {
+	if (message.topic === 'custom') {
+		return message?.data?.entity?.description;
+	}
 	const service = getServiceName(message.data.service);
 	switch (service) {
 		case 'comments':
@@ -113,9 +215,11 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 		date: timestamp,
 		link: getLinkEntity(message),
 		author: user,
+		drawerInfo: getDrawersInfo(message),
 		mentioned,
 		commentEntityTitle,
 		read: message.read || false,
 		createdAt: message.createdAt,
+		metadata: message?.metadata ?? [],
 	};
 };

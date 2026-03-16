@@ -17,6 +17,7 @@ import {
 	massItemsEditing,
 	moveItemFromStageToStage,
 	updateEntityItem,
+	uploadEntityItemAvatar,
 } from './actions';
 import { EntityItems, IMoveCardsData, IState } from './types';
 
@@ -73,6 +74,132 @@ const itemsReducer = createSlice({
 		setCompleteModalOpen: (state: IState, action: PayloadAction<{ entityCode: string; value: boolean }>) => {
 			const { entityCode, value } = action.payload;
 			state[entityCode].completeModalOpen = value;
+		},
+		updateEntityItemLocal: (state, action: PayloadAction<{ data: IEntityData; entityCode: string; stageId?: number }>) => {
+			const { entityCode } = action.payload;
+			const stageId = action.payload?.stageId;
+			const payloadData = action.payload.data;
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].errorMessage = null;
+				state[entityCode].data = state[entityCode].data.map((item) => {
+					if (item.id === payloadData.id) {
+						if (payloadData?.updated_at && item?.updated_at && payloadData?.updated_at < item?.updated_at) return item;
+						return {
+							...item,
+							...payloadData,
+						};
+					}
+					return item;
+				});
+			}
+			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
+				state[entityCode].stages[stageId].loading = false;
+				state[entityCode].stages[stageId].errorMessage = null;
+				state[entityCode].stages[stageId].data = state[entityCode].stages[stageId].data.map((item) => {
+					if (item.id === payloadData.id) {
+						if (payloadData?.updated_at && item?.updated_at && payloadData?.updated_at < item?.updated_at) return item;
+						return {
+							...item,
+							...payloadData,
+						};
+					}
+					return item;
+				});
+			}
+		},
+		moveItemFromStageToStageLocal: (state, action: PayloadAction<IMoveCardsData>) => {
+			const { entityCode, entityId, stageId, reason_id: reasonId, funnelHasChanged, sourceStageId, item: payloadItem } = action.payload;
+
+			state[entityCode].data = state[entityCode].data.map((item) => {
+				if (item.id === entityId) {
+					if (payloadItem?.updated_at && item.updated_at && payloadItem.updated_at < item.updated_at) return item;
+					return {
+						...item,
+						kanban_stage_id: stageId,
+						updated_at: payloadItem?.updated_at || Math.floor(new Date().valueOf() / 1000),
+						kanban_reason_id: reasonId ?? null,
+						changed_by: payloadItem?.changed_by || item?.changed_by,
+					};
+				}
+				return item;
+			});
+
+			if (!state[entityCode]?.stages) return;
+
+			let foundEntityItem: IEntityData | undefined;
+			let foundInStageKey: string | undefined;
+			for (const [key, stage] of Object.entries(state[entityCode].stages)) {
+				foundEntityItem = stage.data.find((item) => item.id === entityId);
+				if (foundEntityItem) {
+					foundInStageKey = key;
+					break;
+				}
+			}
+
+			if (!foundEntityItem) {
+				foundEntityItem = state[entityCode].data.find((item) => item.id === entityId) ?? payloadItem;
+			}
+
+			if (payloadItem?.updated_at && foundEntityItem?.updated_at && payloadItem?.updated_at < foundEntityItem?.updated_at) return;
+
+			if (funnelHasChanged) {
+				if (foundInStageKey !== undefined) {
+					const stage = state[entityCode].stages[foundInStageKey];
+					state[entityCode].stages[foundInStageKey] = {
+						...stage,
+						data: stage.data.filter((item) => item.id !== entityId),
+						meta: { ...stage.meta, total: Math.max((stage.meta?.total || 1) - 1, 0) },
+					};
+				} else if (sourceStageId && state[entityCode].stages[sourceStageId]) {
+					const stage = state[entityCode].stages[sourceStageId];
+					state[entityCode].stages[sourceStageId] = {
+						...stage,
+						meta: { ...stage.meta, total: Math.max((stage.meta?.total || 1) - 1, 0) },
+					};
+				}
+				return;
+			}
+
+			state[entityCode].stages = Object.fromEntries(
+				Object.entries(state[entityCode].stages).map(([key, value]) => {
+					if (+key === stageId) {
+						const alreadyInStage = value.data.some((item) => item.id === entityId);
+						if (!alreadyInStage && foundEntityItem) {
+							const data = [
+								{
+									...foundEntityItem,
+									kanban_stage_id: stageId,
+									kanban_reason_id: reasonId ?? null,
+									updated_at: payloadItem?.updated_at || foundEntityItem?.updated_at,
+									changed_by: payloadItem?.changed_by || foundEntityItem?.changed_by,
+								},
+								...value.data,
+							];
+							return [key, { ...value, data, meta: { ...value.meta, total: (value?.meta?.total || 0) + 1 } }];
+						}
+						return [key, value];
+					}
+					const filteredData = value.data.filter((item) => item.id !== entityId);
+					if (filteredData.length === value.data.length) {
+						if (sourceStageId && +key === sourceStageId) {
+							return [key, { ...value, meta: { ...value.meta, total: Math.max((value.meta?.total || 1) - 1, 0) } }];
+						}
+						return [key, value];
+					}
+					return [key, { ...value, data: filteredData, meta: { ...value.meta, total: (value.meta?.total || 1) - 1 } }];
+				}),
+			);
+		},
+		deleteEntityItemLocal: (state, action: PayloadAction<{ id: number; entityCode: string; stageId?: number }>) => {
+			const { entityCode, stageId, id } = action.payload;
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].data = state[entityCode].data.filter((item) => item.id !== id);
+				state[entityCode].meta.total--;
+			}
+			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
+				state[entityCode].stages[stageId].data = state[entityCode].stages[stageId].data.filter((item) => item.id !== id);
+				state[entityCode].stages[stageId].meta.total--;
+			}
 		},
 	},
 	extraReducers: {
@@ -466,7 +593,52 @@ const itemsReducer = createSlice({
 			const { entityCode, stageId } = action.meta.arg;
 			state[entityCode].stages[stageId].loadingCurrencyAmount = false;
 		},
+		[uploadEntityItemAvatar.fulfilled.type]: (
+			state,
+			action: PayloadAction<IEntityData, string, { arg: { data: IEntityData; entityCode: string } }>,
+		) => {
+			const { entityCode } = action.meta.arg;
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].errorMessage = null;
+				state[entityCode].data = state[entityCode].data.map((item) => {
+					if (item.id === action.payload.id) {
+						return {
+							...item,
+							crm_avatar: action.payload?.crm_avatar,
+						};
+					}
+					return item;
+				});
+			}
+		},
+		[uploadEntityItemAvatar.pending.type]: (
+			state,
+			action: PayloadAction<IEntityData, string, { arg: { entityCode: string; data: IEntityData } }>,
+		) => {
+			const { entityCode } = action.meta.arg;
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].errorMessage = null;
+			}
+		},
+		[uploadEntityItemAvatar.rejected.type]: (
+			state,
+			action: PayloadAction<IErrors, string, { arg: { entityCode: string; data: IEntityData } }>,
+		) => {
+			const { entityCode } = action.meta.arg;
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].errorMessage = action.payload;
+			}
+		},
 	},
 });
-export const { changeReason, clearItems, setViewModalOpen, setCreateModalOpen, setCompleteModalOpen } = itemsReducer.actions;
+export const {
+	changeReason,
+	clearItems,
+	setViewModalOpen,
+	setCreateModalOpen,
+	setCompleteModalOpen,
+	updateEntityItemLocal,
+	moveItemFromStageToStageLocal,
+	deleteEntityItemLocal,
+} = itemsReducer.actions;
 export default itemsReducer.reducer;

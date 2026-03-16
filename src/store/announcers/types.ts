@@ -9,6 +9,8 @@ export interface IState {
 	popup: IAnnouncePopup[];
 	meta: Meta;
 	isBannerExists: boolean;
+	isShowBanner: boolean;
+	isShowTariffBanner: boolean;
 }
 
 export interface Meta {

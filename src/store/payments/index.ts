@@ -1,16 +1,25 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
 import {
+	DiscountInputType,
+	DurationViewType,
 	IDiscounts,
 	IIndividualPersonForm,
 	IIndividualPersonFormErrors,
-	ILegalEntityForm,
-	ILegalEntityFormErrors,
-	ILegalEntityFormEuCom,
-	ILegalEntityFormEuComErrors,
+	IIndividualPersonFormErrorsEu,
+	IIndividualPersonFormEu,
+	ILegalForm,
+	ILegalFormErrors,
+	ILegalFormErrorsEu,
+	ILegalFormEu,
 	IPrice,
-} from '@uspacy/sdk/lib/models/payments';
-
-import { IState } from './types';
+	IState,
+	PaymentMethodType,
+	RadioValueTariffStateType,
+	TariffActionType,
+	TariffType,
+	TypeOfPayerType,
+} from './types';
 
 const initialState = {
 	isPaymentButtonPress: false,
@@ -18,8 +27,11 @@ const initialState = {
 	price: {
 		professional: 1,
 		standard: 1,
+		mail_10: 1,
+		mail_100: 1,
 	},
 	usersCount: 0,
+	emailCreditsCount: 0,
 	durationView: 'yearly',
 	tariff: 'professional',
 	radioValueTariffState: 'professional',
@@ -31,7 +43,7 @@ const initialState = {
 		type: 'percentage',
 		value: 0,
 	},
-	typeOfPayer: 'individual',
+	typeOfPayer: 'legalEntityIndividualEntrepreneur',
 	paymentMethod: 'card',
 	tariffActionType: 'changeTheTariff',
 	vatTaxStatus: '',
@@ -42,16 +54,26 @@ const initialState = {
 		phone: '',
 		email: '',
 	},
-	legalEntityForm: {
+	legalForm: {
 		contactPersonPhone: '',
 		contactPersonEmail: '',
 		itinCode: '',
+		edoEmail: '',
 	},
-	legalEntityFormEuCom: {
+	individualPersonFormEu: {
 		firstName: '',
 		lastName: '',
 		email: '',
 		phone: '',
+		country: '',
+	},
+	legalFormEu: {
+		email: '',
+		phone: '',
+		registryCode: '',
+		vatNumber: '',
+		companyName: '',
+		country: '',
 	},
 	individualPersonFormErrors: {
 		firstNameErr: false,
@@ -59,18 +81,27 @@ const initialState = {
 		phoneErr: false,
 		emailErr: false,
 	},
-	legalEntityFormErrors: {
+	legalFormErrors: {
 		contactPersonPhoneErr: false,
 		contactPersonEmailErr: false,
 		itinCodeErr: false,
+		edoEmailErr: false,
 	},
-	legalEntityFormEuComErrors: {
+	individualPersonFormErrorsEu: {
 		firstNameErr: false,
 		lastNameErr: false,
 		emailErr: false,
 		phoneErr: false,
+		countryErr: false,
 	},
-	vatTaxIdError: false,
+	legalFormErrorsEu: {
+		emailErr: false,
+		phoneErr: false,
+		registryCodeErr: false,
+		vatNumberErr: false,
+		companyNameErr: false,
+		countryErr: false,
+	},
 } as IState;
 
 const paymentsReducer = createSlice({
@@ -89,16 +120,19 @@ const paymentsReducer = createSlice({
 		setUsersCount: (state, action: PayloadAction<number>) => {
 			state.usersCount = action.payload;
 		},
-		setDurationView: (state, action: PayloadAction<'yearly' | 'monthly'>) => {
+		setEmailCreditsCount: (state, action: PayloadAction<number>) => {
+			state.emailCreditsCount = action.payload;
+		},
+		setDurationView: (state, action: PayloadAction<DurationViewType>) => {
 			state.durationView = action.payload;
 		},
-		setTariff: (state, action: PayloadAction<'professional' | 'standard'>) => {
+		setTariff: (state, action: PayloadAction<TariffType>) => {
 			state.tariff = action.payload;
 		},
-		setRadioValueTariffState: (state, action: PayloadAction<'professional' | 'standard'>) => {
+		setRadioValueTariffState: (state, action: PayloadAction<RadioValueTariffStateType>) => {
 			state.radioValueTariffState = action.payload;
 		},
-		setDiscounts: (state, action: PayloadAction<{ discount: IDiscounts; type: 'input' | 'season' }>) => {
+		setDiscounts: (state, action: PayloadAction<{ discount: IDiscounts; type: DiscountInputType }>) => {
 			if (action.payload.type === 'input') {
 				state.discountInput = action.payload.discount;
 			}
@@ -106,13 +140,13 @@ const paymentsReducer = createSlice({
 				state.discountSeason = action.payload.discount;
 			}
 		},
-		setTypeOfPayer: (state, action: PayloadAction<'individual' | 'legalEntityIndividualEntrepreneur'>) => {
+		setTypeOfPayer: (state, action: PayloadAction<TypeOfPayerType>) => {
 			state.typeOfPayer = action.payload;
 		},
-		setPaymentMethod: (state, action: PayloadAction<'card' | 'bank_transfer'>) => {
+		setPaymentMethod: (state, action: PayloadAction<PaymentMethodType>) => {
 			state.paymentMethod = action.payload;
 		},
-		setTariffActionType: (state, action: PayloadAction<'extendTheTariff' | 'changeTheTariff'>) => {
+		setTariffActionType: (state, action: PayloadAction<TariffActionType>) => {
 			state.tariffActionType = action.payload;
 		},
 		setVatTaxStatus: (state, action: PayloadAction<string>) => {
@@ -124,23 +158,26 @@ const paymentsReducer = createSlice({
 		setIndividualPersonForm: (state, action: PayloadAction<IIndividualPersonForm>) => {
 			state.individualPersonForm = action.payload;
 		},
+		setLegalForm: (state, action: PayloadAction<ILegalForm>) => {
+			state.legalForm = action.payload;
+		},
+		setIndividualPersonFormEu: (state, action: PayloadAction<IIndividualPersonFormEu>) => {
+			state.individualPersonFormEu = action.payload;
+		},
+		setLegalFormEu: (state, action: PayloadAction<ILegalFormEu>) => {
+			state.legalFormEu = action.payload;
+		},
 		setIndividualPersonFormErrors: (state, action: PayloadAction<IIndividualPersonFormErrors>) => {
 			state.individualPersonFormErrors = action.payload;
 		},
-		setLegalEntityForm: (state, action: PayloadAction<ILegalEntityForm>) => {
-			state.legalEntityForm = action.payload;
+		setLegalFormErrors: (state, action: PayloadAction<ILegalFormErrors>) => {
+			state.legalFormErrors = action.payload;
 		},
-		setLegalEntityFormErrors: (state, action: PayloadAction<ILegalEntityFormErrors>) => {
-			state.legalEntityFormErrors = action.payload;
+		setIndividualPersonFormErrorsEu: (state, action: PayloadAction<IIndividualPersonFormErrorsEu>) => {
+			state.individualPersonFormErrorsEu = action.payload;
 		},
-		setLegalEntityFormEuCom: (state, action: PayloadAction<ILegalEntityFormEuCom>) => {
-			state.legalEntityFormEuCom = action.payload;
-		},
-		setLegalEntityFormEuComErrors: (state, action: PayloadAction<ILegalEntityFormEuComErrors>) => {
-			state.legalEntityFormEuComErrors = action.payload;
-		},
-		setVatTaxIdError: (state, action: PayloadAction<boolean>) => {
-			state.vatTaxIdError = action.payload;
+		setLegalFormErrorsEu: (state, action: PayloadAction<ILegalFormErrorsEu>) => {
+			state.legalFormErrorsEu = action.payload;
 		},
 	},
 	extraReducers: {},
@@ -151,6 +188,7 @@ export const {
 	setIsPaymentProcess,
 	setPrice,
 	setUsersCount,
+	setEmailCreditsCount,
 	setDurationView,
 	setTariff,
 	setRadioValueTariffState,
@@ -161,11 +199,12 @@ export const {
 	setVatTaxStatus,
 	setAutomaticSubscriptionRenewal,
 	setIndividualPersonForm,
+	setLegalForm,
+	setIndividualPersonFormEu,
+	setLegalFormEu,
 	setIndividualPersonFormErrors,
-	setLegalEntityForm,
-	setLegalEntityFormErrors,
-	setLegalEntityFormEuCom,
-	setLegalEntityFormEuComErrors,
-	setVatTaxIdError,
+	setLegalFormErrors,
+	setIndividualPersonFormErrorsEu,
+	setLegalFormErrorsEu,
 } = paymentsReducer.actions;
 export default paymentsReducer.reducer;

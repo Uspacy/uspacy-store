@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IChat, IMessage } from '@uspacy/sdk/lib/models/messenger';
+import { IChat, ICrmConnectEntity, IMessage } from '@uspacy/sdk/lib/models/messenger';
+import { ITask } from '@uspacy/sdk/lib/models/tasks';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 import {
@@ -13,7 +14,7 @@ import {
 	updateUnreadCountAndMentionedByChatId,
 } from '../../../helpers/messenger';
 import { fetchExternalChats } from './actions';
-import { ICrmConnectEntity, IState } from './types';
+import { IState } from './types';
 
 const initialConnectEntities = {
 	leads: [],
@@ -32,6 +33,8 @@ const initialState: IState = {
 		},
 		externalChatsLength: 0,
 		crmConnectEntities: initialConnectEntities,
+		connectedTasks: [],
+		isLoadingConnectedTasks: false,
 	},
 };
 
@@ -50,6 +53,14 @@ export const externalChatSlice = createSlice({
 		},
 		addChatToActive(state, action: PayloadAction<IChat>) {
 			state.externalChats.items.active = [action.payload, ...state.externalChats.items.active];
+		},
+		addChatToActiveIfDontExists(state, action: PayloadAction<IChat>) {
+			if (state.externalChats.items.active.findIndex((chat) => chat.id === action.payload.id) !== -1) {
+				return;
+			}
+			state.externalChats.items.active = [action.payload, ...state.externalChats.items.active];
+			state.externalChats.items.undistributed = state.externalChats.items.undistributed.filter((chat) => chat.id !== action.payload.id);
+			state.externalChats.items.inactive = state.externalChats.items.inactive.filter((chat) => chat.id !== action.payload.id);
 		},
 		addChatToInactive(state, action: PayloadAction<IChat>) {
 			state.externalChats.items.inactive = [action.payload, ...state.externalChats.items.inactive];
@@ -72,9 +83,6 @@ export const externalChatSlice = createSlice({
 		unshiftLastMessage(state, action: PayloadAction<{ chatId: string; item: IMessage; profile: IUser }>) {
 			const { chatId, item, profile } = action.payload;
 			state.externalChats.items = updateLastMessageInExternalChat(state.externalChats.items, chatId, item, profile);
-		},
-		appendChatsToUndistributed(state, action: PayloadAction<IChat>) {
-			state.externalChats.items.undistributed = [action.payload, ...state.externalChats.items.undistributed];
 		},
 		addExternalMembersAction(state, action: PayloadAction<{ id: string; members: number[] }>) {
 			state.externalChats.items = {
@@ -187,6 +195,20 @@ export const externalChatSlice = createSlice({
 				});
 			}
 		},
+		setConnectedTasks(state, action: PayloadAction<ITask[]>) {
+			state.externalChats.connectedTasks = action.payload;
+		},
+		addConnectedTask(state, action: PayloadAction<ITask>) {
+			if (!state.externalChats.connectedTasks.find((task) => task.id === action.payload.id)) {
+				state.externalChats.connectedTasks.push(action.payload);
+			}
+		},
+		removeConnectedTask(state, action: PayloadAction<ITask['id']>) {
+			state.externalChats.connectedTasks = state.externalChats.connectedTasks.filter((task) => task.id !== action.payload);
+		},
+		setIsLoadingConnectedTasks(state, action: PayloadAction<boolean>) {
+			state.externalChats.isLoadingConnectedTasks = action.payload;
+		},
 	},
 	extraReducers: {
 		[fetchExternalChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
@@ -207,6 +229,7 @@ export const {
 	setCurrentChat,
 	unsetCurrentChat,
 	addChatToActive,
+	addChatToActiveIfDontExists,
 	addChatToInactive,
 	removeChatFromUndistributed,
 	removeChatFromActive,
@@ -214,7 +237,6 @@ export const {
 	removeChatFromInactive,
 	updateChat,
 	addChatToUndistributed,
-	appendChatsToUndistributed,
 	addExternalMembersAction,
 	deleteExternalMembersAction,
 	readLastMessageInExternalChat,
@@ -225,6 +247,10 @@ export const {
 	addConnectedCrmEntities,
 	updateConnectedCrmEntitiesByKey,
 	readExtChat,
+	setConnectedTasks,
+	addConnectedTask,
+	removeConnectedTask,
+	setIsLoadingConnectedTasks,
 } = externalChatSlice.actions;
 
 export default externalChatSlice.reducer;

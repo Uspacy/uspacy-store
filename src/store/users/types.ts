@@ -8,9 +8,11 @@ export interface IState {
 	usersFiltersData: IResponseWithMeta<IUser>;
 	errorLoading?: string;
 	errorLoadingUpdatingUser: IErrorsAxiosResponse;
+	errorLoadingOnlineStatuses: IErrorsAxiosResponse;
 	loading: boolean;
 	loadingUsersByFilter: boolean;
 	loadingUpdatingUser: boolean;
+	loadingOnlineStatuses: boolean;
 	userFilter: {
 		presets: IFilterPreset<IUserFilter>[];
 		filters?: IUserFilter;
@@ -23,6 +25,7 @@ export interface IInvite {
 	firstName?: string;
 	lastName?: string;
 	email: string;
+	external_user: boolean;
 }
 
 export interface IUploadAvatar {

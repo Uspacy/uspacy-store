@@ -43,6 +43,7 @@ export const createGroup = createAsyncThunk(
 			logo,
 			moderatorsIds,
 			usersIds,
+			externalUserIds,
 			enableColorTheme,
 			themeSettings,
 		}: {
@@ -54,6 +55,7 @@ export const createGroup = createAsyncThunk(
 			logo?: File;
 			moderatorsIds?: string[];
 			usersIds?: string[];
+			externalUserIds?: string[];
 			enableColorTheme: boolean;
 			themeSettings: IThemeSettings;
 		},
@@ -61,7 +63,19 @@ export const createGroup = createAsyncThunk(
 	) => {
 		try {
 			return await uspacySdk.groupsService
-				.createGroup({ name, groupType, description, groupTheme, ownerId, logo, moderatorsIds, usersIds, enableColorTheme, themeSettings })
+				.createGroup({
+					name,
+					groupType,
+					description,
+					groupTheme,
+					ownerId,
+					logo,
+					moderatorsIds,
+					usersIds,
+					enableColorTheme,
+					themeSettings,
+					externalUserIds,
+				})
 				.then((res) => res.data);
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
@@ -81,6 +95,7 @@ export const editGroup = createAsyncThunk(
 			ownerId,
 			moderatorsIds,
 			usersIds,
+			externalUserIds,
 			archived,
 			enableColorTheme,
 			themeSettings,
@@ -93,6 +108,7 @@ export const editGroup = createAsyncThunk(
 			ownerId?: string;
 			moderatorsIds?: string[];
 			usersIds?: string[];
+			externalUserIds?: string[];
 			archived?: number;
 			enableColorTheme: boolean;
 			themeSettings: IThemeSettings;
@@ -113,6 +129,7 @@ export const editGroup = createAsyncThunk(
 					archived,
 					enableColorTheme,
 					themeSettings,
+					externalUserIds,
 				})
 				.then((res) => res.data);
 		} catch (e) {
