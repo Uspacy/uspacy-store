@@ -51,6 +51,7 @@ import trash from './trash';
 import users from './users';
 import webhooks from './webhooks';
 import widgets from './widgets';
+import workflows from './workflows';
 
 const rootReducer = combineReducers({
 	apps,
@@ -101,6 +102,7 @@ const rootReducer = combineReducers({
 	transferOfCases,
 	trash,
 	marketing,
+	workflows,
 	drawers,
 	eventBuffer,
 	widgets,
