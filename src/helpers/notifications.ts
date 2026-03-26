@@ -220,5 +220,6 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 		commentEntityTitle,
 		read: message.read || false,
 		createdAt: message.createdAt,
+		metadata: message?.metadata ?? [],
 	};
 };
