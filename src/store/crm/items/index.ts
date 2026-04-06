@@ -121,26 +121,30 @@ const itemsReducer = createSlice({
 		moveItemFromStageToStageLocal: (state, action: PayloadAction<IMoveCardsData>) => {
 			const { entityCode, entityId, stageId, reason_id: reasonId, funnelHasChanged, sourceStageId, item: payloadItem } = action.payload;
 
-			state[entityCode].data = state[entityCode].data.map((item) => {
-				if (item.id === entityId) {
-					if (payloadItem?.updated_at && item.updated_at && payloadItem.updated_at < item.updated_at) return item;
-					return {
-						...item,
-						kanban_stage_id: stageId,
-						updated_at: payloadItem?.updated_at || Math.floor(new Date().valueOf() / 1000),
-						kanban_reason_id: reasonId ?? null,
-						changed_by: payloadItem?.changed_by || item?.changed_by,
-					};
-				}
-				return item;
-			});
+			if (!state[entityCode]) return;
+
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].data = state[entityCode].data.map((item) => {
+					if (item.id === entityId) {
+						if (payloadItem?.updated_at && item.updated_at && payloadItem.updated_at < item.updated_at) return item;
+						return {
+							...item,
+							kanban_stage_id: stageId,
+							updated_at: payloadItem?.updated_at || Math.floor(new Date().valueOf() / 1000),
+							kanban_reason_id: reasonId ?? null,
+							changed_by: payloadItem?.changed_by || item?.changed_by,
+						};
+					}
+					return item;
+				});
+			}
 
 			if (!state[entityCode]?.stages) return;
 
 			let foundEntityItem: IEntityData | undefined;
 			let foundInStageKey: string | undefined;
 			for (const [key, stage] of Object.entries(state[entityCode].stages)) {
-				foundEntityItem = stage.data.find((item) => item.id === entityId);
+				foundEntityItem = stage.data?.find((item) => item.id === entityId);
 				if (foundEntityItem) {
 					foundInStageKey = key;
 					break;
@@ -653,6 +657,7 @@ const itemsReducer = createSlice({
 			action: PayloadAction<IErrors, string, { arg: { entityCode: string; stageId: number } }>,
 		) => {
 			const { entityCode, stageId } = action.meta.arg;
+			if (!state[entityCode]?.stages?.[stageId]) return;
 			state[entityCode].stages[stageId].loadingCurrencyAmount = false;
 		},
 		[fetchEntityItemsByTimePeriod.fulfilled.type]: (
