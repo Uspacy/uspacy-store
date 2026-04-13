@@ -90,6 +90,13 @@ const productsForEntityReducer = createSlice({
 				state.productsWithInfoForEntity.list_products = [state.defaultProduct];
 			}
 		},
+		setInfoProductsForEntity: (state, action: PayloadAction<IProductInfoForEntity>) => {
+			state.productsWithInfoForEntity = {
+				...action.payload,
+				list_products: !!action.payload.list_products.length ? action.payload.list_products : [state.defaultProduct],
+			};
+			state.productsForEntity = !!action.payload.list_products.length ? action.payload.list_products : [state.defaultProduct];
+		},
 	},
 	extraReducers: {
 		[fetchInfoProductsForEntity.fulfilled.type]: (state, action: PayloadAction<IProductInfoForEntity>) => {
@@ -299,6 +306,7 @@ export const {
 	liveEditProductsForEntity,
 	deleteLocalProduct,
 	changeDefaultCurrency,
+	setInfoProductsForEntity,
 } = productsForEntityReducer.actions;
 
 export default productsForEntityReducer.reducer;
