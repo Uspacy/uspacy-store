@@ -20,6 +20,7 @@ export class CardsByEvents {
 	private readonly registeredEntities = new Set<string>();
 	private readonly kanbanStages = new Map<string, Set<string>>();
 	private readonly kanbanFilterParams = new Map<string, object>();
+	private readonly tableFilterParams = new Map<string, object>();
 	private readonly ENTITY_KEY_SEPARATOR = '-';
 
 	private buildEntityKey(entityType: string, entityId: string): string {
@@ -95,6 +96,22 @@ export class CardsByEvents {
 		return this.kanbanFilterParams.get(entityCode);
 	}
 
+	setTableFilterParams(entityCode: string, params: object | null): void {
+		if (params === null) {
+			this.tableFilterParams.delete(entityCode);
+		} else {
+			this.tableFilterParams.set(entityCode, params);
+		}
+	}
+
+	getTableFilterParams(entityCode: string): object | undefined {
+		return this.tableFilterParams.get(entityCode);
+	}
+
+	hasTableSubscriber(entityCode: string): boolean {
+		return this.tableFilterParams.has(entityCode);
+	}
+
 	hasKanbanStageSubscriber(entityCode: string, stageId: string): boolean {
 		return this.kanbanStages.get(entityCode)?.has(stageId) ?? false;
 	}
@@ -147,6 +164,7 @@ export class CardsByEvents {
 		this.registeredEntities.clear();
 		this.kanbanStages.clear();
 		this.kanbanFilterParams.clear();
+		this.tableFilterParams.clear();
 	}
 
 	getActiveSubscriptionsCount(): number {
