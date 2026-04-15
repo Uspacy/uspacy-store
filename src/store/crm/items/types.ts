@@ -9,6 +9,7 @@ export interface EntityItems extends IResponseWithMeta<IEntityData> {
 	viewModalOpen?: boolean;
 	createModalOpen?: boolean;
 	completeModalOpen?: boolean;
+	pendingNewItems?: IEntityData[];
 	stages?: {
 		[key: string]: {
 			loading: boolean;
