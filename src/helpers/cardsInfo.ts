@@ -94,8 +94,8 @@ export class CardsByEvents {
 		this.kanbanFilterParams.set(entityCode, params);
 	}
 
-	getKanbanFilterParams(entityCode: string): object | undefined {
-		return this.kanbanFilterParams.get(entityCode);
+	getKanbanFilterParams(entityCode: string): Record<string, unknown> | undefined {
+		return this.kanbanFilterParams.get(entityCode) as Record<string, unknown> | undefined;
 	}
 
 	setTableFilterParams(entityCode: string, params: object | null): void {
@@ -106,8 +106,8 @@ export class CardsByEvents {
 		}
 	}
 
-	getTableFilterParams(entityCode: string): object | undefined {
-		return this.tableFilterParams.get(entityCode);
+	getTableFilterParams(entityCode: string): Record<string, unknown> | undefined {
+		return this.tableFilterParams.get(entityCode) as Record<string, unknown> | undefined;
 	}
 
 	hasTableSubscriber(entityCode: string): boolean {
