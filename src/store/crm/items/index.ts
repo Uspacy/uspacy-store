@@ -253,6 +253,16 @@ const itemsReducer = createSlice({
 				state[entityCode].meta.total++;
 			}
 		},
+		removePendingItem: (state, action: PayloadAction<{ entityCode: string; id: number }>) => {
+			const { entityCode, id } = action.payload;
+			if (!state[entityCode]?.pendingNewItems?.length) return;
+			const wasInPending = state[entityCode].pendingNewItems.some((item) => item.id === id);
+			if (!wasInPending) return;
+			state[entityCode].pendingNewItems = state[entityCode].pendingNewItems.filter((item) => item.id !== id);
+			if (state[entityCode].meta) {
+				state[entityCode].meta.total = Math.max((state[entityCode].meta.total || 1) - 1, 0);
+			}
+		},
 		flushPendingNewItems: (state, action: PayloadAction<{ entityCode: string }>) => {
 			const { entityCode } = action.payload;
 			if (!state[entityCode]) return;
@@ -802,6 +812,7 @@ export const {
 	deleteEntityItemLocal,
 	addEntityItemToStageLocal,
 	addPendingNewItem,
+	removePendingItem,
 	flushPendingNewItems,
 } = itemsReducer.actions;
 export default itemsReducer.reducer;
