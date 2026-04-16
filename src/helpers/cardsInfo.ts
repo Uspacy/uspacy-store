@@ -21,6 +21,8 @@ export class CardsByEvents {
 	private readonly kanbanStages = new Map<string, Set<string>>();
 	private readonly kanbanFilterParams = new Map<string, object>();
 	private readonly tableFilterParams = new Map<string, object>();
+	// entityType -> Map<parentEntityType, Set<parentEntityId>>
+	private readonly relatedEntityWatchers = new Map<string, Map<string, Set<string>>>();
 	private readonly ENTITY_KEY_SEPARATOR = '-';
 
 	private buildEntityKey(entityType: string, entityId: string): string {
@@ -112,6 +114,36 @@ export class CardsByEvents {
 		return this.tableFilterParams.has(entityCode);
 	}
 
+	registerRelatedEntityInterest(entityType: string, parentEntityType: string, parentEntityId: string): () => void {
+		const byParent = this.relatedEntityWatchers.get(entityType) ?? new Map<string, Set<string>>();
+		const ids = byParent.get(parentEntityType) ?? new Set<string>();
+		ids.add(parentEntityId);
+		byParent.set(parentEntityType, ids);
+		this.relatedEntityWatchers.set(entityType, byParent);
+
+		return () => {
+			const currentByParent = this.relatedEntityWatchers.get(entityType);
+			if (!currentByParent) return;
+			const currentIds = currentByParent.get(parentEntityType);
+			if (!currentIds) return;
+			currentIds.delete(parentEntityId);
+			if (currentIds.size === 0) currentByParent.delete(parentEntityType);
+			if (currentByParent.size === 0) this.relatedEntityWatchers.delete(entityType);
+		};
+	}
+
+	isRelatedEntityCreateRelevant(entityType: string, payload: Record<string, any>): boolean {
+		const byParent = this.relatedEntityWatchers.get(entityType);
+		if (!byParent || byParent.size === 0) return false;
+		return Array.from(byParent.entries()).some(([parentType, ids]) => {
+			const refValue = payload?.[parentType];
+			if (!refValue) return false;
+			if (Array.isArray(refValue)) return refValue.some((ref) => ids.has(String(ref?.id ?? ref)));
+			if (typeof refValue === 'object') return ids.has(String((refValue as any).id));
+			return ids.has(String(refValue));
+		});
+	}
+
 	hasKanbanStageSubscriber(entityCode: string, stageId: string): boolean {
 		return this.kanbanStages.get(entityCode)?.has(stageId) ?? false;
 	}
@@ -165,6 +197,7 @@ export class CardsByEvents {
 		this.kanbanStages.clear();
 		this.kanbanFilterParams.clear();
 		this.tableFilterParams.clear();
+		this.relatedEntityWatchers.clear();
 	}
 
 	getActiveSubscriptionsCount(): number {
