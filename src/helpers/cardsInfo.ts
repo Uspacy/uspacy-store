@@ -23,6 +23,8 @@ export class CardsByEvents {
 	private readonly tableFilterParams = new Map<string, object>();
 	// entityType -> Map<parentEntityType, Set<parentEntityId>>
 	private readonly relatedEntityWatchers = new Map<string, Map<string, Set<string>>>();
+	// entityType -> Set<entityId> — pending items in ConnectedEntitiesTable
+	private readonly activePendingRelatedIds = new Map<string, Set<string>>();
 	private readonly ENTITY_KEY_SEPARATOR = '-';
 
 	private buildEntityKey(entityType: string, entityId: string): string {
@@ -144,6 +146,18 @@ export class CardsByEvents {
 		});
 	}
 
+	setActivePendingRelatedIds(entityType: string, ids: string[]): void {
+		if (ids.length === 0) {
+			this.activePendingRelatedIds.delete(entityType);
+		} else {
+			this.activePendingRelatedIds.set(entityType, new Set(ids));
+		}
+	}
+
+	hasActivePendingRelatedEntity(entityType: string, entityId: string): boolean {
+		return this.activePendingRelatedIds.get(entityType)?.has(entityId) ?? false;
+	}
+
 	hasKanbanStageSubscriber(entityCode: string, stageId: string): boolean {
 		return this.kanbanStages.get(entityCode)?.has(stageId) ?? false;
 	}
@@ -198,6 +212,7 @@ export class CardsByEvents {
 		this.kanbanFilterParams.clear();
 		this.tableFilterParams.clear();
 		this.relatedEntityWatchers.clear();
+		this.activePendingRelatedIds.clear();
 	}
 
 	getActiveSubscriptionsCount(): number {
