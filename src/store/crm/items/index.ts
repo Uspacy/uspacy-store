@@ -198,11 +198,11 @@ const itemsReducer = createSlice({
 			const { entityCode, stageId, id } = action.payload;
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].data = state[entityCode].data.filter((item) => item.id !== id);
-				state[entityCode].meta.total--;
+				if (state[entityCode].meta) state[entityCode].meta.total--;
 			}
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
 				state[entityCode].stages[stageId].data = state[entityCode].stages[stageId].data.filter((item) => item.id !== id);
-				state[entityCode].stages[stageId].meta.total--;
+				if (state[entityCode].stages[stageId].meta) state[entityCode].stages[stageId].meta.total--;
 			}
 		},
 	},
@@ -357,11 +357,11 @@ const itemsReducer = createSlice({
 				state[entityCode].loading = false;
 				state[entityCode].errorMessage = null;
 				state[entityCode].data = [action.payload, ...state[entityCode].data];
-				state[entityCode].meta.total++;
+				if (state[entityCode].meta) state[entityCode].meta.total++;
 			}
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
 				state[entityCode].stages[stageId].data = [action.payload, ...state[entityCode].stages[stageId].data];
-				state[entityCode].stages[stageId].meta.total++;
+				if (state[entityCode].stages[stageId].meta) state[entityCode].stages[stageId].meta.total++;
 				state[entityCode].stages[stageId].loading = false;
 				state[entityCode].stages[stageId].errorMessage = null;
 			}
@@ -402,11 +402,11 @@ const itemsReducer = createSlice({
 			const { entityCode, stageId, id } = action.meta.arg;
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].data = state[entityCode].data.filter((item) => item.id !== id);
-				state[entityCode].meta.total--;
+				if (state[entityCode].meta) state[entityCode].meta.total--;
 			}
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
 				state[entityCode].stages[stageId].data = state[entityCode].stages[stageId].data.filter((item) => item.id !== id);
-				state[entityCode].stages[stageId].meta.total--;
+				if (state[entityCode].stages[stageId].meta) state[entityCode].stages[stageId].meta.total--;
 			}
 		},
 
