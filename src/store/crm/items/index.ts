@@ -141,7 +141,7 @@ const itemsReducer = createSlice({
 			}
 
 			if (!foundEntityItem) {
-				foundEntityItem = state[entityCode].data.find((item) => item.id === entityId) ?? payloadItem;
+				foundEntityItem = state[entityCode].data?.find((item) => item.id === entityId) ?? payloadItem;
 			}
 
 			if (payloadItem?.updated_at && foundEntityItem?.updated_at && payloadItem?.updated_at < foundEntityItem?.updated_at) return;
@@ -167,7 +167,7 @@ const itemsReducer = createSlice({
 			state[entityCode].stages = Object.fromEntries(
 				Object.entries(state[entityCode].stages).map(([key, value]) => {
 					if (+key === stageId) {
-						const alreadyInStage = value.data.some((item) => item.id === entityId);
+						const alreadyInStage = value.data?.some((item) => item.id === entityId);
 						if (!alreadyInStage && foundEntityItem) {
 							const data = [
 								{
@@ -177,14 +177,14 @@ const itemsReducer = createSlice({
 									updated_at: payloadItem?.updated_at || foundEntityItem?.updated_at,
 									changed_by: payloadItem?.changed_by || foundEntityItem?.changed_by,
 								},
-								...value.data,
+								...(value.data || []),
 							];
 							return [key, { ...value, data, meta: { ...value.meta, total: (value?.meta?.total || 0) + 1 } }];
 						}
 						return [key, value];
 					}
-					const filteredData = value.data.filter((item) => item.id !== entityId);
-					if (filteredData.length === value.data.length) {
+					const filteredData = (value.data || []).filter((item) => item.id !== entityId);
+					if (filteredData.length === (value.data?.length ?? 0)) {
 						if (sourceStageId && +key === sourceStageId) {
 							return [key, { ...value, meta: { ...value.meta, total: Math.max((value.meta?.total || 1) - 1, 0) } }];
 						}
@@ -424,7 +424,7 @@ const itemsReducer = createSlice({
 			state[entityCode].errorMessage = null;
 			if (state[entityCode]?.stages) {
 				// TODO move to fulfilled after backend optimization
-				state[entityCode].data = state[entityCode].data.map((item) => {
+				state[entityCode].data = (state[entityCode].data || []).map((item) => {
 					if (item.id === action.meta.arg.entityId) {
 						return {
 							...item,
@@ -565,6 +565,7 @@ const itemsReducer = createSlice({
 		) => {
 			const { entityCode, stageId } = action.meta.arg;
 
+			if (!state[entityCode]?.stages?.[stageId]) return;
 			state[entityCode].stages[stageId].currencyAmount = action.payload;
 			state[entityCode].stages[stageId].loadingCurrencyAmount = false;
 			state[entityCode].stages[stageId].errorCurrencyAmount = null;
