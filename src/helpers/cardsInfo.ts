@@ -25,6 +25,8 @@ export class CardsByEvents {
 	private readonly relatedEntityWatchers = new Map<string, Map<string, Set<string>>>();
 	// entityType -> Set<entityId> — pending items in ConnectedEntitiesTable
 	private readonly activePendingRelatedIds = new Map<string, Set<string>>();
+	// "entityType-entityId" -> listeners — timeline subscribers per parent entity
+	private readonly timelineSubscribers = new Map<string, Set<CardEventListener>>();
 	private readonly ENTITY_KEY_SEPARATOR = '-';
 
 	private buildEntityKey(entityType: string, entityId: string): string {
@@ -158,6 +160,33 @@ export class CardsByEvents {
 		return this.activePendingRelatedIds.get(entityType)?.has(entityId) ?? false;
 	}
 
+	subscribeToEntityTimeline(entityType: string, entityId: string, listener: CardEventListener): () => void {
+		const key = this.buildEntityKey(entityType, entityId);
+		const listeners = this.timelineSubscribers.get(key) ?? new Set<CardEventListener>();
+		listeners.add(listener);
+		this.timelineSubscribers.set(key, listeners);
+
+		return () => {
+			const current = this.timelineSubscribers.get(key);
+			if (!current) return;
+			current.delete(listener);
+			if (current.size === 0) this.timelineSubscribers.delete(key);
+		};
+	}
+
+	emitToEntityTimeline(entityType: string, entityId: string, event: CardEvent): void {
+		const listeners = this.timelineSubscribers.get(this.buildEntityKey(entityType, entityId));
+		if (!listeners?.size) return;
+		Array.from(listeners).forEach((listener) => {
+			try {
+				listener(event);
+			} catch (error) {
+				// eslint-disable-next-line no-console
+				console.error('emitToEntityTimeline listener error', error);
+			}
+		});
+	}
+
 	hasKanbanStageSubscriber(entityCode: string, stageId: string): boolean {
 		return this.kanbanStages.get(entityCode)?.has(stageId) ?? false;
 	}
@@ -213,6 +242,7 @@ export class CardsByEvents {
 		this.tableFilterParams.clear();
 		this.relatedEntityWatchers.clear();
 		this.activePendingRelatedIds.clear();
+		this.timelineSubscribers.clear();
 	}
 
 	getActiveSubscriptionsCount(): number {
@@ -249,12 +279,14 @@ export class CardsByEvents {
 		entitySubscribers: Record<string, number>;
 		typeSubscribers: Record<string, number>;
 		kanbanStages: Record<string, string[]>;
+		timelineSubscribers: Record<string, number>;
 	} {
 		return {
 			registeredEntities: Array.from(this.registeredEntities),
 			entitySubscribers: Object.fromEntries(Array.from(this.listenersByEntityKey.entries()).map(([key, listeners]) => [key, listeners.size])),
 			typeSubscribers: Object.fromEntries(Array.from(this.listenersByType.entries()).map(([type, listeners]) => [type, listeners.size])),
 			kanbanStages: Object.fromEntries(Array.from(this.kanbanStages.entries()).map(([entityCode, stages]) => [entityCode, Array.from(stages)])),
+			timelineSubscribers: Object.fromEntries(Array.from(this.timelineSubscribers.entries()).map(([key, listeners]) => [key, listeners.size])),
 		};
 	}
 }
