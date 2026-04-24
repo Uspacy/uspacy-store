@@ -1,5 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { EMessengerType, FetchMessagesRequest, GoToMessageRequest, IChat, IMessage, IQuickAnswer } from '@uspacy/sdk/lib/models/messenger';
+import {
+	EMessengerType,
+	FetchMessagesRequest,
+	GoToMessageRequest,
+	IChat,
+	IMessage,
+	IQuickAnswer,
+	IUserSettings,
+} from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 import differenceInMinutes from 'date-fns/differenceInMinutes';
@@ -20,8 +28,10 @@ import {
 	fetchMessages,
 	fetchPinedMessages,
 	getQuickAnswers,
+	getUserSettings,
 	goToMessage,
 	updateQuickAnswer,
+	updateUserSettings,
 } from './actions';
 import { IState } from './types';
 
@@ -52,6 +62,10 @@ const initialState: IState = {
 			total: 0,
 		},
 		loading: false,
+	},
+	userSettings: {
+		isInternalMsgSoundEnabled: true,
+		isExternalMsgSoundEnabled: true,
 	},
 };
 
@@ -744,6 +758,17 @@ export const chatSlice = createSlice({
 		[deleteQuickAnswer.fulfilled.type]: (state, action: PayloadAction<IQuickAnswer['id']>) => {
 			state.quickAnswers.data = state.quickAnswers.data.filter((it) => it.id !== action.payload);
 			state.quickAnswers.meta.total -= 1;
+		},
+		[getUserSettings.fulfilled.type]: (state, action: PayloadAction<IUserSettings[]>) => {
+			if (!action.payload.length) return;
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { id, authUserId, ...restSettings } = action.payload[0];
+			state.userSettings = restSettings;
+		},
+		[updateUserSettings.fulfilled.type]: (state, action: PayloadAction<IUserSettings>) => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { id, authUserId, ...restSettings } = action.payload;
+			state.userSettings = restSettings;
 		},
 	},
 });

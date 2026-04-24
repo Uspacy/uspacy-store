@@ -9,6 +9,7 @@ import {
 	IGetQuickAnswerParams,
 	IMessage,
 	IQuickAnswer,
+	IUserSettings,
 } from '@uspacy/sdk/lib/models/messenger';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
@@ -137,3 +138,22 @@ export const deleteQuickAnswer = createAsyncThunk('messenger/deleteQuickAnswer',
 		return rejectWithValue(e);
 	}
 });
+
+export const getUserSettings = createAsyncThunk('messenger/getUserSettings', async (_, { rejectWithValue }) => {
+	try {
+		return (await uspacySdk.messengerService.getSettings()).data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const updateUserSettings = createAsyncThunk(
+	'messenger/updateUserSettings',
+	async (settings: Partial<Omit<IUserSettings, 'authUserId' | 'id'>>, { rejectWithValue }) => {
+		try {
+			return (await uspacySdk.messengerService.updateSettings(settings)).data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);

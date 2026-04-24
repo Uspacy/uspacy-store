@@ -1,4 +1,4 @@
-import { EMessengerType, IChat, IMessage, IMessagesGroup, IQuickAnswer } from '@uspacy/sdk/lib/models/messenger';
+import { EMessengerType, IChat, IMessage, IMessagesGroup, IQuickAnswer, IUserSettings } from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 
 export interface IState {
@@ -29,4 +29,5 @@ export interface IState {
 		meta: IMeta;
 		loading: boolean;
 	};
+	userSettings: Omit<IUserSettings, 'authUserId' | 'id'>;
 }
