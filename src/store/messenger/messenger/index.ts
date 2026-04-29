@@ -7,6 +7,7 @@ import {
 	ICreateWidgetData,
 	IMessage,
 	IQuickAnswer,
+	IUserSettings,
 } from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 import { IUser } from '@uspacy/sdk/lib/models/user';
@@ -30,9 +31,11 @@ import {
 	fetchMessages,
 	fetchPinedMessages,
 	getQuickAnswers,
+	getUserSettings,
 	getWidgets,
 	goToMessage,
 	updateQuickAnswer,
+	updateUserSettings,
 	updateWidget,
 } from './actions';
 import { IState } from './types';
@@ -76,6 +79,10 @@ const initialState: IState = {
 			total: 0,
 		},
 		loading: false,
+	},
+	userSettings: {
+		isInternalMsgSoundEnabled: true,
+		isExternalMsgSoundEnabled: true,
 	},
 };
 
@@ -799,6 +806,17 @@ export const chatSlice = createSlice({
 		[deleteQuickAnswer.fulfilled.type]: (state, action: PayloadAction<IQuickAnswer['id']>) => {
 			state.quickAnswers.data = state.quickAnswers.data.filter((it) => it.id !== action.payload);
 			state.quickAnswers.meta.total -= 1;
+		},
+		[getUserSettings.fulfilled.type]: (state, action: PayloadAction<IUserSettings[]>) => {
+			if (!action.payload.length) return;
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { id, authUserId, ...restSettings } = action.payload[0];
+			state.userSettings = restSettings;
+		},
+		[updateUserSettings.fulfilled.type]: (state, action: PayloadAction<IUserSettings>) => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { id, authUserId, ...restSettings } = action.payload;
+			state.userSettings = restSettings;
 		},
 	},
 });
