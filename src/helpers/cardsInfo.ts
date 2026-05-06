@@ -204,6 +204,19 @@ export class CardsByEvents {
 		return (this.listenersByType.get(entityType)?.size ?? 0) > 0;
 	}
 
+	hasTimelineSubscriberInCrmEntities(...entitiesObjects: Array<Record<string, unknown>>): boolean {
+		for (const entities of entitiesObjects) {
+			for (const [tableName, items] of Object.entries(entities)) {
+				if (!Array.isArray(items)) continue;
+				for (const { id } of items as Array<{ id: number | string }>) {
+					if (!id) continue;
+					if ((this.timelineSubscribers.get(this.buildEntityKey(tableName, String(id)))?.size ?? 0) > 0) return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	emitEventToEntity(entityType: string, entityId: string, event: CardEvent): void {
 		const entityKey = this.buildEntityKey(entityType, entityId);
 		const entityListeners = this.listenersByEntityKey.get(entityKey);
