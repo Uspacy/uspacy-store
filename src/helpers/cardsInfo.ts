@@ -5,6 +5,7 @@ export interface CardEvent {
 	action?: string;
 	payload?: any;
 	notifId?: string;
+	prevPayload?: any;
 }
 
 type CardEventListener = (event: CardEvent) => void;
