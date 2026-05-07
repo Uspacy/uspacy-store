@@ -1,7 +1,7 @@
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IField } from '@uspacy/sdk/lib/models/field';
 import { IMeta, IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
-import { IFilterTasks, ITask, taskType } from '@uspacy/sdk/lib/models/tasks';
+import { ITask, ITasksParams, taskType } from '@uspacy/sdk/lib/models/tasks';
 
 export interface ITaskCardActions {
 	type: taskType;
@@ -34,8 +34,8 @@ export interface IState {
 	deleteTaskId: number;
 	deleteTaskIds: string[];
 	deleteAllFromKanban: boolean;
-	filters: IFilterTasks;
-	regularFilter: IFilterTasks;
+	filters: ITasksParams;
+	regularFilter: ITasksParams;
 	fields: IField[];
 	isEditMode: boolean;
 	loadingTasks: boolean;

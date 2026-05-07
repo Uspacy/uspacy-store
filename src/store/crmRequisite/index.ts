@@ -39,6 +39,9 @@ const requisiteReducer = createSlice({
 		clearCardRequisites: (state) => {
 			state.cardRequisites = initialState.cardRequisites;
 		},
+		clearCardRequisiteById: (state, action: PayloadAction<string>) => {
+			state.cardRequisites = state.cardRequisites?.filter((it) => it.cardId !== action.payload);
+		},
 	},
 	extraReducers: {
 		[fetchTemplates.fulfilled.type]: (state, action: PayloadAction<ITemplateResponse>) => {
@@ -57,11 +60,19 @@ const requisiteReducer = createSlice({
 			state.loading.load = false;
 			state.errorMessage = action.payload;
 		},
-		[fetchCardRequisites.fulfilled.type]: (state, action: PayloadAction<IRequisite[]>) => {
+		[fetchCardRequisites.fulfilled.type]: (state, action: PayloadAction<{ cardId: string; requisites: IRequisite[] }>) => {
 			state.loading.cardLoading = false;
 			state.loading.load = false;
 			state.errorMessage = '';
-			state.cardRequisites = [...state.cardRequisites, action.payload] as any;
+			const { cardId, requisites } = action.payload;
+
+			const idx = state.cardRequisites.findIndex((it) => it.cardId === cardId);
+
+			if (idx === -1) {
+				state.cardRequisites.push({ cardId, requisites });
+			} else {
+				state.cardRequisites[idx] = { cardId, requisites };
+			}
 		},
 		[fetchCardRequisites.pending.type]: (state) => {
 			state.loading.cardLoading = true;
@@ -322,5 +333,5 @@ const requisiteReducer = createSlice({
 	},
 });
 
-export const { clearCardRequisites } = requisiteReducer.actions;
+export const { clearCardRequisites, clearCardRequisiteById } = requisiteReducer.actions;
 export default requisiteReducer.reducer;

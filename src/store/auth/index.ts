@@ -8,6 +8,7 @@ import {
 	activatingDemo,
 	createSubscriptionInvdividual,
 	createSubscriptionLegal,
+	createSubscriptionLegalEu,
 	disableSubscriptionRenewal,
 	downgradeTariff,
 	getDiscountCoupon,
@@ -133,6 +134,19 @@ const authReducer = createSlice({
 			state.errorLoadingCreatingSubscription = null;
 		},
 		[createSubscriptionLegal.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingCreatingSubscription = false;
+			state.errorLoadingCreatingSubscription = action.payload;
+		},
+		[createSubscriptionLegalEu.fulfilled.type]: (state, action: PayloadAction<IBill>) => {
+			state.loadingCreatingSubscription = false;
+			state.errorLoadingCreatingSubscription = null;
+			state.bill = action.payload;
+		},
+		[createSubscriptionLegalEu.pending.type]: (state) => {
+			state.loadingCreatingSubscription = true;
+			state.errorLoadingCreatingSubscription = null;
+		},
+		[createSubscriptionLegalEu.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingCreatingSubscription = false;
 			state.errorLoadingCreatingSubscription = action.payload;
 		},

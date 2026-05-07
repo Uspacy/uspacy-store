@@ -1,6 +1,17 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
-import { FetchMessagesRequest, GoToMessageRequest, IChat, ICreateWidgetData } from '@uspacy/sdk/lib/models/messenger';
+import {
+	EMessageStatus,
+	FetchMessagesRequest,
+	GoToMessageRequest,
+	IChat,
+	ICreateQuickAnswerDTO,
+	ICreateWidgetData,
+	IGetQuickAnswerParams,
+	IMessage,
+	IQuickAnswer,
+	IUserSettings,
+} from '@uspacy/sdk/lib/models/messenger';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 import { formatChats } from '../../../helpers/messenger';
@@ -23,12 +34,43 @@ export const fetchChats = createAsyncThunk(
 
 export const fetchMessages = createAsyncThunk(
 	'messenger/fetchMessages',
-	async ({ chatId, limit, lastTimestamp, firstTimestamp, unreadFirst }: FetchMessagesRequest, { rejectWithValue, getState }) => {
+	async (
+		{
+			chatId,
+			limit,
+			lastTimestamp,
+			firstTimestamp,
+			unreadFirst,
+			messagesFromIndexedDb,
+		}: FetchMessagesRequest & { messagesFromIndexedDb?: (IMessage & { prevMessageId?: string })[] },
+		{ rejectWithValue, getState },
+	) => {
 		try {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const state: any = getState();
 			const items = (await uspacySdk.messengerService.getMessages({ chatId, limit, lastTimestamp, firstTimestamp, unreadFirst })).data;
-			return { items, profile: state.profile.data };
+
+			if (!messagesFromIndexedDb?.length) return { items, profile: state.profile.data };
+
+			const mergedItemsWithIndexedDb = items.reduce((acc, it) => {
+				const fromIndexedDb = messagesFromIndexedDb?.findIndex((m) => m.prevMessageId === it.id);
+
+				if (fromIndexedDb > -1) {
+					const messagesFromIndexed = [{ ...messagesFromIndexedDb[fromIndexedDb], status: EMessageStatus.ERROR }];
+
+					for (let index = fromIndexedDb - 1; index > -1; index--) {
+						if (messagesFromIndexedDb?.[index]?.prevMessageId === messagesFromIndexedDb[index + 1]?.id) {
+							messagesFromIndexed.unshift({ ...messagesFromIndexedDb[index], status: EMessageStatus.ERROR });
+						} else break;
+					}
+					acc.push(...messagesFromIndexed, it);
+				} else {
+					acc.push(it);
+				}
+				return acc;
+			}, []);
+
+			return { items: mergedItemsWithIndexedDb, profile: state.profile.data };
 		} catch (e) {
 			return rejectWithValue(e);
 		}
@@ -89,3 +131,65 @@ export const updateWidget = createAsyncThunk('messenger/updateWidget', async (da
 		return rejectWithValue(e);
 	}
 });
+
+export const getQuickAnswers = createAsyncThunk('messenger/getQuickAnswers', async (params: IGetQuickAnswerParams, { rejectWithValue }) => {
+	try {
+		return (await uspacySdk.messengerService.getQuickAnswers(params)).data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const createQuickAnswer = createAsyncThunk('messenger/createQuickAnswer', async (data: ICreateQuickAnswerDTO, { rejectWithValue }) => {
+	try {
+		return (await uspacySdk.messengerService.createQuickAnswer(data)).data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const updateQuickAnswer = createAsyncThunk(
+	'messenger/updateQuickAnswer',
+	async (params: { id: IQuickAnswer['id']; data: Partial<IQuickAnswer> }, { rejectWithValue }) => {
+		try {
+			return (await uspacySdk.messengerService.updateQuickAnswer(params.id, params.data)).data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const updateQuickAnswerStatus = createAsyncThunk('messenger/updateQuickAnswer', async (params: { id: IQuickAnswer['id']; status: string }) => {
+	try {
+		return (await uspacySdk.messengerService.updateQuickAnswerStatus(params.id, params.status)).data;
+	} catch (e) {
+		return e;
+	}
+});
+
+export const deleteQuickAnswer = createAsyncThunk('messenger/deleteQuickAnswer', async (params: { id: IQuickAnswer['id'] }, { rejectWithValue }) => {
+	try {
+		return (await uspacySdk.messengerService.deleteQuickAnswer(params.id)).data.id;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const getUserSettings = createAsyncThunk('messenger/getUserSettings', async (_, { rejectWithValue }) => {
+	try {
+		return (await uspacySdk.messengerService.getSettings()).data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const updateUserSettings = createAsyncThunk(
+	'messenger/updateUserSettings',
+	async (settings: Partial<Omit<IUserSettings, 'authUserId' | 'id'>>, { rejectWithValue }) => {
+		try {
+			return (await uspacySdk.messengerService.updateSettings(settings)).data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);

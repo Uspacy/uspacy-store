@@ -29,6 +29,7 @@ import departments from './departments';
 import drawers from './drawers';
 import drawersManagement from './drawersManagement';
 import email from './email';
+import eventBuffer from './eventBuffer';
 import files from './files';
 import forms from './forms';
 import groups from './groups';
@@ -43,14 +44,13 @@ import profile from './profile';
 import roles from './roles';
 import settings from './settings';
 import tasks from './tasks';
-import tasksFilters from './tasksFilters';
-import tasksSettings from './tasksSettings';
 import tasksStages from './tasksStages';
 import tasksTimer from './tasksTimer';
 import transferOfCases from './transferOfCases';
 import trash from './trash';
 import users from './users';
 import webhooks from './webhooks';
+import workflows from './workflows';
 
 const rootReducer = combineReducers({
 	apps,
@@ -68,8 +68,6 @@ const rootReducer = combineReducers({
 	profile,
 	roles,
 	tasks,
-	tasksFilters,
-	tasksSettings,
 	tasksStages,
 	tasksTimer,
 	users,
@@ -103,7 +101,9 @@ const rootReducer = combineReducers({
 	transferOfCases,
 	trash,
 	marketing,
+	workflows,
 	drawers,
+	eventBuffer,
 });
 
 export const setupStore = () => {

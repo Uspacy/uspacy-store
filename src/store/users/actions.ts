@@ -80,6 +80,7 @@ export const sendUserInvites = createAsyncThunk(
 											email: curr.email,
 											firstName: curr.firstName,
 											lastName: curr.lastName,
+											external_user: curr.external_user,
 										},
 								  ]
 								: acc,
@@ -183,3 +184,12 @@ export const fetchUsersByFilters = createAsyncThunk(
 		}
 	},
 );
+
+export const getUsersOnlineStatuses = createAsyncThunk('users/getUsersOnlineStatuses', async (_, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.usersService.getUsersOnlineStatuses();
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});

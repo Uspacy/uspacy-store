@@ -25,6 +25,7 @@ const filtersReducer = createSlice({
 				data: IFilterPreset[];
 				filtersFromSearchParams: Partial<IFilter>;
 				filterFields: Partial<IFilterField[]>;
+				smartFilters?: Partial<IFilter>;
 			}>,
 		) => {
 			if (!state[action.payload.entityCode]) state[action.payload.entityCode] = { presets: [] };
@@ -37,6 +38,7 @@ const filtersReducer = createSlice({
 					...action.payload.filtersFromSearchParams,
 				},
 				filterFields: action.payload.filterFields,
+				smartFilters: action.payload.smartFilters,
 			};
 		},
 		createFilterPreset: (state, action: PayloadAction<{ entityCode: string; data: IFilterPreset }>) => {
@@ -53,6 +55,7 @@ const filtersReducer = createSlice({
 				presets,
 				filters: currentPreset?.filters,
 				filterFields: currentPreset?.filterFields,
+				smartFilters: currentPreset?.smartFilters,
 			};
 		},
 		deleteFilterPreset: (state, action: PayloadAction<{ entityCode: string; presetId: IFilterPreset['id'] }>) => {
@@ -76,6 +79,7 @@ const filtersReducer = createSlice({
 			if (needChangeFilter) {
 				const currentPreset = newItems.find((item) => item.current);
 				state[action.payload.entityCode].filters = currentPreset?.filters;
+				state[action.payload.entityCode].smartFilters = currentPreset?.smartFilters;
 			}
 		},
 		updateFilterPreset: (state, action: PayloadAction<{ entityCode: string; data: Partial<IFilterPreset> }>) => {
@@ -90,38 +94,43 @@ const filtersReducer = createSlice({
 		},
 		pinFilterPreset: (state, action: PayloadAction<{ entityCode: string; presetId: IFilterPreset['id'] }>) => {
 			let needChangeFilter = false;
-			const newItems = state[action.payload.entityCode].presets?.map((item) => {
+			const newItems = state[action.payload.entityCode].presets?.map((item, idx) => {
 				if (item.id === action.payload.presetId && !item.pinned) {
 					needChangeFilter = true;
 					return {
 						...item,
 						pinned: true,
 						current: true,
+						sort: 10,
 					};
 				}
 				return {
 					...item,
 					pinned: false,
+					sort: item?.pinned ? 10 : item?.sort || (idx + 1) * 10,
 				};
 			});
 			state[action.payload.entityCode].presets = sortPresets(newItems);
 			if (needChangeFilter) {
 				const currentPreset = newItems.find((item) => item.current);
 				state[action.payload.entityCode].filters = currentPreset?.filters;
+				state[action.payload.entityCode].smartFilters = currentPreset?.smartFilters;
 			}
 		},
 		unpinFilterPreset: (state, action: PayloadAction<{ entityCode: string; presetId: IFilterPreset['id'] }>) => {
-			const newItems = state[action.payload.entityCode].presets?.map((item) => {
+			const newItems = state[action.payload.entityCode].presets?.map((item, idx) => {
 				if (item.id === action.payload.presetId && item.pinned)
 					return {
 						...item,
 						pinned: false,
+						sort: item?.pinned ? 10 : item?.sort || (idx + 1) * 10,
 					};
 				if (item.default && !item.pinned) {
 					return {
 						...item,
 						pinned: true,
 						current: true,
+						sort: 10,
 					};
 				}
 				return item;
@@ -129,6 +138,7 @@ const filtersReducer = createSlice({
 			state[action.payload.entityCode].presets = sortPresets(newItems);
 			const currentPreset = newItems.find((item) => item.current);
 			state[action.payload.entityCode].filters = currentPreset?.filters;
+			state[action.payload.entityCode].smartFilters = currentPreset?.smartFilters;
 		},
 		setCurrentFilterPreset: (state, action: PayloadAction<{ entityCode: string; presetId: IFilterPreset['id'] }>) => {
 			let needChangeFilter = false;
@@ -149,9 +159,13 @@ const filtersReducer = createSlice({
 			if (needChangeFilter) {
 				const currentPreset = newItems.find((item) => item.current);
 				state[action.payload.entityCode].filters = currentPreset?.filters;
+				state[action.payload.entityCode].smartFilters = currentPreset?.smartFilters;
 			}
 		},
-		updateCurrentPresetFilters: (state, action: PayloadAction<{ entityCode: string; filters: Partial<IFilter> }>) => {
+		updateCurrentPresetFilters: (
+			state,
+			action: PayloadAction<{ entityCode: string; filters: Partial<IFilter>; smartFilters?: Partial<IFilter> }>,
+		) => {
 			state[action.payload.entityCode].presets = state[action.payload.entityCode].presets?.map((item) => {
 				if (item.current) {
 					const it = { ...item, filters: { ...item.filters, ...action.payload.filters } };
@@ -160,12 +174,16 @@ const filtersReducer = createSlice({
 				return item;
 			});
 			state[action.payload.entityCode].filters = { ...state[action.payload.entityCode]?.filters, ...action.payload.filters };
+			state[action.payload.entityCode].smartFilters = { ...state[action.payload.entityCode]?.smartFilters, ...action.payload?.smartFilters };
 		},
-		updateCurrentFilters: (state, action: PayloadAction<{ entityCode: string; filters: Partial<IFilter> }>) => {
+		updateCurrentFilters: (state, action: PayloadAction<{ entityCode: string; filters: Partial<IFilter>; smartFilters?: Partial<IFilter> }>) => {
 			state[action.payload.entityCode].filters = { ...state[action.payload.entityCode]?.filters, ...action.payload.filters };
 		},
 		updateCurrentFilterFields: (state, action: PayloadAction<{ entityCode: string; filterFields: Partial<IFilterField[]> }>) => {
 			state[action.payload.entityCode].filterFields = action.payload.filterFields;
+		},
+		updateCurrentSmartFilters: (state, action: PayloadAction<{ entityCode: string; smartFilters: Partial<IFilter> }>) => {
+			state[action.payload.entityCode].smartFilters = action.payload.smartFilters;
 		},
 	},
 });
@@ -180,5 +198,6 @@ export const {
 	unpinFilterPreset,
 	setCurrentFilterPreset,
 	updateCurrentFilterFields,
+	updateCurrentSmartFilters,
 } = filtersReducer.actions;
 export default filtersReducer.reducer;
