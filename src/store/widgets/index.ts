@@ -19,6 +19,7 @@ const initialState: IState = {
 			backgroundColor: '',
 			operatorName: '',
 			operatorAvatar: '',
+			showSignature: true,
 		},
 		config: {
 			crmEntity: 'lead',
@@ -131,6 +132,11 @@ export const widgetsSlice = createSlice({
 		updateCrmEntity: (state, action: PayloadAction<ICreateWidgetData['config']['crmEntity']>) => {
 			state.widgetData.config.crmEntity = action.payload;
 		},
+		clearWidgetData: (state) => {
+			// eslint-disable-next-line no-console
+			console.log(111);
+			state.widgetData = initialState.widgetData;
+		},
 	},
 	extraReducers: {
 		[createWidget.pending.type]: (state) => {
@@ -185,6 +191,7 @@ export const {
 	addLocalWidgetField,
 	removeLocalWidgetField,
 	updateCrmEntity,
+	clearWidgetData,
 } = widgetsSlice.actions;
 
 export default widgetsSlice.reducer;
