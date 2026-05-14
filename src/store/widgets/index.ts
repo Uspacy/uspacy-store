@@ -28,6 +28,7 @@ const initialState: IState = {
 			showForm: false,
 			timeShowForm: ETimeFormShow.FIRST_TIME,
 			formWelcomeMessage: '',
+			messageAfterFormSend: '',
 		},
 	},
 	fields: [],
@@ -129,6 +130,9 @@ export const widgetsSlice = createSlice({
 		updateConfigFormWelcomeMessage: (state, action: PayloadAction<ICreateWidgetData['config']['formWelcomeMessage']>) => {
 			state.widgetData.config.formWelcomeMessage = action.payload;
 		},
+		updateConfigMessageAfterFormSend: (state, action: PayloadAction<ICreateWidgetData['config']['messageAfterFormSend']>) => {
+			state.widgetData.config.messageAfterFormSend = action.payload;
+		},
 		updateCrmEntity: (state, action: PayloadAction<ICreateWidgetData['config']['crmEntity']>) => {
 			state.widgetData.config.crmEntity = action.payload;
 		},
@@ -183,6 +187,7 @@ export const {
 	updateConfigShowForm,
 	updateConfigTimeShowForm,
 	updateConfigFormWelcomeMessage,
+	updateConfigMessageAfterFormSend,
 	addLocalWidgetField,
 	removeLocalWidgetField,
 	updateCrmEntity,
