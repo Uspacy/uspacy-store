@@ -110,7 +110,7 @@ export const sortChats = (a: IChat, b: IChat) => {
 	return b.timestamp - a.timestamp;
 };
 
-// TODO: implement real check of external chat status [isActive, isInactive, isUndistributed]
+// TODO: implement real check of external chat status [isActive, isUndistributed, isInactive]
 export const checkExtChatStatus = (chat: IChat) => [chat.active && chat.assigned, !chat.assigned, !chat.active];
 
 export const separateExternalChats = (items: IChat[]) =>
