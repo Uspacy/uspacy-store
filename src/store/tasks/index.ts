@@ -8,9 +8,6 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { fillTheString } from '../../helpers/stringsHelper';
 import {
-	completeTask,
-	createOneTimeTemplate,
-	createRecurringTemplate,
 	createTask,
 	createTasksField,
 	delegationTask,
@@ -19,28 +16,21 @@ import {
 	deleteTasksListValues,
 	getHierarchies,
 	getOneTimeTemplates,
-	getParentTask,
-	getRecurringTemplate,
 	getRecurringTemplates,
-	getSubtasks,
-	getTask,
 	getTasks,
 	getTasksFields,
+	getTasksItemsByStage,
 	massCompletion,
 	massTasksDeletion,
 	massTasksEditing,
-	pauseTask,
+	moveTaskFromStageToStage,
 	replicateTask,
-	restartTask,
-	startTask,
-	updateOneTimeTemplate,
-	updateRecurringTemplate,
-	updateSubtask,
 	updateTask,
 	updateTasksField,
 	updateTasksListValues,
+	updateTaskStatus,
 } from './actions';
-import { IDeleteTaskPayload, IState, ITaskCardActions } from './types';
+import { IDeleteTaskPayload, IMoveCardsData, IState } from './types';
 
 const initialState = {
 	tasks: {
@@ -48,23 +38,11 @@ const initialState = {
 		meta: {},
 		aborted: false,
 	},
-	subtasks: {
-		data: [],
-		meta: {},
-		aborted: false,
-	},
-	allSubtasks: [],
-	task: {},
-	recurringTemplate: {},
-	parentTask: {},
-	taskFromTemplate: {},
+	kanban: {},
 	addedTask: {},
 	addedToKanbanTask: {},
 	changeTask: {},
-	changeTasks: [],
 	deleteTaskId: null,
-	deleteTaskIds: [],
-	deleteAllFromKanban: false,
 	filters: {
 		page: 0,
 		list: 0,
@@ -81,10 +59,6 @@ const initialState = {
 	},
 	fields: [],
 	loadingTasks: true,
-	loadingSubtasks: true,
-	loadingTask: false,
-	loadingRecurringTemplate: false,
-	loadingParentTask: false,
 	loadingCreatingTask: false,
 	loadingUpdatingTask: false,
 	loadingDeletingTask: false,
@@ -95,10 +69,6 @@ const initialState = {
 	loadingUpdatingTasksField: false,
 	loadingDeletingTasksField: false,
 	errorLoadingTasks: null,
-	errorLoadingSubtasks: null,
-	errorLoadingTask: null,
-	errorLoadingRecurringTemplate: null,
-	errorLoadingParentTask: null,
 	errorLoadingCreatingTask: null,
 	errorLoadingUpdatingTask: null,
 	errorLoadingDeletingTask: null,
@@ -113,17 +83,13 @@ const initialState = {
 		perPage: 20,
 		total: 0,
 	},
-	popupLinks: [],
-	isSubtasks: false,
 	isCopyingTask: false,
 	isTaskFromTemplate: false,
 	isKanban: false,
 	isTable: false,
 	isHierarchy: false,
 	isEditMode: false,
-	taskStatus: '',
 	isRegularSection: false,
-	tasksCardPermissions: { type: 'task', mode: 'view' },
 	tasksServiceType: 'task',
 	aiTaskData: null,
 } as IState;
@@ -134,27 +100,6 @@ const tasksReducer = createSlice({
 	reducers: {
 		setTasks: (state, action: PayloadAction<IResponseWithMeta<ITask>>) => {
 			state.tasks = action.payload;
-		},
-		setTask: (state, action: PayloadAction<ITask>) => {
-			state.task = action.payload;
-		},
-		setTemplate: (state, action: PayloadAction<ITask>) => {
-			state.recurringTemplate = action.payload;
-		},
-		setParentTask: (state, action: PayloadAction<ITask>) => {
-			state.parentTask = action.payload;
-		},
-		setTaskFromTemplate: (state, action: PayloadAction<ITask>) => {
-			state.taskFromTemplate = action.payload;
-		},
-		editSubTask: (state, action: PayloadAction<ITask>) => {
-			state.allSubtasks = state.allSubtasks.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
-			if (state.isTable) {
-				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
-			}
-			if (state.isKanban || state.isHierarchy) {
-				state.changeTask = action?.payload;
-			}
 		},
 		deleteTaskReducer: (state, action: PayloadAction<string | number>) => {
 			state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload));
@@ -170,13 +115,6 @@ const tasksReducer = createSlice({
 		},
 		changeItemsFilterRegularTasks: (state, action: PayloadAction<ITasksParams>) => {
 			state.regularFilter = action.payload;
-		},
-		setAllSubtasks: (state, action: PayloadAction<ITask[]>) => {
-			state.allSubtasks = action.payload;
-		},
-		clearSubstasks: (state) => {
-			state.allSubtasks = [];
-			state.subtasks = initialState.subtasks;
 		},
 		clearAddedTaskReducer: (state) => {
 			state.addedTask = initialState.addedTask;
@@ -219,18 +157,9 @@ const tasksReducer = createSlice({
 				state.meta.total = state.meta.total - 1;
 			}
 		},
-		addPopupLink: (state, action: PayloadAction<ITask>) => {
-			state.popupLinks.push(action.payload);
-		},
-		clearPopupLink: (state) => {
-			state.popupLinks = [];
-		},
 		clearTasks: (state) => {
 			state.tasks.data = [];
 			state.loadingTasks = true;
-		},
-		setIsSubtasks: (state, action: PayloadAction<boolean>) => {
-			state.isSubtasks = action.payload;
 		},
 		setIsCopyingTask: (state, action: PayloadAction<boolean>) => {
 			state.isCopyingTask = action.payload;
@@ -247,23 +176,14 @@ const tasksReducer = createSlice({
 		setIsHierarchy: (state, action: PayloadAction<boolean>) => {
 			state.isHierarchy = action.payload;
 		},
-		setStatus: (state, action: PayloadAction<string>) => {
-			state.taskStatus = action.payload;
-		},
 		setIsRegularSection: (state, action: PayloadAction<boolean>) => {
 			state.isRegularSection = action.payload;
 		},
 		setTotalTasks: (state, action: PayloadAction<number>) => {
 			state.meta.total = action.payload;
 		},
-		setDeleteAllFromKanban: (state, action: PayloadAction<boolean>) => {
-			state.deleteAllFromKanban = action.payload;
-		},
 		setAnEditMode: (state, action: PayloadAction<boolean>) => {
 			state.isEditMode = action.payload;
-		},
-		changeTasksCardViewMode: (state, action: PayloadAction<ITaskCardActions>) => {
-			state.tasksCardPermissions = action.payload;
 		},
 		setTasksServiceType: (state, action: PayloadAction<taskType>) => {
 			state.tasksServiceType = action.payload;
@@ -275,9 +195,6 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state?.task?.id) {
-				state.task = action.payload;
-			}
 		},
 		deleteItemLocal: (state, action: PayloadAction<IDeleteTaskPayload>) => {
 			if (state.isHierarchy) {
@@ -288,6 +205,41 @@ const tasksReducer = createSlice({
 				if (state.tasksServiceType === action.payload.type) {
 					state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload?.id));
 				}
+			}
+		},
+		moveTaskFromStageToStageLocal: (state, action: PayloadAction<IMoveCardsData>) => {
+			const { taskId, prevTaskId, stageId, entityCode } = action.payload;
+
+			const stages = state?.kanban?.[entityCode]?.stages;
+			const destinationStage = stages?.[stageId];
+
+			if (!stages) return;
+			if (!destinationStage) return;
+
+			let movedItem = null;
+			let sourceStage = null;
+
+			Object.values(stages || {}).forEach((stage) => {
+				const found = stage?.data?.find((item) => String(item?.id) === String(taskId));
+				if (found) {
+					movedItem = found;
+					sourceStage = stage;
+				}
+				stage.data = stage?.data?.filter((item) => String(item?.id) !== String(taskId));
+			});
+
+			if (!movedItem) return;
+
+			movedItem = { ...movedItem, kanbanStageId: String(stageId) };
+
+			const overIndex = destinationStage.data.findIndex((item) => +item?.id === +prevTaskId);
+
+			if (overIndex >= 0) destinationStage.data.splice(overIndex + 1, 0, movedItem);
+			else destinationStage.data.unshift(movedItem);
+
+			if (sourceStage && sourceStage !== destinationStage) {
+				sourceStage.meta.total = Math.max(0, (sourceStage.meta.total ?? 0) - 1);
+				destinationStage.meta.total = (destinationStage.meta.total ?? 0) + 1;
 			}
 		},
 	},
@@ -352,60 +304,50 @@ const tasksReducer = createSlice({
 			state.loadingTasks = false;
 			state.errorLoadingTasks = action.payload;
 		},
-		[getSubtasks.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<ITask>>) => {
-			state.loadingSubtasks = false;
-			state.errorLoadingSubtasks = null;
-			state.subtasks = action.payload;
-			state.allSubtasks = [...state.allSubtasks, ...action.payload.data];
+		[getTasksItemsByStage.fulfilled.type]: (
+			state,
+			action: PayloadAction<IResponseWithMeta<ITask>, string, { arg: { entityCode: string; stageId: number; stagesIds?: number[] } }>,
+		) => {
+			const { entityCode, stageId, stagesIds } = action.meta.arg;
+			state.kanban[entityCode].stages[stageId].data = [...state.kanban[entityCode].stages[stageId].data, ...action.payload.data];
+			state.kanban[entityCode].stages[stageId].loading = false;
+			state.kanban[entityCode].stages[stageId].meta = action.payload.meta;
+
+			if (stagesIds) {
+				// Remove extra stages that are not in the stagesIds array
+				Object.keys(state?.kanban?.[entityCode]?.stages || {}).forEach((key) => {
+					if (!stagesIds?.includes(Number(key))) delete state.kanban[entityCode].stages[key];
+				});
+			}
 		},
-		[getSubtasks.pending.type]: (state) => {
-			state.loadingSubtasks = true;
-			state.errorLoadingSubtasks = null;
+		[getTasksItemsByStage.pending.type]: (
+			state,
+			action: PayloadAction<unknown, string, { arg: { entityCode: string; stageId?: number; filters: Omit<ITasksParams, 'openDatePicker'> } }>,
+		) => {
+			const { entityCode, stageId, filters } = action.meta.arg;
+			if (!state.kanban[entityCode]) state.kanban[entityCode] = { stages: {} };
+			state.kanban[entityCode].stages[stageId] = {
+				...state.kanban[entityCode].stages[stageId],
+				// page 1 means that we are fetching data for the first time and we need to clear the data
+				...(filters.page === 1 && { data: [], meta: undefined }),
+				loading: true,
+				errorMessage: null,
+			};
 		},
-		[getSubtasks.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingSubtasks = false;
-			state.errorLoadingSubtasks = action.payload;
+		[getTasksItemsByStage.rejected.type]: (
+			state,
+			action: PayloadAction<IErrorsAxiosResponse, string, { arg: { entityCode: string; stageId: number } }>,
+		) => {
+			const { entityCode, stageId } = action.meta.arg;
+			if (state?.kanban?.[entityCode]?.stages?.[stageId]) {
+				state.kanban[entityCode].stages[stageId].loading = false;
+				state.kanban[entityCode].stages[stageId].errorMessage = action.payload;
+			}
 		},
-		[getTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingTask = false;
-			state.errorLoadingTask = null;
-			state.task = action.payload;
-		},
-		[getTask.pending.type]: (state) => {
-			state.loadingTask = true;
-			state.errorLoadingTask = null;
-		},
-		[getTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingTask = false;
-			state.errorLoadingTask = action.payload;
-		},
-		[getRecurringTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingRecurringTemplate = false;
-			state.errorLoadingRecurringTemplate = null;
-			state.recurringTemplate = action.payload;
-		},
-		[getRecurringTemplate.pending.type]: (state) => {
-			state.loadingRecurringTemplate = true;
-			state.errorLoadingRecurringTemplate = null;
-		},
-		[getRecurringTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingRecurringTemplate = false;
-			state.errorLoadingRecurringTemplate = action.payload;
-		},
-		[getParentTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingTask = false;
-			state.loadingParentTask = null;
-			state.parentTask = action.payload;
-		},
-		[getParentTask.pending.type]: (state) => {
-			state.loadingParentTask = true;
-			state.errorLoadingParentTask = null;
-		},
-		[getParentTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingParentTask = false;
-			state.errorLoadingParentTask = action.payload;
-		},
-		[createTask.fulfilled.type]: (state, action: PayloadAction<{ task: ITask; abilityToAddTask: boolean }>) => {
+		[createTask.fulfilled.type]: (
+			state,
+			action: PayloadAction<{ task: ITask; abilityToAddTask: boolean; entityCode?: string; stageId?: number }>,
+		) => {
 			state.loadingCreatingTask = false;
 			state.errorLoadingCreatingTask = null;
 			if (action.payload.abilityToAddTask) {
@@ -419,75 +361,46 @@ const tasksReducer = createSlice({
 					state.addedToKanbanTask = action.payload.task;
 				}
 			}
-			if (state.isSubtasks && !state.isCopyingTask) {
-				state.allSubtasks.unshift(action.payload.task);
-				state.subtasks.meta.total = state.subtasks.meta.total + 1;
-			}
 			state.addedTask = action.payload.task;
+			if (Array.isArray(state.kanban[action.payload.entityCode]?.stages?.[action.payload.stageId]?.data)) {
+				state.kanban[action.payload.entityCode].stages[action.payload.stageId].data = [
+					action.payload.task,
+					...state.kanban[action.payload.entityCode].stages[action.payload.stageId].data,
+				];
+				if (state.kanban[action.payload.entityCode].stages[action.payload.stageId].meta) {
+					state.kanban[action.payload.entityCode].stages[action.payload.stageId].meta.total++;
+				}
+				state.kanban[action.payload.entityCode].stages[action.payload.stageId].loading = false;
+				state.kanban[action.payload.entityCode].stages[action.payload.stageId].errorMessage = null;
+			}
 		},
-		[createTask.pending.type]: (state) => {
+		[createTask.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode?: string; stageId?: number } }>) => {
+			const { entityCode, stageId } = action.meta.arg;
 			state.loadingCreatingTask = true;
 			state.errorLoadingCreatingTask = null;
-		},
-		[createTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingCreatingTask = false;
-			state.errorLoadingCreatingTask = action.payload;
-		},
-		[createRecurringTemplate.fulfilled.type]: (state, action: PayloadAction<{ task: ITask; abilityToAddTask: boolean }>) => {
-			state.loadingCreatingTask = false;
-			state.errorLoadingCreatingTask = null;
-			if (action.payload.abilityToAddTask) {
-				if (state.isTable) {
-					state.tasks.data.unshift(action.payload.task);
-					state.meta.total = state.meta.total + 1;
-				}
 
-				if (state.isKanban) {
-					state.addedToKanbanTask = action.payload.task;
-				}
+			if (Array.isArray(state?.kanban?.[entityCode]?.stages?.[stageId]?.data)) {
+				state.kanban[entityCode].stages[stageId].loading = true;
+				state.kanban[entityCode].stages[stageId].errorMessage = null;
 			}
-			if (state.isSubtasks && !state.isCopyingTask) {
-				state.allSubtasks.unshift(action.payload.task);
-				state.subtasks.meta.total = state.subtasks.meta.total + 1;
-			}
-			state.addedTask = action.payload.task;
 		},
-		[createRecurringTemplate.pending.type]: (state) => {
-			state.loadingCreatingTask = true;
-			state.errorLoadingCreatingTask = null;
-		},
-		[createRecurringTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[createTask.rejected.type]: (
+			state,
+			action: PayloadAction<IErrorsAxiosResponse, string, { arg: { entityCode?: string; stageId?: number } }>,
+		) => {
+			const { entityCode, stageId } = action.meta.arg;
 			state.loadingCreatingTask = false;
 			state.errorLoadingCreatingTask = action.payload;
-		},
-		[createOneTimeTemplate.fulfilled.type]: (state, action: PayloadAction<{ task: ITask; abilityToAddTask: boolean }>) => {
-			state.loadingCreatingTask = false;
-			state.errorLoadingCreatingTask = null;
-			if (action.payload.abilityToAddTask) {
-				if (state.isTable) {
-					state.tasks.data.unshift(action.payload.task);
-					state.meta.total = state.meta.total + 1;
-				}
 
-				if (state.isKanban) {
-					state.addedToKanbanTask = action.payload.task;
-				}
+			if (Array.isArray(state?.kanban?.[entityCode]?.stages?.[stageId]?.data)) {
+				state.kanban[entityCode].stages[stageId].loading = false;
+				state.kanban[entityCode].stages[stageId].errorMessage = action.payload;
 			}
-			if (state.isSubtasks && !state.isCopyingTask) {
-				state.allSubtasks.unshift(action.payload.task);
-				state.subtasks.meta.total = state.subtasks.meta.total + 1;
-			}
-			state.addedTask = action.payload.task;
 		},
-		[createOneTimeTemplate.pending.type]: (state) => {
-			state.loadingCreatingTask = true;
-			state.errorLoadingCreatingTask = null;
-		},
-		[createOneTimeTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingCreatingTask = false;
-			state.errorLoadingCreatingTask = action.payload;
-		},
-		[replicateTask.fulfilled.type]: (state, action: PayloadAction<{ task: ITask; abilityToAddTask: boolean }>) => {
+		[replicateTask.fulfilled.type]: (
+			state,
+			action: PayloadAction<{ task: ITask; abilityToAddTask: boolean; entityCode?: string; stageId?: number }>,
+		) => {
 			state.loadingCreatingTask = false;
 			state.errorLoadingCreatingTask = null;
 			if (action.payload.abilityToAddTask) {
@@ -502,112 +415,115 @@ const tasksReducer = createSlice({
 					state.addedToKanbanTask = action.payload.task;
 				}
 			}
-			if (state.isSubtasks && !state.isCopyingTask) {
-				state.allSubtasks.unshift(action.payload.task);
-				state.subtasks.meta.total = state.subtasks.meta.total + 1;
-			}
 			state.addedTask = action.payload.task;
+			if (Array.isArray(state.kanban[action.payload.entityCode]?.stages?.[action.payload.stageId]?.data)) {
+				state.kanban[action.payload.entityCode].stages[action.payload.stageId].data = [
+					action.payload.task,
+					...state.kanban[action.payload.entityCode].stages[action.payload.stageId].data,
+				];
+				if (state.kanban[action.payload.entityCode].stages[action.payload.stageId].meta) {
+					state.kanban[action.payload.entityCode].stages[action.payload.stageId].meta.total++;
+				}
+				state.kanban[action.payload.entityCode].stages[action.payload.stageId].loading = false;
+				state.kanban[action.payload.entityCode].stages[action.payload.stageId].errorMessage = null;
+			}
 		},
-		[replicateTask.pending.type]: (state) => {
+		[replicateTask.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode?: string; stageId?: number } }>) => {
+			const { entityCode, stageId } = action.meta.arg;
 			state.loadingCreatingTask = true;
 			state.errorLoadingCreatingTask = null;
+
+			if (Array.isArray(state?.kanban?.[entityCode]?.stages?.[stageId]?.data)) {
+				state.kanban[entityCode].stages[stageId].loading = true;
+				state.kanban[entityCode].stages[stageId].errorMessage = null;
+			}
 		},
-		[replicateTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[replicateTask.rejected.type]: (
+			state,
+			action: PayloadAction<IErrorsAxiosResponse, string, { arg: { entityCode?: string; stageId?: number } }>,
+		) => {
+			const { entityCode, stageId } = action.meta.arg;
 			state.loadingCreatingTask = false;
 			state.errorLoadingCreatingTask = action.payload;
+			if (Array.isArray(state?.kanban?.[entityCode]?.stages?.[stageId]?.data)) {
+				state.kanban[entityCode].stages[stageId].loading = false;
+				state.kanban[entityCode].stages[stageId].errorMessage = action.payload;
+			}
 		},
-		[updateTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+		[updateTask.fulfilled.type]: (state, action: PayloadAction<ITask, string, { arg: { entityCode?: string; stageId?: number } }>) => {
+			const { entityCode, stageId } = action.meta.arg;
+
 			state.loadingUpdatingTask = false;
 			state.errorLoadingUpdatingTask = null;
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
-			if (state?.task?.id) {
-				state.task = action.payload;
-			}
 			if (state.isKanban || state.isHierarchy) {
 				state.changeTask = action?.payload;
+			}
+
+			if (Array.isArray(state?.kanban?.[entityCode]?.stages?.[stageId]?.data)) {
+				state.kanban[entityCode].stages[stageId].loading = false;
+				state.kanban[entityCode].stages[stageId].errorMessage = null;
+				state.kanban[entityCode].stages[stageId].data = state.kanban[entityCode].stages[stageId].data.map((item) => {
+					if (item?.id === action?.payload?.id) return { ...item, ...action.payload };
+					return item;
+				});
 			}
 		},
 		[updateTask.pending.type]: (state) => {
 			state.loadingUpdatingTask = true;
 			state.errorLoadingUpdatingTask = null;
 		},
-		[updateTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[updateTask.rejected.type]: (
+			state,
+			action: PayloadAction<IErrorsAxiosResponse, string, { arg: { entityCode?: string; stageId?: number } }>,
+		) => {
+			const { entityCode, stageId } = action.meta.arg;
 			state.loadingUpdatingTask = false;
 			state.errorLoadingUpdatingTask = action.payload;
-		},
 
-		[updateRecurringTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
+			if (Array.isArray(state?.kanban?.[entityCode]?.stages?.[stageId]?.data)) {
+				state.kanban[entityCode].stages[stageId].loading = false;
+				state.kanban[entityCode].stages[stageId].errorMessage = action.payload;
+			}
+		},
+		[delegationTask.fulfilled.type]: (state, action: PayloadAction<ITask, string, { arg: { entityCode?: string; stageId?: number } }>) => {
+			const { entityCode, stageId } = action.meta.arg;
 			state.loadingUpdatingTask = false;
 			state.errorLoadingUpdatingTask = null;
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
-			}
-			if (state?.task?.id) {
-				state.task = action.payload;
-			}
-		},
-		[updateRecurringTemplate.pending.type]: (state) => {
-			state.loadingUpdatingTask = true;
-			state.errorLoadingUpdatingTask = null;
-		},
-		[updateRecurringTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = action.payload;
-		},
-
-		[updateOneTimeTemplate.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = null;
-			if (state.isTable) {
-				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
-			}
-			if (state?.task?.id) {
-				state.task = action.payload;
-			}
-		},
-		[updateOneTimeTemplate.pending.type]: (state) => {
-			state.loadingUpdatingTask = true;
-			state.errorLoadingUpdatingTask = null;
-		},
-		[updateOneTimeTemplate.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = action.payload;
-		},
-
-		[updateSubtask.fulfilled.type]: (state) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = null;
-		},
-		[updateSubtask.pending.type]: (state) => {
-			state.loadingUpdatingTask = true;
-			state.errorLoadingUpdatingTask = null;
-		},
-		[updateSubtask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = action.payload;
-		},
-		[delegationTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingUpdatingTask = false;
-			state.errorLoadingUpdatingTask = null;
-			if (state.isTable) {
-				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
-			}
-			if (state?.task?.id) {
-				state.task = action.payload;
 			}
 			if (state.isKanban) {
 				state.changeTask = action?.payload;
+			}
+
+			if (Array.isArray(state?.kanban?.[entityCode]?.stages?.[stageId]?.data)) {
+				state.kanban[entityCode].stages[stageId].loading = false;
+				state.kanban[entityCode].stages[stageId].errorMessage = null;
+				state.kanban[entityCode].stages[stageId].data = state.kanban[entityCode].stages[stageId].data.map((item) => {
+					if (item?.id === action?.payload?.id) return { ...item, ...action.payload };
+					return item;
+				});
 			}
 		},
 		[delegationTask.pending.type]: (state) => {
 			state.loadingUpdatingTask = true;
 			state.errorLoadingUpdatingTask = null;
 		},
-		[delegationTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[delegationTask.rejected.type]: (
+			state,
+			action: PayloadAction<IErrorsAxiosResponse, string, { arg: { entityCode?: string; stageId?: number } }>,
+		) => {
+			const { entityCode, stageId } = action.meta.arg;
 			state.loadingUpdatingTask = false;
 			state.errorLoadingUpdatingTask = action.payload;
+
+			if (Array.isArray(state?.kanban?.[entityCode]?.stages?.[stageId]?.data)) {
+				state.kanban[entityCode].stages[stageId].loading = false;
+				state.kanban[entityCode].stages[stageId].errorMessage = action.payload;
+			}
 		},
 		[massTasksEditing.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
 			state.loadingMassActionsTasks = false;
@@ -643,10 +559,6 @@ const tasksReducer = createSlice({
 						}
 					}
 
-					if (state.isKanban) {
-						state.changeTasks.push(copiedTask);
-					}
-
 					return copiedTask;
 				}
 
@@ -661,7 +573,11 @@ const tasksReducer = createSlice({
 			state.loadingMassActionsTasks = false;
 			state.errorLoadingMassActionsTasks = action.payload;
 		},
-		[deleteTask.fulfilled.type]: (state, action: PayloadAction<IDeleteTaskPayload>) => {
+		[deleteTask.fulfilled.type]: (
+			state,
+			action: PayloadAction<IDeleteTaskPayload, string, { arg: { id: string; entityCode: string; stageId: number } }>,
+		) => {
+			const { id, entityCode, stageId } = action.meta.arg;
 			state.loadingMassActionsTasks = false;
 			state.errorLoadingMassActionsTasks = null;
 			if (state.isKanban || state.isHierarchy) {
@@ -674,6 +590,10 @@ const tasksReducer = createSlice({
 				if (state.tasksServiceType === action.payload.type) {
 					state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload?.id));
 				}
+			}
+			if (Array.isArray(state?.kanban?.[entityCode]?.stages?.[stageId]?.data)) {
+				state.kanban[entityCode].stages[stageId].data = state.kanban[entityCode].stages[stageId].data.filter((item) => item?.id !== id);
+				if (state.kanban[entityCode].stages[stageId].meta) state.kanban[entityCode].stages[stageId].meta.total--;
 			}
 		},
 		[deleteTask.pending.type]: (state) => {
@@ -696,14 +616,6 @@ const tasksReducer = createSlice({
 
 					const checkPermissionsForEdit = admin || setterTaskUser;
 
-					if (state.isKanban && checkPermissionsForEdit) {
-						state.deleteTaskIds = action?.payload?.taskIds?.map((id) => id);
-
-						if (action.payload.all) {
-							state.deleteAllFromKanban = true;
-						}
-					}
-
 					if (action.payload.all && checkPermissionsForEdit) {
 						state.meta.total = 0;
 					} else if (action.payload.all && checkPermissionsForEdit && action.payload.exceptIds.length) {
@@ -724,9 +636,9 @@ const tasksReducer = createSlice({
 			state.loadingDeletingTask = false;
 			state.errorLoadingDeletingTask = action.payload;
 		},
+		[updateTaskStatus.fulfilled.type]: (state, action: PayloadAction<ITask, string, { arg: { entityCode: string; stageId: string } }>) => {
+			const { entityCode, stageId } = action.meta.arg;
 
-		// STATUS TASK EXTRA-REDUCERS
-		[startTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
 			state.loadingStatusesTask = false;
 			state.errorLoadingStatusesTask = null;
 			if (state.isTable) {
@@ -742,66 +654,35 @@ const tasksReducer = createSlice({
 			if (state.isKanban || state.isHierarchy) {
 				state.changeTask = action?.payload;
 			}
-		},
-		[startTask.pending.type]: (state) => {
-			state.loadingStatusesTask = true;
-			state.errorLoadingStatusesTask = null;
-		},
-		[startTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingStatusesTask = false;
-			state.errorLoadingStatusesTask = action.payload;
-		},
-		[pauseTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingStatusesTask = false;
-			state.errorLoadingStatusesTask = null;
-			state.taskStatus = action.payload.status;
-			if (state.isTable) {
-				state.tasks.data = state.tasks.data.map((task) => {
-					if (task.id === action.payload.id) {
-						task.status = action.payload.status;
-						return task;
-					}
-
-					return task;
+			if (Array.isArray(state?.kanban?.[entityCode]?.stages?.[stageId]?.data)) {
+				state.kanban[entityCode].stages[stageId].loading = false;
+				state.kanban[entityCode].stages[stageId].errorMessage = null;
+				state.kanban[entityCode].stages[stageId].data = state.kanban[entityCode].stages[stageId].data.map((item) => {
+					if (item?.id === action?.payload?.id) return { ...item, ...action.payload };
+					return item;
 				});
 			}
-			if (state.isKanban || state.isHierarchy) {
-				state.changeTask = action?.payload;
-			}
 		},
-		[pauseTask.pending.type]: (state) => {
+		[updateTaskStatus.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string; stageId: number } }>) => {
+			const { entityCode, stageId } = action.meta.arg;
 			state.loadingStatusesTask = true;
 			state.errorLoadingStatusesTask = null;
+			if (Array.isArray(state?.kanban?.[entityCode]?.stages?.[stageId]?.data)) {
+				state.kanban[entityCode].stages[stageId].errorMessage = null;
+			}
 		},
-		[pauseTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+		[updateTaskStatus.rejected.type]: (
+			state,
+			action: PayloadAction<IErrorsAxiosResponse, string, { arg: { entityCode: string; stageId: number } }>,
+		) => {
+			const { entityCode, stageId } = action.meta.arg;
 			state.loadingStatusesTask = false;
 			state.errorLoadingStatusesTask = action.payload;
-		},
-		[completeTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingStatusesTask = false;
-			state.errorLoadingStatusesTask = null;
-			state.taskStatus = action.payload.status;
-			if (state.isTable) {
-				state.tasks.data = state.tasks.data.map((task) => {
-					if (task.id === action.payload.id) {
-						task.status = action.payload.status;
-						return task;
-					}
 
-					return task;
-				});
+			if (Array.isArray(state?.kanban?.[entityCode]?.stages?.[stageId]?.data)) {
+				state.kanban[entityCode].stages[stageId].loading = false;
+				state.kanban[entityCode].stages[stageId].errorMessage = action.payload;
 			}
-			if (state.isKanban || state.isHierarchy) {
-				state.changeTask = action?.payload;
-			}
-		},
-		[completeTask.pending.type]: (state) => {
-			state.loadingStatusesTask = true;
-			state.errorLoadingStatusesTask = null;
-		},
-		[completeTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingStatusesTask = false;
-			state.errorLoadingStatusesTask = action.payload;
 		},
 		[massCompletion.fulfilled.type]: (state, action: PayloadAction<IMassActions>) => {
 			state.loadingMassActionsTasks = false;
@@ -816,10 +697,6 @@ const tasksReducer = createSlice({
 				if (action.payload.taskIds.includes(task?.id) && checkPermissionsForFinishTask) {
 					task.status = task?.acceptResult && !setterTaskUser ? 'inControl' : 'ready';
 
-					if (state.isKanban) {
-						state.changeTasks.push(task);
-					}
-
 					return task;
 				}
 
@@ -833,32 +710,6 @@ const tasksReducer = createSlice({
 		[massCompletion.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingMassActionsTasks = false;
 			state.errorLoadingMassActionsTasks = action.payload;
-		},
-		[restartTask.fulfilled.type]: (state, action: PayloadAction<ITask>) => {
-			state.loadingStatusesTask = false;
-			state.errorLoadingStatusesTask = null;
-			state.taskStatus = action.payload.status;
-			if (state.isTable) {
-				state.tasks.data = state.tasks.data.map((task) => {
-					if (task.id === action.payload.id) {
-						task.status = action.payload.status;
-						return task;
-					}
-
-					return task;
-				});
-			}
-			if (state.isKanban || state.isHierarchy) {
-				state.changeTask = action?.payload;
-			}
-		},
-		[restartTask.pending.type]: (state) => {
-			state.loadingStatusesTask = true;
-			state.errorLoadingStatusesTask = null;
-		},
-		[restartTask.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingStatusesTask = false;
-			state.errorLoadingStatusesTask = action.payload;
 		},
 		[getTasksFields.fulfilled.type]: (state, action: PayloadAction<IField[]>) => {
 			state.loadingTasksFields = false;
@@ -966,18 +817,46 @@ const tasksReducer = createSlice({
 			state.loadingDeletingTasksField = false;
 			state.errorLoadingDeletingTasksField = action.payload;
 		},
+		[moveTaskFromStageToStage.pending.type]: (state, action: PayloadAction<unknown, string, { arg: IMoveCardsData }>) => {
+			const { taskId, prevTaskId, stageId, entityCode } = action.meta.arg;
+
+			const stages = state?.kanban?.[entityCode]?.stages;
+			const destinationStage = stages?.[stageId];
+
+			if (!stages) return;
+			if (!destinationStage) return;
+
+			let movedItem = null;
+			let sourceStage = null;
+
+			Object.values(stages || {}).forEach((stage) => {
+				const found = stage?.data?.find((item) => String(item?.id) === String(taskId));
+				if (found) {
+					movedItem = found;
+					sourceStage = stage;
+				}
+				stage.data = stage?.data?.filter((item) => String(item?.id) !== String(taskId));
+			});
+
+			if (!movedItem) return;
+
+			movedItem = { ...movedItem, kanbanStageId: String(stageId) };
+
+			const overIndex = destinationStage?.data?.findIndex((item) => +item?.id === +prevTaskId);
+
+			if (overIndex >= 0) destinationStage.data.splice(overIndex + 1, 0, movedItem);
+			else destinationStage?.data?.unshift(movedItem);
+
+			if (sourceStage && sourceStage !== destinationStage) {
+				sourceStage.meta.total = Math.max(0, (sourceStage.meta.total ?? 0) - 1);
+				destinationStage.meta.total = (destinationStage.meta.total ?? 0) + 1;
+			}
+		},
 	},
 });
 
 export const {
 	setTasks,
-	setTask,
-	setTemplate,
-	setParentTask,
-	setTaskFromTemplate,
-	editSubTask,
-	setAllSubtasks,
-	clearSubstasks,
 	clearAddedTaskReducer,
 	clearAddedToKanbanTaskReducer,
 	clearChangeTask,
@@ -992,25 +871,20 @@ export const {
 	addTaskToEndTable,
 	addTasksToEndTable,
 	removeTaskFromEndTable,
-	addPopupLink,
-	clearPopupLink,
 	clearTasks,
-	setIsSubtasks,
 	setIsCopyingTask,
 	setIsTaskFromTemplate,
 	removeTaskFromNPositionTable,
 	setIsKanban,
 	setIsTable,
 	setIsHierarchy,
-	setStatus,
 	setIsRegularSection,
 	setTotalTasks,
-	setDeleteAllFromKanban,
 	setAnEditMode,
-	changeTasksCardViewMode,
 	setTasksServiceType,
 	setAiTaskData,
 	updateItemLocal,
 	deleteItemLocal,
+	moveTaskFromStageToStageLocal,
 } = tasksReducer.actions;
 export default tasksReducer.reducer;
