@@ -26,6 +26,11 @@ const getEntityBase = (linkData: ILinkData) => {
 
 export const getLinkEntity = (message: INotificationMessage): string | undefined => {
 	if (message.data.action === NotificationAction.DELETE) return undefined;
+	if (message.data.service === 'u-approval') {
+		const entityId = message?.data?.entity?.entity_id || message?.data?.entity?.id;
+		const entityType = message?.data?.entity?.entity_type;
+		return `/u-approval/${entityType}/${entityId}`;
+	}
 	const service = getServiceName(message.data.service);
 	const itemId = message?.data?.entity?.id || message?.data?.entity?.entity_id;
 	if (message.topic === 'custom' && (message.data.service === 'custom' || !itemId)) return '';
@@ -60,6 +65,7 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 };
 
 export const getDrawersInfo = (message: INotificationMessage) => {
+	if (message.data.service === 'u-approval') return undefined;
 	if (message.topic === 'custom' && (message.data.service === 'custom' || !(message?.data?.entity?.id || message?.data?.entity?.entity_id)))
 		return undefined;
 	if (message.data.action === NotificationAction.DELETE && message?.type !== 'comment') return undefined;
