@@ -38,6 +38,7 @@ const initialState = {
 		meta: {},
 		aborted: false,
 	},
+	pendingNewItems: [] as ITask[],
 	kanban: {},
 	addedTask: {},
 	addedToKanbanTask: {},
@@ -196,6 +197,25 @@ const tasksReducer = createSlice({
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
 		},
+		addPendingTaskItem: (state, action: PayloadAction<ITask>) => {
+			const alreadyPending = state.pendingNewItems.some((pendingTask) => pendingTask.id === action.payload.id);
+			if (alreadyPending) return;
+			state.pendingNewItems = [action.payload, ...state.pendingNewItems];
+			if (state.meta?.total != null) state.meta.total++;
+		},
+		removePendingTaskItem: (state, action: PayloadAction<string>) => {
+			const wasInPending = state.pendingNewItems.some((pendingTask) => pendingTask.id === action.payload);
+			if (!wasInPending) return;
+			state.pendingNewItems = state.pendingNewItems.filter((pendingTask) => pendingTask.id !== action.payload);
+			if (state.meta?.total != null) state.meta.total = Math.max(0, state.meta.total - 1);
+		},
+		flushPendingTaskItems: (state) => {
+			if (!state.pendingNewItems.length) return;
+			const existingIds = new Set(state.tasks.data.map((task) => task.id));
+			const toAdd = state.pendingNewItems.filter((pendingTask) => !existingIds.has(pendingTask.id));
+			state.tasks.data = [...toAdd, ...state.tasks.data];
+			state.pendingNewItems = [];
+		},
 		deleteItemLocal: (state, action: PayloadAction<IDeleteTaskPayload>) => {
 			if (state.isHierarchy) {
 				state.deleteTaskId = +action?.payload?.id;
@@ -206,6 +226,28 @@ const tasksReducer = createSlice({
 					state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload?.id));
 				}
 			}
+		},
+		removeKanbanItemLocal: (state, action: PayloadAction<{ taskId: string | number; entityCode: string }>) => {
+			const { taskId, entityCode } = action.payload;
+			const stages = state?.kanban?.[entityCode]?.stages;
+			if (!stages) return;
+			Object.values(stages).forEach((stage) => {
+				if (!Array.isArray(stage.data)) return;
+				const before = stage.data.length;
+				stage.data = stage.data.filter((item) => String(item?.id) !== String(taskId));
+				if (before > stage.data.length && stage.meta?.total != null) {
+					stage.meta.total = Math.max(0, stage.meta.total - 1);
+				}
+			});
+		},
+		updateKanbanItemLocal: (state, action: PayloadAction<{ task: ITask; entityCode: string }>) => {
+			const { task, entityCode } = action.payload;
+			const stages = state?.kanban?.[entityCode]?.stages;
+			if (!stages) return;
+			Object.values(stages).forEach((stage) => {
+				if (!Array.isArray(stage.data)) return;
+				stage.data = stage.data.map((item) => (String(item?.id) === String(task.id) ? task : item));
+			});
 		},
 		moveTaskFromStageToStageLocal: (state, action: PayloadAction<IMoveCardsData>) => {
 			const { taskId, prevTaskId, stageId, entityCode } = action.payload;
@@ -884,7 +926,12 @@ export const {
 	setTasksServiceType,
 	setAiTaskData,
 	updateItemLocal,
+	addPendingTaskItem,
+	removePendingTaskItem,
+	flushPendingTaskItems,
 	deleteItemLocal,
 	moveTaskFromStageToStageLocal,
+	removeKanbanItemLocal,
+	updateKanbanItemLocal,
 } = tasksReducer.actions;
 export default tasksReducer.reducer;

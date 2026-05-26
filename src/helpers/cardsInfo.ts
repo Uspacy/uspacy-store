@@ -22,6 +22,7 @@ export class CardsByEvents {
 	private readonly kanbanStages = new Map<string, Set<string>>();
 	private readonly kanbanFilterParams = new Map<string, object>();
 	private readonly tableFilterParams = new Map<string, object>();
+	private readonly firstKanbanStageIds = new Map<string, string>();
 	// entityType -> Map<parentEntityType, Set<parentEntityId>>
 	private readonly relatedEntityWatchers = new Map<string, Map<string, Set<string>>>();
 	// entityType -> Set<entityId> — pending items in ConnectedEntitiesTable
