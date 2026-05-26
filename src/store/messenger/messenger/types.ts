@@ -35,4 +35,9 @@ export interface IState {
 		loading: boolean;
 	};
 	userSettings: Omit<IUserSettings, 'authUserId' | 'id'>;
+	usersTypingStatus: {
+		[chatId: IChat['id']]: {
+			typingUsersIds: IUserSettings['authUserId'][];
+		};
+	};
 }
