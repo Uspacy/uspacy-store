@@ -84,6 +84,7 @@ const initialState: IState = {
 		isInternalMsgSoundEnabled: true,
 		isExternalMsgSoundEnabled: true,
 	},
+	usersTypingStatus: {},
 };
 
 interface IPreparedMessage extends IMessage {
@@ -609,6 +610,24 @@ export const chatSlice = createSlice({
 			const { key, value } = action.payload;
 			state.AISummaryData[key] = value;
 		},
+		setUserTypingStatus(state, action: PayloadAction<{ chatId: IChat['id']; userId: IUserSettings['authUserId']; isTyping: boolean }>) {
+			const { chatId, userId, isTyping } = action.payload;
+			if (!state.usersTypingStatus[chatId]) {
+				state.usersTypingStatus[chatId] = { typingUsersIds: [] };
+			}
+			const typingUsersIds = state.usersTypingStatus[chatId].typingUsersIds;
+			if (isTyping) {
+				if (!typingUsersIds.includes(userId)) {
+					typingUsersIds.push(userId);
+				}
+			} else {
+				const index = typingUsersIds.indexOf(userId);
+				if (index !== -1) {
+					typingUsersIds.splice(index, 1);
+				}
+			}
+			state.usersTypingStatus[chatId] = { typingUsersIds };
+		},
 	},
 	extraReducers: {
 		[fetchChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
@@ -858,6 +877,7 @@ export const {
 	saveDraftMessage,
 	setTimestamp,
 	setAISummaryData,
+	setUserTypingStatus,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
