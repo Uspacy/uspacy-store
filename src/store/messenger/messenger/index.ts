@@ -7,6 +7,7 @@ import {
 	ICreateWidgetData,
 	IMessage,
 	IQuickAnswer,
+	IUserSettings,
 } from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 import { IUser } from '@uspacy/sdk/lib/models/user';
@@ -30,9 +31,11 @@ import {
 	fetchMessages,
 	fetchPinedMessages,
 	getQuickAnswers,
+	getUserSettings,
 	getWidgets,
 	goToMessage,
 	updateQuickAnswer,
+	updateUserSettings,
 	updateWidget,
 } from './actions';
 import { IState } from './types';
@@ -77,6 +80,11 @@ const initialState: IState = {
 		},
 		loading: false,
 	},
+	userSettings: {
+		isInternalMsgSoundEnabled: true,
+		isExternalMsgSoundEnabled: true,
+	},
+	usersTypingStatus: {},
 };
 
 interface IPreparedMessage extends IMessage {
@@ -602,6 +610,24 @@ export const chatSlice = createSlice({
 			const { key, value } = action.payload;
 			state.AISummaryData[key] = value;
 		},
+		setUserTypingStatus(state, action: PayloadAction<{ chatId: IChat['id']; userId: IUserSettings['authUserId']; isTyping: boolean }>) {
+			const { chatId, userId, isTyping } = action.payload;
+			if (!state.usersTypingStatus[chatId]) {
+				state.usersTypingStatus[chatId] = { typingUsersIds: [] };
+			}
+			const typingUsersIds = state.usersTypingStatus[chatId].typingUsersIds;
+			if (isTyping) {
+				if (!typingUsersIds.includes(userId)) {
+					typingUsersIds.push(userId);
+				}
+			} else {
+				const index = typingUsersIds.indexOf(userId);
+				if (index !== -1) {
+					typingUsersIds.splice(index, 1);
+				}
+			}
+			state.usersTypingStatus[chatId] = { typingUsersIds };
+		},
 	},
 	extraReducers: {
 		[fetchChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
@@ -800,6 +826,17 @@ export const chatSlice = createSlice({
 			state.quickAnswers.data = state.quickAnswers.data.filter((it) => it.id !== action.payload);
 			state.quickAnswers.meta.total -= 1;
 		},
+		[getUserSettings.fulfilled.type]: (state, action: PayloadAction<IUserSettings[]>) => {
+			if (!action.payload.length) return;
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { id, authUserId, ...restSettings } = action.payload[0];
+			state.userSettings = restSettings;
+		},
+		[updateUserSettings.fulfilled.type]: (state, action: PayloadAction<IUserSettings>) => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { id, authUserId, ...restSettings } = action.payload;
+			state.userSettings = restSettings;
+		},
 	},
 });
 
@@ -840,6 +877,7 @@ export const {
 	saveDraftMessage,
 	setTimestamp,
 	setAISummaryData,
+	setUserTypingStatus,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
