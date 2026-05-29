@@ -233,7 +233,7 @@ const funnelsReducer = createSlice({
 						stages: it.stages.map((stage) => {
 							return {
 								...stage,
-								reasons: stage.reasons.filter((reason) => reason.id !== action.meta.arg.id),
+								reasons: (stage?.reasons || []).filter((reason) => reason?.id !== action.meta.arg.id),
 							};
 						}),
 					};

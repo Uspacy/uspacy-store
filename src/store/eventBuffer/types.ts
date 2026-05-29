@@ -4,6 +4,7 @@ export interface IEvents {
 	notifId: string;
 	action: string;
 	payload: any;
+	prevPayload?: any;
 }
 
 export enum EEventEntity {
