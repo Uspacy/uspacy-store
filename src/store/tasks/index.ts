@@ -941,5 +941,6 @@ export const {
 	moveTaskFromStageToStageLocal,
 	removeKanbanItemLocal,
 	updateKanbanItemLocal,
+	addKanbanItemLocal,
 } = tasksReducer.actions;
 export default tasksReducer.reducer;
