@@ -240,6 +240,14 @@ const tasksReducer = createSlice({
 				}
 			});
 		},
+		addKanbanItemLocal: (state, action: PayloadAction<{ task: ITask; entityCode: string; stageId: string | number }>) => {
+			const { task, entityCode, stageId } = action.payload;
+			const stage = state?.kanban?.[entityCode]?.stages?.[stageId];
+			if (!stage || !Array.isArray(stage.data)) return;
+			if (stage.data.some((item) => String(item?.id) === String(task.id))) return;
+			stage.data = [task, ...stage.data];
+			if (stage.meta?.total != null) stage.meta.total++;
+		},
 		updateKanbanItemLocal: (state, action: PayloadAction<{ task: ITask; entityCode: string }>) => {
 			const { task, entityCode } = action.payload;
 			const stages = state?.kanban?.[entityCode]?.stages;
