@@ -36,7 +36,7 @@ export interface ICreateTaskPayload {
 
 export interface IState {
 	tasks: IResponseWithMeta<ITask>;
-	pendingNewItems: ITask[];
+	pendingNewItems: Record<string, ITask[]>;
 	addedTask: ITask;
 	addedToKanbanTask: ITask;
 	changeTask: ITask;
