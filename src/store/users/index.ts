@@ -2,8 +2,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFilterField, IFilterPreset } from '@uspacy/sdk/lib/models/filter-preset';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
+import { IPortalSettings } from '@uspacy/sdk/lib/models/settings';
 import { IUser, IUserFilter, IUserOnlineStatuses } from '@uspacy/sdk/lib/models/user';
 
+import { fetchSettings, updateSettings } from '../settings/actions';
 import {
 	activateUser,
 	deactivateUser,
@@ -31,6 +33,7 @@ export const sortPresets = (presets: IFilterPreset<IUserFilter>[]) => {
 const initialState: IState = {
 	data: [],
 	allUsers: [],
+	hideFiredEmployees: false,
 	usersFiltersData: {
 		data: [],
 		meta: null,
@@ -271,6 +274,30 @@ export const usersSlice = createSlice({
 		},
 	},
 	extraReducers: {
+		[fetchSettings.fulfilled.type]: (state, action: PayloadAction<IPortalSettings>) => {
+			state.hideFiredEmployees = action?.payload?.hideFiredEmployees || false;
+
+			if (action?.payload?.hideFiredEmployees) {
+				state.data = state.data.filter((user) => {
+					if (!user.authUserId) return false;
+					if (!user?.active && user?.registered) return false;
+					return true;
+				});
+			} else {
+				state.data = state.allUsers.filter((user) => !!user.authUserId);
+			}
+		},
+		[updateSettings.fulfilled.type]: (state, action: PayloadAction<IPortalSettings>) => {
+			if (action?.payload?.hideFiredEmployees) {
+				state.data = state.data.filter((user) => {
+					if (!user.authUserId) return false;
+					if (!user?.active && user?.registered) return false;
+					return true;
+				});
+			} else {
+				state.data = state.allUsers.filter((user) => !!user.authUserId);
+			}
+		},
 		[fetchUsersByFilters.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<IUser>>) => {
 			state.loadingUsersByFilter = false;
 			state.usersFiltersData = !!action.payload.aborted ? state.usersFiltersData : action.payload;
@@ -285,7 +312,7 @@ export const usersSlice = createSlice({
 		},
 		[fetchUsers.fulfilled.type]: (state, action: PayloadAction<IUser[], string, { arg: boolean }>) => {
 			state.loading = false;
-			if (!!action?.meta?.arg) {
+			if (state.hideFiredEmployees) {
 				state.data = action.payload.filter((user) => {
 					if (!user.authUserId) return false;
 					if (!user?.active && user?.registered) return false;
