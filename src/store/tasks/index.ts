@@ -202,7 +202,6 @@ const tasksReducer = createSlice({
 			const bucket = state.pendingNewItems[type] ?? [];
 			if (bucket.some((pendingTask) => pendingTask.id === item.id)) return;
 			state.pendingNewItems[type] = [item, ...bucket];
-			// meta belongs to the currently shown table, so only bump it for the active type
 			if (type === state.tasksServiceType && state.meta?.total != null) state.meta.total++;
 		},
 		removePendingTaskItem: (state, action: PayloadAction<{ id: string; type: string }>) => {
@@ -327,6 +326,7 @@ const tasksReducer = createSlice({
 			if (state.isTable) {
 				state.tasks = action.payload.aborted ? state.tasks : action.payload;
 				state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+				if (!action.payload.aborted) state.pendingNewItems['task'] = [];
 			}
 		},
 		[getTasks.pending.type]: (state) => {
@@ -342,6 +342,7 @@ const tasksReducer = createSlice({
 			state.errorLoadingTasks = null;
 			state.tasks = action.payload.aborted ? state.tasks : action.payload;
 			state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+			if (!action.payload.aborted) state.pendingNewItems['recurring'] = [];
 		},
 		[getRecurringTemplates.pending.type]: (state) => {
 			state.loadingTasks = true;
@@ -356,6 +357,7 @@ const tasksReducer = createSlice({
 			state.errorLoadingTasks = null;
 			state.tasks = action.payload.aborted ? state.tasks : action.payload;
 			state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+			if (!action.payload.aborted) state.pendingNewItems['one_time'] = [];
 		},
 		[getOneTimeTemplates.pending.type]: (state) => {
 			state.loadingTasks = true;
@@ -391,7 +393,6 @@ const tasksReducer = createSlice({
 			state.kanban[entityCode].stages[stageId].meta = action.payload.meta;
 
 			if (stagesIds) {
-				// Remove extra stages that are not in the stagesIds array
 				Object.keys(state?.kanban?.[entityCode]?.stages || {}).forEach((key) => {
 					if (!stagesIds?.includes(Number(key))) delete state.kanban[entityCode].stages[key];
 				});
