@@ -38,7 +38,7 @@ const initialState = {
 		meta: {},
 		aborted: false,
 	},
-	pendingNewItems: [] as ITask[],
+	pendingNewItems: {} as Record<string, ITask[]>,
 	kanban: {},
 	addedTask: {},
 	addedToKanbanTask: {},
@@ -197,24 +197,29 @@ const tasksReducer = createSlice({
 				state.tasks.data = state.tasks.data.map((task) => (task?.id === action?.payload?.id ? action.payload : task));
 			}
 		},
-		addPendingTaskItem: (state, action: PayloadAction<ITask>) => {
-			const alreadyPending = state.pendingNewItems.some((pendingTask) => pendingTask.id === action.payload.id);
-			if (alreadyPending) return;
-			state.pendingNewItems = [action.payload, ...state.pendingNewItems];
-			if (state.meta?.total != null) state.meta.total++;
+		addPendingTaskItem: (state, action: PayloadAction<{ item: ITask; type: string }>) => {
+			const { item, type } = action.payload;
+			const bucket = state.pendingNewItems[type] ?? [];
+			if (bucket.some((pendingTask) => pendingTask.id === item.id)) return;
+			state.pendingNewItems[type] = [item, ...bucket];
+			// meta belongs to the currently shown table, so only bump it for the active type
+			if (type === state.tasksServiceType && state.meta?.total != null) state.meta.total++;
 		},
-		removePendingTaskItem: (state, action: PayloadAction<string>) => {
-			const wasInPending = state.pendingNewItems.some((pendingTask) => pendingTask.id === action.payload);
-			if (!wasInPending) return;
-			state.pendingNewItems = state.pendingNewItems.filter((pendingTask) => pendingTask.id !== action.payload);
-			if (state.meta?.total != null) state.meta.total = Math.max(0, state.meta.total - 1);
+		removePendingTaskItem: (state, action: PayloadAction<{ id: string; type: string }>) => {
+			const { id, type } = action.payload;
+			const bucket = state.pendingNewItems[type];
+			if (!bucket?.some((pendingTask) => pendingTask.id === id)) return;
+			state.pendingNewItems[type] = bucket.filter((pendingTask) => pendingTask.id !== id);
+			if (type === state.tasksServiceType && state.meta?.total != null) state.meta.total = Math.max(0, state.meta.total - 1);
 		},
-		flushPendingTaskItems: (state) => {
-			if (!state.pendingNewItems.length) return;
+		flushPendingTaskItems: (state, action: PayloadAction<{ type: string }>) => {
+			const { type } = action.payload;
+			const bucket = state.pendingNewItems[type];
+			if (!bucket?.length) return;
 			const existingIds = new Set(state.tasks.data.map((task) => task.id));
-			const toAdd = state.pendingNewItems.filter((pendingTask) => !existingIds.has(pendingTask.id));
+			const toAdd = bucket.filter((pendingTask) => !existingIds.has(pendingTask.id));
 			state.tasks.data = [...toAdd, ...state.tasks.data];
-			state.pendingNewItems = [];
+			state.pendingNewItems[type] = [];
 		},
 		deleteItemLocal: (state, action: PayloadAction<IDeleteTaskPayload>) => {
 			if (state.isHierarchy) {
@@ -274,7 +279,10 @@ const tasksReducer = createSlice({
 				});
 			}
 
-			if (state.pendingNewItems?.length) state.pendingNewItems = state.pendingNewItems.map(apply);
+			Object.keys(state.pendingNewItems).forEach((bucketType) => {
+				if (Array.isArray(state.pendingNewItems[bucketType]))
+					state.pendingNewItems[bucketType] = state.pendingNewItems[bucketType].map(apply);
+			});
 		},
 		moveTaskFromStageToStageLocal: (state, action: PayloadAction<IMoveCardsData>) => {
 			const { taskId, prevTaskId, stageId, entityCode } = action.payload;
