@@ -30,6 +30,7 @@ export const sortPresets = (presets: IFilterPreset<IUserFilter>[]) => {
 
 const initialState: IState = {
 	data: [],
+	allUsers: [],
 	usersFiltersData: {
 		data: [],
 		meta: null,
@@ -282,9 +283,18 @@ export const usersSlice = createSlice({
 			state.loadingUsersByFilter = false;
 			state.errorLoading = action.payload;
 		},
-		[fetchUsers.fulfilled.type]: (state, action: PayloadAction<IUser[]>) => {
+		[fetchUsers.fulfilled.type]: (state, action: PayloadAction<IUser[], string, { arg: boolean }>) => {
 			state.loading = false;
-			state.data = action.payload.filter((user) => !!user.authUserId);
+			if (!!action?.meta?.arg) {
+				state.data = action.payload.filter((user) => {
+					if (!user.authUserId) return false;
+					if (!user?.active && user?.registered) return false;
+					return true;
+				});
+			} else {
+				state.data = action.payload.filter((user) => !!user.authUserId);
+			}
+			state.allUsers = action.payload.filter((user) => !!user.authUserId);
 		},
 		[fetchUsers.pending.type]: (state) => {
 			state.loading = true;

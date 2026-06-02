@@ -5,6 +5,7 @@ import { IUser, IUserFilter } from '@uspacy/sdk/lib/models/user';
 
 export interface IState {
 	data: IUser[];
+	allUsers: IUser[];
 	usersFiltersData: IResponseWithMeta<IUser>;
 	errorLoading?: string;
 	errorLoadingUpdatingUser: IErrorsAxiosResponse;
