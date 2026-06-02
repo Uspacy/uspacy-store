@@ -288,7 +288,8 @@ export const usersSlice = createSlice({
 			if (!!action?.meta?.arg) {
 				state.data = action.payload.filter((user) => {
 					if (!user.authUserId) return false;
-					return !user?.active && user?.registered;
+					if (!user?.active && user?.registered) return false;
+					return true;
 				});
 			} else {
 				state.data = action.payload.filter((user) => !!user.authUserId);
