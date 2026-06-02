@@ -257,6 +257,25 @@ const tasksReducer = createSlice({
 				stage.data = stage.data.map((item) => (String(item?.id) === String(task.id) ? task : item));
 			});
 		},
+		updateTaskItemLocal: (state, action: PayloadAction<{ task: ITask; entityCode: string }>) => {
+			const { task, entityCode } = action.payload;
+			const apply = (item: ITask): ITask => {
+				if (String(item?.id) !== String(task.id)) return item;
+				if (task?.updatedAt && item?.updatedAt && task.updatedAt < item.updatedAt) return item;
+				return { ...item, ...task };
+			};
+
+			if (Array.isArray(state.tasks?.data)) state.tasks.data = state.tasks.data.map(apply);
+
+			const stages = state?.kanban?.[entityCode]?.stages;
+			if (stages) {
+				Object.values(stages).forEach((stage) => {
+					if (Array.isArray(stage.data)) stage.data = stage.data.map(apply);
+				});
+			}
+
+			if (state.pendingNewItems?.length) state.pendingNewItems = state.pendingNewItems.map(apply);
+		},
 		moveTaskFromStageToStageLocal: (state, action: PayloadAction<IMoveCardsData>) => {
 			const { taskId, prevTaskId, stageId, entityCode } = action.payload;
 
@@ -941,6 +960,7 @@ export const {
 	moveTaskFromStageToStageLocal,
 	removeKanbanItemLocal,
 	updateKanbanItemLocal,
+	updateTaskItemLocal,
 	addKanbanItemLocal,
 } = tasksReducer.actions;
 export default tasksReducer.reducer;
