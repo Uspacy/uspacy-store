@@ -6,7 +6,7 @@ import { IUser, IUserFilter, MainRoles } from '@uspacy/sdk/lib/models/user';
 import { getFilterParams } from '../../helpers/filterFieldsArrs';
 import { IInvite, IUploadAvatar } from './types';
 
-export const fetchUsers = createAsyncThunk<IUser[], boolean | void>('users/fetchUsers', async (_, thunkAPI) => {
+export const fetchUsers = createAsyncThunk('users/fetchUsers', async (_, thunkAPI) => {
 	try {
 		const roles = (await uspacySdk.tokensService.getUserRoles().catch(() => undefined)) || [];
 		const show = uspacySdk.usersService.hasRole(roles, [MainRoles.ADMIN, MainRoles.OWNER]) ? 'all' : undefined;
