@@ -294,7 +294,7 @@ export const usersSlice = createSlice({
 			} else {
 				state.data = action.payload.filter((user) => !!user.authUserId);
 			}
-			state.allUsers = action.payload;
+			state.allUsers = action.payload.filter((user) => !!user.authUserId);
 		},
 		[fetchUsers.pending.type]: (state) => {
 			state.loading = true;
