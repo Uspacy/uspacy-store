@@ -18,11 +18,8 @@ export const selectTotalSettings = (personalSettings: IPortalSettings, portalSet
 	return totalSettings as IPortalSettings;
 };
 
-export const fetchSettings = createAsyncThunk<IPortalSettings>('settings/fetchSettings', async (_, thunkAPI) => {
+export const getPersonalSettings = async (portalSettings: IPortalSettings) => {
 	try {
-		const res = await uspacySdk.settingsService.getPortalSettings();
-		const portalSettings = res.data as IPortalSettings;
-
 		const { data: currentPersonalSettings } = await uspacySdk.profileService.getPortalSettings();
 		const personalSettings = portalSettings?.themeCustomization
 			? currentPersonalSettings
@@ -32,6 +29,20 @@ export const fetchSettings = createAsyncThunk<IPortalSettings>('settings/fetchSe
 					themeName: portalSettings?.themeName,
 					themeDecor: portalSettings?.themeDecor,
 			  };
+		return personalSettings;
+	} catch (e) {
+		// eslint-disable-next-line no-console
+		console.error(e, 'Error by get personal settings');
+		return null;
+	}
+};
+
+export const fetchSettings = createAsyncThunk<IPortalSettings>('settings/fetchSettings', async (_, thunkAPI) => {
+	try {
+		const res = await uspacySdk.settingsService.getPortalSettings();
+		const portalSettings = res.data as IPortalSettings;
+
+		const personalSettings = await getPersonalSettings(portalSettings);
 
 		return selectTotalSettings(personalSettings, portalSettings);
 	} catch (e) {
@@ -42,7 +53,10 @@ export const fetchSettings = createAsyncThunk<IPortalSettings>('settings/fetchSe
 export const updateSettings = createAsyncThunk('settings/updateSettings', async (data: Partial<IPortalSettings>, thunkAPI) => {
 	try {
 		const res = await uspacySdk.settingsService.updatePortalSettings(data);
-		return res.data;
+
+		const personalSettings = await getPersonalSettings(res?.data);
+
+		return selectTotalSettings(personalSettings, res?.data);
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
