@@ -2,8 +2,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IPortalSettings } from '@uspacy/sdk/lib/models/settings';
 
-import { API_PREFIX_SETTINGS } from '../../const';
-
 export const selectTotalSettings = (personalSettings: IPortalSettings, portalSettings: IPortalSettings): IPortalSettings => {
 	const totalSettings = {};
 
@@ -22,10 +20,8 @@ export const selectTotalSettings = (personalSettings: IPortalSettings, portalSet
 
 export const fetchSettings = createAsyncThunk<IPortalSettings>('settings/fetchSettings', async (_, thunkAPI) => {
 	try {
-		const domain = await uspacySdk.tokensService.getDomain();
-		const { data: portalSettings } = await uspacySdk.httpClient.client.get<IPortalSettings>(
-			`${API_PREFIX_SETTINGS}/settings/general?domain=${domain}`,
-		);
+		const res = await uspacySdk.settingsService.getPortalSettings();
+		const portalSettings = res.data as IPortalSettings;
 
 		const { data: currentPersonalSettings } = await uspacySdk.profileService.getPortalSettings();
 		const personalSettings = portalSettings?.themeCustomization
@@ -39,6 +35,15 @@ export const fetchSettings = createAsyncThunk<IPortalSettings>('settings/fetchSe
 
 		return selectTotalSettings(personalSettings, portalSettings);
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
+		return thunkAPI.rejectWithValue(e);
+	}
+});
+
+export const updateSettings = createAsyncThunk('settings/updateSettings', async (data: Partial<IPortalSettings>, thunkAPI) => {
+	try {
+		const res = await uspacySdk.settingsService.updatePortalSettings(data);
+		return res.data;
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
 	}
 });

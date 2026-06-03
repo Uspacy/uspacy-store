@@ -5,6 +5,8 @@ import { IUser, IUserFilter } from '@uspacy/sdk/lib/models/user';
 
 export interface IState {
 	data: IUser[];
+	withoutFiredUsers: IUser[];
+	hideFiredEmployees: boolean;
 	usersFiltersData: IResponseWithMeta<IUser>;
 	errorLoading?: string;
 	errorLoadingUpdatingUser: IErrorsAxiosResponse;
