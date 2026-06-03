@@ -32,7 +32,7 @@ export const sortPresets = (presets: IFilterPreset<IUserFilter>[]) => {
 
 const initialState: IState = {
 	data: [],
-	allUsers: [],
+	withoutFiredUsers: [],
 	hideFiredEmployees: false,
 	usersFiltersData: {
 		data: [],
@@ -278,24 +278,24 @@ export const usersSlice = createSlice({
 			state.hideFiredEmployees = action?.payload?.hideFiredEmployees || false;
 
 			if (action?.payload?.hideFiredEmployees) {
-				state.data = state.data.filter((user) => {
+				state.withoutFiredUsers = state.withoutFiredUsers.filter((user) => {
 					if (!user.authUserId) return false;
 					if (!user?.active && user?.registered) return false;
 					return true;
 				});
 			} else {
-				state.data = state.allUsers.filter((user) => !!user.authUserId);
+				state.withoutFiredUsers = state.data.filter((user) => !!user.authUserId);
 			}
 		},
 		[updateSettings.fulfilled.type]: (state, action: PayloadAction<IPortalSettings>) => {
 			if (action?.payload?.hideFiredEmployees) {
-				state.data = state.data.filter((user) => {
+				state.withoutFiredUsers = state.withoutFiredUsers.filter((user) => {
 					if (!user.authUserId) return false;
 					if (!user?.active && user?.registered) return false;
 					return true;
 				});
 			} else {
-				state.data = state.allUsers.filter((user) => !!user.authUserId);
+				state.withoutFiredUsers = state.data.filter((user) => !!user.authUserId);
 			}
 		},
 		[fetchUsersByFilters.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<IUser>>) => {
@@ -312,16 +312,16 @@ export const usersSlice = createSlice({
 		},
 		[fetchUsers.fulfilled.type]: (state, action: PayloadAction<IUser[], string, { arg: boolean }>) => {
 			state.loading = false;
+			state.data = action.payload.filter((user) => !!user.authUserId);
 			if (state.hideFiredEmployees) {
-				state.data = action.payload.filter((user) => {
+				state.withoutFiredUsers = action.payload.filter((user) => {
 					if (!user.authUserId) return false;
 					if (!user?.active && user?.registered) return false;
 					return true;
 				});
 			} else {
-				state.data = action.payload.filter((user) => !!user.authUserId);
+				state.withoutFiredUsers = action.payload.filter((user) => !!user.authUserId);
 			}
-			state.allUsers = action.payload.filter((user) => !!user.authUserId);
 		},
 		[fetchUsers.pending.type]: (state) => {
 			state.loading = true;
