@@ -224,10 +224,14 @@ const tasksReducer = createSlice({
 			if (state.isHierarchy) {
 				state.deleteTaskId = +action?.payload?.id;
 			}
-			if (state.isTable) {
-				state.meta.total = state.meta.total - 1;
-				if (state.tasksServiceType === action.payload.type) {
-					state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload?.id));
+			if (state.isTable && state.tasksServiceType === action.payload.type) {
+				const before = state.tasks.data.length;
+				state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload?.id));
+				if (state.tasks.data.length < before) {
+					state.meta.total = Math.max(0, state.meta.total - 1);
+					if (state.tasks?.meta?.total != null) {
+						state.tasks.meta.total = Math.max(0, state.tasks.meta.total - 1);
+					}
 				}
 			}
 		},
