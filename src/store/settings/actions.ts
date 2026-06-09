@@ -2,8 +2,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IPortalSettings } from '@uspacy/sdk/lib/models/settings';
 
-import { API_PREFIX_SETTINGS } from '../../const';
-
 export const selectTotalSettings = (personalSettings: IPortalSettings, portalSettings: IPortalSettings): IPortalSettings => {
 	const totalSettings = {};
 
@@ -20,13 +18,8 @@ export const selectTotalSettings = (personalSettings: IPortalSettings, portalSet
 	return totalSettings as IPortalSettings;
 };
 
-export const fetchSettings = createAsyncThunk<IPortalSettings>('settings/fetchSettings', async (_, thunkAPI) => {
+export const getPersonalSettings = async (portalSettings: IPortalSettings) => {
 	try {
-		const domain = await uspacySdk.tokensService.getDomain();
-		const { data: portalSettings } = await uspacySdk.httpClient.client.get<IPortalSettings>(
-			`${API_PREFIX_SETTINGS}/settings/general?domain=${domain}`,
-		);
-
 		const { data: currentPersonalSettings } = await uspacySdk.profileService.getPortalSettings();
 		const personalSettings = portalSettings?.themeCustomization
 			? currentPersonalSettings
@@ -36,9 +29,35 @@ export const fetchSettings = createAsyncThunk<IPortalSettings>('settings/fetchSe
 					themeName: portalSettings?.themeName,
 					themeDecor: portalSettings?.themeDecor,
 			  };
+		return personalSettings;
+	} catch (e) {
+		// eslint-disable-next-line no-console
+		console.error(e, 'Error by get personal settings');
+		return null;
+	}
+};
+
+export const fetchSettings = createAsyncThunk<IPortalSettings>('settings/fetchSettings', async (_, thunkAPI) => {
+	try {
+		const res = await uspacySdk.settingsService.getPortalSettings();
+		const portalSettings = res.data as IPortalSettings;
+
+		const personalSettings = await getPersonalSettings(portalSettings);
 
 		return selectTotalSettings(personalSettings, portalSettings);
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
+		return thunkAPI.rejectWithValue(e);
+	}
+});
+
+export const updateSettings = createAsyncThunk('settings/updateSettings', async (data: Partial<IPortalSettings>, thunkAPI) => {
+	try {
+		const res = await uspacySdk.settingsService.updatePortalSettings(data);
+
+		const personalSettings = await getPersonalSettings(res?.data);
+
+		return selectTotalSettings(personalSettings, res?.data);
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
 	}
 });
