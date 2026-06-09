@@ -1,12 +1,15 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import {
+	EMessageStatus,
 	FetchMessagesRequest,
 	GoToMessageRequest,
 	IChat,
 	ICreateQuickAnswerDTO,
 	IGetQuickAnswerParams,
+	IMessage,
 	IQuickAnswer,
+	IUserSettings,
 } from '@uspacy/sdk/lib/models/messenger';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
@@ -30,12 +33,43 @@ export const fetchChats = createAsyncThunk(
 
 export const fetchMessages = createAsyncThunk(
 	'messenger/fetchMessages',
-	async ({ chatId, limit, lastTimestamp, firstTimestamp, unreadFirst }: FetchMessagesRequest, { rejectWithValue, getState }) => {
+	async (
+		{
+			chatId,
+			limit,
+			lastTimestamp,
+			firstTimestamp,
+			unreadFirst,
+			messagesFromIndexedDb,
+		}: FetchMessagesRequest & { messagesFromIndexedDb?: (IMessage & { prevMessageId?: string })[] },
+		{ rejectWithValue, getState },
+	) => {
 		try {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const state: any = getState();
 			const items = (await uspacySdk.messengerService.getMessages({ chatId, limit, lastTimestamp, firstTimestamp, unreadFirst })).data;
-			return { items, profile: state.profile.data };
+
+			if (!messagesFromIndexedDb?.length) return { items, profile: state.profile.data };
+
+			const mergedItemsWithIndexedDb = items.reduce((acc, it) => {
+				const fromIndexedDb = messagesFromIndexedDb?.findIndex((m) => m.prevMessageId === it.id);
+
+				if (fromIndexedDb > -1) {
+					const messagesFromIndexed = [{ ...messagesFromIndexedDb[fromIndexedDb], status: EMessageStatus.ERROR }];
+
+					for (let index = fromIndexedDb - 1; index > -1; index--) {
+						if (messagesFromIndexedDb?.[index]?.prevMessageId === messagesFromIndexedDb[index + 1]?.id) {
+							messagesFromIndexed.unshift({ ...messagesFromIndexedDb[index], status: EMessageStatus.ERROR });
+						} else break;
+					}
+					acc.push(...messagesFromIndexed, it);
+				} else {
+					acc.push(it);
+				}
+				return acc;
+			}, []);
+
+			return { items: mergedItemsWithIndexedDb, profile: state.profile.data };
 		} catch (e) {
 			return rejectWithValue(e);
 		}
@@ -104,3 +138,22 @@ export const deleteQuickAnswer = createAsyncThunk('messenger/deleteQuickAnswer',
 		return rejectWithValue(e);
 	}
 });
+
+export const getUserSettings = createAsyncThunk('messenger/getUserSettings', async (_, { rejectWithValue }) => {
+	try {
+		return (await uspacySdk.messengerService.getSettings()).data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const updateUserSettings = createAsyncThunk(
+	'messenger/updateUserSettings',
+	async (settings: Partial<Omit<IUserSettings, 'authUserId' | 'id'>>, { rejectWithValue }) => {
+		try {
+			return (await uspacySdk.messengerService.updateSettings(settings)).data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);

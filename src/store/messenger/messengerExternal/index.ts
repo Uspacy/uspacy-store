@@ -52,6 +52,9 @@ export const externalChatSlice = createSlice({
 			state.externalChats.items = updateExternalChat(state.externalChats.items, action.payload);
 		},
 		addChatToActive(state, action: PayloadAction<IChat>) {
+			if (state.externalChats.items.active.findIndex((chat) => chat.id === action.payload.id) !== -1) {
+				return;
+			}
 			state.externalChats.items.active = [action.payload, ...state.externalChats.items.active];
 		},
 		addChatToActiveIfDontExists(state, action: PayloadAction<IChat>) {
@@ -63,9 +66,15 @@ export const externalChatSlice = createSlice({
 			state.externalChats.items.inactive = state.externalChats.items.inactive.filter((chat) => chat.id !== action.payload.id);
 		},
 		addChatToInactive(state, action: PayloadAction<IChat>) {
+			if (state.externalChats.items.inactive.findIndex((chat) => chat.id === action.payload.id) !== -1) {
+				return;
+			}
 			state.externalChats.items.inactive = [action.payload, ...state.externalChats.items.inactive];
 		},
 		addChatToUndistributed(state, action: PayloadAction<IChat>) {
+			if (state.externalChats.items.undistributed.findIndex((chat) => chat.id === action.payload.id) !== -1) {
+				return;
+			}
 			state.externalChats.items.undistributed = [action.payload, ...state.externalChats.items.undistributed];
 		},
 		removeChatFromUndistributed(state, action: PayloadAction<IChat['id']>) {

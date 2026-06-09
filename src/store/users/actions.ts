@@ -13,7 +13,7 @@ export const fetchUsers = createAsyncThunk('users/fetchUsers', async (_, thunkAP
 		const res = await uspacySdk.usersService.getUsers(undefined, 'all', show);
 		return res.data;
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure load users');
+		return thunkAPI.rejectWithValue(e);
 	}
 });
 

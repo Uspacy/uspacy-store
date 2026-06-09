@@ -12,6 +12,7 @@ import {
 	deleteEntityItem,
 	fetchEntityItems,
 	fetchEntityItemsByStage,
+	fetchEntityItemsByTimePeriod,
 	getEntitiesCurrenciesAmount,
 	massItemsDeletion,
 	massItemsEditing,
@@ -45,17 +46,27 @@ const itemsReducer = createSlice({
 				return item;
 			});
 		},
-		clearItems: (state: IState, action: PayloadAction<{ entityCode: string; stageId?: number }>) => {
-			const { entityCode, stageId } = action.payload;
+		clearItems: (state: IState, action: PayloadAction<{ entityCode: string; stageId?: number; timePeriod?: string }>) => {
+			const { entityCode, stageId, timePeriod } = action.payload;
 			if (state[entityCode]) {
 				state[entityCode].data = [];
 				state[entityCode].loading = true;
 				state[entityCode].errorMessage = null;
 				state[entityCode].meta = undefined;
+				state[entityCode].pendingNewItems = [];
 			}
 
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
 				state[entityCode].stages[stageId] = {
+					data: [],
+					loading: true,
+					errorMessage: null,
+					meta: undefined,
+				};
+			}
+
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod] = {
 					data: [],
 					loading: true,
 					errorMessage: null,
@@ -106,30 +117,41 @@ const itemsReducer = createSlice({
 					return item;
 				});
 			}
+			if (state[entityCode]?.pendingNewItems?.length) {
+				state[entityCode].pendingNewItems = state[entityCode].pendingNewItems.map((item) => {
+					if (item.id !== payloadData.id) return item;
+					if (payloadData?.updated_at && item?.updated_at && payloadData?.updated_at < item?.updated_at) return item;
+					return { ...item, ...payloadData };
+				});
+			}
 		},
 		moveItemFromStageToStageLocal: (state, action: PayloadAction<IMoveCardsData>) => {
 			const { entityCode, entityId, stageId, reason_id: reasonId, funnelHasChanged, sourceStageId, item: payloadItem } = action.payload;
 
-			state[entityCode].data = state[entityCode].data.map((item) => {
-				if (item.id === entityId) {
-					if (payloadItem?.updated_at && item.updated_at && payloadItem.updated_at < item.updated_at) return item;
-					return {
-						...item,
-						kanban_stage_id: stageId,
-						updated_at: payloadItem?.updated_at || Math.floor(new Date().valueOf() / 1000),
-						kanban_reason_id: reasonId ?? null,
-						changed_by: payloadItem?.changed_by || item?.changed_by,
-					};
-				}
-				return item;
-			});
+			if (!state[entityCode]) return;
+
+			if (Array.isArray(state[entityCode]?.data)) {
+				state[entityCode].data = state[entityCode].data.map((item) => {
+					if (item.id === entityId) {
+						if (payloadItem?.updated_at && item.updated_at && payloadItem.updated_at < item.updated_at) return item;
+						return {
+							...item,
+							kanban_stage_id: stageId,
+							updated_at: payloadItem?.updated_at || Math.floor(new Date().valueOf() / 1000),
+							kanban_reason_id: reasonId ?? null,
+							changed_by: payloadItem?.changed_by || item?.changed_by,
+						};
+					}
+					return item;
+				});
+			}
 
 			if (!state[entityCode]?.stages) return;
 
 			let foundEntityItem: IEntityData | undefined;
 			let foundInStageKey: string | undefined;
 			for (const [key, stage] of Object.entries(state[entityCode].stages)) {
-				foundEntityItem = stage.data.find((item) => item.id === entityId);
+				foundEntityItem = stage.data?.find((item) => item.id === entityId);
 				if (foundEntityItem) {
 					foundInStageKey = key;
 					break;
@@ -194,12 +216,61 @@ const itemsReducer = createSlice({
 			const { entityCode, stageId, id } = action.payload;
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].data = state[entityCode].data.filter((item) => item.id !== id);
-				state[entityCode].meta.total--;
+				if (state[entityCode].meta) state[entityCode].meta.total--;
 			}
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
 				state[entityCode].stages[stageId].data = state[entityCode].stages[stageId].data.filter((item) => item.id !== id);
-				state[entityCode].stages[stageId].meta.total--;
+				if (state[entityCode].stages[stageId].meta) state[entityCode].stages[stageId].meta.total--;
 			}
+			if (state[entityCode]?.pendingNewItems?.length) {
+				const wasOnlyInPending = !state[entityCode].data.some((item) => item.id === id);
+				state[entityCode].pendingNewItems = state[entityCode].pendingNewItems.filter((item) => item.id !== id);
+				if (wasOnlyInPending && state[entityCode].meta) {
+					state[entityCode].meta.total = Math.max((state[entityCode].meta.total || 1) - 1, 0);
+				}
+			}
+		},
+		addEntityItemToStageLocal: (state, action: PayloadAction<{ item: IEntityData; entityCode: string; stageId: number }>) => {
+			const { entityCode, stageId, item } = action.payload;
+			if (!state[entityCode]?.stages?.[stageId]) return;
+			if (!Array.isArray(state[entityCode].stages[stageId].data)) return;
+			const alreadyInStage = state[entityCode].stages[stageId].data.some((i) => i.id === item.id);
+			if (!alreadyInStage) {
+				state[entityCode].stages[stageId].data = [item, ...state[entityCode].stages[stageId].data];
+				if (state[entityCode].stages[stageId].meta) {
+					state[entityCode].stages[stageId].meta.total++;
+				}
+			}
+		},
+		addPendingNewItem: (state, action: PayloadAction<{ entityCode: string; item: IEntityData }>) => {
+			const { entityCode, item } = action.payload;
+			if (!state[entityCode]) return;
+			const alreadyPending = state[entityCode].pendingNewItems?.some((i) => i.id === item.id);
+			if (alreadyPending) return;
+			state[entityCode].pendingNewItems = [item, ...(state[entityCode].pendingNewItems ?? [])];
+			if (state[entityCode].meta) {
+				state[entityCode].meta.total++;
+			}
+		},
+		removePendingItem: (state, action: PayloadAction<{ entityCode: string; id: number }>) => {
+			const { entityCode, id } = action.payload;
+			if (!state[entityCode]?.pendingNewItems?.length) return;
+			const wasInPending = state[entityCode].pendingNewItems.some((item) => item.id === id);
+			if (!wasInPending) return;
+			state[entityCode].pendingNewItems = state[entityCode].pendingNewItems.filter((item) => item.id !== id);
+			if (state[entityCode].meta) {
+				state[entityCode].meta.total = Math.max((state[entityCode].meta.total || 1) - 1, 0);
+			}
+		},
+		flushPendingNewItems: (state, action: PayloadAction<{ entityCode: string }>) => {
+			const { entityCode } = action.payload;
+			if (!state[entityCode]) return;
+			const pending = state[entityCode].pendingNewItems ?? [];
+			if (!pending.length) return;
+			const existingIds = new Set(state[entityCode].data.map((i) => i.id));
+			const toAdd = pending.filter((i) => !existingIds.has(i.id));
+			state[entityCode].data = [...toAdd, ...state[entityCode].data];
+			state[entityCode].pendingNewItems = [];
 		},
 	},
 	extraReducers: {
@@ -216,6 +287,7 @@ const itemsReducer = createSlice({
 				state[entityCode].data = action.payload.data;
 			}
 			state[entityCode].meta = action.payload.meta;
+			state[entityCode].pendingNewItems = [];
 		},
 		[fetchEntityItems.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string } }>) => {
 			const { entityCode } = action.meta.arg;
@@ -223,6 +295,7 @@ const itemsReducer = createSlice({
 				state[entityCode] = {
 					...initialData,
 					stages: {},
+					timePeriods: {},
 				};
 			}
 			state[entityCode].loading = true;
@@ -280,12 +353,11 @@ const itemsReducer = createSlice({
 				state[entityCode].stages[stageId].loading = false;
 			}
 		},
-
 		[updateEntityItem.fulfilled.type]: (
 			state,
-			action: PayloadAction<IEntityData, string, { arg: { data: IEntityData; entityCode: string; stageId?: number } }>,
+			action: PayloadAction<IEntityData, string, { arg: { data: IEntityData; entityCode: string; stageId?: number; timePeriod?: string } }>,
 		) => {
-			const { entityCode } = action.meta.arg;
+			const { entityCode, timePeriod } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].errorMessage = null;
@@ -313,12 +385,26 @@ const itemsReducer = createSlice({
 					return item;
 				});
 			}
+
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod].loading = false;
+				state[entityCode].timePeriods[timePeriod].errorMessage = null;
+				state[entityCode].timePeriods[timePeriod].data = state[entityCode].timePeriods[timePeriod].data.map((item) => {
+					if (item.id === action.payload.id) {
+						return {
+							...item,
+							...action.payload,
+						};
+					}
+					return item;
+				});
+			}
 		},
 		[updateEntityItem.pending.type]: (
 			state,
-			action: PayloadAction<IEntityData, string, { arg: { entityCode: string; data: IEntityData; stageId?: number } }>,
+			action: PayloadAction<IEntityData, string, { arg: { entityCode: string; data: IEntityData; stageId?: number; timePeriod?: string } }>,
 		) => {
-			const { entityCode } = action.meta.arg;
+			const { entityCode, timePeriod } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].errorMessage = null;
@@ -327,12 +413,17 @@ const itemsReducer = createSlice({
 				state[entityCode].stages[stageId].loading = true;
 				state[entityCode].stages[stageId].errorMessage = null;
 			}
+
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod].loading = true;
+				state[entityCode].timePeriods[timePeriod].errorMessage = null;
+			}
 		},
 		[updateEntityItem.rejected.type]: (
 			state,
-			action: PayloadAction<IErrors, string, { arg: { entityCode: string; data: IEntityData; stageId?: number } }>,
+			action: PayloadAction<IErrors, string, { arg: { entityCode: string; data: IEntityData; stageId?: number; timePeriod?: string } }>,
 		) => {
-			const { entityCode } = action.meta.arg;
+			const { entityCode, timePeriod } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].errorMessage = action.payload;
@@ -341,11 +432,15 @@ const itemsReducer = createSlice({
 				state[entityCode].stages[stageId].loading = false;
 				state[entityCode].stages[stageId].errorMessage = action.payload;
 			}
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod].loading = false;
+				state[entityCode].timePeriods[timePeriod].errorMessage = action.payload;
+			}
 		},
 
 		[createEntityItem.fulfilled.type]: (
 			state,
-			action: PayloadAction<IEntityData, string, { arg: { entityCode: string; data: IEntityData; stageId?: number } }>,
+			action: PayloadAction<IEntityData, string, { arg: { entityCode: string; data: IEntityData; stageId?: number; timePeriod?: string } }>,
 		) => {
 			const { entityCode } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || action.meta.arg.data.kanban_stage_id;
@@ -353,20 +448,20 @@ const itemsReducer = createSlice({
 				state[entityCode].loading = false;
 				state[entityCode].errorMessage = null;
 				state[entityCode].data = [action.payload, ...state[entityCode].data];
-				state[entityCode].meta.total++;
+				if (state[entityCode].meta) state[entityCode].meta.total++;
 			}
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
 				state[entityCode].stages[stageId].data = [action.payload, ...state[entityCode].stages[stageId].data];
-				state[entityCode].stages[stageId].meta.total++;
+				if (state[entityCode].stages[stageId].meta) state[entityCode].stages[stageId].meta.total++;
 				state[entityCode].stages[stageId].loading = false;
 				state[entityCode].stages[stageId].errorMessage = null;
 			}
 		},
 		[createEntityItem.pending.type]: (
 			state,
-			action: PayloadAction<unknown, string, { arg: { entityCode: string; data: IEntityData; stageId?: number } }>,
+			action: PayloadAction<unknown, string, { arg: { entityCode: string; data: IEntityData; stageId?: number; timePeriod?: string } }>,
 		) => {
-			const { entityCode } = action.meta.arg;
+			const { entityCode, timePeriod } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || action.meta.arg.data.kanban_stage_id;
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].loading = true;
@@ -376,12 +471,16 @@ const itemsReducer = createSlice({
 				state[entityCode].stages[stageId].loading = true;
 				state[entityCode].stages[stageId].errorMessage = null;
 			}
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod].loading = true;
+				state[entityCode].timePeriods[timePeriod].errorMessage = null;
+			}
 		},
 		[createEntityItem.rejected.type]: (
 			state,
-			action: PayloadAction<IErrors, string, { arg: { entityCode: string; data: IEntityData; stageId?: number } }>,
+			action: PayloadAction<IErrors, string, { arg: { entityCode: string; data: IEntityData; stageId?: number; timePeriod?: string } }>,
 		) => {
-			const { entityCode } = action.meta.arg;
+			const { entityCode, timePeriod } = action.meta.arg;
 			const stageId = action.meta.arg.stageId || action.meta.arg.data.kanban_stage_id;
 			state[entityCode].loading = false;
 			state[entityCode].errorMessage = action.payload;
@@ -389,20 +488,28 @@ const itemsReducer = createSlice({
 				state[entityCode].stages[stageId].loading = false;
 				state[entityCode].stages[stageId].errorMessage = action.payload;
 			}
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod].loading = false;
+				state[entityCode].timePeriods[timePeriod].errorMessage = action.payload;
+			}
 		},
 
 		[deleteEntityItem.pending.type]: (
 			state,
-			action: PayloadAction<unknown, string, { arg: { id: Number; entityCode: string; stageId?: number } }>,
+			action: PayloadAction<unknown, string, { arg: { id: Number; entityCode: string; stageId?: number; timePeriod?: string } }>,
 		) => {
-			const { entityCode, stageId, id } = action.meta.arg;
+			const { entityCode, stageId, id, timePeriod } = action.meta.arg;
 			if (Array.isArray(state[entityCode]?.data)) {
 				state[entityCode].data = state[entityCode].data.filter((item) => item.id !== id);
-				state[entityCode].meta.total--;
+				if (state[entityCode].meta) state[entityCode].meta.total--;
 			}
 			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
 				state[entityCode].stages[stageId].data = state[entityCode].stages[stageId].data.filter((item) => item.id !== id);
-				state[entityCode].stages[stageId].meta.total--;
+				if (state[entityCode].stages[stageId].meta) state[entityCode].stages[stageId].meta.total--;
+			}
+			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
+				state[entityCode].timePeriods[timePeriod].data = state[entityCode].timePeriods[timePeriod].data.filter((item) => item.id !== id);
+				state[entityCode].timePeriods[timePeriod].meta.total--;
 			}
 		},
 
@@ -591,7 +698,53 @@ const itemsReducer = createSlice({
 			action: PayloadAction<IErrors, string, { arg: { entityCode: string; stageId: number } }>,
 		) => {
 			const { entityCode, stageId } = action.meta.arg;
+			if (!state[entityCode]?.stages?.[stageId]) return;
 			state[entityCode].stages[stageId].loadingCurrencyAmount = false;
+		},
+		[fetchEntityItemsByTimePeriod.fulfilled.type]: (
+			state,
+			action: PayloadAction<IResponseWithMeta<IEntityData>, string, { arg: { entityCode: string; timePeriod: string } }>,
+		) => {
+			const { entityCode, timePeriod } = action.meta.arg;
+
+			state[entityCode].timePeriods[timePeriod].data = [...state[entityCode].timePeriods[timePeriod].data, ...action.payload.data];
+			state[entityCode].timePeriods[timePeriod].loading = false;
+			state[entityCode].timePeriods[timePeriod].meta = action.payload.meta;
+		},
+		[fetchEntityItemsByTimePeriod.pending.type]: (
+			state,
+			action: PayloadAction<
+				unknown,
+				string,
+				{ arg: { entityCode: string; timePeriod: string; filters: Omit<IEntityFilters, 'openDatePicker'> } }
+			>,
+		) => {
+			const { entityCode, timePeriod, filters } = action.meta.arg;
+			if (!state[entityCode]) {
+				state[entityCode] = {
+					...initialData,
+					timePeriods: {},
+				};
+			}
+			state[entityCode].timePeriods[timePeriod] = {
+				...initialData,
+				...state[entityCode].timePeriods[timePeriod],
+				// page 1 means that we are fetching data for the first time and we need to clear the data
+				...(filters.page === 1 && {
+					data: [],
+					meta: undefined,
+				}),
+				loading: true,
+				errorMessage: null,
+			};
+		},
+		[fetchEntityItemsByTimePeriod.rejected.type]: (
+			state,
+			action: PayloadAction<IErrors, string, { arg: { entityCode: string; timePeriod: string } }>,
+		) => {
+			const { entityCode, timePeriod } = action.meta.arg;
+
+			state[entityCode].timePeriods[timePeriod].loading = false;
 		},
 		[uploadEntityItemAvatar.fulfilled.type]: (
 			state,
@@ -640,5 +793,9 @@ export const {
 	updateEntityItemLocal,
 	moveItemFromStageToStageLocal,
 	deleteEntityItemLocal,
+	addEntityItemToStageLocal,
+	addPendingNewItem,
+	removePendingItem,
+	flushPendingNewItems,
 } = itemsReducer.actions;
 export default itemsReducer.reducer;
