@@ -43,16 +43,6 @@ const initialState: IState = {
 					link: '',
 					active: true,
 				},
-				{
-					id: '1',
-					order: 1,
-					icon: {
-						type: '',
-					},
-					canal: '',
-					link: '',
-					active: true,
-				},
 			],
 		},
 	},
