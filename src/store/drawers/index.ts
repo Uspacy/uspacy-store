@@ -27,6 +27,9 @@ export const multiDrawersSlice = createSlice({
 					const cardLink = `/crm/${entityCodeCheckActivity}/${
 						action?.payload?.mode === 'create' ? 'create' : action?.payload?.entityId
 					}${commentLink}`;
+					if (action.payload.entityCode === 'uspacy_transactions' && action?.payload?.mode === 'create') {
+						break;
+					}
 					const url = new URL(cardLink, location.origin + location.pathname + '/');
 					history.pushState(null, '', url);
 					break;
