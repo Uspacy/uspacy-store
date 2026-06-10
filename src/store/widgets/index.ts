@@ -160,7 +160,16 @@ export const widgetsSlice = createSlice({
 		updateSocialItem: (state, action: PayloadAction<RequireOnlyOne<IWidgetSocialItem, 'id'>>) => {
 			const itemIndex = state.widgetData.socialSettings.items.findIndex((item) => item.id === action.payload.id);
 			if (itemIndex !== -1) {
-				state.widgetData.socialSettings.items[itemIndex] = { ...state.widgetData.socialSettings.items[itemIndex], ...action.payload };
+				state.widgetData.socialSettings.items[itemIndex] = {
+					...state.widgetData.socialSettings.items[itemIndex],
+					...action.payload,
+				};
+			}
+		},
+		clearItemValidation: (state, action: PayloadAction<string>) => {
+			const itemIndex = state.widgetData.socialSettings.items.findIndex((item) => item.id === action.payload);
+			if (itemIndex !== -1) {
+				delete state.widgetData.socialSettings.items[itemIndex].invalidData;
 			}
 		},
 		removeSocialItem: (state, action: PayloadAction<string>) => {
@@ -230,6 +239,7 @@ export const {
 	updateSocialItem,
 	removeSocialItem,
 	updateWidgetSocialsOrder,
+	clearItemValidation,
 } = widgetsSlice.actions;
 
 export default widgetsSlice.reducer;
