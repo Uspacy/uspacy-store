@@ -37,6 +37,9 @@ const stagesReducer = createSlice({
 	name: 'stagesReducer',
 	initialState,
 	reducers: {
+		setStages: (state, action: PayloadAction<IStages>) => {
+			state.stages = action.payload;
+		},
 		clearStages: (state) => {
 			state.stages = initialState.stages;
 		},
@@ -71,5 +74,5 @@ const stagesReducer = createSlice({
 	},
 });
 
-export const { clearStages, setDndItem } = stagesReducer.actions;
+export const { setStages, clearStages, setDndItem } = stagesReducer.actions;
 export default stagesReducer.reducer;
