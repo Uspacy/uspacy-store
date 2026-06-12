@@ -39,6 +39,7 @@ import messengerReducer from './messenger';
 import migrationsReducer from './migrations';
 import newsfeed from './newsfeed';
 import notifications from './notifications';
+import pageTitle from './pageTitle';
 import payments from './payments';
 import profile from './profile';
 import roles from './roles';
@@ -106,6 +107,7 @@ const rootReducer = combineReducers({
 	drawers,
 	eventBuffer,
 	widgets,
+	pageTitle,
 });
 
 export const setupStore = () => {
