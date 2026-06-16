@@ -138,6 +138,17 @@ export const chatSlice = createSlice({
 				return group;
 			});
 		},
+		filterMessagesWithoutFirstUnread(state, action: PayloadAction<string>) {
+			state.messages = state.messages.map((group) => {
+				if (group.chatId === action.payload) {
+					return {
+						...group,
+						items: group.items.filter((message) => !message.isFirstUnread),
+					};
+				}
+				return group;
+			});
+		},
 		unsetCurrentChat(state) {
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === state.chats.currentChatId) {
@@ -830,6 +841,7 @@ export const {
 	setTimestamp,
 	setAISummaryData,
 	setUserTypingStatus,
+	filterMessagesWithoutFirstUnread,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
