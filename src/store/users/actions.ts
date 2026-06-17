@@ -4,7 +4,6 @@ import { IField } from '@uspacy/sdk/lib/models/field';
 import { IUser, IUserFilter, MainRoles } from '@uspacy/sdk/lib/models/user';
 
 import { getFilterParams } from '../../helpers/filterFieldsArrs';
-import type { RootState } from '../index';
 import { IInvite, IUploadAvatar } from './types';
 
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async (_, thunkAPI) => {
