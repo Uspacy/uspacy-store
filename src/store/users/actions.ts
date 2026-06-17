@@ -4,7 +4,6 @@ import { IField } from '@uspacy/sdk/lib/models/field';
 import { IUser, IUserFilter, MainRoles } from '@uspacy/sdk/lib/models/user';
 
 import { getFilterParams } from '../../helpers/filterFieldsArrs';
-import type { RootState } from '../index';
 import { IInvite, IUploadAvatar } from './types';
 
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async (_, thunkAPI) => {
@@ -12,7 +11,7 @@ export const fetchUsers = createAsyncThunk('users/fetchUsers', async (_, thunkAP
 		const roles = (await uspacySdk.tokensService.getUserRoles().catch(() => undefined)) || [];
 		const show = uspacySdk.usersService.hasRole(roles, [MainRoles.ADMIN, MainRoles.OWNER]) ? 'all' : undefined;
 		const res = await uspacySdk.usersService.getUsers(undefined, 'all', show);
-		const state = thunkAPI.getState() as RootState;
+		const state = thunkAPI.getState() as { profile?: { data?: IUser } };
 		const currentUserId = state?.profile?.data?.id;
 		const currentUser = res.data.find((user) => user?.id === currentUserId);
 		return currentUser ? [currentUser, ...res.data.filter((user) => user?.id !== currentUserId)] : res.data;
