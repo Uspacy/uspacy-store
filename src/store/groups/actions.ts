@@ -47,6 +47,7 @@ export const createGroup = createAsyncThunk(
 			externalUserIds,
 			enableColorTheme,
 			themeSettings,
+			settings,
 		}: {
 			name: string;
 			groupType: string;
@@ -59,6 +60,7 @@ export const createGroup = createAsyncThunk(
 			externalUserIds?: string[];
 			enableColorTheme: boolean;
 			themeSettings: IThemeSettings;
+			settings?: IGroupSettings;
 		},
 		thunkAPI,
 	) => {
@@ -76,6 +78,7 @@ export const createGroup = createAsyncThunk(
 					enableColorTheme,
 					themeSettings,
 					externalUserIds,
+					settings,
 				})
 				.then((res) => res.data);
 		} catch (e) {
