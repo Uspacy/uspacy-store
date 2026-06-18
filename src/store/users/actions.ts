@@ -11,7 +11,10 @@ export const fetchUsers = createAsyncThunk('users/fetchUsers', async (_, thunkAP
 		const roles = (await uspacySdk.tokensService.getUserRoles().catch(() => undefined)) || [];
 		const show = uspacySdk.usersService.hasRole(roles, [MainRoles.ADMIN, MainRoles.OWNER]) ? 'all' : undefined;
 		const res = await uspacySdk.usersService.getUsers(undefined, 'all', show);
-		return res.data;
+		const state = thunkAPI.getState() as { profile?: { data?: IUser } };
+		const currentUserId = state?.profile?.data?.id;
+		const currentUser = res.data.find((user) => user?.id === currentUserId);
+		return currentUser ? [currentUser, ...res.data.filter((user) => user?.id !== currentUserId)] : res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
