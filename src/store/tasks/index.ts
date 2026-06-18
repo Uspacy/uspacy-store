@@ -130,14 +130,16 @@ const tasksReducer = createSlice({
 			state.deleteTaskId = null;
 		},
 		clearFilter: (state) => {
+			const { list } = state.filters;
 			state.filters = { ...initialState.filters };
 			state.filters.page = 1;
-			state.filters.perPage = 20;
+			state.filters.list = list || 20;
 		},
 		clearRegularFilter: (state) => {
+			const { list } = state.regularFilter;
 			state.regularFilter = { ...initialState.regularFilter };
 			state.regularFilter.page = 1;
-			state.regularFilter.perPage = 20;
+			state.regularFilter.list = list || 20;
 		},
 		addTaskToEndTable: (state, action: PayloadAction<ITask>) => {
 			state.tasks.data.push(action.payload);
