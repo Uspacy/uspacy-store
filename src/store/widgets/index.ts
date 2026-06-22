@@ -39,8 +39,8 @@ const initialState: IState = {
 					icon: {
 						type: 'widget',
 					},
-					canal: '',
-					link: '',
+					canal: 'widget',
+					link: 'widget',
 					active: true,
 				},
 			],
