@@ -179,6 +179,9 @@ export const widgetsSlice = createSlice({
 			const { sortedArr } = action.payload;
 			state.widgetData.socialSettings.items = updateFieldsOrderHelp(state.widgetData.socialSettings.items, sortedArr, true);
 		},
+		clearSocialSettings: (state) => {
+			state.widgetData.socialSettings = initialState.widgetData.socialSettings;
+		},
 	},
 	extraReducers: {
 		[createWidget.pending.type]: (state) => {
@@ -240,6 +243,7 @@ export const {
 	removeSocialItem,
 	updateWidgetSocialsOrder,
 	clearItemValidation,
+	clearSocialSettings,
 } = widgetsSlice.actions;
 
 export default widgetsSlice.reducer;
