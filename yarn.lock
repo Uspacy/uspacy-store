@@ -2524,10 +2524,17 @@
     lint-staged "15.2.10"
     localforage "1.10.0"
 
+<<<<<<< HEAD
 "@uspacy/sdk@0.0.999-alpha.151":
   version "0.0.999-alpha.151"
   resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.151/3ee941a7b3e340d0addd1cdf42d84746677d4b72#3ee941a7b3e340d0addd1cdf42d84746677d4b72"
   integrity sha512-e4hsBjyvZxuHJdJv2+9GHVOxt5wFtaBlbYM0gx6BKnwUl57q3dqDXdEhfb66BAgUCVBQI5IFxHQYGnt+6DcR7Q==
+=======
+"@uspacy/sdk@0.0.999-alpha.152":
+  version "0.0.999-alpha.152"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.152/7298d7c7cd4efa5e81ba980a9198374007b3d9a3#7298d7c7cd4efa5e81ba980a9198374007b3d9a3"
+  integrity sha512-FI7dt/iGpwCDHxBALcoiyjwbybf0Vyevx/7S9r0v1p8ZGbBAwu0HM9WjsHvxiAUP4WceUlfQuHET0FTXI2VzYQ==
+>>>>>>> feature/8679_email_contact_name_filter
   dependencies:
     axios "^1.9.0"
     js-cookie "3.0.5"
