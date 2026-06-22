@@ -232,7 +232,7 @@ const rolesReducer = createSlice({
 			} else {
 				// Update all permissions related to goalForClean
 
-				if (goalForClean !== 'crm.uspacy_calls') {
+				if (goalForClean !== 'crm.uspacy_calls' && goalForClean !== 'hub.uspacy_journal') {
 					newPermissions.create = [
 						...permissionState.create.filter((item) => !item.includes(goalForClean)),
 						`${goalForClean}.create.mine.disabled-any`,
