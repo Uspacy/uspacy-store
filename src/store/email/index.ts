@@ -115,6 +115,7 @@ const initialState = {
 		time_label_date: [],
 		openCalendar: false,
 		q: '',
+		contact_name: '',
 	},
 	selectedLetters: [],
 	emailTableHeaderType: 'default',
