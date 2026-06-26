@@ -55,7 +55,7 @@ const oauthClientsReducer = createSlice({
 		[deleteOAuthClient.fulfilled.type]: (state, action: PayloadAction<string>) => {
 			state.loadingClients = false;
 			state.errorLoadingClients = null;
-			state.clients = state.clients.filter((c) => c.clientId !== action.payload);
+			state.clients = state.clients.filter((c) => c.client_id !== action.payload);
 		},
 		[deleteOAuthClient.pending.type]: (state) => {
 			state.loadingClients = true;

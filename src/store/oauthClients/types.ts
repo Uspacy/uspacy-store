@@ -1,18 +1,19 @@
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
 // TODO: import from @uspacy/sdk once published with oauthClients
+// NOTE: client fields are SNAKE_CASE (raw shape from auth-service via users-backend).
 export interface IOAuthClient {
-	clientId: string;
+	client_id: string;
 	name: string;
-	grantTypes: string[];
-	redirectUris: string[] | null;
+	grant_types: string[];
+	redirect_uris: string[] | null;
 	confidential: boolean;
-	userId: number | null;
+	user_id: number | null;
 	domain: string | null;
 	permissions: string[] | null;
 	revoked: boolean;
-	createdAt: string | number;
-	updatedAt: string | number;
+	created_at: string | number;
+	updated_at: string | number;
 }
 
 export interface IOAuthClientWithSecret extends IOAuthClient {
@@ -36,9 +37,9 @@ export interface IOAuthPermissionGroup {
 export interface IOAuthClientsResponse {
 	data: IOAuthClient[];
 	meta?: {
-		currentPage?: number;
-		lastPage?: number;
-		perPage?: number;
+		current_page?: number;
+		last_page?: number;
+		per_page?: number;
 		total?: number;
 		from?: number;
 		to?: number;
