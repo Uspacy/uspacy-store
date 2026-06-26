@@ -27,7 +27,7 @@ const automationsReducer = createSlice({
 		},
 		updateAutomationInTable: (state, action: PayloadAction<IAutomation>) => {
 			state.automations.data = state.automations.data.map((it) =>
-				it.portal_id === action.payload.portal_id ? { ...it, ...action.payload } : it,
+				it.portal_id === action.payload?.portal_id ? { ...it, ...action.payload } : it,
 			);
 		},
 		addAutomationToStartTable: (state, action: PayloadAction<IAutomation>) => {
