@@ -19,8 +19,11 @@ const feildsReducer = createSlice({
 		},
 	},
 	extraReducers: {
-		[fetchFields.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<IField>, string, { arg: string }>) => {
-			const entityCode = action.meta.arg;
+		[fetchFields.fulfilled.type]: (
+			state,
+			action: PayloadAction<IResponseWithMeta<IField>, string, { arg: string | { code: string; related?: boolean } }>,
+		) => {
+			const entityCode = typeof action.meta.arg === 'string' ? action.meta.arg : action.meta.arg?.code;
 			state[entityCode].loading = false;
 			let data = action.payload.data;
 			data.splice(0, 0, idColumnField);
