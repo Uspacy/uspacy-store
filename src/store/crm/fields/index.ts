@@ -19,8 +19,11 @@ const feildsReducer = createSlice({
 		},
 	},
 	extraReducers: {
-		[fetchFields.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<IField>, string, { arg: string }>) => {
-			const entityCode = action.meta.arg;
+		[fetchFields.fulfilled.type]: (
+			state,
+			action: PayloadAction<IResponseWithMeta<IField>, string, { arg: string | { code: string; related?: boolean } }>,
+		) => {
+			const entityCode = typeof action.meta.arg === 'string' ? action.meta.arg : action.meta.arg?.code;
 			state[entityCode].loading = false;
 			let data = action.payload.data;
 			data.splice(0, 0, idColumnField);
@@ -53,15 +56,16 @@ const feildsReducer = createSlice({
 			});
 			state[entityCode].meta = action.payload.meta;
 		},
-		[fetchFields.pending.type]: (state, action: PayloadAction<unknown, string, { arg: string }>) => {
-			const entityCode = action.meta.arg;
+		[fetchFields.pending.type]: (state, action: PayloadAction<unknown, string, { arg: string | { code: string; related?: boolean } }>) => {
+			const entityCode = typeof action.meta.arg === 'string' ? action.meta.arg : action.meta.arg?.code;
 			state[entityCode] ??= { loading: true, data: [] } as EntityFields;
 			state[entityCode].loading = true;
 			state[entityCode].errorMessage = null;
 		},
-		[fetchFields.rejected.type]: (state, action: PayloadAction<string, string, { arg: string }>) => {
-			state[action.meta.arg].loading = false;
-			state[action.meta.arg].errorMessage = action.payload;
+		[fetchFields.rejected.type]: (state, action: PayloadAction<string, string, { arg: string | { code: string; related?: boolean } }>) => {
+			const entityCode = typeof action.meta.arg === 'string' ? action.meta.arg : action.meta.arg?.code;
+			state[entityCode].loading = false;
+			state[entityCode].errorMessage = action.payload;
 		},
 
 		[createField.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string; data: Partial<IField> } }>) => {
