@@ -75,7 +75,23 @@ interface IPreparedMessage extends IMessage {
 }
 
 const prepareMessages = (items: IPreparedMessage[], profile: IUser) => {
-	let comparedMessage: IPreparedMessage;
+	let comparedMessage: IPreparedMessage | undefined;
+
+	const lastFirstUnreadIndex = items.reduce((lastIndex, message, index) => {
+		const nextMessage = items[index + 1];
+		const isExternalMessage = !!message?.externalLine;
+		const isNotSender = isExternalMessage ? !!message?.externalAuthorId : message.authorId !== profile.authUserId;
+		const nextIsSender = isExternalMessage ? !nextMessage?.externalAuthorId : nextMessage?.authorId === profile.authUserId;
+
+		const isFirstUnread =
+			Array.isArray(message.readBy) &&
+			isNotSender &&
+			!message.readBy.includes(profile.authUserId) &&
+			(nextMessage?.readBy?.includes(profile.authUserId) || nextIsSender || !nextMessage);
+
+		return isFirstUnread ? index : lastIndex;
+	}, -1);
+
 	return items.flatMap((message, index, origin) => {
 		if (
 			!comparedMessage ||
@@ -84,33 +100,27 @@ const prepareMessages = (items: IPreparedMessage[], profile: IUser) => {
 		) {
 			comparedMessage = message;
 		}
+
 		const showTime = comparedMessage.id === message.id || differenceInMinutes(comparedMessage.timestamp, message.timestamp) > 1;
 
-		const nextMessage = items[index + 1];
-		const isExternalMessage = !!message?.externalLine;
-		const isNotSender = isExternalMessage ? !!message?.externalAuthorId : message.authorId !== profile.authUserId;
-		const nextIsSender = isExternalMessage ? !nextMessage?.externalAuthorId : nextMessage?.authorId === profile.authUserId;
-		const isFirstUnread =
-			Array.isArray(message.readBy) &&
-			isNotSender &&
-			!message.readBy.includes(profile.authUserId) &&
-			(nextMessage?.readBy?.includes(profile.authUserId) || nextIsSender || !nextMessage);
-
-		if (isFirstUnread && !origin.find((it) => it.isFirstUnread)) {
-			return [
-				message,
-				{
-					...message,
-					id: `${message.id}-unreadMessage`,
-					message: unreadMessagesValue,
-					isFirstUnread,
-				},
-			];
-		}
-		return {
+		const preparedMessage = {
 			...message,
 			showTime,
 		};
+
+		if (index === lastFirstUnreadIndex && !origin.find((it) => it.isFirstUnread)) {
+			return [
+				preparedMessage,
+				{
+					...preparedMessage,
+					id: `${message.id}-unreadMessage`,
+					message: unreadMessagesValue,
+					isFirstUnread: true,
+				},
+			];
+		}
+
+		return preparedMessage;
 	});
 };
 
@@ -133,6 +143,17 @@ export const chatSlice = createSlice({
 					return {
 						...group,
 						items,
+					};
+				}
+				return group;
+			});
+		},
+		filterMessagesWithoutFirstUnread(state, action: PayloadAction<string>) {
+			state.messages = state.messages.map((group) => {
+				if (group.chatId === action.payload) {
+					return {
+						...group,
+						items: group.items.filter((message) => !message.isFirstUnread),
 					};
 				}
 				return group;
@@ -830,6 +851,7 @@ export const {
 	setTimestamp,
 	setAISummaryData,
 	setUserTypingStatus,
+	filterMessagesWithoutFirstUnread,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
