@@ -39,6 +39,7 @@ import messengerReducer from './messenger';
 import migrationsReducer from './migrations';
 import newsfeed from './newsfeed';
 import notifications from './notifications';
+import oauthClients from './oauthClients';
 import pageTitle from './pageTitle';
 import payments from './payments';
 import profile from './profile';
@@ -74,6 +75,7 @@ const rootReducer = combineReducers({
 	tasksTimer,
 	users,
 	webhooks,
+	oauthClients,
 	newsfeed,
 	migrationsReducer,
 	messengerReducer,
