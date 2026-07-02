@@ -43,6 +43,7 @@ import oauthClients from './oauthClients';
 import pageTitle from './pageTitle';
 import payments from './payments';
 import profile from './profile';
+import reindex from './reindex';
 import roles from './roles';
 import settings from './settings';
 import tasks from './tasks';
@@ -110,6 +111,7 @@ const rootReducer = combineReducers({
 	eventBuffer,
 	widgets,
 	pageTitle,
+	reindex,
 });
 
 export const setupStore = () => {
