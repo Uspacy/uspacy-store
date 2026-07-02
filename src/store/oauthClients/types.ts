@@ -58,5 +58,6 @@ export interface IState {
 	loadingClients: boolean;
 	loadingPermissions: boolean;
 	creating: boolean;
+	updating: boolean;
 	errorLoadingClients: IErrorsAxiosResponse;
 }

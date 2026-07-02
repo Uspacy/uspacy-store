@@ -25,6 +25,18 @@ export const createOAuthClient = createAsyncThunk('oauthClients/createOAuthClien
 	}
 });
 
+export const updateOAuthClient = createAsyncThunk(
+	'oauthClients/updateOAuthClient',
+	async ({ id, data }: { id: string; data: Partial<IOAuthClientRequest> }, thunkAPI) => {
+		try {
+			const res = await sdk.oauthClientsService.updateOAuthClient(id, data);
+			return res.data.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue('Failure');
+		}
+	},
+);
+
 export const deleteOAuthClient = createAsyncThunk('oauthClients/deleteOAuthClient', async (id: string, thunkAPI) => {
 	try {
 		await sdk.oauthClientsService.deleteOAuthClient(id);

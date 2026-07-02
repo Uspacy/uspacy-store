@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
-import { createOAuthClient, deleteOAuthClient, fetchAvailablePermissions, fetchOAuthClients } from './actions';
+import { createOAuthClient, deleteOAuthClient, fetchAvailablePermissions, fetchOAuthClients, updateOAuthClient } from './actions';
 import { IOAuthClient, IOAuthClientWithSecret, IOAuthPermissionGroup, IState } from './types';
 
 const initialState = {
@@ -11,6 +11,7 @@ const initialState = {
 	loadingClients: false,
 	loadingPermissions: false,
 	creating: false,
+	updating: false,
 	errorLoadingClients: null,
 } as IState;
 
@@ -50,6 +51,19 @@ const oauthClientsReducer = createSlice({
 		},
 		[createOAuthClient.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.creating = false;
+			state.errorLoadingClients = action.payload;
+		},
+		[updateOAuthClient.fulfilled.type]: (state, action: PayloadAction<IOAuthClient>) => {
+			state.updating = false;
+			state.errorLoadingClients = null;
+			state.clients = state.clients.map((c) => (c.client_id === action.payload.client_id ? { ...c, ...action.payload } : c));
+		},
+		[updateOAuthClient.pending.type]: (state) => {
+			state.updating = true;
+			state.errorLoadingClients = null;
+		},
+		[updateOAuthClient.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.updating = false;
 			state.errorLoadingClients = action.payload;
 		},
 		[deleteOAuthClient.fulfilled.type]: (state, action: PayloadAction<string>) => {
