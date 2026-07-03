@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
-import { IReindexJob } from '@uspacy/sdk/lib/models/reindex';
+import { EReindexStatus, IReindexJob } from '@uspacy/sdk/lib/models/reindex';
 
 import { createReindexJob, deleteReindexJob, getReindexJobs, retryReindexJob } from './actions';
 import { IState } from './types';
@@ -55,7 +55,7 @@ const reindexReducer = createSlice({
 		},
 
 		[retryReindexJob.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: { jobId: number } }>) => {
-			state.reindexJobs = state.reindexJobs.map((job) => (job.id === action.meta.arg.jobId ? { ...job, status: 'pending' } : job));
+			state.reindexJobs = state.reindexJobs.map((job) => (job.id === action.meta.arg.jobId ? { ...job, status: EReindexStatus.Pending } : job));
 			state.loadingRetryReindexJob = false;
 		},
 		[retryReindexJob.pending.type]: (state) => {
