@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FormFieldCode, IFormField, IPredefinedField } from '@uspacy/sdk/lib/models/forms';
-import { ETimeFormShow, ICreateWidgetData } from '@uspacy/sdk/lib/models/messenger';
+import { ETimeFormShow, ICreateWidgetData, IWidgetSocialItem, WidgetSocialView } from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 
 import { updateFieldsOrderHelp } from '../../helpers/forms';
@@ -29,6 +29,21 @@ const initialState: IState = {
 			timeShowForm: ETimeFormShow.FIRST_TIME,
 			formWelcomeMessage: '',
 			messageAfterFormSend: '',
+		},
+		socialSettings: {
+			view: WidgetSocialView.VERTICAL,
+			items: [
+				{
+					id: 'widget',
+					order: 0,
+					icon: {
+						type: 'widget',
+					},
+					canal: 'widget',
+					link: 'widget',
+					active: true,
+				},
+			],
 		},
 	},
 	fields: [],
@@ -136,6 +151,37 @@ export const widgetsSlice = createSlice({
 		updateCrmEntity: (state, action: PayloadAction<ICreateWidgetData['config']['crmEntity']>) => {
 			state.widgetData.config.crmEntity = action.payload;
 		},
+		updateSocialView: (state, action: PayloadAction<WidgetSocialView>) => {
+			state.widgetData.socialSettings.view = action.payload;
+		},
+		addSocialItem: (state, action: PayloadAction<IWidgetSocialItem>) => {
+			state.widgetData.socialSettings.items.push(action.payload);
+		},
+		updateSocialItem: (state, action: PayloadAction<RequireOnlyOne<IWidgetSocialItem, 'id'>>) => {
+			const itemIndex = state.widgetData.socialSettings.items.findIndex((item) => item.id === action.payload.id);
+			if (itemIndex !== -1) {
+				state.widgetData.socialSettings.items[itemIndex] = {
+					...state.widgetData.socialSettings.items[itemIndex],
+					...action.payload,
+				};
+			}
+		},
+		clearItemValidation: (state, action: PayloadAction<string>) => {
+			const itemIndex = state.widgetData.socialSettings.items.findIndex((item) => item.id === action.payload);
+			if (itemIndex !== -1) {
+				delete state.widgetData.socialSettings.items[itemIndex].invalidData;
+			}
+		},
+		removeSocialItem: (state, action: PayloadAction<string>) => {
+			state.widgetData.socialSettings.items = state.widgetData.socialSettings.items.filter((item) => item.id !== action.payload);
+		},
+		updateWidgetSocialsOrder: (state, action: PayloadAction<{ sortedArr: string[] }>) => {
+			const { sortedArr } = action.payload;
+			state.widgetData.socialSettings.items = updateFieldsOrderHelp(state.widgetData.socialSettings.items, sortedArr, true);
+		},
+		clearSocialSettings: (state) => {
+			state.widgetData.socialSettings = initialState.widgetData.socialSettings;
+		},
 	},
 	extraReducers: {
 		[createWidget.pending.type]: (state) => {
@@ -191,6 +237,13 @@ export const {
 	addLocalWidgetField,
 	removeLocalWidgetField,
 	updateCrmEntity,
+	updateSocialView,
+	addSocialItem,
+	updateSocialItem,
+	removeSocialItem,
+	updateWidgetSocialsOrder,
+	clearItemValidation,
+	clearSocialSettings,
 } = widgetsSlice.actions;
 
 export default widgetsSlice.reducer;

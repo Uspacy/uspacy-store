@@ -4,9 +4,12 @@ import { IAutomation } from '@uspacy/sdk/lib/models/automations';
 
 export const fetchWorkflows = createAsyncThunk(
 	'workflows/fetchWorkflows',
-	async ({ page, list, search }: { page: number; list?: number; search?: string }, thunkAPI) => {
+	async (
+		{ page, list, search, sortBy, sortOrder }: { page: number; list?: number; search?: string; sortBy?: string; sortOrder?: 'asc' | 'desc' },
+		thunkAPI,
+	) => {
 		try {
-			const res = await uspacySdk.automationsService.getWorkflows(page, list, search);
+			const res = await uspacySdk.automationsService.getWorkflows(page, list, search, sortBy, sortOrder);
 			return res.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
