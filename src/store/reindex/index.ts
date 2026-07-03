@@ -25,7 +25,7 @@ const reindexReducer = createSlice({
 		setReindexJobs: (state, action: PayloadAction<IReindexJob[]>) => {
 			state.reindexJobs = action.payload;
 		},
-		setReindexJobsModalsOpen: (state, action: PayloadAction<Record<string, boolean>>) => {
+		setReindexJobsModalsOpen: (state, action: PayloadAction<Record<string, { open: boolean; jobId: number | null }>>) => {
 			state.reindexJobsModalsOpen = action.payload;
 		},
 	},

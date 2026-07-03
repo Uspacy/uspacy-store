@@ -3,7 +3,7 @@ import { IReindexJob } from '@uspacy/sdk/lib/models/reindex';
 
 export interface IState {
 	reindexJobs: IReindexJob[];
-	reindexJobsModalsOpen: Record<string, boolean>;
+	reindexJobsModalsOpen: Record<string, { open: boolean; jobId: number | null }>;
 	loadingReindexJobs: boolean;
 	loadingCreateReindexJob: boolean;
 	loadingDeleteReindexJob: boolean;
