@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
+import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
 import { IOAuthClientRequest } from './types';
 
@@ -12,7 +13,7 @@ export const fetchOAuthClients = createAsyncThunk('oauthClients/fetchOAuthClient
 		const res = await sdk.oauthClientsService.getOAuthClients();
 		return res.data.data.data;
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
+		return thunkAPI.rejectWithValue(e as IErrorsAxiosResponse);
 	}
 });
 
@@ -21,7 +22,7 @@ export const createOAuthClient = createAsyncThunk('oauthClients/createOAuthClien
 		const res = await sdk.oauthClientsService.createOAuthClient(data);
 		return res.data.data;
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
+		return thunkAPI.rejectWithValue(e as IErrorsAxiosResponse);
 	}
 });
 
@@ -32,7 +33,7 @@ export const updateOAuthClient = createAsyncThunk(
 			const res = await sdk.oauthClientsService.updateOAuthClient(id, data);
 			return res.data.data;
 		} catch (e) {
-			return thunkAPI.rejectWithValue('Failure');
+			return thunkAPI.rejectWithValue(e as IErrorsAxiosResponse);
 		}
 	},
 );
@@ -42,7 +43,7 @@ export const deleteOAuthClient = createAsyncThunk('oauthClients/deleteOAuthClien
 		await sdk.oauthClientsService.deleteOAuthClient(id);
 		return id;
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
+		return thunkAPI.rejectWithValue(e as IErrorsAxiosResponse);
 	}
 });
 
@@ -51,6 +52,6 @@ export const fetchAvailablePermissions = createAsyncThunk('oauthClients/fetchAva
 		const res = await sdk.oauthClientsService.getAvailablePermissions();
 		return res.data.data;
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
+		return thunkAPI.rejectWithValue(e as IErrorsAxiosResponse);
 	}
 });

@@ -4,7 +4,7 @@ import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { createOAuthClient, deleteOAuthClient, fetchAvailablePermissions, fetchOAuthClients, updateOAuthClient } from './actions';
 import { IOAuthClient, IOAuthClientWithSecret, IOAuthPermissionGroup, IState } from './types';
 
-const initialState = {
+const initialState: IState = {
 	clients: [],
 	createdClient: null,
 	availablePermissions: [],
@@ -13,7 +13,7 @@ const initialState = {
 	creating: false,
 	updating: false,
 	errorLoadingClients: null,
-} as IState;
+};
 
 const oauthClientsReducer = createSlice({
 	name: 'oauthClientsReducer',
@@ -73,6 +73,7 @@ const oauthClientsReducer = createSlice({
 		},
 		[deleteOAuthClient.pending.type]: (state) => {
 			state.loadingClients = true;
+			state.errorLoadingClients = null;
 		},
 		[deleteOAuthClient.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
 			state.loadingClients = false;
