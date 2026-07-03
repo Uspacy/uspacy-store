@@ -7,6 +7,7 @@ import { IState } from './types';
 
 const initialState: IState = {
 	reindexJobs: [],
+	reindexJobsModalsOpen: {},
 	loadingReindexJobs: false,
 	loadingCreateReindexJob: false,
 	loadingDeleteReindexJob: false,
@@ -23,6 +24,9 @@ const reindexReducer = createSlice({
 	reducers: {
 		setReindexJobs: (state, action: PayloadAction<IReindexJob[]>) => {
 			state.reindexJobs = action.payload;
+		},
+		setReindexJobsModalsOpen: (state, action: PayloadAction<Record<string, boolean>>) => {
+			state.reindexJobsModalsOpen = action.payload;
 		},
 	},
 	extraReducers: {
@@ -76,5 +80,5 @@ const reindexReducer = createSlice({
 	},
 });
 
-export const { setReindexJobs } = reindexReducer.actions;
+export const { setReindexJobs, setReindexJobsModalsOpen } = reindexReducer.actions;
 export default reindexReducer.reducer;
