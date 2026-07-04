@@ -1,9 +1,18 @@
-import { IChat, ICrmConnectEntity, IExternalChatsItems } from '@uspacy/sdk/lib/models/messenger';
+import { IChat, ICrmConnectEntity, IExternalChatsItems, IExternalChatStatus } from '@uspacy/sdk/lib/models/messenger';
 import { IMeta, ITask } from '@uspacy/sdk/lib/models/tasks';
+
+export interface IExternalPaginationBucket {
+	cursor: string | null;
+	hasNext: boolean;
+	loadingMore: boolean;
+}
+
+export type IExternalChatsPagination = Record<IExternalChatStatus, IExternalPaginationBucket>;
 
 export interface IState {
 	externalChats: {
 		items: IExternalChatsItems;
+		pagination: IExternalChatsPagination;
 		journalList: { data: IChat[]; meta?: IMeta };
 		externalChatsLength: number;
 		loading: boolean;
