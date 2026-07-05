@@ -2540,10 +2540,17 @@
     lint-staged "15.2.10"
     localforage "1.10.0"
 
+<<<<<<< HEAD
 "@uspacy/sdk@0.0.999-alpha.168":
   version "0.0.999-alpha.168"
   resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.168/625d2ba8cb8865d4fa6984fa9eb36cf438bd04aa#625d2ba8cb8865d4fa6984fa9eb36cf438bd04aa"
   integrity sha512-pdkLTHIRjWifCVI4GTsVMArU0KuQPOsVx3Gxyxu+FxdMnung7+MPBrSeZPP5t20tUp7PutuY6pkttHKFrpWglA==
+=======
+"@uspacy/sdk@0.0.999-alpha.169":
+  version "0.0.999-alpha.169"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.169/06737b8a66ba4ab4cb78f3406c51df3acf626304#06737b8a66ba4ab4cb78f3406c51df3acf626304"
+  integrity sha512-KoD+3raoLQWK6UdswjIuFsV1uCwbAFt4MQ4Snw2tEoOxVnnRy/Z0UiN96outSVTp+CQKOdy7PcYV0hl9tHrdDw==
+>>>>>>> feat/kanban_gateway
   dependencies:
     axios "^1.9.0"
     js-cookie "3.0.5"
