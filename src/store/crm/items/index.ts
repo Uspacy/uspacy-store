@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IEntityAmount, IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
 import { IErrors } from '@uspacy/sdk/lib/models/crm-errors';
 import { IEntityFilters } from '@uspacy/sdk/lib/models/crm-filters';
+import { IKanbanBoardResponse } from '@uspacy/sdk/lib/models/crm-kanban';
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IProduct } from '@uspacy/sdk/lib/models/crm-products';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
@@ -13,6 +14,7 @@ import {
 	fetchEntityItems,
 	fetchEntityItemsByStage,
 	fetchEntityItemsByTimePeriod,
+	fetchKanbanBoard,
 	getEntitiesCurrenciesAmount,
 	massItemsDeletion,
 	massItemsEditing,
@@ -352,6 +354,61 @@ const itemsReducer = createSlice({
 			if (state?.[entityCode]?.stages?.[stageId]) {
 				state[entityCode].stages[stageId].loading = false;
 			}
+		},
+
+		[fetchKanbanBoard.fulfilled.type]: (
+			state,
+			action: PayloadAction<IKanbanBoardResponse, string, { arg: { entityCode: string; stageIds: (string | number)[] } }>,
+		) => {
+			const { entityCode } = action.meta.arg;
+			if (!state[entityCode]) {
+				state[entityCode] = { ...initialData, stages: {} };
+			}
+			Object.entries(action.payload?.stages || {}).forEach(([stageId, stage]) => {
+				state[entityCode].stages[stageId] = {
+					...initialData,
+					...state[entityCode].stages[stageId],
+					data: stage.data,
+					meta: stage.meta,
+					currencyAmount: stage.amount ?? undefined,
+					loading: false,
+					loadingCurrencyAmount: false,
+					errorMessage: null,
+				};
+			});
+		},
+		[fetchKanbanBoard.pending.type]: (
+			state,
+			action: PayloadAction<unknown, string, { arg: { entityCode: string; stageIds: (string | number)[] } }>,
+		) => {
+			const { entityCode, stageIds } = action.meta.arg;
+			if (!state[entityCode]) {
+				state[entityCode] = { ...initialData, stages: {} };
+			}
+			(stageIds || []).forEach((stageId) => {
+				state[entityCode].stages[stageId] = {
+					...initialData,
+					...state[entityCode].stages[stageId],
+					// batch replaces the first page — clear stale data so infinite scroll restarts from page 1
+					data: [],
+					meta: undefined,
+					loading: true,
+					loadingCurrencyAmount: true,
+					errorMessage: null,
+				};
+			});
+		},
+		[fetchKanbanBoard.rejected.type]: (
+			state,
+			action: PayloadAction<IErrors, string, { arg: { entityCode: string; stageIds: (string | number)[] } }>,
+		) => {
+			const { entityCode, stageIds } = action.meta.arg;
+			(stageIds || []).forEach((stageId) => {
+				if (state?.[entityCode]?.stages?.[stageId]) {
+					state[entityCode].stages[stageId].loading = false;
+					state[entityCode].stages[stageId].loadingCurrencyAmount = false;
+				}
+			});
 		},
 		[updateEntityItem.fulfilled.type]: (
 			state,
