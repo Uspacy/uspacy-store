@@ -318,6 +318,34 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 	},
 );
 
+export const fetchKanbanBoard = createAsyncThunk(
+	'crm/items/fetchKanbanBoard',
+	async (
+		{
+			fields,
+			filters,
+			entityCode,
+			stageIds,
+		}: {
+			filters: Omit<IEntityFilters, 'openDatePicker'>;
+			entityCode: string;
+			fields: IField[];
+			stageIds: (string | number)[];
+		},
+		thunkAPI,
+	) => {
+		try {
+			const params = getFilterParams(filters as IEntityFilters, fields || []);
+			const finalParams = entityCode === 'deals' ? getDealsParams(filters, params) : params;
+
+			const res = await uspacySdk.crmEntitiesService.getKanbanBoard(entityCode, { ...finalParams, stage_ids: stageIds });
+			return res?.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
+
 export const getEntitiesCurrenciesAmount = createAsyncThunk(
 	'deals/getEntitiesCurrenciesAmount',
 	async (
