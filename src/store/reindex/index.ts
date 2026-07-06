@@ -3,7 +3,7 @@ import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { EReindexStatus, IReindexJob } from '@uspacy/sdk/lib/models/reindex';
 
 import { createReindexJob, deleteReindexJob, getReindexJobs, retryReindexJob } from './actions';
-import { IState } from './types';
+import { IReindexModalState, IState } from './types';
 
 const initialState: IState = {
 	reindexJobs: [],
@@ -25,7 +25,7 @@ const reindexReducer = createSlice({
 		setReindexJobs: (state, action: PayloadAction<IReindexJob[]>) => {
 			state.reindexJobs = action.payload;
 		},
-		setReindexJobsModalsOpen: (state, action: PayloadAction<Record<string, { open: boolean; jobId: number | null }>>) => {
+		setReindexJobsModalsOpen: (state, action: PayloadAction<Record<string, IReindexModalState>>) => {
 			state.reindexJobsModalsOpen = action.payload;
 		},
 	},
