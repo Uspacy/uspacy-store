@@ -27,6 +27,9 @@ const feildsReducer = createSlice({
 			if (entityCode === 'deals') {
 				data.splice(0, 0, taskField);
 			}
+			if (entityCode === 'leads') {
+				data.push(taskField);
+			}
 			if (entityCode === 'calls') {
 				data.splice(0, 0, ...fieldForCalls);
 			} else if (!['contacts', 'companies', 'tasks', 'activities', 'products'].includes(entityCode)) {
