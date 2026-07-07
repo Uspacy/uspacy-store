@@ -25,14 +25,14 @@ export const fetchExternalChatsPage = createAsyncThunk(
 		try {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const state: any = getState();
-			const users = state.users.data.filter((u) => u.authUserId);
-			const profile = state.profile.data;
+			const users = (state.users?.data || []).filter((u) => u.authUserId);
+			const profile = state.profile?.data || {};
 			const { data } = await uspacySdk.messengerService.getExternalChatsPage({ externalStatuses: status, cursor, limit });
 			return {
 				status,
 				isFirstPage: !cursor,
 				pinned: data.pinned ? formatChats(data.pinned, users, profile, getFormattedUserName) : [],
-				data: formatChats(data.data, users, profile, getFormattedUserName),
+				data: formatChats(data.data || [], users, profile, getFormattedUserName),
 				nextCursor: data.nextCursor,
 				hasNext: data.hasNext,
 			};
