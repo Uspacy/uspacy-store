@@ -8,7 +8,7 @@ import { IProduct } from '@uspacy/sdk/lib/models/crm-products';
 import { IField } from '@uspacy/sdk/lib/models/field';
 import { IMoveCardsData } from 'src/store/crmEntities/types';
 
-import { getDealsParams, getFilterParams } from '../../../helpers/filterFieldsArrs';
+import { getActivitiesParams, getFilterParams } from '../../../helpers/filterFieldsArrs';
 import { normalizeCategories, normalizeProduct, normalizeProductForView } from '../../../helpers/normalizeProduct';
 
 export const fetchEntityItems = createAsyncThunk(
@@ -69,12 +69,13 @@ export const fetchEntityItems = createAsyncThunk(
 					const res = await uspacySdk.crmTasksService.getTasksWithFilters(rest);
 					return res?.data;
 				}
+				case 'leads':
 				case 'deals': {
-					const dealsParams = getDealsParams(filters, params);
+					const activitiesParams = getActivitiesParams(filters, params);
 
 					const res = await uspacySdk.crmEntitiesService.getEntityItemsWithFilters(
 						entityCode,
-						dealsParams,
+						activitiesParams,
 						signal,
 						String(parentEntityId),
 						parentEntityCode,
@@ -322,10 +323,11 @@ export const fetchEntityItemsByStage = createAsyncThunk(
 					const res = await uspacySdk.crmTasksService.getTasksWithFilters(params);
 					return res?.data;
 				}
+				case 'leads':
 				case 'deals': {
-					const dealsParams = getDealsParams(filters, getFilterParams(filters, fields || []));
+					const activitiesParams = getActivitiesParams(filters, getFilterParams(filters, fields || []));
 
-					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, dealsParams, stageId);
+					const res = await uspacySdk.crmEntitiesService.getEntityItemsByStage(entityCode, activitiesParams, stageId);
 					return res?.data;
 				}
 				default: {
@@ -391,7 +393,7 @@ export const getEntitiesCurrenciesAmount = createAsyncThunk(
 			const params = getFilterParams(filtersParams as IEntityFilters, fields || []) as IFilterCurrenciesAmount;
 
 			const getParams = () => {
-				if (entityCode === 'deals') return getDealsParams(filters, params) as IFilterCurrenciesAmount;
+				if (['deals', 'leads'].includes(entityCode)) return getActivitiesParams(filters, params) as IFilterCurrenciesAmount;
 				return params;
 			};
 
