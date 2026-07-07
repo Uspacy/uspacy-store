@@ -241,6 +241,10 @@ export const externalChatSlice = createSlice({
 			action: PayloadAction<unknown, string, { arg: { status: keyof typeof STATUS_TO_ENUM; cursor?: string } }>,
 		) => {
 			const { status, cursor } = action.meta.arg;
+			// pagination can be missing when state is hydrated from an older persisted shape
+			if (!state.externalChats.pagination) {
+				state.externalChats.pagination = { ...initialPagination };
+			}
 			if (cursor) {
 				state.externalChats.pagination[status].loadingMore = true;
 			} else {
@@ -261,15 +265,23 @@ export const externalChatSlice = createSlice({
 			const { status, isFirstPage, pinned, data, nextCursor, hasNext } = action.payload;
 			const enumStatus = STATUS_TO_ENUM[status];
 			const tagged = [...(isFirstPage ? pinned : []), ...data].map((chat) => ({ ...chat, externalChatStatus: enumStatus }));
-			const existing = isFirstPage ? [] : state.externalChats.items[status];
+			const existing = isFirstPage ? [] : state.externalChats.items[status] || [];
 			state.externalChats.items[status] = getUniqueItems([...existing, ...tagged]).sort(sortChats);
+			if (!state.externalChats.pagination) {
+				state.externalChats.pagination = { ...initialPagination };
+			}
 			state.externalChats.pagination[status] = { cursor: nextCursor, hasNext, loadingMore: false };
 			state.externalChats.loading = false;
 			state.externalChats.externalChatsLength =
-				state.externalChats.items.active.length + state.externalChats.items.undistributed.length + state.externalChats.items.inactive.length;
+				(state.externalChats.items.active?.length || 0) +
+				(state.externalChats.items.undistributed?.length || 0) +
+				(state.externalChats.items.inactive?.length || 0);
 		},
 		[fetchExternalChatsPage.rejected.type]: (state, action: PayloadAction<unknown, string, { arg: { status: keyof typeof STATUS_TO_ENUM } }>) => {
-			state.externalChats.pagination[action.meta.arg.status].loadingMore = false;
+			const status = action.meta?.arg?.status;
+			if (status && state.externalChats.pagination?.[status]) {
+				state.externalChats.pagination[status].loadingMore = false;
+			}
 			state.externalChats.loading = false;
 		},
 		[fetchExternalChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
