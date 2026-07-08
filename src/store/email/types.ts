@@ -18,6 +18,7 @@ import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 export type createNewLetterModeType = 'window' | 'fullScreen' | 'fromLetter' | 'fromCRM';
 export interface IState {
 	emailBoxes: IEmailBoxes;
+	settingsEmailBoxes: IEmailBoxes;
 	emailBox: IEmailBox;
 	connectedEmailBox: IEmailBox;
 	folders: IFolders;
