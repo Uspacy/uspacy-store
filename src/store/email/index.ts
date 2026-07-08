@@ -27,6 +27,7 @@ import {
 	getEmailsBoxes,
 	getEmailSignatures,
 	getIntgrWithCrmSettings,
+	getSettingsEmailsBoxes,
 	moveLetters,
 	readEmailLetters,
 	receiveToOauthLink,
@@ -46,6 +47,9 @@ import { createNewLetterModeType, headerTypes, IEmailMassActionsResponse, IState
 
 const initialState = {
 	emailBoxes: {
+		data: [],
+	},
+	settingsEmailBoxes: {
 		data: [],
 	},
 	emailBox: {},
@@ -130,6 +134,9 @@ const emailReducer = createSlice({
 	reducers: {
 		setEmailBoxes: (state, action: PayloadAction<IEmailBoxes>) => {
 			state.emailBoxes = action.payload;
+		},
+		setSettingsEmailBoxes: (state, action: PayloadAction<IEmailBoxes>) => {
+			state.settingsEmailBoxes = action.payload;
 		},
 		setEmailBox: (state, action: PayloadAction<IEmailBox>) => {
 			state.emailBox = action.payload;
@@ -270,6 +277,19 @@ const emailReducer = createSlice({
 			state.loadingEmailBoxes = false;
 			state.errorLoadingEmailBoxes = action.payload;
 		},
+		[getSettingsEmailsBoxes.fulfilled.type]: (state, action: PayloadAction<IEmailBoxes>) => {
+			state.loadingEmailBoxes = false;
+			state.errorLoadingEmailBoxes = null;
+			state.settingsEmailBoxes = action.payload;
+		},
+		[getSettingsEmailsBoxes.pending.type]: (state) => {
+			state.loadingEmailBoxes = true;
+			state.errorLoadingEmailBoxes = null;
+		},
+		[getSettingsEmailsBoxes.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingEmailBoxes = false;
+			state.errorLoadingEmailBoxes = action.payload;
+		},
 		[getEmailBox.fulfilled.type]: (state, action: PayloadAction<IEmailBox>) => {
 			state.loadingEmailBox = false;
 			state.errorLoadingEmailBox = null;
@@ -288,6 +308,7 @@ const emailReducer = createSlice({
 			state.errorLoadingConnectEmailBox = null;
 			state.connectedEmailBox = action.payload;
 			state.emailBoxes.data = [...state.emailBoxes.data, action.payload];
+			state.settingsEmailBoxes.data = [...state.settingsEmailBoxes.data, action.payload];
 		},
 		[connectEmailBox.pending.type]: (state) => {
 			state.loadingConnectEmailBox = true;
@@ -301,6 +322,9 @@ const emailReducer = createSlice({
 			state.loadingUpdateEmailBox = false;
 			state.errorLoadingUpdateEmailBox = null;
 			state.emailBoxes.data = state.emailBoxes.data.map((emailBox) => (emailBox.id === action.payload.id ? action.payload : emailBox));
+			state.settingsEmailBoxes.data = state.settingsEmailBoxes.data.map((emailBox) =>
+				emailBox.id === action.payload.id ? action.payload : emailBox,
+			);
 		},
 		[setupEmailBox.pending.type]: (state) => {
 			state.loadingUpdateEmailBox = true;
@@ -315,6 +339,9 @@ const emailReducer = createSlice({
 			state.errorLoadingUpdateEmailCredentials = null;
 			state.emailBox = action.payload;
 			state.emailBoxes.data = state.emailBoxes.data.map((emailBox) => (emailBox.id === action.payload.id ? action.payload : emailBox));
+			state.settingsEmailBoxes.data = state.settingsEmailBoxes.data.map((emailBox) =>
+				emailBox.id === action.payload.id ? action.payload : emailBox,
+			);
 		},
 		[updateEmailBoxCredentials.pending.type]: (state) => {
 			state.loadingUpdateEmailCredentials = true;
@@ -328,6 +355,9 @@ const emailReducer = createSlice({
 			state.loadingUpdateEmailBox = false;
 			state.errorLoadingUpdateEmailBox = null;
 			state.emailBoxes.data = state.emailBoxes.data.map((emailBox) => (emailBox.id === action.payload.id ? action.payload : emailBox));
+			state.settingsEmailBoxes.data = state.settingsEmailBoxes.data.map((emailBox) =>
+				emailBox.id === action.payload.id ? action.payload : emailBox,
+			);
 		},
 		[updateEmailBox.pending.type]: (state) => {
 			state.loadingUpdateEmailBox = true;
@@ -367,6 +397,7 @@ const emailReducer = createSlice({
 			state.loadingDeletingLetter = false;
 			state.errorLoadingRemoveEmailBox = null;
 			state.emailBoxes.data = state.emailBoxes.data.filter((emailBox) => emailBox.id !== action.payload);
+			state.settingsEmailBoxes.data = state.settingsEmailBoxes.data.filter((emailBox) => emailBox.id !== action.payload);
 		},
 		[removeEmailBox.pending.type]: (state) => {
 			state.loadingDeletingLetter = true;
@@ -615,6 +646,7 @@ const emailReducer = createSlice({
 
 export const {
 	setEmailBoxes,
+	setSettingsEmailBoxes,
 	setEmailBox,
 	setConnectedEmailBox,
 	setFolders,
