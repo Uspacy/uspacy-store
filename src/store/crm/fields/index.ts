@@ -31,7 +31,7 @@ const feildsReducer = createSlice({
 				data.splice(0, 0, taskField);
 			}
 			if (entityCode === 'leads') {
-				data.splice(1, 0, taskField);
+				data.splice(0, 0, taskField);
 			}
 			if (entityCode === 'calls') {
 				data.splice(0, 0, ...fieldForCalls);
