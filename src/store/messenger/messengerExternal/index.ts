@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IChat, ICrmConnectEntity, IMessage } from '@uspacy/sdk/lib/models/messenger';
+import { EActiveEntity, IChat, ICrmConnectEntity, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { ITask } from '@uspacy/sdk/lib/models/tasks';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
 import {
+	getUniqueItems,
 	onlyUnique,
 	readLastMessageInChat,
 	readLastMessagesInChat,
@@ -13,8 +14,22 @@ import {
 	updateLastMessageInExternalChat,
 	updateUnreadCountAndMentionedByChatId,
 } from '../../../helpers/messenger';
-import { fetchExternalChats } from './actions';
-import { IState } from './types';
+import { fetchExternalChats, fetchExternalChatsPage } from './actions';
+import { IExternalChatsPagination, IState } from './types';
+
+const STATUS_TO_ENUM: Record<'active' | 'undistributed' | 'inactive', EActiveEntity> = {
+	active: EActiveEntity.ACTIVE_EXTERNAL,
+	undistributed: EActiveEntity.UNDISTRIBUTED_EXTERNAL,
+	inactive: EActiveEntity.INACTIVE_EXTERNAL,
+};
+
+const initialPaginationBucket = { cursor: null, hasNext: false, loadingMore: false };
+
+const initialPagination: IExternalChatsPagination = {
+	active: { ...initialPaginationBucket },
+	undistributed: { ...initialPaginationBucket },
+	inactive: { ...initialPaginationBucket },
+};
 
 const initialConnectEntities = {
 	leads: [],
@@ -31,6 +46,7 @@ const initialState: IState = {
 			undistributed: [],
 			inactive: [],
 		},
+		pagination: initialPagination,
 		externalChatsLength: 0,
 		crmConnectEntities: initialConnectEntities,
 		connectedTasks: [],
@@ -220,6 +236,54 @@ export const externalChatSlice = createSlice({
 		},
 	},
 	extraReducers: {
+		[fetchExternalChatsPage.pending.type]: (
+			state,
+			action: PayloadAction<unknown, string, { arg: { status: keyof typeof STATUS_TO_ENUM; cursor?: string } }>,
+		) => {
+			const { status, cursor } = action.meta.arg;
+			// pagination can be missing when state is hydrated from an older persisted shape
+			if (!state.externalChats.pagination) {
+				state.externalChats.pagination = { ...initialPagination };
+			}
+			if (cursor) {
+				state.externalChats.pagination[status].loadingMore = true;
+			} else {
+				state.externalChats.loading = true;
+			}
+		},
+		[fetchExternalChatsPage.fulfilled.type]: (
+			state,
+			action: PayloadAction<{
+				status: keyof typeof STATUS_TO_ENUM;
+				isFirstPage: boolean;
+				pinned: IChat[];
+				data: IChat[];
+				nextCursor: string | null;
+				hasNext: boolean;
+			}>,
+		) => {
+			const { status, isFirstPage, pinned, data, nextCursor, hasNext } = action.payload;
+			const enumStatus = STATUS_TO_ENUM[status];
+			const tagged = [...(isFirstPage ? pinned : []), ...data].map((chat) => ({ ...chat, externalChatStatus: enumStatus }));
+			const existing = isFirstPage ? [] : state.externalChats.items[status] || [];
+			state.externalChats.items[status] = getUniqueItems([...existing, ...tagged]).sort(sortChats);
+			if (!state.externalChats.pagination) {
+				state.externalChats.pagination = { ...initialPagination };
+			}
+			state.externalChats.pagination[status] = { cursor: nextCursor, hasNext, loadingMore: false };
+			state.externalChats.loading = false;
+			state.externalChats.externalChatsLength =
+				(state.externalChats.items.active?.length || 0) +
+				(state.externalChats.items.undistributed?.length || 0) +
+				(state.externalChats.items.inactive?.length || 0);
+		},
+		[fetchExternalChatsPage.rejected.type]: (state, action: PayloadAction<unknown, string, { arg: { status: keyof typeof STATUS_TO_ENUM } }>) => {
+			const status = action.meta?.arg?.status;
+			if (status && state.externalChats.pagination?.[status]) {
+				state.externalChats.pagination[status].loadingMore = false;
+			}
+			state.externalChats.loading = false;
+		},
 		[fetchExternalChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
 			state.externalChats.loading = false;
 			state.externalChats.externalChatsLength = action.payload.length;
