@@ -27,6 +27,9 @@ const feildsReducer = createSlice({
 			if (entityCode === 'deals') {
 				data.splice(0, 0, taskField);
 			}
+			if (entityCode === 'leads') {
+				data.splice(1, 0, taskField);
+			}
 			if (entityCode === 'calls') {
 				data.splice(0, 0, ...fieldForCalls);
 			} else if (!['contacts', 'companies', 'tasks', 'activities', 'products'].includes(entityCode)) {
@@ -42,8 +45,6 @@ const feildsReducer = createSlice({
 			if (entityCode === 'tasks') {
 				data.splice(0, 0, ...fieldsForTasks);
 			}
-			// TODO wait api
-			// data.splice(0, 0, dealsField);
 			// avoid mutation
 			state[entityCode].data = cloneDeep(data).map((field) => {
 				return {
