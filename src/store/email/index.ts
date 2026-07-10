@@ -66,6 +66,7 @@ const initialState = {
 	signatures: {},
 	removedLetterIds: null,
 	loadingEmailBoxes: false,
+	loadingSettingsEmailBoxes: false,
 	loadingEmailBox: false,
 	loadingConnectEmailBox: false,
 	loadingUpdateEmailCredentials: false,
@@ -87,6 +88,7 @@ const initialState = {
 	loadingUpdateSignature: false,
 	loadingRemoveSignature: false,
 	errorLoadingEmailBoxes: null,
+	errorLoadingSettingsEmailBoxes: null,
 	errorLoadingEmailBox: null,
 	errorLoadingConnectEmailBox: null,
 	errorLoadingUpdateEmailCredentials: null,
@@ -278,17 +280,17 @@ const emailReducer = createSlice({
 			state.errorLoadingEmailBoxes = action.payload;
 		},
 		[getSettingsEmailsBoxes.fulfilled.type]: (state, action: PayloadAction<IEmailBoxes>) => {
-			state.loadingEmailBoxes = false;
-			state.errorLoadingEmailBoxes = null;
+			state.loadingSettingsEmailBoxes = false;
+			state.errorLoadingSettingsEmailBoxes = null;
 			state.settingsEmailBoxes = action.payload;
 		},
 		[getSettingsEmailsBoxes.pending.type]: (state) => {
-			state.loadingEmailBoxes = true;
-			state.errorLoadingEmailBoxes = null;
+			state.loadingSettingsEmailBoxes = true;
+			state.errorLoadingSettingsEmailBoxes = null;
 		},
 		[getSettingsEmailsBoxes.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
-			state.loadingEmailBoxes = false;
-			state.errorLoadingEmailBoxes = action.payload;
+			state.loadingSettingsEmailBoxes = false;
+			state.errorLoadingSettingsEmailBoxes = action.payload;
 		},
 		[getEmailBox.fulfilled.type]: (state, action: PayloadAction<IEmailBox>) => {
 			state.loadingEmailBox = false;

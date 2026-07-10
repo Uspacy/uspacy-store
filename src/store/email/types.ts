@@ -30,6 +30,7 @@ export interface IState {
 	signatures: IResponseWithMeta<ISignature>;
 	removedLetterIds: number[];
 	loadingEmailBoxes: boolean;
+	loadingSettingsEmailBoxes: boolean;
 	loadingEmailBox: boolean;
 	loadingConnectEmailBox: boolean;
 	loadingUpdateEmailCredentials: boolean;
@@ -51,6 +52,7 @@ export interface IState {
 	loadingUpdateSignature: boolean;
 	loadingRemoveSignature: boolean;
 	errorLoadingEmailBoxes: IErrorsAxiosResponse;
+	errorLoadingSettingsEmailBoxes: IErrorsAxiosResponse;
 	errorLoadingEmailBox: IErrorsAxiosResponse;
 	errorLoadingConnectEmailBox: IErrorsAxiosResponse;
 	errorLoadingUpdateEmailCredentials: IErrorsAxiosResponse;
