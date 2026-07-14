@@ -16,6 +16,15 @@ export const getEmailsBoxes = createAsyncThunk('email/getEmailsBoxes', async (_,
 	}
 });
 
+export const getSettingsEmailsBoxes = createAsyncThunk('email/getSettingsEmailsBoxes', async (_, thunkAPI) => {
+	try {
+		const res = await uspacySdk.emailService.getSettingsEmailsBoxes();
+		return res.data;
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
+	}
+});
+
 export const getEmailBox = createAsyncThunk('email/getEmailBox', async (id: number, thunkAPI) => {
 	try {
 		const res = await uspacySdk.emailService.getEmailBox(id);
