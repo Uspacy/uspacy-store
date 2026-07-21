@@ -8,6 +8,4 @@ export interface IState {
 	loadingList: boolean;
 	loading: boolean;
 	isDraft: boolean;
-	entityId: number | null;
-	entityType: string | null;
 }
