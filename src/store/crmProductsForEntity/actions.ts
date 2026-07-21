@@ -10,6 +10,9 @@ const nextDraftTempId = () => ++draftTempId;
 export const fetchInfoProductsForEntity = createAsyncThunk(
 	'productsForEntity/fetchInfoProductsForEntity',
 	async (data: { entityType: string; entityId: number }, thunkAPI) => {
+		if (!data.entityId) {
+			return thunkAPI.rejectWithValue('Failure');
+		}
 		const state = thunkAPI.getState() as { crmProductsForEntity: IState };
 		if (state.crmProductsForEntity.entityId === data.entityId && state.crmProductsForEntity.entityType === data.entityType) {
 			return state.crmProductsForEntity.productsWithInfoForEntity;
