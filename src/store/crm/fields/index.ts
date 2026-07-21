@@ -5,7 +5,7 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { fieldForCalls, fieldsForTasks, idColumnField, requisiteField, stageField, taskField } from '../../../const';
 import { defaultDataColumns, normalizeProductFields } from '../../../helpers/normalizeProduct';
-import { createField, deleteField, deleteListValue, fetchFields, updateField, updateListValues } from './actions';
+import { createField, deleteField, deleteListValue, fetchFields, updateEntityListValueStatus, updateField, updateListValues } from './actions';
 import { EntityFields, IState } from './types';
 
 const initialState: IState = {};
@@ -135,6 +135,32 @@ const feildsReducer = createSlice({
 			state[entityCode].data = state[entityCode].data.map((field) => {
 				if (field.code === action.meta.arg.fieldCode) {
 					return { ...field, values: field.values.filter(({ value }) => value !== action.meta.arg.value) };
+				}
+				return field;
+			});
+		},
+
+		[updateEntityListValueStatus.pending.type]: (
+			state,
+			action: PayloadAction<unknown, string, { arg: { fieldCode: string; value: string; entityCode: string; active: boolean } }>,
+		) => {
+			state[action.meta.arg.entityCode].loading = true;
+		},
+		[updateEntityListValueStatus.fulfilled.type]: (
+			state,
+			action: PayloadAction<unknown, string, { arg: { fieldCode: string; value: string; entityCode: string; active: boolean } }>,
+		) => {
+			const entityCode = action.meta.arg.entityCode;
+			state[entityCode].loading = false;
+			state[entityCode].data = state[entityCode].data.map((field) => {
+				if (field.code === action.meta.arg.fieldCode) {
+					return {
+						...field,
+						values: field.values.map((item) => {
+							if (item.value === action.meta.arg.value) return { ...item, active: action.meta.arg.active };
+							return item;
+						}),
+					};
 				}
 				return field;
 			});
