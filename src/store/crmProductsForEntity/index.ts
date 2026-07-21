@@ -41,8 +41,6 @@ const initialState = {
 	loadingList: false,
 	loading: false,
 	isDraft: false,
-	entityId: null,
-	entityType: null,
 } as IState;
 
 const productsForEntityReducer = createSlice({
@@ -121,15 +119,11 @@ const productsForEntityReducer = createSlice({
 		},
 	},
 	extraReducers: {
-		[fetchInfoProductsForEntity.fulfilled.type]: (state, action: PayloadAction<{ info: IProductInfoForEntity; skipped: boolean }>) => {
+		[fetchInfoProductsForEntity.fulfilled.type]: (state, action: PayloadAction<IProductInfoForEntity>) => {
 			state.loadingList = false;
 			state.errorMessage = '';
-			if (!action.payload?.skipped) {
-				state.entityId = null;
-				state.entityType = null;
-			}
-			const list = action.payload?.info?.list_products?.length ? action.payload.info.list_products : [state.defaultProduct];
-			state.productsWithInfoForEntity = { ...action.payload?.info, list_products: list };
+			const list = action.payload?.list_products?.length ? action.payload.list_products : [state.defaultProduct];
+			state.productsWithInfoForEntity = { ...action.payload, list_products: list };
 			state.productsForEntity = list;
 		},
 		[fetchInfoProductsForEntity.pending.type]: (state) => {
@@ -330,8 +324,6 @@ const productsForEntityReducer = createSlice({
 			state.loading = false;
 			state.errorMessage = '';
 			state.isDraft = false;
-			state.entityId = action.payload.entityId;
-			state.entityType = action.payload.entityType;
 			const list = action.payload.list.length ? action.payload.list : [state.defaultProduct];
 			state.productsWithInfoForEntity = { ...action.payload.info, list_products: list };
 			state.productsForEntity = list;
