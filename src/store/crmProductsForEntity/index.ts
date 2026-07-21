@@ -101,8 +101,6 @@ const productsForEntityReducer = createSlice({
 		},
 		startDraft: (state, action: PayloadAction<string>) => {
 			state.isDraft = true;
-			state.entityId = null;
-			state.entityType = null;
 			state.productsWithInfoForEntity = {
 				id: 0,
 				entity_type: action.payload,
