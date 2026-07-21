@@ -121,13 +121,15 @@ const productsForEntityReducer = createSlice({
 		},
 	},
 	extraReducers: {
-		[fetchInfoProductsForEntity.fulfilled.type]: (state, action: PayloadAction<IProductInfoForEntity>) => {
+		[fetchInfoProductsForEntity.fulfilled.type]: (state, action: PayloadAction<{ info: IProductInfoForEntity; skipped: boolean }>) => {
 			state.loadingList = false;
 			state.errorMessage = '';
-			state.entityId = null;
-			state.entityType = null;
-			const list = action.payload?.list_products?.length ? action.payload.list_products : [state.defaultProduct];
-			state.productsWithInfoForEntity = { ...action.payload, list_products: list };
+			if (!action.payload?.skipped) {
+				state.entityId = null;
+				state.entityType = null;
+			}
+			const list = action.payload?.info?.list_products?.length ? action.payload.info.list_products : [state.defaultProduct];
+			state.productsWithInfoForEntity = { ...action.payload?.info, list_products: list };
 			state.productsForEntity = list;
 		},
 		[fetchInfoProductsForEntity.pending.type]: (state) => {

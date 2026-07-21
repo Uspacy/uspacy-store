@@ -15,11 +15,11 @@ export const fetchInfoProductsForEntity = createAsyncThunk(
 		}
 		const state = thunkAPI.getState() as { crmProductsForEntity: IState };
 		if (state.crmProductsForEntity.entityId === data.entityId && state.crmProductsForEntity.entityType === data.entityType) {
-			return state.crmProductsForEntity.productsWithInfoForEntity;
+			return { info: state.crmProductsForEntity.productsWithInfoForEntity, skipped: true };
 		}
 		try {
 			const res = await uspacySdk?.crmProductsForEntityService?.getInfoProductsForEntity(data.entityType, data.entityId);
-			return res?.data;
+			return { info: res?.data, skipped: false };
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
 		}
