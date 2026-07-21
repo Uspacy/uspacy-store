@@ -332,8 +332,9 @@ const productsForEntityReducer = createSlice({
 			state.isDraft = false;
 			state.entityId = action.payload.entityId;
 			state.entityType = action.payload.entityType;
-			state.productsWithInfoForEntity = action.payload.info;
-			state.productsForEntity = action.payload.list.length ? action.payload.list : [state.defaultProduct];
+			const list = action.payload.list.length ? action.payload.list : [state.defaultProduct];
+			state.productsWithInfoForEntity = { ...action.payload.info, list_products: list };
+			state.productsForEntity = list;
 		},
 		[commitDraftProductsForEntity.rejected.type]: (state, action: PayloadAction<string>) => {
 			state.loading = false;
