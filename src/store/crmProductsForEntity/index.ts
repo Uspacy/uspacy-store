@@ -115,9 +115,9 @@ const productsForEntityReducer = createSlice({
 				amount_tax: 0,
 				amount_before_tax: 0,
 				amount_total: 0,
-				list_products: [],
+				list_products: [state.defaultProduct],
 			};
-			state.productsForEntity = [];
+			state.productsForEntity = [state.defaultProduct];
 		},
 	},
 	extraReducers: {
@@ -126,11 +126,9 @@ const productsForEntityReducer = createSlice({
 			state.errorMessage = '';
 			state.entityId = null;
 			state.entityType = null;
-			state.productsWithInfoForEntity = {
-				...action.payload,
-				list_products: !!action.payload.list_products.length ? action.payload.list_products : [state.defaultProduct],
-			};
-			state.productsForEntity = !!action.payload.list_products.length ? action.payload.list_products : [state.defaultProduct];
+			const list = action.payload?.list_products?.length ? action.payload.list_products : [state.defaultProduct];
+			state.productsWithInfoForEntity = { ...action.payload, list_products: list };
+			state.productsForEntity = list;
 		},
 		[fetchInfoProductsForEntity.pending.type]: (state) => {
 			state.loadingList = true;
