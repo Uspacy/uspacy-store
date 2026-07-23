@@ -6,6 +6,7 @@ export interface IState {
 	bookingList: IBooking[];
 	loading: boolean;
 	loadingDetail: boolean;
+	meta: IBookingMeta;
 }
 
 export type SecondLevelKeys<T, K extends keyof T> = K extends keyof T ? keyof T[K] : never;
@@ -18,4 +19,11 @@ export interface UpdateBookingPayload<T extends keyof IBooking, K extends Second
 	keyFirstLevel: T;
 	keySecondLevel?: K;
 	keyThirdLevel?: L;
+}
+
+export interface IBookingMeta {
+	total: number;
+	totalByPortal: number;
+	totalPages: number;
+	currentPage: number;
 }
