@@ -4,7 +4,7 @@ import { IResource } from '@uspacy/sdk/lib/models/resources';
 
 import { prepareResourceInToBooking } from '../../helpers/prepareData';
 import { getBookings } from './actions';
-import { IState, SecondLevelKeys, ThirdLevelKeys, UpdateBookingPayload } from './types';
+import { IBookingMeta, IState, SecondLevelKeys, ThirdLevelKeys, UpdateBookingPayload } from './types';
 
 const initialBookingState: IBooking = {
 	general: {
@@ -68,6 +68,12 @@ const initialState: IState = {
 	bookingList: [],
 	loading: false,
 	loadingDetail: false,
+	meta: {
+		total: 0,
+		totalByPortal: 0,
+		totalPages: 0,
+		currentPage: 0,
+	},
 };
 
 const bookingsReducer = createSlice({
@@ -132,9 +138,11 @@ const bookingsReducer = createSlice({
 		},
 	},
 	extraReducers: {
-		[getBookings.fulfilled.type]: (state, action: PayloadAction<IResource[]>) => {
+		[getBookings.fulfilled.type]: (state, action: PayloadAction<{ data: IResource[]; meta: IBookingMeta }>) => {
+			const { data, meta } = action.payload;
 			state.loading = false;
-			state.bookingList = Array.isArray(action.payload) ? action.payload.map((resource) => prepareResourceInToBooking(resource)) : [];
+			state.bookingList = Array.isArray(data) ? data.map((resource) => prepareResourceInToBooking(resource)) : [];
+			state.meta = meta;
 		},
 		[getBookings.pending.type]: (state) => {
 			state.loading = true;
