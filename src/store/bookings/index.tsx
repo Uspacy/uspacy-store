@@ -69,10 +69,11 @@ const initialState: IState = {
 	loading: false,
 	loadingDetail: false,
 	meta: {
-		total: 0,
-		totalByPortal: 0,
-		totalPages: 0,
 		currentPage: 0,
+		total: 0,
+		totalActiveByPortal: 0,
+		totalActiveForUser: 0,
+		totalPages: 0,
 	},
 };
 
