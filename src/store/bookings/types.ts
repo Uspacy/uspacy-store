@@ -22,8 +22,9 @@ export interface UpdateBookingPayload<T extends keyof IBooking, K extends Second
 }
 
 export interface IBookingMeta {
-	total: number;
-	totalByPortal: number;
-	totalPages: number;
 	currentPage: number;
+	total: number;
+	totalActiveByPortal: number;
+	totalActiveForUser: number;
+	totalPages: number;
 }
