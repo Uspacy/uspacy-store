@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IField } from '@uspacy/sdk/lib/models/field';
 import { IRequisiteUpdate, ITemplate, ITemplateUpdate } from '@uspacy/sdk/lib/models/requisites';
+import { ISetUserStatusDto } from '@uspacy/sdk/lib/services/ProfileService/dto/set-status.dto';
 
 export const fetchProfile = createAsyncThunk('profile/fetchProfile', async (_, thunkAPI) => {
 	try {
@@ -137,6 +138,26 @@ export const deleteProfileField = createAsyncThunk('profile/deleteProfileField',
 	try {
 		await uspacySdk.profileService.deleteProfileField(code);
 		return code;
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
+	}
+});
+
+export const setUserStatus = createAsyncThunk('profile/setUserStatus', async (body: ISetUserStatusDto, thunkAPI) => {
+	try {
+		const res = await uspacySdk.profileService.setStatus(body);
+		const state = thunkAPI.getState() as { profile?: { data?: { id?: number } } };
+		return { userId: Number(state?.profile?.data?.id), status: res.data.status };
+	} catch (e) {
+		return thunkAPI.rejectWithValue(e);
+	}
+});
+
+export const clearUserStatus = createAsyncThunk('profile/clearUserStatus', async (_, thunkAPI) => {
+	try {
+		await uspacySdk.profileService.clearStatus();
+		const state = thunkAPI.getState() as { profile?: { data?: { id?: number } } };
+		return { userId: Number(state?.profile?.data?.id), status: null };
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
