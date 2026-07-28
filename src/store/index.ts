@@ -46,6 +46,7 @@ import profile from './profile';
 import reindex from './reindex';
 import roles from './roles';
 import settings from './settings';
+import { startupCacheMiddleware } from './startupCacheMiddleware';
 import tasks from './tasks';
 import tasksStages from './tasksStages';
 import tasksTimer from './tasksTimer';
@@ -120,7 +121,7 @@ export const setupStore = () => {
 		middleware: (getDefaultMiddleware) =>
 			getDefaultMiddleware({
 				serializableCheck: false,
-			}),
+			}).concat(startupCacheMiddleware),
 	});
 };
 
