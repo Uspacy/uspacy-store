@@ -4,6 +4,7 @@ import {
 	FetchMessagesRequest,
 	GoToMessageRequest,
 	IChat,
+	IChatNote,
 	IMessage,
 	IQuickAnswer,
 	IUserSettings,
@@ -22,14 +23,18 @@ import {
 	updateUnreadCountAndMentionedByChatId,
 } from '../../../helpers/messenger';
 import {
+	createChatNote,
 	createQuickAnswer,
+	deleteChatNote,
 	deleteQuickAnswer,
 	fetchChats,
 	fetchMessages,
 	fetchPinedMessages,
+	getChatNotes,
 	getQuickAnswers,
 	getUserSettings,
 	goToMessage,
+	updateChatNote,
 	updateQuickAnswer,
 	updateUserSettings,
 } from './actions';
@@ -68,6 +73,13 @@ const initialState: IState = {
 		isExternalMsgSoundEnabled: true,
 	},
 	usersTypingStatus: {},
+	chatsNotes: {},
+	chatsNotesLoading: {
+		getting: false,
+		creating: false,
+		updating: false,
+		deleting: false,
+	},
 };
 
 interface IPreparedMessage extends IMessage {
@@ -809,6 +821,53 @@ export const chatSlice = createSlice({
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { id, authUserId, ...restSettings } = action.payload;
 			state.userSettings = restSettings;
+		},
+		[getChatNotes.fulfilled.type]: (state, action: PayloadAction<{ chatId: IChatNote['chatId']; notes: IChatNote[] }>) => {
+			state.chatsNotes[action.payload.chatId] = action.payload.notes;
+			state.chatsNotesLoading.getting = false;
+		},
+		[createChatNote.fulfilled.type]: (state, action: PayloadAction<IChatNote>) => {
+			if (!state.chatsNotes[action.payload.chatId]) {
+				state.chatsNotes[action.payload.chatId] = [];
+			}
+			state.chatsNotes[action.payload.chatId]?.unshift(action.payload);
+			state.chatsNotesLoading.creating = false;
+		},
+		[deleteChatNote.fulfilled.type]: (state, action: PayloadAction<IChatNote>) => {
+			if (!state.chatsNotes[action.payload.chatId]) return;
+			state.chatsNotes[action.payload.chatId] = state.chatsNotes[action.payload.chatId].filter((note) => note.id !== action.payload.id);
+			state.chatsNotesLoading.deleting = false;
+		},
+		[updateChatNote.fulfilled.type]: (state, action: PayloadAction<IChatNote>) => {
+			if (!state.chatsNotes[action.payload.chatId]) return;
+			state.chatsNotes[action.payload.chatId] = state.chatsNotes[action.payload.chatId].map((note) =>
+				note.id === action.payload.id ? action.payload : note,
+			);
+			state.chatsNotesLoading.updating = false;
+		},
+		[getChatNotes.pending.type]: (state) => {
+			state.chatsNotesLoading.getting = true;
+		},
+		[getChatNotes.rejected.type]: (state) => {
+			state.chatsNotesLoading.getting = false;
+		},
+		[createChatNote.pending.type]: (state) => {
+			state.chatsNotesLoading.creating = true;
+		},
+		[createChatNote.rejected.type]: (state) => {
+			state.chatsNotesLoading.creating = false;
+		},
+		[updateChatNote.pending.type]: (state) => {
+			state.chatsNotesLoading.updating = true;
+		},
+		[updateChatNote.rejected.type]: (state) => {
+			state.chatsNotesLoading.updating = false;
+		},
+		[deleteChatNote.pending.type]: (state) => {
+			state.chatsNotesLoading.deleting = true;
+		},
+		[deleteChatNote.rejected.type]: (state) => {
+			state.chatsNotesLoading.deleting = false;
 		},
 	},
 });
