@@ -2,11 +2,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IField } from '@uspacy/sdk/lib/models/field';
-import { ITask, ITasksParams } from '@uspacy/sdk/lib/models/tasks';
+import { ITask, ITasksParams, taskType } from '@uspacy/sdk/lib/models/tasks';
+import { updateTaskStatusActionType } from '@uspacy/sdk/lib/services/TasksService/dto/create-update-task.dto';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 
 import { transformKeysToCaseByType } from '../../helpers/objectsUtilities';
-import { ICreateTaskPayload, IDeleteTaskPayload } from './types';
+import { ICreateTaskPayload, IDeleteTaskPayload, IMoveCardsData } from './types';
 
 export const getTasks = createAsyncThunk(
 	'tasks/getTasks',
@@ -80,78 +81,42 @@ export const getHierarchies = createAsyncThunk(
 	},
 );
 
-export const getSubtasks = createAsyncThunk(
-	'tasks/getSubtasks',
-	async ({ id, isTemplate = false, params }: { id: string; isTemplate?: boolean; params: Partial<ITasksParams> }, { rejectWithValue }) => {
+export const getTasksItemsByStage = createAsyncThunk(
+	'tasks/getTasksItemsByStage',
+	async (
+		{
+			filters,
+			signal,
+		}: {
+			filters: Omit<ITasksParams, 'openDatePicker'>;
+			entityCode?: string;
+			stageId?: number;
+			signal?: AbortSignal;
+			stagesIds?: number[];
+		},
+		{ rejectWithValue },
+	) => {
 		try {
-			const res = await uspacySdk.tasksService.getSubtasks(id, isTemplate, params);
+			const res = await uspacySdk.tasksService.getTasks(filters);
 			return res.data;
 		} catch (e) {
-			return rejectWithValue(e);
+			if (signal.aborted) {
+				return {
+					aborted: true,
+				};
+			} else {
+				return rejectWithValue(e);
+			}
 		}
 	},
 );
 
-export const getTask = createAsyncThunk(
-	'tasks/getTask',
-	async ({ id, crm_entity_list }: { id: string; crm_entity_list?: boolean }, { rejectWithValue }) => {
+export const createTask = createAsyncThunk(
+	'tasks/createTask',
+	async ({ data, abilityToAddTask, entityCode, stageId, type }: ICreateTaskPayload, { rejectWithValue }) => {
 		try {
-			const res = await uspacySdk.tasksService.getTask(id, crm_entity_list);
-			return res.data;
-		} catch (e) {
-			return rejectWithValue(e);
-		}
-	},
-);
-
-export const getRecurringTemplate = createAsyncThunk(
-	'tasks/getRecurringTemplate',
-	async ({ id, crm_entity_list }: { id: string; crm_entity_list?: boolean }, { rejectWithValue }) => {
-		try {
-			const res = await uspacySdk.tasksService.getRecurringTemplate(id, crm_entity_list);
-			return res.data;
-		} catch (e) {
-			return rejectWithValue(e);
-		}
-	},
-);
-
-export const getParentTask = createAsyncThunk('tasks/getParentTask', async (id: string, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.getParentTask(id);
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
-export const createTask = createAsyncThunk('tasks/createTask', async ({ data, abilityToAddTask }: ICreateTaskPayload, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.createTask(data);
-		return { task: res.data, abilityToAddTask };
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
-export const createRecurringTemplate = createAsyncThunk(
-	'tasks/createRecurringTemplate',
-	async ({ data, abilityToAddTask }: ICreateTaskPayload, { rejectWithValue }) => {
-		try {
-			const res = await uspacySdk.tasksService.createRecurringTemplate(data);
-			return { task: res.data, abilityToAddTask };
-		} catch (e) {
-			return rejectWithValue(e);
-		}
-	},
-);
-
-export const createOneTimeTemplate = createAsyncThunk(
-	'tasks/createOneTimeTemplate',
-	async ({ data, abilityToAddTask }: ICreateTaskPayload, { rejectWithValue }) => {
-		try {
-			const res = await uspacySdk.tasksService.createOneTimeTemplate(data);
-			return { task: res.data, abilityToAddTask };
+			const res = await uspacySdk.tasksService.createTask(data, type);
+			return { task: res.data, abilityToAddTask, entityCode, stageId };
 		} catch (e) {
 			return rejectWithValue(e);
 		}
@@ -160,30 +125,21 @@ export const createOneTimeTemplate = createAsyncThunk(
 
 export const replicateTask = createAsyncThunk(
 	'tasks/replicateTask',
-	async ({ data, abilityToAddTask, id }: ICreateTaskPayload, { rejectWithValue }) => {
+	async ({ data, abilityToAddTask, id, entityCode, stageId }: ICreateTaskPayload, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.replicateTask(data, id);
-			return { task: res.data, abilityToAddTask };
+			return { task: res.data, abilityToAddTask, entityCode, stageId };
 		} catch (e) {
 			return rejectWithValue(e);
 		}
 	},
 );
 
-export const updateTask = createAsyncThunk('tasks/updateTask', async ({ id, data }: { id: string; data: Partial<ITask> }, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.updateTask(id, data);
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
-export const updateRecurringTemplate = createAsyncThunk(
-	'tasks/updateRecurringTemplate',
-	async ({ id, data }: { id: string; data: Partial<ITask> }, { rejectWithValue }) => {
+export const updateTask = createAsyncThunk(
+	'tasks/updateTask',
+	async ({ type, id, data }: { type: taskType; id: string; data: Partial<ITask>; entityCode?: string; stageId?: number }, { rejectWithValue }) => {
 		try {
-			const res = await uspacySdk.tasksService.updateRecurringTemplate(id, data);
+			const res = await uspacySdk.tasksService.updateTask(id, data, type);
 			return res.data;
 		} catch (e) {
 			return rejectWithValue(e);
@@ -191,23 +147,11 @@ export const updateRecurringTemplate = createAsyncThunk(
 	},
 );
 
-export const updateOneTimeTemplate = createAsyncThunk(
-	'tasks/updateOneTimeTemplate',
-	async ({ id, data }: { id: string; data: Partial<ITask> }, { rejectWithValue }) => {
+export const updateTaskStatus = createAsyncThunk(
+	'tasks/updateTaskStatus',
+	async ({ id, action }: { id: string; action: updateTaskStatusActionType; entityCode?: string; stageId?: number }, { rejectWithValue }) => {
 		try {
-			const res = await uspacySdk.tasksService.updateOneTimeTemplate(id, data);
-			return res.data;
-		} catch (e) {
-			return rejectWithValue(e);
-		}
-	},
-);
-
-export const updateSubtask = createAsyncThunk(
-	'tasks/updateSubtask',
-	async ({ id, data }: { id: string; data: Partial<ITask> }, { rejectWithValue }) => {
-		try {
-			const res = await uspacySdk.tasksService.updateSubtask(id, data);
+			const res = await uspacySdk.tasksService.updateTaskStatus(id, action);
 			return res.data;
 		} catch (e) {
 			return rejectWithValue(e);
@@ -217,7 +161,7 @@ export const updateSubtask = createAsyncThunk(
 
 export const delegationTask = createAsyncThunk(
 	'tasks/delegationTask',
-	async ({ id, user_id }: { id: string; user_id: number }, { rejectWithValue }) => {
+	async ({ id, user_id }: { id: string; user_id: number; entityCode?: string; stageId?: number }, { rejectWithValue }) => {
 		try {
 			const res = await uspacySdk.tasksService.delegationTask(id, user_id);
 			return res.data;
@@ -240,10 +184,9 @@ export const massTasksEditing = createAsyncThunk(
 	},
 );
 
-export const deleteTask = createAsyncThunk('tasks/deleteTask', async ({ id, type }: IDeleteTaskPayload, { rejectWithValue }) => {
+export const deleteTask = createAsyncThunk('tasks/deleteTask', async ({ id }: IDeleteTaskPayload, { rejectWithValue }) => {
 	try {
-		await uspacySdk.tasksService.deleteTask(id);
-		return { id, type };
+		return await uspacySdk.tasksService.deleteTask(id);
 	} catch (e) {
 		return rejectWithValue(e);
 	}
@@ -262,51 +205,6 @@ export const massTasksDeletion = createAsyncThunk(
 	},
 );
 
-export const startTask = createAsyncThunk('tasks/startTask', async (id: string, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.startTask(id);
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
-export const pauseTask = createAsyncThunk('tasks/pauseTask', async (id: string, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.pauseTask(id);
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
-export const watchTask = createAsyncThunk('tasks/watchTask', async (id: string, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.watchTask(id);
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
-export const unwatchTask = createAsyncThunk('tasks/unwatchTask', async (id: string, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.unwatchTask(id);
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
-export const completeTask = createAsyncThunk('tasks/completeTask', async (id: string, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.completeTask(id);
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
-
 export const massCompletion = createAsyncThunk(
 	'tasks/massCompletion',
 	async ({ taskIds, exceptIds, all, params, withoutResponsible, profile }: IMassActions, { rejectWithValue }) => {
@@ -319,15 +217,6 @@ export const massCompletion = createAsyncThunk(
 		}
 	},
 );
-
-export const restartTask = createAsyncThunk('tasks/restartTask', async (id: string, { rejectWithValue }) => {
-	try {
-		const res = await uspacySdk.tasksService.restartTask(id);
-		return res.data;
-	} catch (e) {
-		return rejectWithValue(e);
-	}
-});
 
 export const getTasksFields = createAsyncThunk('tasks/getTasksFields', async (_, { rejectWithValue }) => {
 	try {
@@ -396,3 +285,14 @@ export const deleteTasksField = createAsyncThunk('tasks/deleteTasksField', async
 		return rejectWithValue(e);
 	}
 });
+
+export const moveTaskFromStageToStage = createAsyncThunk(
+	'tasks/moveTaskFromStageToStage',
+	async ({ taskId, prevTaskId, stageId }: IMoveCardsData, { rejectWithValue }) => {
+		try {
+			return await uspacySdk.tasksStagesService.moveTaskFromStageToStage(taskId, prevTaskId, stageId);
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);

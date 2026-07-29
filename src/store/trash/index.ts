@@ -41,7 +41,12 @@ const trashReducer = createSlice({
 			state.items = initialState.items;
 		},
 		clearFilter: (state) => {
-			state.filter = { ...initialState.filter, entity: state.filter.entity, sortModel: state?.filter?.sortModel || [] };
+			state.filter = {
+				...initialState.filter,
+				entity: state.filter.entity,
+				list: state.filter.list,
+				sortModel: state?.filter?.sortModel || [],
+			};
 		},
 		changeFilter: (state, action: PayloadAction<ITrashFilter>) => {
 			state.filter = action.payload;

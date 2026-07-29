@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IProductForEntity, IProductInfoForEntity } from '@uspacy/sdk/lib/models/crm-products-for-entity';
 
 import {
+	commitDraftProductsForEntity,
 	createProductForEntity,
 	createProductsForEntity,
 	deleteProductForEntityById,
@@ -39,6 +40,7 @@ const initialState = {
 	},
 	loadingList: false,
 	loading: false,
+	isDraft: false,
 } as IState;
 
 const productsForEntityReducer = createSlice({
@@ -90,16 +92,37 @@ const productsForEntityReducer = createSlice({
 				state.productsWithInfoForEntity.list_products = [state.defaultProduct];
 			}
 		},
-	},
-	extraReducers: {
-		[fetchInfoProductsForEntity.fulfilled.type]: (state, action: PayloadAction<IProductInfoForEntity>) => {
-			state.loadingList = false;
-			state.errorMessage = '';
+		setInfoProductsForEntity: (state, action: PayloadAction<IProductInfoForEntity>) => {
 			state.productsWithInfoForEntity = {
 				...action.payload,
 				list_products: !!action.payload.list_products.length ? action.payload.list_products : [state.defaultProduct],
 			};
 			state.productsForEntity = !!action.payload.list_products.length ? action.payload.list_products : [state.defaultProduct];
+		},
+		startDraft: (state, action: PayloadAction<string>) => {
+			state.isDraft = true;
+			state.productsWithInfoForEntity = {
+				id: 0,
+				entity_type: action.payload,
+				entity_id: 0,
+				is_automatic_calculation: 1,
+				amount_before_discount_and_tax: 0,
+				amount_discount: 0,
+				amount_tax: 0,
+				amount_before_tax: 0,
+				amount_total: 0,
+				list_products: [state.defaultProduct],
+			};
+			state.productsForEntity = [state.defaultProduct];
+		},
+	},
+	extraReducers: {
+		[fetchInfoProductsForEntity.fulfilled.type]: (state, action: PayloadAction<IProductInfoForEntity>) => {
+			state.loadingList = false;
+			state.errorMessage = '';
+			const list = action.payload?.list_products?.length ? action.payload.list_products : [state.defaultProduct];
+			state.productsWithInfoForEntity = { ...action.payload, list_products: list };
+			state.productsForEntity = list;
 		},
 		[fetchInfoProductsForEntity.pending.type]: (state) => {
 			state.loadingList = true;
@@ -288,6 +311,25 @@ const productsForEntityReducer = createSlice({
 			state.loading = false;
 			state.errorMessage = action.payload;
 		},
+		[commitDraftProductsForEntity.pending.type]: (state) => {
+			state.loading = true;
+			state.errorMessage = '';
+		},
+		[commitDraftProductsForEntity.fulfilled.type]: (
+			state,
+			action: PayloadAction<{ info: IProductInfoForEntity; list: IProductForEntity[]; entityId: number; entityType: string }>,
+		) => {
+			state.loading = false;
+			state.errorMessage = '';
+			state.isDraft = false;
+			const list = action.payload.list.length ? action.payload.list : [state.defaultProduct];
+			state.productsWithInfoForEntity = { ...action.payload.info, list_products: list };
+			state.productsForEntity = list;
+		},
+		[commitDraftProductsForEntity.rejected.type]: (state, action: PayloadAction<string>) => {
+			state.loading = false;
+			state.errorMessage = action.payload;
+		},
 	},
 });
 
@@ -299,6 +341,8 @@ export const {
 	liveEditProductsForEntity,
 	deleteLocalProduct,
 	changeDefaultCurrency,
+	setInfoProductsForEntity,
+	startDraft,
 } = productsForEntityReducer.actions;
 
 export default productsForEntityReducer.reducer;

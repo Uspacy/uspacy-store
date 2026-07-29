@@ -9,6 +9,7 @@ export interface EntityItems extends IResponseWithMeta<IEntityData> {
 	viewModalOpen?: boolean;
 	createModalOpen?: boolean;
 	completeModalOpen?: boolean;
+	pendingNewItems?: IEntityData[];
 	stages?: {
 		[key: string]: {
 			loading: boolean;
@@ -16,6 +17,12 @@ export interface EntityItems extends IResponseWithMeta<IEntityData> {
 			currencyAmount?: IEntityAmount;
 			loadingCurrencyAmount?: boolean;
 			errorCurrencyAmount?: IErrors;
+		} & IResponseWithMeta<IEntityData>;
+	};
+	timePeriods?: {
+		[key: string]: {
+			loading: boolean;
+			errorMessage?: IErrors;
 		} & IResponseWithMeta<IEntityData>;
 	};
 }

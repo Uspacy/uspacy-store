@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
-import { IThemeSettings } from '@uspacy/sdk/lib/models/groups';
+import { IGroupSettings, IThemeSettings } from '@uspacy/sdk/lib/models/groups';
 
 export const fetchGroup = createAsyncThunk('groups/fetchGroup', async (id: string, thunkAPI) => {
 	try {
@@ -31,6 +31,7 @@ export const fetchGroups = createAsyncThunk(
 	},
 );
 
+// TODO: need refactoring
 export const createGroup = createAsyncThunk(
 	'groups/createGroup',
 	async (
@@ -46,6 +47,7 @@ export const createGroup = createAsyncThunk(
 			externalUserIds,
 			enableColorTheme,
 			themeSettings,
+			settings,
 		}: {
 			name: string;
 			groupType: string;
@@ -58,6 +60,7 @@ export const createGroup = createAsyncThunk(
 			externalUserIds?: string[];
 			enableColorTheme: boolean;
 			themeSettings: IThemeSettings;
+			settings?: IGroupSettings;
 		},
 		thunkAPI,
 	) => {
@@ -75,6 +78,7 @@ export const createGroup = createAsyncThunk(
 					enableColorTheme,
 					themeSettings,
 					externalUserIds,
+					settings,
 				})
 				.then((res) => res.data);
 		} catch (e) {
@@ -83,6 +87,7 @@ export const createGroup = createAsyncThunk(
 	},
 );
 
+// TODO: need refactoring
 export const editGroup = createAsyncThunk(
 	'groups/editGroup',
 	async (
@@ -99,6 +104,7 @@ export const editGroup = createAsyncThunk(
 			archived,
 			enableColorTheme,
 			themeSettings,
+			settings,
 		}: {
 			groupId: string;
 			name: string;
@@ -112,6 +118,7 @@ export const editGroup = createAsyncThunk(
 			archived?: number;
 			enableColorTheme: boolean;
 			themeSettings: IThemeSettings;
+			settings?: IGroupSettings;
 		},
 		thunkAPI,
 	) => {
@@ -130,6 +137,7 @@ export const editGroup = createAsyncThunk(
 					enableColorTheme,
 					themeSettings,
 					externalUserIds,
+					settings,
 				})
 				.then((res) => res.data);
 		} catch (e) {

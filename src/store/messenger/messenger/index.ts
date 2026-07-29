@@ -4,9 +4,10 @@ import {
 	FetchMessagesRequest,
 	GoToMessageRequest,
 	IChat,
-	ICreateWidgetData,
+	IChatNote,
 	IMessage,
 	IQuickAnswer,
+	IUserSettings,
 } from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 import { IUser } from '@uspacy/sdk/lib/models/user';
@@ -22,18 +23,20 @@ import {
 	updateUnreadCountAndMentionedByChatId,
 } from '../../../helpers/messenger';
 import {
+	createChatNote,
 	createQuickAnswer,
-	createWidget,
+	deleteChatNote,
 	deleteQuickAnswer,
-	deleteWidget,
 	fetchChats,
 	fetchMessages,
 	fetchPinedMessages,
+	getChatNotes,
 	getQuickAnswers,
-	getWidgets,
+	getUserSettings,
 	goToMessage,
+	updateChatNote,
 	updateQuickAnswer,
-	updateWidget,
+	updateUserSettings,
 } from './actions';
 import { IState } from './types';
 
@@ -48,18 +51,6 @@ const initialState: IState = {
 	selectedMessages: [],
 	selectNotMyMessageCount: 0,
 	pinedMessages: [],
-	widgets: {
-		data: [],
-		meta: {
-			currentPage: 1,
-			from: 0,
-			lastPage: 1,
-			perPage: 0,
-			to: 0,
-			total: 0,
-		},
-		loading: false,
-	},
 	AISummaryData: {
 		messages: [],
 		text: '',
@@ -77,6 +68,18 @@ const initialState: IState = {
 		},
 		loading: false,
 	},
+	userSettings: {
+		isInternalMsgSoundEnabled: true,
+		isExternalMsgSoundEnabled: true,
+	},
+	usersTypingStatus: {},
+	chatsNotes: {},
+	chatsNotesLoading: {
+		getting: false,
+		creating: false,
+		updating: false,
+		deleting: false,
+	},
 };
 
 interface IPreparedMessage extends IMessage {
@@ -84,7 +87,23 @@ interface IPreparedMessage extends IMessage {
 }
 
 const prepareMessages = (items: IPreparedMessage[], profile: IUser) => {
-	let comparedMessage: IPreparedMessage;
+	let comparedMessage: IPreparedMessage | undefined;
+
+	const lastFirstUnreadIndex = items.reduce((lastIndex, message, index) => {
+		const nextMessage = items[index + 1];
+		const isExternalMessage = !!message?.externalLine;
+		const isNotSender = isExternalMessage ? !!message?.externalAuthorId : message.authorId !== profile.authUserId;
+		const nextIsSender = isExternalMessage ? !nextMessage?.externalAuthorId : nextMessage?.authorId === profile.authUserId;
+
+		const isFirstUnread =
+			Array.isArray(message.readBy) &&
+			isNotSender &&
+			!message.readBy.includes(profile.authUserId) &&
+			(nextMessage?.readBy?.includes(profile.authUserId) || nextIsSender || !nextMessage);
+
+		return isFirstUnread ? index : lastIndex;
+	}, -1);
+
 	return items.flatMap((message, index, origin) => {
 		if (
 			!comparedMessage ||
@@ -93,33 +112,27 @@ const prepareMessages = (items: IPreparedMessage[], profile: IUser) => {
 		) {
 			comparedMessage = message;
 		}
+
 		const showTime = comparedMessage.id === message.id || differenceInMinutes(comparedMessage.timestamp, message.timestamp) > 1;
 
-		const nextMessage = items[index + 1];
-		const isExternalMessage = !!message?.externalLine;
-		const isNotSender = isExternalMessage ? !!message?.externalAuthorId : message.authorId !== profile.authUserId;
-		const nextIsSender = isExternalMessage ? !nextMessage?.externalAuthorId : nextMessage?.authorId === profile.authUserId;
-		const isFirstUnread =
-			Array.isArray(message.readBy) &&
-			isNotSender &&
-			!message.readBy.includes(profile.authUserId) &&
-			(nextMessage?.readBy?.includes(profile.authUserId) || nextIsSender || !nextMessage);
-
-		if (isFirstUnread && !origin.find((it) => it.isFirstUnread)) {
-			return [
-				message,
-				{
-					...message,
-					id: `${message.id}-unreadMessage`,
-					message: unreadMessagesValue,
-					isFirstUnread,
-				},
-			];
-		}
-		return {
+		const preparedMessage = {
 			...message,
 			showTime,
 		};
+
+		if (index === lastFirstUnreadIndex && !origin.find((it) => it.isFirstUnread)) {
+			return [
+				preparedMessage,
+				{
+					...preparedMessage,
+					id: `${message.id}-unreadMessage`,
+					message: unreadMessagesValue,
+					isFirstUnread: true,
+				},
+			];
+		}
+
+		return preparedMessage;
 	});
 };
 
@@ -142,6 +155,17 @@ export const chatSlice = createSlice({
 					return {
 						...group,
 						items,
+					};
+				}
+				return group;
+			});
+		},
+		filterMessagesWithoutFirstUnread(state, action: PayloadAction<string>) {
+			state.messages = state.messages.map((group) => {
+				if (group.chatId === action.payload) {
+					return {
+						...group,
+						items: group.items.filter((message) => !message.isFirstUnread),
 					};
 				}
 				return group;
@@ -602,6 +626,24 @@ export const chatSlice = createSlice({
 			const { key, value } = action.payload;
 			state.AISummaryData[key] = value;
 		},
+		setUserTypingStatus(state, action: PayloadAction<{ chatId: IChat['id']; userId: IUserSettings['authUserId']; isTyping: boolean }>) {
+			const { chatId, userId, isTyping } = action.payload;
+			if (!state.usersTypingStatus[chatId]) {
+				state.usersTypingStatus[chatId] = { typingUsersIds: [] };
+			}
+			const typingUsersIds = state.usersTypingStatus[chatId].typingUsersIds;
+			if (isTyping) {
+				if (!typingUsersIds.includes(userId)) {
+					typingUsersIds.push(userId);
+				}
+			} else {
+				const index = typingUsersIds.indexOf(userId);
+				if (index !== -1) {
+					typingUsersIds.splice(index, 1);
+				}
+			}
+			state.usersTypingStatus[chatId] = { typingUsersIds };
+		},
 	},
 	extraReducers: {
 		[fetchChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
@@ -737,37 +779,6 @@ export const chatSlice = createSlice({
 		[fetchPinedMessages.fulfilled.type]: (state, action: PayloadAction<{ chatId: IChat['id']; items: IMessage[] }>) => {
 			state.pinedMessages = [...state.pinedMessages, action.payload];
 		},
-		[createWidget.pending.type]: (state) => {
-			state.widgets.loading = true;
-		},
-		[createWidget.rejected.type]: (state) => {
-			state.widgets.loading = false;
-		},
-		[createWidget.fulfilled.type]: (state, action: PayloadAction<ICreateWidgetData>) => {
-			state.widgets.data = [...state.widgets.data, action.payload];
-			state.widgets.meta.total = state.widgets.meta.total + 1;
-			state.widgets.loading = false;
-		},
-		[getWidgets.pending.type]: (state) => {
-			state.widgets.loading = true;
-		},
-		[getWidgets.rejected.type]: (state) => {
-			state.widgets.loading = false;
-		},
-		[getWidgets.fulfilled.type]: (state, action: PayloadAction<{ data: ICreateWidgetData[]; meta: IMeta }>) => {
-			state.widgets.data = action.payload.data;
-			state.widgets.meta = action.payload.meta;
-			state.widgets.loading = false;
-		},
-		[deleteWidget.fulfilled.type]: (state, action: PayloadAction<ICreateWidgetData>) => {
-			state.widgets.data = state.widgets.data.filter((it) => it.id !== action.payload.id);
-		},
-		[updateWidget.fulfilled.type]: (state, action: PayloadAction<ICreateWidgetData>) => {
-			state.widgets.data = state.widgets.data.map((it) => {
-				if (it.id === action.payload.id) return action.payload;
-				return it;
-			});
-		},
 		[getQuickAnswers.pending.type]: (state) => {
 			state.quickAnswers.loading = true;
 		},
@@ -799,6 +810,64 @@ export const chatSlice = createSlice({
 		[deleteQuickAnswer.fulfilled.type]: (state, action: PayloadAction<IQuickAnswer['id']>) => {
 			state.quickAnswers.data = state.quickAnswers.data.filter((it) => it.id !== action.payload);
 			state.quickAnswers.meta.total -= 1;
+		},
+		[getUserSettings.fulfilled.type]: (state, action: PayloadAction<IUserSettings[]>) => {
+			if (!action.payload.length) return;
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { id, authUserId, ...restSettings } = action.payload[0];
+			state.userSettings = restSettings;
+		},
+		[updateUserSettings.fulfilled.type]: (state, action: PayloadAction<IUserSettings>) => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { id, authUserId, ...restSettings } = action.payload;
+			state.userSettings = restSettings;
+		},
+		[getChatNotes.fulfilled.type]: (state, action: PayloadAction<{ chatId: IChatNote['chatId']; notes: IChatNote[] }>) => {
+			state.chatsNotes[action.payload.chatId] = action.payload.notes;
+			state.chatsNotesLoading.getting = false;
+		},
+		[createChatNote.fulfilled.type]: (state, action: PayloadAction<IChatNote>) => {
+			if (!state.chatsNotes[action.payload.chatId]) {
+				state.chatsNotes[action.payload.chatId] = [];
+			}
+			state.chatsNotes[action.payload.chatId]?.unshift(action.payload);
+			state.chatsNotesLoading.creating = false;
+		},
+		[deleteChatNote.fulfilled.type]: (state, action: PayloadAction<IChatNote>) => {
+			if (!state.chatsNotes[action.payload.chatId]) return;
+			state.chatsNotes[action.payload.chatId] = state.chatsNotes[action.payload.chatId].filter((note) => note.id !== action.payload.id);
+			state.chatsNotesLoading.deleting = false;
+		},
+		[updateChatNote.fulfilled.type]: (state, action: PayloadAction<IChatNote>) => {
+			if (!state.chatsNotes[action.payload.chatId]) return;
+			state.chatsNotes[action.payload.chatId] = state.chatsNotes[action.payload.chatId].map((note) =>
+				note.id === action.payload.id ? action.payload : note,
+			);
+			state.chatsNotesLoading.updating = false;
+		},
+		[getChatNotes.pending.type]: (state) => {
+			state.chatsNotesLoading.getting = true;
+		},
+		[getChatNotes.rejected.type]: (state) => {
+			state.chatsNotesLoading.getting = false;
+		},
+		[createChatNote.pending.type]: (state) => {
+			state.chatsNotesLoading.creating = true;
+		},
+		[createChatNote.rejected.type]: (state) => {
+			state.chatsNotesLoading.creating = false;
+		},
+		[updateChatNote.pending.type]: (state) => {
+			state.chatsNotesLoading.updating = true;
+		},
+		[updateChatNote.rejected.type]: (state) => {
+			state.chatsNotesLoading.updating = false;
+		},
+		[deleteChatNote.pending.type]: (state) => {
+			state.chatsNotesLoading.deleting = true;
+		},
+		[deleteChatNote.rejected.type]: (state) => {
+			state.chatsNotesLoading.deleting = false;
 		},
 	},
 });
@@ -840,6 +909,8 @@ export const {
 	saveDraftMessage,
 	setTimestamp,
 	setAISummaryData,
+	setUserTypingStatus,
+	filterMessagesWithoutFirstUnread,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

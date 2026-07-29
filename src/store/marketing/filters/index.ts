@@ -34,7 +34,7 @@ const filtersReducer = createSlice({
 	initialState,
 	reducers: {
 		clearFilters: (state) => {
-			state.data = initialState.data;
+			state.data = { ...initialState.data, list: state.data.list };
 		},
 		setFilters: (state, action: PayloadAction<IMarketingFilter>) => {
 			state.data = action.payload;

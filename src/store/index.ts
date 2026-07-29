@@ -39,8 +39,11 @@ import messengerReducer from './messenger';
 import migrationsReducer from './migrations';
 import newsfeed from './newsfeed';
 import notifications from './notifications';
+import oauthClients from './oauthClients';
+import pageTitle from './pageTitle';
 import payments from './payments';
 import profile from './profile';
+import reindex from './reindex';
 import roles from './roles';
 import settings from './settings';
 import tasks from './tasks';
@@ -50,6 +53,8 @@ import transferOfCases from './transferOfCases';
 import trash from './trash';
 import users from './users';
 import webhooks from './webhooks';
+import widgets from './widgets';
+import workflows from './workflows';
 
 const rootReducer = combineReducers({
 	apps,
@@ -71,6 +76,7 @@ const rootReducer = combineReducers({
 	tasksTimer,
 	users,
 	webhooks,
+	oauthClients,
 	newsfeed,
 	migrationsReducer,
 	messengerReducer,
@@ -100,8 +106,12 @@ const rootReducer = combineReducers({
 	transferOfCases,
 	trash,
 	marketing,
+	workflows,
 	drawers,
 	eventBuffer,
+	widgets,
+	pageTitle,
+	reindex,
 });
 
 export const setupStore = () => {

@@ -1,4 +1,4 @@
-import { EMessengerType, IChat, ICreateWidgetData, IMessage, IMessagesGroup, IQuickAnswer } from '@uspacy/sdk/lib/models/messenger';
+import { EMessengerType, IChat, IChatNote, IMessage, IMessagesGroup, IQuickAnswer, IUserSettings } from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 
 export interface IState {
@@ -19,11 +19,6 @@ export interface IState {
 		chatId: IChat['id'];
 		items: IMessage[];
 	}[];
-	widgets: {
-		data: ICreateWidgetData[];
-		meta: IMeta;
-		loading: boolean;
-	};
 	AISummaryData: {
 		messages: IMessage[];
 		text: string;
@@ -33,5 +28,20 @@ export interface IState {
 		data: IQuickAnswer[];
 		meta: IMeta;
 		loading: boolean;
+	};
+	userSettings: Omit<IUserSettings, 'authUserId' | 'id'>;
+	usersTypingStatus: {
+		[chatId: IChat['id']]: {
+			typingUsersIds: IUserSettings['authUserId'][];
+		};
+	};
+	chatsNotes: {
+		[chatId: IChat['id']]: IChatNote[];
+	};
+	chatsNotesLoading: {
+		getting: boolean;
+		creating: boolean;
+		updating: boolean;
+		deleting: boolean;
 	};
 }

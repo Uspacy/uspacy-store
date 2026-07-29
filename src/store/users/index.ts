@@ -2,14 +2,18 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFilterField, IFilterPreset } from '@uspacy/sdk/lib/models/filter-preset';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
-import { IUser, IUserFilter } from '@uspacy/sdk/lib/models/user';
+import { IPortalSettings } from '@uspacy/sdk/lib/models/settings';
+import { IUser, IUserFilter, IUserOnlineStatuses, IUserStatus } from '@uspacy/sdk/lib/models/user';
 
+import { clearUserStatus, setUserStatus } from '../profile/actions';
+import { fetchSettings, updateSettings } from '../settings/actions';
 import {
 	activateUser,
 	deactivateUser,
 	deleteInvitation,
 	fetchUsers,
 	fetchUsersByFilters,
+	getUsersOnlineStatuses,
 	repeatInvitation,
 	sendUserInvites,
 	updateUser,
@@ -29,6 +33,8 @@ export const sortPresets = (presets: IFilterPreset<IUserFilter>[]) => {
 
 const initialState: IState = {
 	data: [],
+	withoutFiredUsers: [],
+	hideFiredEmployees: false,
 	usersFiltersData: {
 		data: [],
 		meta: null,
@@ -36,7 +42,9 @@ const initialState: IState = {
 	loading: true,
 	loadingUsersByFilter: true,
 	loadingUpdatingUser: false,
+	loadingOnlineStatuses: false,
 	errorLoadingUpdatingUser: null,
+	errorLoadingOnlineStatuses: null,
 	userFilter: null,
 };
 
@@ -44,6 +52,22 @@ export const usersSlice = createSlice({
 	name: 'users',
 	initialState,
 	reducers: {
+		setUsers: (state, action: PayloadAction<IUser[]>) => {
+			state.data = action.payload;
+		},
+		updateUserPresence: (state, action: PayloadAction<{ userId: number; lastSeen?: number }>) => {
+			const { userId, lastSeen } = action.payload;
+			state.data = state.data.map((user) => {
+				if (user?.authUserId === userId) {
+					return { ...user, isOnline: !lastSeen, lastSeenAt: lastSeen ? Math.floor(lastSeen / 1000) : null };
+				}
+				return user;
+			});
+		},
+		updateUserStatus: (state, action: PayloadAction<{ userId: number; status: IUserStatus | null }>) => {
+			const { userId, status } = action.payload;
+			state.data = state.data?.map((user) => (Number(user?.id) === Number(userId) ? { ...user, status } : user));
+		},
 		addUserRoleFromTable(state, action) {
 			state.data = state.data.filter((item) => {
 				if (item.id === action.payload.id) {
@@ -255,6 +279,30 @@ export const usersSlice = createSlice({
 		},
 	},
 	extraReducers: {
+		[fetchSettings.fulfilled.type]: (state, action: PayloadAction<IPortalSettings>) => {
+			state.hideFiredEmployees = action?.payload?.hideFiredEmployees || false;
+
+			if (action?.payload?.hideFiredEmployees) {
+				state.withoutFiredUsers = state.withoutFiredUsers.filter((user) => {
+					if (!user.authUserId) return false;
+					if (!user?.active && user?.registered) return false;
+					return true;
+				});
+			} else {
+				state.withoutFiredUsers = state.data.filter((user) => !!user.authUserId);
+			}
+		},
+		[updateSettings.fulfilled.type]: (state, action: PayloadAction<IPortalSettings>) => {
+			if (action?.payload?.hideFiredEmployees) {
+				state.withoutFiredUsers = state.withoutFiredUsers.filter((user) => {
+					if (!user.authUserId) return false;
+					if (!user?.active && user?.registered) return false;
+					return true;
+				});
+			} else {
+				state.withoutFiredUsers = state.data.filter((user) => !!user.authUserId);
+			}
+		},
 		[fetchUsersByFilters.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<IUser>>) => {
 			state.loadingUsersByFilter = false;
 			state.usersFiltersData = !!action.payload.aborted ? state.usersFiltersData : action.payload;
@@ -270,6 +318,15 @@ export const usersSlice = createSlice({
 		[fetchUsers.fulfilled.type]: (state, action: PayloadAction<IUser[]>) => {
 			state.loading = false;
 			state.data = action.payload.filter((user) => !!user.authUserId);
+			if (state.hideFiredEmployees) {
+				state.withoutFiredUsers = action.payload.filter((user) => {
+					if (!user.authUserId) return false;
+					if (!user?.active && user?.registered) return false;
+					return true;
+				});
+			} else {
+				state.withoutFiredUsers = action.payload.filter((user) => !!user.authUserId);
+			}
 		},
 		[fetchUsers.pending.type]: (state) => {
 			state.loading = true;
@@ -285,6 +342,14 @@ export const usersSlice = createSlice({
 			state.data = state.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			state.usersFiltersData.data = state.usersFiltersData.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
+		},
+		[setUserStatus.fulfilled.type]: (state, action: PayloadAction<{ userId: number; status: IUserStatus | null }>) => {
+			const { userId, status } = action.payload;
+			state.data = state.data?.map((user) => (Number(user?.id) === Number(userId) ? { ...user, status } : user));
+		},
+		[clearUserStatus.fulfilled.type]: (state, action: PayloadAction<{ userId: number; status: IUserStatus | null }>) => {
+			const { userId } = action.payload;
+			state.data = state.data?.map((user) => (Number(user?.id) === Number(userId) ? { ...user, status: null } : user));
 		},
 		[updateUser.pending.type]: (state) => {
 			state.loadingUpdatingUser = true;
@@ -416,10 +481,32 @@ export const usersSlice = createSlice({
 			state.loadingUpdatingUser = false;
 			state.errorLoadingUpdatingUser = action.payload;
 		},
+		[getUsersOnlineStatuses.fulfilled.type]: (state, action: PayloadAction<IUserOnlineStatuses>) => {
+			state.loadingOnlineStatuses = false;
+			state.errorLoadingOnlineStatuses = null;
+			state.data = state.data.map((user) => {
+				return {
+					...user,
+					isOnline: action?.payload?.[user?.id]?.isOnline || false,
+					lastSeenAt: action?.payload?.[user?.id]?.lastSeenAt || null,
+				};
+			});
+		},
+		[getUsersOnlineStatuses.pending.type]: (state) => {
+			state.loadingOnlineStatuses = true;
+			state.errorLoadingOnlineStatuses = null;
+		},
+		[getUsersOnlineStatuses.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingOnlineStatuses = false;
+			state.errorLoadingOnlineStatuses = action.payload;
+		},
 	},
 });
 
 export const {
+	setUsers,
+	updateUserPresence,
+	updateUserStatus,
 	addUserRoleFromTable,
 	addDepartmentToUsers,
 	removeDepartmentFromUsers,

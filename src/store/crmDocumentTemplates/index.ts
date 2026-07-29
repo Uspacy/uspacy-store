@@ -87,7 +87,10 @@ const documentTemplatesReducer = createSlice({
 			state[`${action.payload.type}Filters`] = action.payload.filters;
 		},
 		clearFilterByType: (state, action: PayloadAction<{ type: documentsGeneratorTypes }>) => {
-			state[`${action.payload.type}Filters`] = initialState[`${action.payload.type}Filters`];
+			state[`${action.payload.type}Filters`] = {
+				...initialState[`${action.payload.type}Filters`],
+				list: state[`${action.payload.type}Filters`].list,
+			};
 		},
 		fillTemplate: (state, action: PayloadAction<{ item: Partial<IDocumentTemplate> }>) => {
 			state.template = action.payload.item;

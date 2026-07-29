@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
-import { IEmailBox } from '@uspacy/sdk/lib/models/email';
+import { IEmailBox, IEmailBoxesFiltersParams } from '@uspacy/sdk/lib/models/email';
 import { ICreateLetterPayload } from '@uspacy/sdk/lib/services/EmailService/create-email.dto';
 import { ISignaturePayload } from '@uspacy/sdk/lib/services/EmailService/signature.dto';
 
@@ -15,6 +15,18 @@ export const getEmailsBoxes = createAsyncThunk('email/getEmailsBoxes', async (_,
 		return thunkAPI.rejectWithValue(e);
 	}
 });
+
+export const getSettingsEmailsBoxes = createAsyncThunk(
+	'email/getSettingsEmailsBoxes',
+	async ({ params }: { params?: IEmailBoxesFiltersParams }, thunkAPI) => {
+		try {
+			const res = await uspacySdk.emailService.getSettingsEmailsBoxes(params);
+			return res.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);
 
 export const getEmailBox = createAsyncThunk('email/getEmailBox', async (id: number, thunkAPI) => {
 	try {

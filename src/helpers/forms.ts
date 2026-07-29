@@ -2,11 +2,12 @@ export const getFormFieldByCode = (fields, fieldCode) => {
 	return fields.find((field) => field.fieldCode === fieldCode);
 };
 
-export const updateFieldsOrderHelp = (fields, fieldsSortedArr) =>
+export const updateFieldsOrderHelp = (fields, fieldsSortedArr, byId = false) =>
 	fields.map((field) => {
-		if (!fieldsSortedArr.includes(field.fieldCode)) return field;
+		const fieldKey = byId ? field.id : field.fieldCode;
+		if (!fieldsSortedArr.includes(fieldKey)) return field;
 
-		const fieldIndex = fieldsSortedArr.findIndex((fieldCode) => fieldCode === field.fieldCode);
+		const fieldIndex = fieldsSortedArr.findIndex((key) => key === fieldKey);
 		return {
 			...field,
 			order: fieldIndex,

@@ -6,5 +6,6 @@ export interface IState {
 		presets: IFilterPreset[];
 		filters?: IFilter;
 		filterFields?: IFilterField[];
+		smartFilters?: IFilter;
 	};
 }

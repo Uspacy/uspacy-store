@@ -4,9 +4,12 @@ import { IAutomation } from '@uspacy/sdk/lib/models/automations';
 
 export const fetchAutomations = createAsyncThunk(
 	'automations/fetchAutomations',
-	async ({ page, list, search }: { page: number; list?: number; search?: string }, thunkAPI) => {
+	async (
+		{ page, list, search, sortBy, sortOrder }: { page: number; list?: number; search?: string; sortBy?: string; sortOrder?: 'asc' | 'desc' },
+		thunkAPI,
+	) => {
 		try {
-			const res = await uspacySdk.automationsService.getAutomations(page, list, search);
+			const res = await uspacySdk.automationsService.getAutomations(page, list, search, sortBy, sortOrder);
 			return res.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');

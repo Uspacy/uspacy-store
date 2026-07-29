@@ -141,7 +141,7 @@ export const getField = (field: IField) => {
 export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = false) => {
 	return Object?.entries(filters)
 		?.filter(([key, value]) => {
-			if (key === 'time_label_start_time' && value.includes('expiredtask')) {
+			if (['time_label_start_time', 'time_label_end_time'].includes(key) && value.includes('expiredtask')) {
 				return true;
 			}
 			if (
@@ -171,7 +171,7 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			}
 			return true;
 		})
-		.reduce((acc, [key, value]) => {
+		.reduce((acc: Record<string, unknown> & { expired?: Record<string, number> }, [key, value]) => {
 			const findField = fields?.find((it) => it?.code === key);
 			if (key === 'search') {
 				return { ...acc, q: value };
@@ -180,7 +180,10 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 				return { ...acc, list: value };
 			}
 			if (key === 'time_label_start_time' && value?.includes('expiredtask')) {
-				return { ...acc, expired: Math.floor(new Date().getTime() / 1000) };
+				return { ...acc, expired: { ...acc?.expired, start_time: Math.floor(new Date().getTime() / 1000) } };
+			}
+			if (key === 'time_label_end_time' && value?.includes('expiredtask')) {
+				return { ...acc, expired: { ...acc?.expired, end_time: Math.floor(new Date().getTime() / 1000) } };
 			}
 			if (key === 'select') {
 				return { ...acc, ['funnel_id']: value };
@@ -236,13 +239,12 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 		}, {});
 };
 
-export const getDealsParams = (filters: object, params: object) => {
+export const getActivitiesParams = (filters: object, params: object) => {
 	const tasksArray = (Array.isArray(filters?.['time_label_tasks']) ? filters?.['time_label_tasks'] : [filters['time_label_task']]).filter(Boolean);
 	const noTasks = typeof filters?.['time_label_tasks'] !== 'undefined' && tasksArray?.includes('noBusiness');
-	const dealsParams = {
+
+	return {
 		...params,
 		...(noTasks ? { tasks: '' } : {}),
 	};
-
-	return dealsParams;
 };

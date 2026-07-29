@@ -28,11 +28,6 @@ export const PermissionsControllerViewEnums = [
 				name: 'activity',
 				key: 'activity',
 			},
-			{
-				id: 6,
-				name: 'call',
-				key: 'uspacy_calls',
-			},
 		],
 	},
 	{
@@ -48,6 +43,22 @@ export const PermissionsControllerViewEnums = [
 				id: 2,
 				name: 'Department',
 				key: 'department',
+			},
+		],
+	},
+	{
+		keyCategory: 'communicationCenter',
+		key: 'hub',
+		subMenuList: [
+			{
+				id: 1,
+				name: 'journal',
+				key: 'uspacy_journal',
+			},
+			{
+				id: 2,
+				name: 'call',
+				key: 'uspacy_calls',
 			},
 		],
 	},
