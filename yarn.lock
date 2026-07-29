@@ -2502,16 +2502,16 @@
     lint-staged "15.2.10"
     localforage "1.10.0"
 
-"@uspacy/sdk@0.0.999-alpha.185":
-  version "0.0.999-alpha.185"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.185/f1d2697d77f3099d24ed30985179fad49ef2aec3#f1d2697d77f3099d24ed30985179fad49ef2aec3"
-  integrity sha512-U+x2VVCK8I2bz6jbEH4dOrFUrEAAJ8LEk2hE9O05TLxA9KIYa9zbw2NQ4g+XUzkMjK5PT0gg21KZV2+ZUXfkZQ==
+"@uspacy/sdk@0.0.250":
+  version "0.0.250"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.250/8eac9eaa7d18153b4ed8fa73648d1614044b9832#8eac9eaa7d18153b4ed8fa73648d1614044b9832"
+  integrity sha512-QLIB0yFPj4THgqW/qlbPGLxGBeGs93s+kbcC6JRsO/zOCE4cYm37lHLZ7Ibw71dHidQKiqwofh0Hv3RZbdTxWg==
   dependencies:
     axios "^1.9.0"
     js-cookie "3.0.5"
     jwt-decode "3.1.2"
-    lint-staged "15.2.10"
     localforage "1.10.0"
+    pidtree "^0.6.0"
     rfdc "^1.4.1"
 
 "@uspacy/store@0.0.184-alpha.8":
