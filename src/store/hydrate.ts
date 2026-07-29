@@ -16,8 +16,13 @@ export interface IHydratedFromCache {
 }
 
 // Puts the previous session's lists into the store, so a service can render its menu and user
-// names before the requests come back. Reports what was actually filled, which lets the caller
-// hold back the refreshing request for the lists that already have something to show.
+// names before the requests come back. Reports which lists have something to show afterwards,
+// which lets the caller hold back the refreshing request for them.
+//
+// A list is only filled while its slice is still untouched. Reading the cache can lose a race
+// against the network — IndexedDB does not only fail, it also hangs, on an upgrade another tab
+// is blocking — and a caller that stopped waiting has already asked for fresh data by then.
+// Without the check the previous session's copy would land on top of that response.
 export const hydrateStartupCache = async (): Promise<IHydratedFromCache> => {
 	const [users, departments, entities] = await Promise.all([
 		readStartupCache<IUser[]>('users'),
@@ -25,13 +30,18 @@ export const hydrateStartupCache = async (): Promise<IHydratedFromCache> => {
 		readStartupCache<IResponseWithMeta<IEntityMainData>>('entities'),
 	]);
 
-	if (users?.length) store.dispatch(setUsers(users));
-	if (departments?.length) store.dispatch(setDepartments(departments));
-	if (entities?.data?.length) store.dispatch(setEntities(entities));
+	const state = store.getState();
+	const hasUsers = !!state.users.data?.length;
+	const hasDepartments = !!state.departments.departments?.length;
+	const hasEntities = !!state.crm.entities.items?.data?.length;
+
+	if (users?.length && !hasUsers) store.dispatch(setUsers(users));
+	if (departments?.length && !hasDepartments) store.dispatch(setDepartments(departments));
+	if (entities?.data?.length && !hasEntities) store.dispatch(setEntities(entities));
 
 	return {
-		users: !!users?.length,
-		departments: !!departments?.length,
-		entities: !!entities?.data?.length,
+		users: hasUsers || !!users?.length,
+		departments: hasDepartments || !!departments?.length,
+		entities: hasEntities || !!entities?.data?.length,
 	};
 };
