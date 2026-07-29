@@ -108,6 +108,19 @@ const bookingsReducer = createSlice({
 							[keySecondLevel]: value,
 						},
 					};
+					if (keyFirstLevel === 'active' && value === false) {
+						state.meta = {
+							...state.meta,
+							totalActiveByPortal: state.meta.totalActiveByPortal - 1,
+							totalActiveForUser: state.meta.totalActiveForUser - 1,
+						};
+					} else {
+						state.meta = {
+							...state.meta,
+							totalActiveByPortal: state.meta.totalActiveByPortal + 1,
+							totalActiveForUser: state.meta.totalActiveForUser + 1,
+						};
+					}
 					break;
 				}
 			}
@@ -123,9 +136,21 @@ const bookingsReducer = createSlice({
 		},
 		addBooking: (state, action: PayloadAction<IBooking>) => {
 			state.bookingList.push(action.payload);
+			state.meta = {
+				...state.meta,
+				total: state.meta.total + 1,
+				totalActiveByPortal: state.meta.totalActiveByPortal + 1,
+				totalActiveForUser: state.meta.totalActiveForUser + 1,
+			};
 		},
 		removeBooking: (state, action: PayloadAction<IBooking['id']>) => {
 			state.bookingList = state.bookingList.filter((booking) => booking.id !== action.payload);
+			state.meta = {
+				...state.meta,
+				total: state.meta.total - 1,
+				totalActiveByPortal: state.meta.totalActiveByPortal - 1,
+				totalActiveForUser: state.meta.totalActiveForUser - 1,
+			};
 		},
 		setLoadingDetail: (state, action: PayloadAction<boolean>) => {
 			state.loadingDetail = action.payload;
@@ -136,14 +161,6 @@ const bookingsReducer = createSlice({
 		},
 		setInvalidBookingFields: (state, action: PayloadAction<unknown[]>) => {
 			state.invalidBookingFields = action.payload;
-		},
-		updateBookingMeta: (state, action: PayloadAction<{ type: 'inc' | 'dec'; key: keyof IBookingMeta }>) => {
-			const { type, key } = action.payload;
-			if (type === 'inc') {
-				state.meta[key] += 1;
-			} else {
-				state.meta[key] -= 1;
-			}
 		},
 	},
 	extraReducers: {
@@ -171,6 +188,5 @@ export const {
 	setLoadingDetail,
 	updateBookingInList,
 	setInvalidBookingFields,
-	updateBookingMeta,
 } = bookingsReducer.actions;
 export default bookingsReducer.reducer;
