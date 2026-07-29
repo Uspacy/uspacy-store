@@ -78,7 +78,7 @@ const initialState: IState = {
 };
 
 const bookingsReducer = createSlice({
-	name: 'filesReducer',
+	name: 'bookingsReducer',
 	initialState,
 	reducers: {
 		updateBooking: <T extends keyof IBooking, K extends SecondLevelKeys<IBooking, T>, L extends ThirdLevelKeys<IBooking, T, K>>(
@@ -137,6 +137,14 @@ const bookingsReducer = createSlice({
 		setInvalidBookingFields: (state, action: PayloadAction<unknown[]>) => {
 			state.invalidBookingFields = action.payload;
 		},
+		updateBookingMeta: (state, action: PayloadAction<{ type: 'inc' | 'dec'; key: keyof IBookingMeta }>) => {
+			const { type, key } = action.payload;
+			if (type === 'inc') {
+				state.meta[key] += 1;
+			} else {
+				state.meta[key] -= 1;
+			}
+		},
 	},
 	extraReducers: {
 		[getBookings.fulfilled.type]: (state, action: PayloadAction<{ data: IResource[]; meta: IBookingMeta }>) => {
@@ -163,5 +171,6 @@ export const {
 	setLoadingDetail,
 	updateBookingInList,
 	setInvalidBookingFields,
+	updateBookingMeta,
 } = bookingsReducer.actions;
 export default bookingsReducer.reducer;
