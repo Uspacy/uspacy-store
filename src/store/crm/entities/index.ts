@@ -14,7 +14,11 @@ const initialState: IState = {
 const entitiesReducer = createSlice({
 	name: 'crm/entities',
 	initialState,
-	reducers: {},
+	reducers: {
+		setEntities: (state, action: PayloadAction<IResponseWithMeta<IEntityMainData>>) => {
+			state.items = action.payload;
+		},
+	},
 	extraReducers: {
 		[fetchEntities.fulfilled.type]: (state, action: PayloadAction<IResponseWithMeta<IEntityMainData>>) => {
 			state.loading = false;
@@ -75,5 +79,5 @@ const entitiesReducer = createSlice({
 		},
 	},
 });
-export const {} = entitiesReducer.actions;
+export const { setEntities } = entitiesReducer.actions;
 export default entitiesReducer.reducer;

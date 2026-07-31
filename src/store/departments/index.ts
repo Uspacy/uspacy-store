@@ -13,7 +13,11 @@ const initialState = {
 const departmentsReducer = createSlice({
 	name: 'departmentsReducer',
 	initialState,
-	reducers: {},
+	reducers: {
+		setDepartments: (state, action: PayloadAction<IDepartment[]>) => {
+			state.departments = action.payload;
+		},
+	},
 	extraReducers: {
 		[fetchDepartments.fulfilled.type]: (state, action: PayloadAction<IDepartment[]>) => {
 			state.loadingDepartments = false;
@@ -110,5 +114,7 @@ const departmentsReducer = createSlice({
 		},
 	},
 });
+
+export const { setDepartments } = departmentsReducer.actions;
 
 export default departmentsReducer.reducer;
