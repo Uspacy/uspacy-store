@@ -7,4 +7,5 @@ export interface IState {
 	errorMessage: string;
 	loadingList: boolean;
 	loading: boolean;
+	isDraft: boolean;
 }

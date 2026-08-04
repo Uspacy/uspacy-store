@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FormFieldCode, IFormField, IPredefinedField } from '@uspacy/sdk/lib/models/forms';
-import { ETimeFormShow, ICreateWidgetData, IWidgetSocialItem, WidgetSocialView } from '@uspacy/sdk/lib/models/messenger';
+import { ETimeFormShow, ICreateWidgetData, IWidgetSocialItem, WidgetPosition, WidgetSocialView } from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 
 import { updateFieldsOrderHelp } from '../../helpers/forms';
@@ -20,6 +20,7 @@ const initialState: IState = {
 			operatorName: '',
 			operatorAvatar: '',
 			showSignature: true,
+			position: WidgetPosition.BOTTOM_RIGHT,
 		},
 		config: {
 			crmEntity: 'lead',
