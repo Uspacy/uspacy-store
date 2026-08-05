@@ -70,3 +70,15 @@ export const deleteListValue = createAsyncThunk(
 		}
 	},
 );
+
+export const updateEntityListValueStatus = createAsyncThunk(
+	'crm/fields/updateEntityListValueStatus',
+	async ({ fieldCode, value, entityCode, active }: { fieldCode: string; value: string; entityCode: string; active: boolean }, thunkAPI) => {
+		try {
+			const res = await uspacySdk.crmEntitiesService.updateEntityListValueStatus(entityCode, fieldCode, value, active);
+			return res?.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue('Failure');
+		}
+	},
+);
