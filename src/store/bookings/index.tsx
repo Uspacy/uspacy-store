@@ -108,19 +108,6 @@ const bookingsReducer = createSlice({
 							[keySecondLevel]: value,
 						},
 					};
-					if (keyFirstLevel === 'active' && value === false) {
-						state.meta = {
-							...state.meta,
-							totalActiveByPortal: state.meta.totalActiveByPortal - 1,
-							totalActiveForUser: state.meta.totalActiveForUser - 1,
-						};
-					} else {
-						state.meta = {
-							...state.meta,
-							totalActiveByPortal: state.meta.totalActiveByPortal + 1,
-							totalActiveForUser: state.meta.totalActiveForUser + 1,
-						};
-					}
 					break;
 				}
 			}
@@ -155,9 +142,25 @@ const bookingsReducer = createSlice({
 		setLoadingDetail: (state, action: PayloadAction<boolean>) => {
 			state.loadingDetail = action.payload;
 		},
-		updateBookingInList: (state, action: PayloadAction<IBooking>) => {
-			const bookingIndex = state.bookingList.findIndex((it) => it.id === action.payload.id);
-			state.bookingList[bookingIndex] = action.payload;
+		updateBookingInList: (state, action: PayloadAction<{ booking: IBooking; isChangeActive?: boolean }>) => {
+			const { booking, isChangeActive } = action.payload;
+			const bookingIndex = state.bookingList.findIndex((it) => it.id === booking.id);
+			state.bookingList[bookingIndex] = booking;
+			if (isChangeActive) {
+				if (booking.active) {
+					state.meta = {
+						...state.meta,
+						totalActiveByPortal: state.meta.totalActiveByPortal + 1,
+						totalActiveForUser: state.meta.totalActiveForUser + 1,
+					};
+				} else {
+					state.meta = {
+						...state.meta,
+						totalActiveByPortal: state.meta.totalActiveByPortal - 1,
+						totalActiveForUser: state.meta.totalActiveForUser - 1,
+					};
+				}
+			}
 		},
 		setInvalidBookingFields: (state, action: PayloadAction<unknown[]>) => {
 			state.invalidBookingFields = action.payload;
