@@ -2614,10 +2614,10 @@
     transliteration "2.3.5"
     uniqid "5.4.0"
 
-"@uspacy/forms@2.2.0-alpha.2":
-  version "2.2.0-alpha.2"
-  resolved "https://npm.pkg.github.com/download/@uspacy/forms/2.2.0-alpha.2/96e0a54204e7fc70175bcb965be833da95b3866d#96e0a54204e7fc70175bcb965be833da95b3866d"
-  integrity sha512-ZSMJiXVHEcMc96Xgj2SMk7KBcJKLcBgkaWBpLKj6CaCDbnEoIuhtwqEceKZJy5EAidDgXnuz3zEN6P1jpgu2NA==
+"@uspacy/forms@2.2.0-alpha.3":
+  version "2.2.0-alpha.3"
+  resolved "https://npm.pkg.github.com/download/@uspacy/forms/2.2.0-alpha.3/185cdb5483543d0b4243fb1772ee8adaa30b946e#185cdb5483543d0b4243fb1772ee8adaa30b946e"
+  integrity sha512-DAsBVxJ3VeYAK7H5/iZ/VAlCg0SCvlkJP/hKp8QBYL9IX8uzgFTYybYPLlo97fyHrd4JApvmE9IC9xPfqRwCWA==
   dependencies:
     "@emotion/react" "11.11.4"
     "@emotion/styled" "11.11.5"
