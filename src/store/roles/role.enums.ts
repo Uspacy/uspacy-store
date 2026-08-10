@@ -62,4 +62,30 @@ export const PermissionsControllerViewEnums = [
 			},
 		],
 	},
+	{
+		keyCategory: 'tasks',
+		key: 'tasks',
+		subMenuList: [
+			{
+				id: 1,
+				name: 'permissionsCreate',
+				key: 'create',
+			},
+			{
+				id: 2,
+				name: 'permissionsView',
+				key: 'view',
+			},
+			{
+				id: 3,
+				name: 'permissionsEdit',
+				key: 'edit',
+			},
+			{
+				id: 4,
+				name: 'permissionsDelete',
+				key: 'delete',
+			},
+		],
+	},
 ];
