@@ -5,6 +5,7 @@ import {
 	FetchMessagesRequest,
 	GoToMessageRequest,
 	IChat,
+	IChatNote,
 	ICreateQuickAnswerDTO,
 	IGetQuickAnswerParams,
 	IMessage,
@@ -152,6 +153,44 @@ export const updateUserSettings = createAsyncThunk(
 	async (settings: Partial<Omit<IUserSettings, 'authUserId' | 'id'>>, { rejectWithValue }) => {
 		try {
 			return (await uspacySdk.messengerService.updateSettings(settings)).data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const getChatNotes = createAsyncThunk('messenger/getChatNotes', async (chatId: IChatNote['chatId'], { rejectWithValue }) => {
+	try {
+		return { notes: (await uspacySdk.messengerService.getChatNotes(chatId)).data, chatId };
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const updateChatNote = createAsyncThunk(
+	'messenger/updateChatNote',
+	async (params: { id: IChatNote['id']; text: IChatNote['text'] }, { rejectWithValue }) => {
+		try {
+			return (await uspacySdk.messengerService.updateChatNote(params.id, params.text)).data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const deleteChatNote = createAsyncThunk('messenger/deleteChatNote', async (id: IChatNote['id'], { rejectWithValue }) => {
+	try {
+		return (await uspacySdk.messengerService.deleteChatNote(id)).data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const createChatNote = createAsyncThunk(
+	'messenger/createChatNote',
+	async (params: { chatId: IChatNote['chatId']; text: IChatNote['text'] }, { rejectWithValue }) => {
+		try {
+			return (await uspacySdk.messengerService.createChatNote(params.chatId, params.text)).data;
 		} catch (e) {
 			return rejectWithValue(e);
 		}

@@ -39,11 +39,14 @@ import messengerReducer from './messenger';
 import migrationsReducer from './migrations';
 import newsfeed from './newsfeed';
 import notifications from './notifications';
+import oauthClients from './oauthClients';
 import pageTitle from './pageTitle';
 import payments from './payments';
 import profile from './profile';
+import reindex from './reindex';
 import roles from './roles';
 import settings from './settings';
+import { startupCacheMiddleware } from './startupCacheMiddleware';
 import tasks from './tasks';
 import tasksStages from './tasksStages';
 import tasksTimer from './tasksTimer';
@@ -74,6 +77,7 @@ const rootReducer = combineReducers({
 	tasksTimer,
 	users,
 	webhooks,
+	oauthClients,
 	newsfeed,
 	migrationsReducer,
 	messengerReducer,
@@ -108,6 +112,7 @@ const rootReducer = combineReducers({
 	eventBuffer,
 	widgets,
 	pageTitle,
+	reindex,
 });
 
 export const setupStore = () => {
@@ -116,7 +121,7 @@ export const setupStore = () => {
 		middleware: (getDefaultMiddleware) =>
 			getDefaultMiddleware({
 				serializableCheck: false,
-			}),
+			}).concat(startupCacheMiddleware),
 	});
 };
 

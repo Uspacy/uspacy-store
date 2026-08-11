@@ -3,8 +3,9 @@ import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IFilterField, IFilterPreset } from '@uspacy/sdk/lib/models/filter-preset';
 import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 import { IPortalSettings } from '@uspacy/sdk/lib/models/settings';
-import { IUser, IUserFilter, IUserOnlineStatuses } from '@uspacy/sdk/lib/models/user';
+import { IUser, IUserFilter, IUserOnlineStatuses, IUserStatus } from '@uspacy/sdk/lib/models/user';
 
+import { clearUserStatus, setUserStatus } from '../profile/actions';
 import { fetchSettings, updateSettings } from '../settings/actions';
 import {
 	activateUser,
@@ -62,6 +63,10 @@ export const usersSlice = createSlice({
 				}
 				return user;
 			});
+		},
+		updateUserStatus: (state, action: PayloadAction<{ userId: number; status: IUserStatus | null }>) => {
+			const { userId, status } = action.payload;
+			state.data = state.data?.map((user) => (Number(user?.id) === Number(userId) ? { ...user, status } : user));
 		},
 		addUserRoleFromTable(state, action) {
 			state.data = state.data.filter((item) => {
@@ -338,6 +343,14 @@ export const usersSlice = createSlice({
 			state.usersFiltersData.data = state.usersFiltersData.data.map((user) => (user.id === action.payload.id ? action.payload : user));
 			// UsersCache.setData(state.data);
 		},
+		[setUserStatus.fulfilled.type]: (state, action: PayloadAction<{ userId: number; status: IUserStatus | null }>) => {
+			const { userId, status } = action.payload;
+			state.data = state.data?.map((user) => (Number(user?.id) === Number(userId) ? { ...user, status } : user));
+		},
+		[clearUserStatus.fulfilled.type]: (state, action: PayloadAction<{ userId: number; status: IUserStatus | null }>) => {
+			const { userId } = action.payload;
+			state.data = state.data?.map((user) => (Number(user?.id) === Number(userId) ? { ...user, status: null } : user));
+		},
 		[updateUser.pending.type]: (state) => {
 			state.loadingUpdatingUser = true;
 			state.errorLoadingUpdatingUser = null;
@@ -493,6 +506,7 @@ export const usersSlice = createSlice({
 export const {
 	setUsers,
 	updateUserPresence,
+	updateUserStatus,
 	addUserRoleFromTable,
 	addDepartmentToUsers,
 	removeDepartmentFromUsers,
