@@ -2,16 +2,25 @@ import { IAnalyticReport } from '@uspacy/sdk/lib/models/analytics';
 import { v4 as uuidv4 } from 'uuid';
 
 export const findPlacement = (currentState, newItemWidth, newItemHeight, cols = 12) => {
-	// Create a 2D grid (10 rows, `cols` columns), where `false` means a free cell,
-	// and `true` means an occupied cell.
-	const grid = Array.from({ length: 10 }, () => Array(cols).fill(false));
+	const items = (currentState || []).filter(({ w, h }) => w > 0 && h > 0);
+
+	// Find the maximum Y coordinate
+	const maxY = Math.max(...items.map(({ y, h }) => y + h), 0);
+
+	// Create a 2D grid (`rows` rows, `cols` columns), where `false` means a free cell,
+	// and `true` means an occupied cell. The grid always covers every existing item
+	// plus enough free rows below for the new one.
+	const rows = Math.max(10, maxY + newItemHeight);
+	const grid = Array.from({ length: rows }, () => Array(cols).fill(false));
 
 	// Fill the grid with data about the current elements (occupied cells).
-	currentState.forEach(({ x, y, w, h }) => {
+	items.forEach(({ x, y, w, h }) => {
 		for (let i = 0; i < h; i++) {
 			// Iterate over the height of the element
 			for (let j = 0; j < w; j++) {
 				// Iterate over the width of the element
+				if (grid[y + i]?.[x + j] === undefined) continue; // Skip cells outside the grid
+
 				grid[y + i][x + j] = true; // Mark the cells occupied by this element
 			}
 		}
@@ -44,7 +53,6 @@ export const findPlacement = (currentState, newItemWidth, newItemHeight, cols = 
 	}
 
 	// If no space is found in the grid, place the new element below the lowest occupied position.
-	const maxY = Math.max(...currentState.map(({ y, h }) => y + h), 0); // Find the maximum Y coordinate
 	return { x: 0, y: maxY }; // Place the element at the next available row
 };
 
