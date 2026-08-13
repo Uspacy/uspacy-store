@@ -3,7 +3,7 @@ import { FormFieldCode, IForm, IFormDesign, IFormField, IFormOther, IPredefinedF
 
 import { updateFieldsOrderHelp } from '../../helpers/forms';
 import { getForms } from './actions';
-import { IState, RequireOnlyOne } from './types';
+import { IFormsMeta, IState, RequireOnlyOne } from './types';
 
 export const initialDesignState: IFormDesign = {
 	generalColors: {
@@ -61,10 +61,17 @@ const initialState: IState = {
 	formsList: [],
 	loadFormsList: false,
 	showSaveButton: false,
+	meta: {
+		currentPage: 1,
+		total: 0,
+		totalActiveByPortal: 0,
+		totalActiveForUser: 0,
+		totalPages: 0,
+	},
 };
 
 const formsReducer = createSlice({
-	name: 'filesReducer',
+	name: 'formsReducer',
 	initialState,
 	reducers: {
 		setFormFields: (state, action: PayloadAction<IState['formFields']>) => {
@@ -189,9 +196,10 @@ const formsReducer = createSlice({
 		},
 	},
 	extraReducers: {
-		[getForms.fulfilled.type]: (state, action: PayloadAction<IForm[]>) => {
+		[getForms.fulfilled.type]: (state, action: PayloadAction<{ data: IForm[]; meta: IFormsMeta }>) => {
 			state.loadFormsList = false;
-			state.formsList = Array.isArray(action.payload) ? action.payload : [];
+			state.formsList = Array.isArray(action.payload.data) ? action.payload.data : [];
+			state.meta = action.payload.meta;
 		},
 		[getForms.pending.type]: (state) => {
 			state.loadFormsList = true;
