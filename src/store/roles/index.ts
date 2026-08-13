@@ -124,20 +124,25 @@ const rolesReducer = createSlice({
 		},
 		updatePermission(state, action) {
 			const currPoint = state[action.payload.permissionsType][action.payload.key];
-			const keyForClean = action.payload.value.split('.').slice(0, -1).join('.');
-			const typeOfCleanItem = action.payload.value.split('.').pop();
+			const newValue = action.payload.value;
 
-			const filterArr = currPoint.filter((item) => {
-				const prettierItem = item.split('.').slice(0, -1).join('.');
-				if (prettierItem !== keyForClean) {
-					return item;
-				}
-			});
+			const getValueType = (item: string) => {
+				const p = item.split('.');
+				return p.length === 5 ? p[3] : p[p.length - 1];
+			};
+			const getDedupeKey = (item: string) => {
+				const p = item.split('.');
+				return p.length === 5 ? [p[0], p[1], p[2], p[4]].join('.') : p.slice(0, -1).join('.');
+			};
 
-			state[action.payload.permissionsType][action.payload.key] = [
-				...filterArr,
-				typeOfCleanItem === 'disabled' ? '' : action.payload.value,
-			].filter((item) => item !== '');
+			const newKey = getDedupeKey(newValue);
+			const newValueType = getValueType(newValue);
+
+			const filterArr = currPoint.filter((item) => getDedupeKey(item) !== newKey);
+
+			state[action.payload.permissionsType][action.payload.key] = [...filterArr, newValueType === 'disabled' ? '' : newValue].filter(
+				(item) => item !== '',
+			);
 		},
 		setActiveModalType(state, action) {
 			state.modalActiveType = action.payload;
