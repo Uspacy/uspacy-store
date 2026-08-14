@@ -52,38 +52,48 @@ const rolesReducer = createSlice({
 	initialState,
 	reducers: {
 		getNextVal(state, action) {
-			const { tabName, categoryName, colName, targetVal, storeKey, currPickPermission } = action.payload;
+			const { tabName, categoryName, colName, targetVal, storeKey, currPickPermission, funnelKey } = action.payload;
 
+			const FUNNEL_ROLES = ['setter', 'responsible', 'accomplice', 'auditor'];
 			const filteredCurrColName = colName === 'view' ? 'edit' : 'delete';
 			const currStoreData = current(state[storeKey][filteredCurrColName]);
+			const prefix = `${tabName}.${categoryName}.${filteredCurrColName}`;
 
-			const findNextVal = currStoreData
-				.find(
-					(item) =>
-						item.split('.').splice(0, 3).join('.') === `${tabName}.${categoryName}.${filteredCurrColName}` && !item.includes('disabled'),
-				)
-				?.split('.')
-				?.splice(-1)[0];
+			if (!['view', 'edit'].includes(colName)) return;
 
-			const filterArr = currStoreData.filter(
-				(item) => item.split('.').splice(0, 3).join('.') !== `${tabName}.${categoryName}.${filteredCurrColName}`,
-			);
+			const validNextVal = {
+				mine: ['allowed', 'department'],
+				disabled: ['allowed', 'mine', 'department'],
+				department: ['allowed'],
+			};
 
-			if (['view', 'edit'].includes(colName)) {
-				const validNextVal = {
-					mine: ['allowed', 'department'],
-					disabled: ['allowed', 'mine', 'department'],
-					department: ['allowed'],
-				};
+			const groups = new Map<string, string>();
+			currStoreData.forEach((item) => {
+				if (item.split('.').splice(0, 3).join('.') !== prefix) return;
+				if (item.includes('disabled-any')) return;
 
-				if (validNextVal[targetVal]?.includes(findNextVal)) {
-					state[storeKey][filteredCurrColName] = [
-						...filterArr,
-						`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
-						...(colName === 'view' && currPickPermission ? [currPickPermission] : []),
-					];
+				const parts = item.split('.');
+				const last = parts[parts.length - 1];
+				const roleKey = tabName === 'tasks' && FUNNEL_ROLES.includes(last) ? last : 'plain';
+
+				if (funnelKey && roleKey !== funnelKey) return;
+
+				groups.set(roleKey, item);
+			});
+
+			let result = [...currStoreData];
+			groups.forEach((item, roleKey) => {
+				const currVal = item.split('.')[3];
+				if (validNextVal[targetVal]?.includes(currVal)) {
+					const newItem = roleKey === 'plain' ? `${prefix}.${targetVal}` : `${prefix}.${targetVal}.${roleKey}`;
+					result = result.filter((it) => it !== item);
+					result.push(newItem);
 				}
-			}
+			});
+
+			if (colName === 'view' && currPickPermission) result.push(currPickPermission);
+
+			state[storeKey][filteredCurrColName] = result;
 		},
 		selectedRole(state, action) {
 			state.roleData = action.payload;
