@@ -3,12 +3,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IField } from '@uspacy/sdk/lib/models/field';
 import { ICountryTemplates, IRequisite, IRequisitesResponse, ITemplate, ITemplateResponse } from '@uspacy/sdk/lib/models/requisites';
-import { IUser } from '@uspacy/sdk/lib/models/user';
+import { IUser, IUserStatus } from '@uspacy/sdk/lib/models/user';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { headField } from '../../const';
 import { checkBasicRequisite } from '../../helpers/checkBasicRequisite';
 import {
+	clearUserStatus,
 	createProfileField,
 	createTemplate,
 	deleteProfileField,
@@ -20,6 +21,7 @@ import {
 	fetchTemplates,
 	removeRequisite,
 	removeTemplate,
+	setUserStatus,
 	updateProfileField,
 	updateProfileListValues,
 	updateRequisite,
@@ -66,6 +68,11 @@ export const profileSlice = createSlice({
 		},
 		updateRequisites(state, action: PayloadAction<IRequisite>) {
 			state.requisites = checkBasicRequisite(state.requisites, action.payload);
+		},
+		setProfileStatus(state, action: PayloadAction<{ userId: number; status: IUserStatus | null }>) {
+			if (state.data && Number(state.data.id) === Number(action.payload.userId)) {
+				state.data.status = action.payload.status;
+			}
 		},
 	},
 	extraReducers: {
@@ -264,6 +271,12 @@ export const profileSlice = createSlice({
 			state.loadingTemplates.loadingDeleteTemplates = false;
 			state.errorLoading = action.payload;
 			state.currentRequestId = undefined;
+		},
+		[setUserStatus.fulfilled.type]: (state: IState, action: PayloadAction<{ userId: number; status: IUserStatus | null }>) => {
+			if (state.data) state.data.status = action.payload.status;
+		},
+		[clearUserStatus.fulfilled.type]: (state: IState) => {
+			if (state.data) state.data.status = null;
 		},
 	},
 });
