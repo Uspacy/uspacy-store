@@ -287,6 +287,22 @@ const rolesReducer = createSlice({
 			};
 			state[action.payload.key] = merged;
 		},
+		resetTasksPermissionsToDefault(state, action: PayloadAction<{ permissionsType: 'permissions' | 'createPermissions'; roleID: string }>) {
+			const { permissionsType, roleID } = action.payload;
+			const isHeadRole = String(roleID) === '3';
+
+			const defaultTasksPermissions: Record<'create' | 'view' | 'edit' | 'delete', string> = {
+				create: 'tasks.task.create.allowed',
+				view: isHeadRole ? 'tasks.task.view.allowed' : 'tasks.task.view.mine',
+				edit: 'tasks.task.edit.mine.setter',
+				delete: 'tasks.task.delete.mine.setter',
+			};
+
+			(Object.keys(defaultTasksPermissions) as Array<keyof typeof defaultTasksPermissions>).forEach((key) => {
+				const withoutTasks = (state[permissionsType][key] || []).filter((item: string) => !item.startsWith('tasks.task.'));
+				state[permissionsType][key] = [...withoutTasks, defaultTasksPermissions[key]];
+			});
+		},
 		clearPermissionsFunnels(state) {
 			state.permissionsFunnels = initialState.permissionsFunnels;
 		},
@@ -443,6 +459,7 @@ export const {
 	allowAllPermissions,
 	addPermissionsForColAction,
 	mergeCreatePermissions,
+	resetTasksPermissionsToDefault,
 	clearPermissionsFunnels,
 	clearCreatePermission,
 } = rolesReducer.actions;
