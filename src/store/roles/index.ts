@@ -298,16 +298,21 @@ const rolesReducer = createSlice({
 			const { permissionsType, roleID } = action.payload;
 			const isHeadRole = String(roleID) === '3';
 
-			const defaultTasksPermissions: Record<'create' | 'view' | 'edit' | 'delete', string> = {
-				create: 'tasks.task.create.allowed',
-				view: isHeadRole ? 'tasks.task.view.allowed' : 'tasks.task.view.mine',
-				edit: 'tasks.task.edit.mine.setter',
-				delete: 'tasks.task.delete.mine.setter',
+			const TASKS_PREFIX = 'tasks.task.';
+
+			const defaultTasksPermissions: Record<'create' | 'view' | 'edit' | 'delete', string[]> = {
+				create: ['tasks.task.create.allowed'],
+				view: [isHeadRole ? 'tasks.task.view.allowed' : 'tasks.task.view.mine'],
+				edit: ['tasks.task.edit.mine', 'tasks.task.edit.mine.setter'],
+				delete: ['tasks.task.delete.mine', 'tasks.task.delete.mine.setter'],
 			};
 
 			(Object.keys(defaultTasksPermissions) as Array<keyof typeof defaultTasksPermissions>).forEach((key) => {
-				const withoutTasks = (state[permissionsType][key] || []).filter((item: string) => !item.startsWith('tasks.task.'));
-				state[permissionsType][key] = [...withoutTasks, defaultTasksPermissions[key]];
+				const currentList = state[permissionsType][key] || [];
+
+				const withoutTasksOnly = currentList.filter((item: string) => !item.startsWith(TASKS_PREFIX));
+
+				state[permissionsType][key] = [...withoutTasksOnly, ...defaultTasksPermissions[key]];
 			});
 		},
 		clearPermissionsFunnels(state) {
