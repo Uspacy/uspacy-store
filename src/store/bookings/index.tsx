@@ -4,7 +4,7 @@ import { IResource } from '@uspacy/sdk/lib/models/resources';
 
 import { prepareResourceInToBooking } from '../../helpers/prepareData';
 import { getBookings } from './actions';
-import { IState, SecondLevelKeys, ThirdLevelKeys, UpdateBookingPayload } from './types';
+import { IBookingMeta, IState, SecondLevelKeys, ThirdLevelKeys, UpdateBookingPayload } from './types';
 
 const initialBookingState: IBooking = {
 	general: {
@@ -68,10 +68,17 @@ const initialState: IState = {
 	bookingList: [],
 	loading: false,
 	loadingDetail: false,
+	meta: {
+		currentPage: 0,
+		total: 0,
+		totalActiveByPortal: 0,
+		totalActiveForUser: 0,
+		totalPages: 0,
+	},
 };
 
 const bookingsReducer = createSlice({
-	name: 'filesReducer',
+	name: 'bookingsReducer',
 	initialState,
 	reducers: {
 		updateBooking: <T extends keyof IBooking, K extends SecondLevelKeys<IBooking, T>, L extends ThirdLevelKeys<IBooking, T, K>>(
@@ -116,25 +123,55 @@ const bookingsReducer = createSlice({
 		},
 		addBooking: (state, action: PayloadAction<IBooking>) => {
 			state.bookingList.push(action.payload);
+			state.meta = {
+				...state.meta,
+				total: state.meta.total + 1,
+				totalActiveByPortal: state.meta.totalActiveByPortal + 1,
+				totalActiveForUser: state.meta.totalActiveForUser + 1,
+			};
 		},
 		removeBooking: (state, action: PayloadAction<IBooking['id']>) => {
 			state.bookingList = state.bookingList.filter((booking) => booking.id !== action.payload);
+			state.meta = {
+				...state.meta,
+				total: state.meta.total - 1,
+				totalActiveByPortal: state.meta.totalActiveByPortal - 1,
+				totalActiveForUser: state.meta.totalActiveForUser - 1,
+			};
 		},
 		setLoadingDetail: (state, action: PayloadAction<boolean>) => {
 			state.loadingDetail = action.payload;
 		},
-		updateBookingInList: (state, action: PayloadAction<IBooking>) => {
-			const bookingIndex = state.bookingList.findIndex((it) => it.id === action.payload.id);
-			state.bookingList[bookingIndex] = action.payload;
+		updateBookingInList: (state, action: PayloadAction<{ booking: IBooking; isChangeActive?: boolean }>) => {
+			const { booking, isChangeActive } = action.payload;
+			const bookingIndex = state.bookingList.findIndex((it) => it.id === booking.id);
+			state.bookingList[bookingIndex] = booking;
+			if (isChangeActive) {
+				if (booking.active) {
+					state.meta = {
+						...state.meta,
+						totalActiveByPortal: state.meta.totalActiveByPortal + 1,
+						totalActiveForUser: state.meta.totalActiveForUser + 1,
+					};
+				} else {
+					state.meta = {
+						...state.meta,
+						totalActiveByPortal: state.meta.totalActiveByPortal - 1,
+						totalActiveForUser: state.meta.totalActiveForUser - 1,
+					};
+				}
+			}
 		},
 		setInvalidBookingFields: (state, action: PayloadAction<unknown[]>) => {
 			state.invalidBookingFields = action.payload;
 		},
 	},
 	extraReducers: {
-		[getBookings.fulfilled.type]: (state, action: PayloadAction<IResource[]>) => {
+		[getBookings.fulfilled.type]: (state, action: PayloadAction<{ data: IResource[]; meta: IBookingMeta }>) => {
+			const { data, meta } = action.payload;
 			state.loading = false;
-			state.bookingList = Array.isArray(action.payload) ? action.payload.map((resource) => prepareResourceInToBooking(resource)) : [];
+			state.bookingList = Array.isArray(data) ? data.map((resource) => prepareResourceInToBooking(resource)) : [];
+			state.meta = meta;
 		},
 		[getBookings.pending.type]: (state) => {
 			state.loading = true;
