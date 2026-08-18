@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IAutomation } from '@uspacy/sdk/lib/models/automations';
+import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
 export const fetchWorkflows = createAsyncThunk(
 	'workflows/fetchWorkflows',
@@ -32,6 +33,6 @@ export const toggleWorkflow = createAsyncThunk('workflows/toggleWorkflow', async
 		await uspacySdk.automationsService.toggleWorkflow(id, body);
 		return id;
 	} catch (e) {
-		return thunkAPI.rejectWithValue('Failure');
+		return thunkAPI.rejectWithValue((e as IErrorsAxiosResponse)?.response?.data || 'Failure');
 	}
 });
