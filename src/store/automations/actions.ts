@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IAutomation } from '@uspacy/sdk/lib/models/automations';
+import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
 export const fetchAutomations = createAsyncThunk(
 	'automations/fetchAutomations',
@@ -34,7 +35,7 @@ export const toggleAutomation = createAsyncThunk(
 			await uspacySdk.automationsService.toggleAutomation(id, body);
 			return id;
 		} catch (e) {
-			return thunkAPI.rejectWithValue('Failure');
+			return thunkAPI.rejectWithValue((e as IErrorsAxiosResponse)?.response?.data || 'Failure');
 		}
 	},
 );
