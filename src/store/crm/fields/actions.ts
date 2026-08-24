@@ -3,9 +3,11 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IField } from '@uspacy/sdk/lib/models/field';
 
-export const fetchFields = createAsyncThunk('crm/fields/fetchFields', async (code: string, thunkAPI) => {
+export const fetchFields = createAsyncThunk('crm/fields/fetchFields', async (arg: string | { code: string; related?: boolean }, thunkAPI) => {
 	try {
-		const res = await uspacySdk.crmEntitiesService.getEntityFields(code);
+		const code = typeof arg === 'string' ? arg : arg?.code;
+		const related = typeof arg === 'string' ? false : arg?.related ?? false;
+		const res = await uspacySdk.crmEntitiesService.getEntityFields(code, related);
 		return res.data;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
