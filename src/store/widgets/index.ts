@@ -1,6 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FormFieldCode, IFormField, IPredefinedField } from '@uspacy/sdk/lib/models/forms';
-import { ETimeFormShow, ICreateWidgetData, IWidgetSocialItem, WidgetPosition, WidgetSocialView } from '@uspacy/sdk/lib/models/messenger';
+import {
+	CreateCrmEntityType,
+	ETimeFormShow,
+	ICreateWidgetData,
+	IWidgetSocialItem,
+	WidgetPosition,
+	WidgetSocialView,
+} from '@uspacy/sdk/lib/models/messenger';
 import { IMeta } from '@uspacy/sdk/lib/models/tasks';
 
 import { updateFieldsOrderHelp } from '../../helpers/forms';
@@ -30,6 +37,21 @@ const initialState: IState = {
 			timeShowForm: ETimeFormShow.FIRST_TIME,
 			formWelcomeMessage: '',
 			messageAfterFormSend: '',
+			connectedCrmEntities: {
+				enabled: false,
+				createFromUnknown: {
+					enabled: false,
+					entityType: CreateCrmEntityType.LEAD,
+					source: '',
+					responsibleUserId: 0,
+				},
+				createFromKnown: {
+					enabled: false,
+					entityType: CreateCrmEntityType.LEAD,
+					source: '',
+					responsibleUserId: 0,
+				},
+			},
 		},
 		socialSettings: {
 			view: WidgetSocialView.VERTICAL,
@@ -183,6 +205,30 @@ export const widgetsSlice = createSlice({
 		clearSocialSettings: (state) => {
 			state.widgetData.socialSettings = initialState.widgetData.socialSettings;
 		},
+		updateConnectedCrmEntitiesEnable: (state, action: PayloadAction<boolean>) => {
+			state.widgetData.config.connectedCrmEntities.enabled = action.payload;
+		},
+		updateConnectedCrmEntitiesCreateFromUnknown: (
+			state,
+			action: PayloadAction<Partial<ICreateWidgetData['config']['connectedCrmEntities']['createFromUnknown']>>,
+		) => {
+			state.widgetData.config.connectedCrmEntities.createFromUnknown = {
+				...state.widgetData.config.connectedCrmEntities.createFromUnknown,
+				...action.payload,
+			};
+		},
+		updateConnectedCrmEntitiesCreateFromKnown: (
+			state,
+			action: PayloadAction<Partial<ICreateWidgetData['config']['connectedCrmEntities']['createFromKnown']>>,
+		) => {
+			state.widgetData.config.connectedCrmEntities.createFromKnown = {
+				...state.widgetData.config.connectedCrmEntities.createFromKnown,
+				...action.payload,
+			};
+		},
+		clearConnectedCrmEntities: (state) => {
+			state.widgetData.config.connectedCrmEntities = initialState.widgetData.config.connectedCrmEntities;
+		},
 	},
 	extraReducers: {
 		[createWidget.pending.type]: (state) => {
@@ -245,6 +291,10 @@ export const {
 	updateWidgetSocialsOrder,
 	clearItemValidation,
 	clearSocialSettings,
+	updateConnectedCrmEntitiesEnable,
+	updateConnectedCrmEntitiesCreateFromUnknown,
+	updateConnectedCrmEntitiesCreateFromKnown,
+	clearConnectedCrmEntities,
 } = widgetsSlice.actions;
 
 export default widgetsSlice.reducer;
