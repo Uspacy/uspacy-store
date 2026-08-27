@@ -52,6 +52,7 @@ const initialState: IState = {
 					responsibleUserId: 0,
 				},
 			},
+			disableSendMessageWhileFormNotSuccess: false,
 		},
 		socialSettings: {
 			view: WidgetSocialView.VERTICAL,
@@ -229,6 +230,12 @@ export const widgetsSlice = createSlice({
 		clearConnectedCrmEntities: (state) => {
 			state.widgetData.config.connectedCrmEntities = initialState.widgetData.config.connectedCrmEntities;
 		},
+		updateWidgetConfig: (state, action: PayloadAction<Partial<ICreateWidgetData['config']>>) => {
+			state.widgetData.config = {
+				...state.widgetData.config,
+				...action.payload,
+			};
+		},
 	},
 	extraReducers: {
 		[createWidget.pending.type]: (state) => {
@@ -295,6 +302,7 @@ export const {
 	updateConnectedCrmEntitiesCreateFromUnknown,
 	updateConnectedCrmEntitiesCreateFromKnown,
 	clearConnectedCrmEntities,
+	updateWidgetConfig,
 } = widgetsSlice.actions;
 
 export default widgetsSlice.reducer;
