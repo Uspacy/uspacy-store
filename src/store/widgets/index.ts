@@ -30,6 +30,7 @@ const initialState: IState = {
 			timeShowForm: ETimeFormShow.FIRST_TIME,
 			formWelcomeMessage: '',
 			messageAfterFormSend: '',
+			disableSendMessageWhileFormNotSuccess: false,
 		},
 		socialSettings: {
 			view: WidgetSocialView.VERTICAL,
@@ -183,6 +184,12 @@ export const widgetsSlice = createSlice({
 		clearSocialSettings: (state) => {
 			state.widgetData.socialSettings = initialState.widgetData.socialSettings;
 		},
+		updateWidgetConfig: (state, action: PayloadAction<Partial<ICreateWidgetData['config']>>) => {
+			state.widgetData.config = {
+				...state.widgetData.config,
+				...action.payload,
+			};
+		},
 	},
 	extraReducers: {
 		[createWidget.pending.type]: (state) => {
@@ -245,6 +252,7 @@ export const {
 	updateWidgetSocialsOrder,
 	clearItemValidation,
 	clearSocialSettings,
+	updateWidgetConfig,
 } = widgetsSlice.actions;
 
 export default widgetsSlice.reducer;
