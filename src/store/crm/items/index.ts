@@ -367,7 +367,7 @@ const itemsReducer = createSlice({
 			Object.entries(action.payload?.stages || {}).forEach(([stageId, stage]) => {
 				state[entityCode].stages[stageId] = {
 					...initialData,
-					...state[entityCode].stages[stageId],
+					...(state[entityCode].stages[stageId] || {}),
 					data: stage.data,
 					meta: stage.meta,
 					currencyAmount: stage.amount ?? undefined,
