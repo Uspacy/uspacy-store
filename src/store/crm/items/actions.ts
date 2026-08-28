@@ -338,7 +338,7 @@ export const fetchKanbanBoard = createAsyncThunk(
 	) => {
 		try {
 			const params = getFilterParams(filters as IEntityFilters, fields || []);
-			const finalParams = entityCode === 'deals' ? getActivitiesParams(filters, params) : params;
+const finalParams = ['deals', 'leads'].includes(entityCode) ? getActivitiesParams(filters, params) : params;
 
 			const res = await uspacySdk.crmEntitiesService.getKanbanBoard(entityCode, { ...finalParams, stage_ids: stageIds });
 			return res?.data;
