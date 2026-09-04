@@ -287,20 +287,27 @@ const rolesReducer = createSlice({
 			};
 			state[action.payload.key] = merged;
 		},
-		resetTasksPermissionsToDefault(state, action: PayloadAction<{ permissionsType: 'permissions' | 'createPermissions'; roleID: string }>) {
-			const { permissionsType, roleID } = action.payload;
-			const isHeadRole = String(roleID) === '3';
+		resetTasksPermissionsToDefault(state, action: PayloadAction<{ permissionsType: 'permissions' | 'createPermissions'; roleCode: string }>) {
+			const { permissionsType, roleCode } = action.payload;
+			const isHeadRole = roleCode === 'Head';
+			const isHeadOfTheSalesDepartment = roleCode === 'Head of the sales department';
 
 			const TASKS_PREFIX = 'tasks.task.';
 
+			const view = (() => {
+				if (isHeadRole) return ['tasks.task.view.allowed'];
+				if (isHeadOfTheSalesDepartment) return ['tasks.task.view.department'];
+				return ['tasks.task.view.mine'];
+			})();
+
 			const defaultTasksPermissions: Record<'create' | 'view' | 'edit' | 'delete', string[]> = {
 				create: ['tasks.task.create.allowed'],
-				view: [isHeadRole ? 'tasks.task.view.allowed' : 'tasks.task.view.mine'],
+				view,
 				edit: ['tasks.task.edit.mine', 'tasks.task.edit.mine.setter'],
 				delete: ['tasks.task.delete.mine', 'tasks.task.delete.mine.setter'],
 			};
 
-			(Object.keys(defaultTasksPermissions) as Array<keyof typeof defaultTasksPermissions>).forEach((key) => {
+			(Object.keys(defaultTasksPermissions || {}) as Array<keyof typeof defaultTasksPermissions>).forEach((key) => {
 				const currentList = state[permissionsType][key] || [];
 
 				const withoutTasksOnly = currentList.filter((item: string) => !item.startsWith(TASKS_PREFIX));
