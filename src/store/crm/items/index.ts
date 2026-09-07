@@ -692,7 +692,7 @@ const itemsReducer = createSlice({
 			const hasKandban = Array.isArray(Object.keys(state[entityCode]?.stages || {}));
 			state[entityCode].loading = false;
 			state[entityCode].errorMessage = null;
-			state[entityCode].data = state[entityCode].data.filter((item) => !action.meta.arg.entityIds.map(Number).includes(item.id));
+			state[entityCode].data = state[entityCode].data.filter((item) => !(action.meta.arg.entityIds || []).map(Number).includes(item.id));
 
 			if (hasKandban) {
 				Object.keys(state[entityCode].stages).forEach((stageId) => {
@@ -716,7 +716,7 @@ const itemsReducer = createSlice({
 					});
 				}
 			} else {
-				state[entityCode].meta.total -= action.meta.arg.entityIds.length;
+				state[entityCode].meta.total -= action.meta.arg.entityIds?.length || 0;
 				if (hasKandban) {
 					Object.keys(state[entityCode].stages).forEach((stageId) => {
 						state[entityCode].stages[stageId].meta.total -= action.meta.arg.exceptIds.length;
