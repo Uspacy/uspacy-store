@@ -20,7 +20,6 @@ import leadsFunnel from './crmLeadsFunnel';
 import leadsStages from './crmLeadsStages';
 import crmProducts from './crmProducts';
 import crmProductsCategory from './crmProductsCategory';
-import crmProductsForEntity from './crmProductsForEntity';
 import crmProductsTaxes from './crmProductsTaxes';
 import crmProductsUnit from './crmProductsUnit';
 import crmRequisite from './crmRequisite';
@@ -92,7 +91,6 @@ const rootReducer = combineReducers({
 	crmTasks,
 	crmProducts,
 	crmProductsCategory,
-	crmProductsForEntity,
 	crmProductsTaxes,
 	crmProductsUnit,
 	crmDocumentTemplates,
