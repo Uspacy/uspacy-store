@@ -25,6 +25,10 @@ const getEntityBase = (linkData: ILinkData) => {
 };
 
 export const getLinkEntity = (message: INotificationMessage): string | undefined => {
+	if (message.data.service === 'automations') {
+		const entityType = message?.data?.entity?.entity_type;
+		return ['workers', 'workflows'].includes(entityType) ? `/automations/${entityType}` : '/automations';
+	}
 	if (message.data.action === NotificationAction.DELETE) return undefined;
 	if (message.data.service === 'u-approval') {
 		const entityId = message?.data?.entity?.entity_id || message?.data?.entity?.id;
