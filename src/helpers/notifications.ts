@@ -23,10 +23,20 @@ const getEntityBase = (linkData: ILinkData) => {
 	}
 };
 
+const isAutomationMessage = (message: INotificationMessage) => ['automations', 'processes'].includes(message?.data?.service);
+
+const getAutomationKind = (entityType: string) => (['workflows', 'process'].includes(entityType) ? 'process' : 'automation');
+
+const parseAutomationKey = (message: INotificationMessage, value?: string) => {
+	if (!isAutomationMessage(message) || !value?.startsWith('notifications.automations.')) return undefined;
+	const separatorIndex = value.indexOf('|');
+	if (separatorIndex === -1) return { key: value, value: '' };
+	return { key: value.slice(0, separatorIndex), value: value.slice(separatorIndex + 1) };
+};
+
 export const getLinkEntity = (message: INotificationMessage): string | undefined => {
-	if (message.data.service === 'automations') {
-		const entityType = message?.data?.entity?.entity_type;
-		return ['workers', 'workflows'].includes(entityType) ? `/automations/${entityType}` : '/automations';
+	if (isAutomationMessage(message)) {
+		return getAutomationKind(message.data.entity?.entity_type) === 'process' ? '/automations/workflows' : '/automations/workers';
 	}
 	if (message.data.action === NotificationAction.DELETE) return undefined;
 	if (message.data.service === 'u-approval') {
@@ -172,6 +182,8 @@ const getEntityType = (message: INotificationMessage) => {
 };
 
 export const getNotificationTitle = (message: INotificationMessage, profileId: number): string | undefined => {
+	const automationTitle = parseAutomationKey(message, message?.data?.entity?.title);
+	if (automationTitle) return automationTitle.key;
 	if (message.topic === 'custom') {
 		return message?.data?.entity?.title;
 	}
@@ -200,6 +212,8 @@ export const deleteHtmlFromComment = (text: string) => {
 };
 
 export const getNotificationSubTitle = (message: INotificationMessage): string | undefined => {
+	const automationSource = parseAutomationKey(message, message?.data?.entity?.description);
+	if (automationSource) return automationSource.key;
 	if (message.topic === 'custom') {
 		return message?.data?.entity?.description;
 	}
@@ -218,6 +232,8 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 	const timestamp = new Date(message.data.timestamp).getTime();
 	const mentioned = !!message.data.entity?.mentioned?.users?.includes(profileId);
 	const commentEntityTitle = message.data?.root_parent?.data?.title;
+	const automationTitle = parseAutomationKey(message, message.data?.entity?.title);
+	const automationSource = parseAutomationKey(message, message.data?.entity?.description);
 	return {
 		id: message.id,
 		title: getNotificationTitle(message, profileId),
@@ -231,5 +247,7 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 		read: message.read || false,
 		createdAt: message.createdAt,
 		metadata: message?.metadata ?? [],
+		...(automationTitle && { titleParams: { title: automationTitle.value } }),
+		...(automationSource && { subTitleParams: { user: user ? `${user.firstName} ${user.lastName}` : `#${message.data.user_id}` } }),
 	};
 };
