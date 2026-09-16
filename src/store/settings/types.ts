@@ -8,8 +8,3 @@ export interface IState {
 	error?: IErrorsAxiosResponse;
 	dateLocale?: Locale;
 }
-
-export interface IFetchSettingsResponse {
-	portalSettings: IPortalSettings;
-	totalSettings: IPortalSettings;
-}

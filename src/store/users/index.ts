@@ -7,7 +7,6 @@ import { IUser, IUserFilter, IUserOnlineStatuses, IUserStatus } from '@uspacy/sd
 
 import { clearUserStatus, setUserStatus } from '../profile/actions';
 import { fetchSettings, updateSettings } from '../settings/actions';
-import { IFetchSettingsResponse } from '../settings/types';
 import {
 	activateUser,
 	deactivateUser,
@@ -280,12 +279,10 @@ export const usersSlice = createSlice({
 		},
 	},
 	extraReducers: {
-		[fetchSettings.fulfilled.type]: (state, action: PayloadAction<IFetchSettingsResponse>) => {
-			const hideFiredEmployees =
-				action?.payload?.portalSettings?.hideFiredEmployees ?? (action?.payload as unknown as IPortalSettings)?.hideFiredEmployees ?? false;
-			state.hideFiredEmployees = hideFiredEmployees;
+		[fetchSettings.fulfilled.type]: (state, action: PayloadAction<IPortalSettings>) => {
+			state.hideFiredEmployees = action?.payload?.hideFiredEmployees || false;
 
-			if (hideFiredEmployees) {
+			if (action?.payload?.hideFiredEmployees) {
 				state.withoutFiredUsers = state.withoutFiredUsers.filter((user) => {
 					if (!user.authUserId) return false;
 					if (!user?.active && user?.registered) return false;
@@ -295,10 +292,8 @@ export const usersSlice = createSlice({
 				state.withoutFiredUsers = state.data.filter((user) => !!user.authUserId);
 			}
 		},
-		[updateSettings.fulfilled.type]: (state, action: PayloadAction<IFetchSettingsResponse>) => {
-			const hideFiredEmployees =
-				action?.payload?.portalSettings?.hideFiredEmployees ?? (action?.payload as unknown as IPortalSettings)?.hideFiredEmployees ?? false;
-			if (hideFiredEmployees) {
+		[updateSettings.fulfilled.type]: (state, action: PayloadAction<IPortalSettings>) => {
+			if (action?.payload?.hideFiredEmployees) {
 				state.withoutFiredUsers = state.withoutFiredUsers.filter((user) => {
 					if (!user.authUserId) return false;
 					if (!user?.active && user?.registered) return false;
