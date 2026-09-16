@@ -2,6 +2,8 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IPortalSettings } from '@uspacy/sdk/lib/models/settings';
 
+import { IFetchSettingsResponse } from './types';
+
 export const selectTotalSettings = (personalSettings: IPortalSettings, portalSettings: IPortalSettings): IPortalSettings => {
 	const totalSettings = {};
 
@@ -37,27 +39,39 @@ export const getPersonalSettings = async (portalSettings: IPortalSettings) => {
 	}
 };
 
-export const fetchSettings = createAsyncThunk<IPortalSettings>('settings/fetchSettings', async (_, thunkAPI) => {
+export const fetchSettings = createAsyncThunk<IFetchSettingsResponse>('settings/fetchSettings', async (_, thunkAPI) => {
 	try {
 		const res = await uspacySdk.settingsService.getPortalSettings();
 		const portalSettings = res.data as IPortalSettings;
 
 		const personalSettings = await getPersonalSettings(portalSettings);
+		const totalSettings = selectTotalSettings(personalSettings, portalSettings);
 
-		return selectTotalSettings(personalSettings, portalSettings);
+		return {
+			portalSettings,
+			totalSettings,
+		};
 	} catch (e) {
 		return thunkAPI.rejectWithValue(e);
 	}
 });
 
-export const updateSettings = createAsyncThunk('settings/updateSettings', async (data: Partial<IPortalSettings>, thunkAPI) => {
-	try {
-		const res = await uspacySdk.settingsService.updatePortalSettings(data);
+export const updateSettings = createAsyncThunk<IFetchSettingsResponse, Partial<IPortalSettings>>(
+	'settings/updateSettings',
+	async (data: Partial<IPortalSettings>, thunkAPI) => {
+		try {
+			const res = await uspacySdk.settingsService.updatePortalSettings(data);
+			const portalSettings = res?.data as IPortalSettings;
 
-		const personalSettings = await getPersonalSettings(res?.data);
+			const personalSettings = await getPersonalSettings(portalSettings);
+			const totalSettings = selectTotalSettings(personalSettings, portalSettings);
 
-		return selectTotalSettings(personalSettings, res?.data);
-	} catch (e) {
-		return thunkAPI.rejectWithValue(e);
-	}
-});
+			return {
+				portalSettings,
+				totalSettings,
+			};
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e);
+		}
+	},
+);

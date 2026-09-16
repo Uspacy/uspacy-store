@@ -3,7 +3,7 @@ import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IPortalSettings } from '@uspacy/sdk/lib/models/settings';
 
 import { fetchSettings, updateSettings } from './actions';
-import { IState } from './types';
+import { IFetchSettingsResponse, IState } from './types';
 
 const initialState: IState = {};
 
@@ -14,15 +14,19 @@ const settingsReducer = createSlice({
 		setUserSettings: (state, action: PayloadAction<IPortalSettings>) => {
 			state.data = action.payload;
 		},
+		setPortalSettings: (state, action: PayloadAction<IPortalSettings>) => {
+			state.portalSettings = action.payload;
+		},
 		setDateLocale: (state, action: PayloadAction<Locale>) => {
 			state.dateLocale = action.payload;
 		},
 	},
 	extraReducers: {
-		[fetchSettings.fulfilled.type]: (state, action: PayloadAction<IPortalSettings>) => {
+		[fetchSettings.fulfilled.type]: (state, action: PayloadAction<IFetchSettingsResponse>) => {
 			state.loading = false;
 			state.error = null;
-			state.data = action.payload;
+			state.data = action.payload.totalSettings;
+			state.portalSettings = action.payload.portalSettings;
 		},
 		[fetchSettings.pending.type]: (state) => {
 			state.loading = true;
@@ -32,10 +36,11 @@ const settingsReducer = createSlice({
 			state.loading = false;
 			state.error = action.payload;
 		},
-		[updateSettings.fulfilled.type]: (state, action: PayloadAction<IPortalSettings>) => {
+		[updateSettings.fulfilled.type]: (state, action: PayloadAction<IFetchSettingsResponse>) => {
 			state.loading = false;
 			state.error = null;
-			state.data = action.payload;
+			state.data = action.payload.totalSettings;
+			state.portalSettings = action.payload.portalSettings;
 		},
 		[updateSettings.pending.type]: (state) => {
 			state.loading = true;
@@ -48,5 +53,5 @@ const settingsReducer = createSlice({
 	},
 });
 
-export const { setUserSettings, setDateLocale } = settingsReducer.actions;
+export const { setUserSettings, setPortalSettings, setDateLocale } = settingsReducer.actions;
 export default settingsReducer.reducer;
