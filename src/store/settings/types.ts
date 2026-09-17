@@ -3,6 +3,7 @@ import { IPortalSettings } from '@uspacy/sdk/lib/models/settings';
 
 export interface IState {
 	data?: IPortalSettings;
+	portalSettings?: IPortalSettings;
 	loading?: boolean;
 	error?: IErrorsAxiosResponse;
 	dateLocale?: Locale;
