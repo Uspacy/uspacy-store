@@ -4,7 +4,9 @@ import { IUser } from '@uspacy/sdk/lib/models/user';
 export interface INotification {
 	id: string;
 	title: string;
+	titleParams?: Record<string, string>;
 	subTitle: string;
+	subTitleParams?: Record<string, string>;
 	date: number;
 	link?: string;
 	read?: boolean;
