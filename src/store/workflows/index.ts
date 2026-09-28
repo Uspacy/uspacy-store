@@ -32,7 +32,9 @@ const workflowReducer = createSlice({
 			state.workflows.data.push(action.payload);
 		},
 		toggleActiveWorkflow: (state, action: PayloadAction<number>) => {
-			state.workflows.data = state.workflows.data.map((it) => (it.portal_id === action.payload ? { ...it, active: !it.active } : it));
+			state.workflows.data = state.workflows.data.map((it) =>
+				it.portal_id === action.payload ? { ...it, active: !it.active, deactivatedReason: null } : it,
+			);
 		},
 		addWorkflowToStartTable: (state, action: PayloadAction<IWorkflow>) => {
 			state.workflows.data = [action.payload, ...state.workflows.data];
