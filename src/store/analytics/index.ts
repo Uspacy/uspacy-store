@@ -1,18 +1,23 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IAnalyticReport, IAnalyticReportList, IDashboard } from '@uspacy/sdk/lib/models/analytics';
+import { IAnalyticReport, IAnalyticReportList, IDashboard, IGoal, IGoalList } from '@uspacy/sdk/lib/models/analytics';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
-import { addReportToLayout, removeReportFromLayout } from '../../helpers/dashboardHelper';
+import { addGoalToLayout, addReportToLayout, removeGoalFromLayout, removeReportFromLayout } from '../../helpers/dashboardHelper';
 import {
 	createDashboard,
+	createGoal,
 	createReport,
 	deleteDashboard,
+	deleteGoal,
 	deleteReport,
 	getAnalyticsReportList,
 	getDashboard,
 	getDashboardsList,
+	getGoal,
+	getGoalsList,
 	getReport,
 	updateDashboard,
+	updateGoal,
 	updateReport,
 } from './actions';
 import { IState } from './types';
@@ -25,14 +30,25 @@ const initialState = {
 			page: 1,
 		},
 	},
+	goals: {
+		data: [],
+		meta: {
+			total: 0,
+			page: 1,
+		},
+	},
 	dashboards: [],
 	dashboard: null,
 	report: null,
+	goal: null,
 	loadingDashboards: true,
 	loadingDashboard: true,
 	loadingReports: true,
 	loadingReport: true,
+	loadingGoals: true,
+	loadingGoal: true,
 	errorLoadingReports: null,
+	errorLoadingGoals: null,
 	errorLoadingDashboards: null,
 } as IState;
 
@@ -42,6 +58,9 @@ const analyticsReducer = createSlice({
 	reducers: {
 		clearAllReport: (state) => {
 			state.reports = initialState.reports;
+		},
+		clearAllGoals: (state) => {
+			state.goals = initialState.goals;
 		},
 		clearAllDashboard: (state) => {
 			state.dashboards = initialState.dashboards;
@@ -173,6 +192,111 @@ const analyticsReducer = createSlice({
 			state.errorLoadingReports = action.payload;
 		},
 
+		[getGoalsList.fulfilled.type]: (state, action: PayloadAction<IGoalList>) => {
+			state.loadingGoals = false;
+			state.errorLoadingGoals = null;
+			state.goals = { ...state.goals, data: [...state.goals.data, ...action.payload.data], meta: action.payload.meta };
+		},
+		[getGoalsList.pending.type]: (state) => {
+			state.loadingGoals = true;
+			state.errorLoadingGoals = null;
+		},
+		[getGoalsList.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingGoals = false;
+			state.errorLoadingGoals = action.payload;
+		},
+		[getGoal.fulfilled.type]: (state, action: PayloadAction<IGoal>) => {
+			state.loadingGoal = false;
+			state.errorLoadingGoals = null;
+			state.goal = action.payload;
+		},
+		[getGoal.pending.type]: (state) => {
+			state.loadingGoal = true;
+			state.errorLoadingGoals = null;
+		},
+		[getGoal.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingGoal = false;
+			state.errorLoadingGoals = action.payload;
+		},
+		[createGoal.fulfilled.type]: (state, action: PayloadAction<IGoal>) => {
+			state.loadingGoal = false;
+			state.errorLoadingGoals = null;
+			state.goal = action.payload;
+			state.goals = {
+				...state.goals,
+				data: [action.payload, ...state.goals.data],
+				meta: { ...state.goals.meta, total: state.goals.meta.total + 1, unfiltered_total: state.goals.meta.unfiltered_total + 1 },
+			};
+			state.dashboards = state.dashboards.map((dashboard) =>
+				action.payload.dashboards?.includes(dashboard.id)
+					? { ...dashboard, layout: addGoalToLayout(dashboard.layout, action.payload) }
+					: dashboard,
+			);
+		},
+		[createGoal.pending.type]: (state) => {
+			state.loadingGoal = true;
+			state.errorLoadingGoals = null;
+		},
+		[createGoal.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingGoal = false;
+			state.errorLoadingGoals = action.payload;
+		},
+		[updateGoal.fulfilled.type]: (state, action: PayloadAction<IGoal>) => {
+			state.loadingGoal = false;
+			state.errorLoadingGoals = null;
+			state.goal = action.payload;
+			state.goals = { ...state.goals, data: state.goals.data.map((it) => (it.id === action.payload.id ? action.payload : it)) };
+			state.dashboards = state.dashboards.map((dashboard) => {
+				const hasGoalInLayout = dashboard.layout.some((item) => item.goal_id === action.payload.id);
+				const hasGoalInDashboard = action.payload.dashboards?.includes(dashboard.id);
+
+				if (hasGoalInLayout && !hasGoalInDashboard) {
+					return { ...dashboard, layout: removeGoalFromLayout(dashboard.layout, action.payload.id) };
+				}
+
+				if (!hasGoalInLayout && hasGoalInDashboard) {
+					return { ...dashboard, layout: addGoalToLayout(dashboard.layout, action.payload) };
+				}
+
+				if (hasGoalInLayout && hasGoalInDashboard) {
+					return {
+						...dashboard,
+						layout: dashboard.layout.map((item) => (item.goal_id === action.payload.id ? { ...item, goal: action.payload } : item)),
+					};
+				}
+
+				return dashboard;
+			});
+		},
+		[updateGoal.pending.type]: (state) => {
+			state.loadingGoal = true;
+			state.errorLoadingGoals = null;
+		},
+		[updateGoal.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingGoal = false;
+			state.errorLoadingGoals = action.payload;
+		},
+		[deleteGoal.fulfilled.type]: (state, action: PayloadAction<string>) => {
+			state.loadingGoal = false;
+			state.errorLoadingGoals = null;
+			state.goals = {
+				...state.goals,
+				data: state.goals.data.filter((it) => it.id !== action.payload),
+				meta: { ...state.goals.meta, total: state.goals.meta.total - 1, unfiltered_total: state.goals.meta.unfiltered_total - 1 },
+			};
+			state.dashboards = state.dashboards.map((dashboard) => ({
+				...dashboard,
+				layout: removeGoalFromLayout(dashboard.layout, action.payload),
+			}));
+		},
+		[deleteGoal.pending.type]: (state) => {
+			state.loadingGoal = true;
+			state.errorLoadingGoals = null;
+		},
+		[deleteGoal.rejected.type]: (state, action: PayloadAction<IErrorsAxiosResponse>) => {
+			state.loadingGoal = false;
+			state.errorLoadingGoals = action.payload;
+		},
 		[getDashboardsList.fulfilled.type]: (state, action: PayloadAction<IDashboard[]>) => {
 			state.loadingDashboards = false;
 			state.errorLoadingDashboards = null;
@@ -234,6 +358,6 @@ const analyticsReducer = createSlice({
 	},
 });
 
-export const { clearAllReport, clearAllDashboard, updateDashboardStateById } = analyticsReducer.actions;
+export const { clearAllReport, clearAllGoals, clearAllDashboard, updateDashboardStateById } = analyticsReducer.actions;
 
 export default analyticsReducer.reducer;
