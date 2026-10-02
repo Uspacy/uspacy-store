@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { getParentUrl } from '../../helpers/getParentUrl';
+import { buildTasksCardLink, getTasksBasePath } from '../../helpers/tasksPath';
 import { IDrawerNavItem, IState } from './types';
 
 const initialState: IState = {
@@ -37,7 +38,11 @@ export const multiDrawersSlice = createSlice({
 				}
 
 				case 'task': {
-					const cardLink = `/tasks/${action?.payload?.entityId ? action?.payload?.entityId : 'create'}${commentLink}`;
+					const cardLink = `${buildTasksCardLink({
+						basePath: getTasksBasePath(state.initialLink),
+						entityCode: action?.payload?.entityCode,
+						entityId: action?.payload?.entityId,
+					})}${commentLink}`;
 					const url = new URL(cardLink, location.origin + location.pathname + '/');
 					history.pushState(null, '', url);
 					break;
@@ -84,9 +89,16 @@ export const multiDrawersSlice = createSlice({
 					history.pushState(null, '', url);
 				}
 				if (state.drawers?.[0]?.service === 'task') {
-					const cardLink = `/tasks/${!!state.drawers?.[0]?.entityId ? state.drawers?.[0]?.entityId : 'create'}`;
+					const cardLink = buildTasksCardLink({
+						basePath: getTasksBasePath(state.initialLink),
+						entityCode: state.drawers?.[0]?.entityCode,
+						entityId: state.drawers?.[0]?.entityId,
+					});
 					const url = new URL(cardLink, location.origin + location.pathname + '/');
 					history.pushState(null, '', url);
+				}
+				if (state.drawers?.[0]?.service === 'messenger') {
+					history.pushState(null, '', getParentUrl(state.initialLink));
 				}
 			}
 		},
@@ -106,7 +118,11 @@ export const multiDrawersSlice = createSlice({
 				history.pushState(null, '', url);
 			}
 			if (action.payload.service === 'task') {
-				const cardLink = `/tasks/${!!action.payload.entityId ? action.payload.entityId : 'create'}`;
+				const cardLink = buildTasksCardLink({
+					basePath: getTasksBasePath(state.initialLink),
+					entityCode: action.payload.entityCode,
+					entityId: action.payload.entityId,
+				});
 				const url = new URL(cardLink, location.origin + location.pathname + '/');
 				history.pushState(null, '', url);
 			}
