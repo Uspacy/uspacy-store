@@ -2694,10 +2694,10 @@
     pidtree "^0.6.0"
     rfdc "^1.4.1"
 
-"@uspacy/sdk@0.0.999-alpha.220":
-  version "0.0.999-alpha.220"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.220/31d49b6a4991a8fcddf1e373f0751be8e5d41b2c#31d49b6a4991a8fcddf1e373f0751be8e5d41b2c"
-  integrity sha512-4835QwC8SOklRhW9jZf2cz/quP8/96IzzAmxrLuqQeq2jh+tSOGpPRv7OFk+wJ30DXixHRwfyQkrsTK6MyjGJA==
+"@uspacy/sdk@0.0.999-alpha.225":
+  version "0.0.999-alpha.225"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.225/0b4a5f92ab5678f2d5b6851c1ef3b25de8e03202#0b4a5f92ab5678f2d5b6851c1ef3b25de8e03202"
+  integrity sha512-oJexfiXYYHlJcQtEAsJE+Gp4/fZpx7nwA4lIoDJQtZTRKdZky8CTdJIfPMXUHXTLccyPyCT/oCNMcjvDpxFMAQ==
   dependencies:
     axios "^1.9.0"
     js-cookie "3.0.5"
@@ -2967,11 +2967,6 @@ ansi-regex@^4.1.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-4.1.1.tgz#164daac87ab2d6f6db3a29875e2d1766582dabed"
   integrity sha512-ILlv4k/3f6vfQ4OoP2AGvirOktlQ98ZEL1k9FaQjxa3L1abBgbuTDAdPOpvbGncC0BTVQrl+OM8xZGK6tWXt7g==
-
-ansi-regex@^5.0.1:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-5.0.1.tgz#082cb2c89c9fe8659a311a53bd6a4dc5301db304"
-  integrity sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==
 
 ansi-regex@^6.2.2:
   version "6.2.2"
