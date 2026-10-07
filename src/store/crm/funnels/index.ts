@@ -109,13 +109,6 @@ const funnelsReducer = createSlice({
 			state[entityCode].data.push(action.payload);
 		},
 
-		[replicateFunnel.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { entityCode: string } }>) => {
-			const entityCode = action.meta.arg.entityCode;
-			if (!state[entityCode]) {
-				state[entityCode] = { loading: true, data: [] } as EntityFunnels;
-			}
-			state[entityCode].loading = true;
-		},
 		[replicateFunnel.fulfilled.type]: (
 			state,
 			action: PayloadAction<IFunnel, string, { arg: { id: number; name?: string; entityCode: string } }>,
@@ -124,12 +117,7 @@ const funnelsReducer = createSlice({
 			if (!state[entityCode]) {
 				state[entityCode] = { loading: false, data: [] } as EntityFunnels;
 			}
-			state[entityCode].loading = false;
 			state[entityCode].data.push(action.payload);
-		},
-		[replicateFunnel.rejected.type]: (state, action: PayloadAction<string, string, { arg: { entityCode: string } }>) => {
-			state[action.meta.arg.entityCode].loading = false;
-			state[action.meta.arg.entityCode].errorMessage = action.payload;
 		},
 
 		[updateFunnel.pending.type]: (state, action: PayloadAction<unknown, string, { arg: { data: Partial<IFunnel>; entityCode: string } }>) => {
