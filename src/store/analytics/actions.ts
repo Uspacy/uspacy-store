@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
-import { IAnalyticReport, IAnalyticReportFilter, IDashboard } from '@uspacy/sdk/lib/models/analytics';
+import { IAnalyticReport, IAnalyticReportFilter, IDashboard, IGoal, IGoalFilter } from '@uspacy/sdk/lib/models/analytics';
 
 export const getAnalyticsReportList = createAsyncThunk(
 	'analytics/getAnalyticsReportList',
@@ -60,6 +60,69 @@ export const deleteReport = createAsyncThunk('analytics/deleteReport', async (id
 	try {
 		await uspacySdk.analyticsService.deleteReport(id);
 
+		return id;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const getGoalsList = createAsyncThunk(
+	'analytics/getGoalsList',
+	async (
+		data: {
+			params: IGoalFilter;
+			signal: AbortSignal;
+		},
+		{ rejectWithValue },
+	) => {
+		try {
+			const res = await uspacySdk.analyticsService.getGoalsList(data.params, data?.signal);
+			return res?.data;
+		} catch (e) {
+			if (data.signal.aborted) {
+				return {
+					aborted: true,
+				};
+			} else {
+				return rejectWithValue(e);
+			}
+		}
+	},
+);
+
+export const getGoal = createAsyncThunk('analytics/getGoal', async ({ id }: { id: string }, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.analyticsService.getGoal(id);
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const createGoal = createAsyncThunk('analytics/createGoal', async (data: Partial<IGoal>, { rejectWithValue }) => {
+	try {
+		const res = await uspacySdk.analyticsService.createGoal(data);
+		return res.data;
+	} catch (e) {
+		return rejectWithValue(e);
+	}
+});
+
+export const updateGoal = createAsyncThunk(
+	'analytics/updateGoal',
+	async ({ id, body }: { id: string; body: Partial<IGoal> }, { rejectWithValue }) => {
+		try {
+			const res = await uspacySdk.analyticsService.updateGoal(id, body);
+			return res.data;
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	},
+);
+
+export const deleteGoal = createAsyncThunk('analytics/deleteGoal', async (id: string, { rejectWithValue }) => {
+	try {
+		await uspacySdk.analyticsService.deleteGoal(id);
 		return id;
 	} catch (e) {
 		return rejectWithValue(e);

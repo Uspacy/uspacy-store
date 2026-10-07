@@ -26,7 +26,7 @@ export interface IState {
 	};
 	quickAnswers: {
 		data: IQuickAnswer[];
-		meta: IMeta;
+		meta: IMeta & { totalActive: number };
 		loading: boolean;
 	};
 	userSettings: Omit<IUserSettings, 'authUserId' | 'id'>;

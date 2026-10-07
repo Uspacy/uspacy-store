@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IPortalSettings } from '@uspacy/sdk/lib/models/settings';
 
-import { fetchSettings, updateSettings } from './actions';
+import { fetchSettings, setPortalSettings, updateSettings } from './actions';
 import { IState } from './types';
 
 const initialState: IState = {};
@@ -19,6 +19,9 @@ const settingsReducer = createSlice({
 		},
 	},
 	extraReducers: {
+		[setPortalSettings.type]: (state, action: PayloadAction<IPortalSettings>) => {
+			state.portalSettings = action.payload;
+		},
 		[fetchSettings.fulfilled.type]: (state, action: PayloadAction<IPortalSettings>) => {
 			state.loading = false;
 			state.error = null;
