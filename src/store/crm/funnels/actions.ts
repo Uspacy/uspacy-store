@@ -36,6 +36,18 @@ export const createFunnel = createAsyncThunk(
 	},
 );
 
+export const replicateFunnel = createAsyncThunk(
+	'crm/funnels/replicateFunnel',
+	async ({ id, name, entityCode }: { id: number; name?: string; entityCode: string }, thunkAPI) => {
+		try {
+			const res = await uspacySdk.crmEntitiesService.replicateEntityFunnel(entityCode, id, name);
+			return res?.data as IFunnel;
+		} catch (e) {
+			return thunkAPI.rejectWithValue('Failure');
+		}
+	},
+);
+
 export const updateFunnel = createAsyncThunk(
 	'crm/funnels/updateFunnel',
 	async ({ data: funnelData, entityCode }: { data: Partial<IFunnel>; entityCode: string }, thunkAPI) => {
