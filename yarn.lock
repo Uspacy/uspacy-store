@@ -2694,10 +2694,10 @@
     pidtree "^0.6.0"
     rfdc "^1.4.1"
 
-"@uspacy/sdk@0.0.999-alpha.226":
-  version "0.0.999-alpha.226"
-  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.226/994f976ae696effbd71218c482d3490fbdc56114#994f976ae696effbd71218c482d3490fbdc56114"
-  integrity sha512-sY8jKkJ0qtwcRDV74aBzrlzzDhAiwYjz5SREF+CDV1zBRR3xbNFh9LsYUXcS6ltkqeokQPsYVm7Smj6iB9Qihw==
+"@uspacy/sdk@0.0.999-alpha.229":
+  version "0.0.999-alpha.229"
+  resolved "https://npm.pkg.github.com/download/@uspacy/sdk/0.0.999-alpha.229/10850f4ff28fb4e3cad51e77d09bd2ee9fdd0a43#10850f4ff28fb4e3cad51e77d09bd2ee9fdd0a43"
+  integrity sha512-wrHGW+w9hbqBphFSjpq1K3ofywRym00lIANxEDMEcGZ06dPm1LSqqHlJK6/O66z9I051T0IzNgkv4hEuNs0HbA==
   dependencies:
     axios "^1.9.0"
     js-cookie "3.0.5"
