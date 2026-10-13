@@ -1,5 +1,5 @@
 import { IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
-import { FieldAccessLevel, IField } from '@uspacy/sdk/lib/models/field';
+import { FieldAccessAction, FieldAccessLevel, IField } from '@uspacy/sdk/lib/models/field';
 
 interface IFieldLevelParams {
 	field: IField;
@@ -17,21 +17,27 @@ interface ITableFieldsParams {
 	fields: IField[];
 }
 
-interface IFieldAccessLevelsParams {
+interface IFieldAccessActionsParams {
 	fields: IField[];
 	item: IEntityData;
 	userId: number;
 	stageId?: number;
 }
 
+const LEVEL_ACTIONS: Record<FieldAccessLevel, FieldAccessAction[]> = {
+	view: ['view'],
+	edit: ['view', 'edit'],
+	full: ['view', 'edit', 'delete'],
+};
+
 export const isFieldWithAccess = (field: IField) => field?.type === 'user_id' && !!field?.access?.enabled;
 
-const getLevelByStage = ({ field, stageId }: IFieldLevelParams): FieldAccessLevel[] => {
+const getLevelByStage = ({ field, stageId }: IFieldLevelParams): FieldAccessLevel => {
 	const access = field?.access;
 
-	if (!access?.funnels?.length) return access?.level || [];
+	if (!access?.funnels?.length) return access?.level?.[0];
 
-	return access.funnels?.find((it) => it?.stage_id?.includes(stageId))?.level || [];
+	return access.funnels?.find((it) => it?.stage_id?.includes(stageId))?.level?.[0];
 };
 
 const isUserInField = ({ field, item, userId }: IUserInFieldParams) => {
@@ -51,9 +57,11 @@ export const withFieldAccessTableFields = ({ tableFields, fields }: ITableFields
 	return [...tableFields, ...[...accessFieldCodes, 'kanban_stage_id']?.filter((code) => !tableFields.includes(code))];
 };
 
-export const getFieldAccessLevels = ({ fields, item, userId, stageId }: IFieldAccessLevelsParams): FieldAccessLevel[] =>
-	(fields || [])?.reduce<FieldAccessLevel[]>((acc, field) => {
+export const getFieldAccessActions = ({ fields, item, userId, stageId }: IFieldAccessActionsParams): FieldAccessAction[] =>
+	(fields || [])?.reduce<FieldAccessAction[]>((acc, field) => {
 		if (!isFieldWithAccess(field) || !isUserInField({ field, item, userId })) return acc;
 
-		return [...acc, ...getLevelByStage({ field, stageId })?.filter((level) => !acc.includes(level))];
+		const actions = LEVEL_ACTIONS[getLevelByStage({ field, stageId })] || [];
+
+		return [...acc, ...actions?.filter((action) => !acc.includes(action))];
 	}, []);
