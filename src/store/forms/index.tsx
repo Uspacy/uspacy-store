@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FormFieldCode, IForm, IFormDesign, IFormField, IFormOther, IPredefinedField } from '@uspacy/sdk/lib/models/forms';
+import { FormFieldCode, IForm, IFormDesign, IFormField, IFormOther, IFormQueryParam, IPredefinedField } from '@uspacy/sdk/lib/models/forms';
 
 import { updateFieldsOrderHelp } from '../../helpers/forms';
 import { getForms } from './actions';
@@ -49,6 +49,7 @@ const initialFormState: IState['form'] = {
 			timeBeforeRedirect: null,
 		},
 		design: initialDesignState,
+		queryParams: [],
 	},
 };
 
@@ -194,6 +195,18 @@ const formsReducer = createSlice({
 
 			state.form.config.design[groupKey] = { ...state.form.config.design[groupKey], ...value };
 		},
+		updateQueryParams: (state, action: PayloadAction<{ fieldCode: IFormQueryParam['fieldCode']; queryData: Partial<IFormQueryParam> }>) => {
+			const queryParamIndex = state.form.config.queryParams.findIndex((param) => param.fieldCode === action.payload.fieldCode);
+			if (queryParamIndex !== -1) {
+				state.form.config.queryParams[queryParamIndex] = { ...state.form.config.queryParams[queryParamIndex], ...action.payload.queryData };
+			}
+		},
+		addQueryParam: (state, action: PayloadAction<IFormQueryParam>) => {
+			state.form.config.queryParams.push(action.payload);
+		},
+		removeQueryParam: (state, action: PayloadAction<IFormQueryParam['fieldCode']>) => {
+			state.form.config.queryParams = state.form.config.queryParams.filter((param) => param.fieldCode !== action.payload);
+		},
 	},
 	extraReducers: {
 		[getForms.fulfilled.type]: (state, action: PayloadAction<{ data: IForm[]; meta: IFormsMeta }>) => {
@@ -232,5 +245,8 @@ export const {
 	updateDesignSettings,
 	removePredefinedField,
 	addPredefinedField,
+	updateQueryParams,
+	addQueryParam,
+	removeQueryParam,
 } = formsReducer.actions;
 export default formsReducer.reducer;
