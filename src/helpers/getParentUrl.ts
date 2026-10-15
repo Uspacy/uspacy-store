@@ -8,12 +8,15 @@ const ALREADY_CRM_ENTITY_RE = /^crm\/[^/]+\/?$/;
 const ALREADY_CRM_TASKS_RE = /^crm\/tasks\/?$/;
 const ALREADY_TASKS_RE = /^tasks\/?$/;
 const ALREADY_GROUP_TASKS_RE = /^company\/groups\/[^/]+\/tasks\/?$/;
+const ALREADY_TASK_TEMPLATES_RE = /^(?:company\/groups\/[^/]+\/)?tasks\/templates\/(?:recurring|one_time)\/?$/;
 
+const TASK_TEMPLATE_WITH_ID_RE = /^((?:company\/groups\/[^/]+\/)?tasks\/templates\/(?:recurring|one_time))\/[^/]+$/;
 const COMPANY_GROUP_TASK_WITH_ID = /^company\/groups\/[^/]+\/tasks\/[^/]+$/;
 const CRM_ACTIVITIES_WITH_ID = /^crm\/activities\/[^/]+$/;
 const CRM_ENTITY_CREATE_EDIT_RE = /^crm\/[^/]+\/(?:create|edit)(?:\/[^/]+)?$/;
 const CRM_ENTITY_WITH_ID_RE = /^crm\/[^/]+\/[^/]+$/;
 const TASKS_WITH_ID_RE = /^tasks\/[^/]+$/;
+const EMAIL_LETTER_RE = /^(?:.*\/)?email\/letter\/[^/]+$/;
 
 type Options = { keepOrigin?: boolean; keepQuery?: boolean };
 
@@ -37,6 +40,11 @@ export const getParentUrl = (rawUrl: string, { keepOrigin = true, keepQuery = fa
 	if (ALREADY_CRM_TASKS_RE.test(clean)) return base('/crm/tasks');
 	if (ALREADY_TASKS_RE.test(clean)) return base('/tasks');
 	if (ALREADY_GROUP_TASKS_RE.test(clean)) return base('/' + clean.replace(/\/?$/, '/'));
+	if (ALREADY_TASK_TEMPLATES_RE.test(clean)) return base('/' + clean.replace(/\/$/, ''));
+
+	if (TASK_TEMPLATE_WITH_ID_RE.test(clean)) {
+		return base('/' + clean.replace(TASK_TEMPLATE_WITH_ID_RE, '$1'));
+	}
 
 	if (COMPANY_GROUP_TASK_WITH_ID.test(clean)) {
 		return base('/' + clean.replace(LAST_SEGMENT_RE, '/'));
@@ -58,6 +66,9 @@ export const getParentUrl = (rawUrl: string, { keepOrigin = true, keepQuery = fa
 		return base('/tasks');
 	}
 
-	const trimmed = clean.replace(LAST_SEGMENT_RE, '');
-	return base(trimmed ? '/' + trimmed : '/');
+	if (EMAIL_LETTER_RE.test(clean)) {
+		return base('/');
+	}
+
+	return base('/' + clean);
 };

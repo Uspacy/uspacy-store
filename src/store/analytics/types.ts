@@ -1,4 +1,4 @@
-import { IAnalyticReport, IAnalyticReportList, IDashboard } from '@uspacy/sdk/lib/models/analytics';
+import { IAnalyticReport, IAnalyticReportList, IDashboard, IGoal, IGoalList } from '@uspacy/sdk/lib/models/analytics';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 
 export interface IState {
@@ -6,10 +6,15 @@ export interface IState {
 	dashboard: IDashboard;
 	reports: IAnalyticReportList;
 	report: IAnalyticReport;
+	goals: IGoalList;
+	goal: IGoal;
 	loadingDashboards: boolean;
 	loadingDashboard: boolean;
 	loadingReports: boolean;
 	loadingReport: boolean;
+	loadingGoals: boolean;
+	loadingGoal: boolean;
 	errorLoadingReports: IErrorsAxiosResponse;
+	errorLoadingGoals: IErrorsAxiosResponse;
 	errorLoadingDashboards: IErrorsAxiosResponse;
 }

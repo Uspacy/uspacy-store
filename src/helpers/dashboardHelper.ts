@@ -1,4 +1,4 @@
-import { IAnalyticReport } from '@uspacy/sdk/lib/models/analytics';
+import { GoalChartType, IAnalyticReport, IGoal } from '@uspacy/sdk/lib/models/analytics';
 import { v4 as uuidv4 } from 'uuid';
 
 export const findPlacement = (currentState, newItemWidth, newItemHeight, cols = 12) => {
@@ -56,7 +56,7 @@ export const findPlacement = (currentState, newItemWidth, newItemHeight, cols = 
 	return { x: 0, y: maxY }; // Place the element at the next available row
 };
 
-export const getMinSize = (chartType: IAnalyticReport['chart_type']) => {
+export const getMinSize = (chartType: IAnalyticReport['chart_type'] | GoalChartType) => {
 	switch (chartType) {
 		case 'numeric': {
 			return { minW: 3, minH: 1 };
@@ -73,6 +73,8 @@ export const getMinSize = (chartType: IAnalyticReport['chart_type']) => {
 
 export const removeReportFromLayout = (layout, reportId) => layout.filter((item) => item.report_id !== reportId);
 
+export const removeGoalFromLayout = (layout, goalId: string) => layout.filter((item) => item.goal_id !== goalId);
+
 export const addReportToLayout = (layout, reportData) => {
 	const chartLimitSize = getMinSize(reportData.chart_type);
 	const { x, y } = findPlacement(layout, chartLimitSize.minW, chartLimitSize.minH);
@@ -81,6 +83,23 @@ export const addReportToLayout = (layout, reportData) => {
 		x,
 		y,
 		report: reportData,
+		i: uuidv4(),
+		w: chartLimitSize.minW,
+		h: chartLimitSize.minH,
+		maxH: 5,
+		...chartLimitSize,
+	};
+	return [...(layout || []), newItem];
+};
+
+export const addGoalToLayout = (layout, goalData: IGoal) => {
+	const chartLimitSize = getMinSize(goalData.chart_type);
+	const { x, y } = findPlacement(layout, chartLimitSize.minW, chartLimitSize.minH);
+	const newItem = {
+		goal_id: goalData.id,
+		x,
+		y,
+		goal: goalData,
 		i: uuidv4(),
 		w: chartLimitSize.minW,
 		h: chartLimitSize.minH,

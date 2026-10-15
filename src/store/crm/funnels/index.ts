@@ -12,6 +12,7 @@ import {
 	deleteStage,
 	fetchFunnels,
 	fetchStages,
+	replicateFunnel,
 	updateFunnel,
 	updateReason,
 	updateStage,
@@ -105,6 +106,17 @@ const funnelsReducer = createSlice({
 		},
 		[createFunnel.fulfilled.type]: (state, action: PayloadAction<IFunnel, string, { arg: { data: Partial<IFunnel>; entityCode: string } }>) => {
 			const entityCode = action.meta.arg.entityCode;
+			state[entityCode].data.push(action.payload);
+		},
+
+		[replicateFunnel.fulfilled.type]: (
+			state,
+			action: PayloadAction<IFunnel, string, { arg: { id: number; name?: string; entityCode: string } }>,
+		) => {
+			const entityCode = action.meta.arg.entityCode;
+			if (!state[entityCode]) {
+				state[entityCode] = { loading: false, data: [] } as EntityFunnels;
+			}
 			state[entityCode].data.push(action.payload);
 		},
 

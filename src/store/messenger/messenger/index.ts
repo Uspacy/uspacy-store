@@ -65,6 +65,7 @@ const initialState: IState = {
 			perPage: 0,
 			to: 0,
 			total: 0,
+			totalActive: 0,
 		},
 		loading: false,
 	},
@@ -644,6 +645,13 @@ export const chatSlice = createSlice({
 			}
 			state.usersTypingStatus[chatId] = { typingUsersIds };
 		},
+		updateQuickAnswersTotalActive(state, action: PayloadAction<'increment' | 'decrement'>) {
+			if (action.payload === 'increment') {
+				state.quickAnswers.meta.totalActive += 1;
+			} else if (action.payload === 'decrement') {
+				state.quickAnswers.meta.totalActive -= 1;
+			}
+		},
 	},
 	extraReducers: {
 		[fetchChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
@@ -722,7 +730,6 @@ export const chatSlice = createSlice({
 				return group;
 			});
 		},
-
 		[goToMessage.fulfilled.type]: (state, action: PayloadAction<{ items: IMessage[]; profile: IUser }, string, { arg: GoToMessageRequest }>) => {
 			const isFirstOpenedChat = !state.messages.find((it) => it.chatId === action.payload.items[0]?.chatId);
 			const lastTimestamp = action.payload.items[action.payload.items.length - 1]?.timestamp;
@@ -785,7 +792,7 @@ export const chatSlice = createSlice({
 		[getQuickAnswers.rejected.type]: (state) => {
 			state.quickAnswers.loading = false;
 		},
-		[getQuickAnswers.fulfilled.type]: (state, action: PayloadAction<{ data: IQuickAnswer[]; meta: IMeta }>) => {
+		[getQuickAnswers.fulfilled.type]: (state, action: PayloadAction<{ data: IQuickAnswer[]; meta: IMeta & { totalActive: number } }>) => {
 			const { data, meta } = action.payload;
 			state.quickAnswers.data = data;
 			state.quickAnswers.meta = meta;
@@ -911,6 +918,7 @@ export const {
 	setAISummaryData,
 	setUserTypingStatus,
 	filterMessagesWithoutFirstUnread,
+	updateQuickAnswersTotalActive,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

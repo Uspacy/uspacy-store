@@ -134,7 +134,8 @@ export const updateQuickAnswerStatus = createAsyncThunk('messenger/updateQuickAn
 
 export const deleteQuickAnswer = createAsyncThunk('messenger/deleteQuickAnswer', async (params: { id: IQuickAnswer['id'] }, { rejectWithValue }) => {
 	try {
-		return (await uspacySdk.messengerService.deleteQuickAnswer(params.id)).data.id;
+		await uspacySdk.messengerService.deleteQuickAnswer(params.id);
+		return params.id;
 	} catch (e) {
 		return rejectWithValue(e);
 	}
