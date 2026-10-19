@@ -5,7 +5,9 @@ interface ITableFieldsParams {
 	fields: IField[];
 }
 
-export const isFieldWithAccess = (field: IField) => field?.type === 'user_id' && !!field?.access?.enabled;
+const getFieldAccess = (field: IField) => (field?.access && 'enabled' in field.access ? field.access : undefined);
+
+export const isFieldWithAccess = (field: IField) => field?.type === 'user_id' && !!getFieldAccess(field)?.enabled;
 
 export const withFieldAccessTableFields = ({ tableFields, fields }: ITableFieldsParams) => {
 	const accessFieldCodes = (fields || [])?.filter(isFieldWithAccess)?.map((field) => field.code);
