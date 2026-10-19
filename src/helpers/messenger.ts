@@ -1,14 +1,24 @@
 import { ChatType, EActiveEntity, IChat, IExternalChatsItems, IMessage } from '@uspacy/sdk/lib/models/messenger';
 import { IUser } from '@uspacy/sdk/lib/models/user';
 
+// owner of a direct chat may be missing in `members` (legacy chats or chats broken by member changes),
+// so participants are members + ownerId
+export const getChatParticipants = (chat: IChat): number[] =>
+	[...(chat?.members || []), chat?.ownerId].filter((id, index, array) => Boolean(id) && array.indexOf(id) === index);
+
+// the other participant of a direct chat; returns own id for the chat with self
+export const getDirectCompanionId = (chat: IChat, myAuthUserId: number): number | undefined => {
+	const participants = getChatParticipants(chat);
+	return participants.find((id) => id !== myAuthUserId) ?? (participants.includes(myAuthUserId) ? myAuthUserId : undefined);
+};
+
 export const getChatName = (chat: IChat, users: IUser[], profile: IUser, formattedUserName: (u: IUser) => string) => {
 	if (!chat) return '';
 
 	switch (chat?.type) {
 		case ChatType.DIRECT: {
-			const withSelf = chat.members.length === 1 && chat.members.includes(profile.authUserId);
-			if (withSelf) return formattedUserName(profile);
-			const userId = chat.members.find((member) => profile.authUserId !== member);
+			const userId = getDirectCompanionId(chat, profile.authUserId);
+			if (userId === profile.authUserId) return formattedUserName(profile);
 			const user = users.find(({ authUserId }) => authUserId === userId);
 			if (!user) return undefined;
 			return formattedUserName(user);
@@ -23,9 +33,8 @@ export const getChatPictureUrl = (chat: IChat, users: IUser[], profile: IUser) =
 
 	switch (chat.type) {
 		case ChatType.DIRECT: {
-			const withSelf = chat.members.length === 1 && chat.members.includes(profile.authUserId);
-			if (withSelf) return profile.avatar;
-			const userId = chat.members.find((member) => profile.authUserId !== member);
+			const userId = getDirectCompanionId(chat, profile.authUserId);
+			if (userId === profile.authUserId) return profile.avatar;
 			const user = users.find(({ authUserId }) => authUserId === userId);
 			return user?.avatar;
 		}
@@ -116,6 +125,8 @@ export const checkExtChatStatus = (chat: IChat) => [chat.active && chat.assigned
 export const separateExternalChats = (items: IChat[]) =>
 	items.reduce(
 		(acc, item) => {
+			// internal chats must never get into external lines buckets
+			if (item.type !== ChatType.EXTERNAL) return acc;
 			const [isActive, isUndistributed, isInactive] = checkExtChatStatus(item);
 
 			switch (true) {
