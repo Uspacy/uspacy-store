@@ -24,6 +24,8 @@ const getEntityBase = (linkData: ILinkData) => {
 	}
 };
 
+const isInAppPath = (value?: string) => !!value?.startsWith('/');
+
 const isAutomationMessage = (message: INotificationMessage) => ['automations', 'processes'].includes(message?.data?.service);
 
 const getAutomationKind = (entityType: string) => (['workflows', 'process'].includes(entityType) ? 'process' : 'automation');
@@ -47,7 +49,11 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 	}
 	const service = getServiceName(message.data.service);
 	const itemId = message?.data?.entity?.id || message?.data?.entity?.entity_id;
-	if (message.topic === 'custom' && (message.data.service === 'custom' || !itemId)) return '';
+	if (message.topic === 'custom') {
+		const customLink = message?.data?.entity?.link || message.data.service;
+		if (isInAppPath(customLink)) return customLink;
+		if (message.data.service === 'custom' || !itemId) return '';
+	}
 	switch (service) {
 		case 'crm':
 			return `/crm/${message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'tasks/task' : message.type}`}/${itemId}`;
@@ -80,7 +86,12 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 
 export const getDrawersInfo = (message: INotificationMessage) => {
 	if (message.data.service === 'u-approval') return undefined;
-	if (message.topic === 'custom' && (message.data.service === 'custom' || !(message?.data?.entity?.id || message?.data?.entity?.entity_id)))
+	if (
+		message.topic === 'custom' &&
+		(message.data.service === 'custom' ||
+			isInAppPath(message?.data?.entity?.link || message.data.service) ||
+			!(message?.data?.entity?.id || message?.data?.entity?.entity_id))
+	)
 		return undefined;
 	if (message.data.action === NotificationAction.DELETE && message?.type !== 'comment') return undefined;
 	const service = getServiceName(message.data.service);
