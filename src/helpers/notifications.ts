@@ -24,6 +24,17 @@ const getEntityBase = (linkData: ILinkData) => {
 	}
 };
 
+const parseCustomText = (value?: string) => {
+	const separatorIndex = value?.indexOf('|') ?? -1;
+	if (separatorIndex === -1) return undefined;
+
+	try {
+		return { key: value.slice(0, separatorIndex), params: JSON.parse(value.slice(separatorIndex + 1)) as Record<string, string> };
+	} catch {
+		return undefined;
+	}
+};
+
 const isInAppPath = (value?: string) => !!value?.startsWith('/');
 
 const isAutomationMessage = (message: INotificationMessage) => ['automations', 'processes'].includes(message?.data?.service);
@@ -197,7 +208,7 @@ export const getNotificationTitle = (message: INotificationMessage, profileId: n
 	const automationTitle = parseAutomationKey(message, message?.data?.entity?.title);
 	if (automationTitle) return automationTitle.key;
 	if (message.topic === 'custom') {
-		return message?.data?.entity?.title;
+		return parseCustomText(message?.data?.entity?.title)?.key || message?.data?.entity?.title;
 	}
 	const crmBaseTypes = ['leads', 'contacts', 'companies', 'deals'];
 	const service = getServiceName(message.data.service);
@@ -233,7 +244,7 @@ export const getNotificationSubTitle = (message: INotificationMessage): string |
 	const automationSource = parseAutomationKey(message, message?.data?.entity?.description);
 	if (automationSource) return automationSource.key;
 	if (message.topic === 'custom') {
-		return message?.data?.entity?.description;
+		return parseCustomText(message?.data?.entity?.description)?.key || message?.data?.entity?.description;
 	}
 	const service = getServiceName(message.data.service);
 	switch (service) {
@@ -250,6 +261,8 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 	const timestamp = new Date(message.data.timestamp).getTime();
 	const mentioned = !!message.data.entity?.mentioned?.users?.includes(profileId);
 	const commentEntityTitle = message.data?.root_parent?.data?.title;
+	const customTitle = message.topic === 'custom' ? parseCustomText(message?.data?.entity?.title) : undefined;
+	const customSubTitle = message.topic === 'custom' ? parseCustomText(message?.data?.entity?.description) : undefined;
 	const automationTitle = parseAutomationKey(message, message.data?.entity?.title);
 	const automationSource = parseAutomationKey(message, message.data?.entity?.description);
 	return {
@@ -265,6 +278,8 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 		read: message.read || false,
 		createdAt: message.createdAt,
 		metadata: message?.metadata ?? [],
+		...(customTitle?.params && { titleParams: customTitle.params }),
+		...(customSubTitle?.params && { subTitleParams: customSubTitle.params }),
 		...(automationTitle && { titleParams: { title: automationTitle.value } }),
 		...(automationSource && { subTitleParams: { user: user ? `${user.firstName} ${user.lastName}` : `#${message.data.user_id}` } }),
 	};
