@@ -23,6 +23,19 @@ const getEntityBase = (linkData: ILinkData) => {
 	}
 };
 
+const parseCustomText = (value?: string) => {
+	const separatorIndex = value?.indexOf('|') ?? -1;
+	if (separatorIndex === -1) return undefined;
+
+	try {
+		return { key: value.slice(0, separatorIndex), params: JSON.parse(value.slice(separatorIndex + 1)) as Record<string, string> };
+	} catch {
+		return undefined;
+	}
+};
+
+const isInAppPath = (value?: string) => !!value?.startsWith('/');
+
 const isAutomationMessage = (message: INotificationMessage) => ['automations', 'processes'].includes(message?.data?.service);
 
 const getAutomationKind = (entityType: string) => (['workflows', 'process'].includes(entityType) ? 'process' : 'automation');
@@ -46,7 +59,11 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 	}
 	const service = getServiceName(message.data.service);
 	const itemId = message?.data?.entity?.id || message?.data?.entity?.entity_id;
-	if (message.topic === 'custom' && (message.data.service === 'custom' || !itemId)) return '';
+	if (message.topic === 'custom') {
+		const customLink = message?.data?.entity?.link || message.data.service;
+		if (isInAppPath(customLink)) return customLink;
+		if (message.data.service === 'custom' || !itemId) return '';
+	}
 	switch (service) {
 		case 'crm':
 			return `/crm/${message.data.entity?.table_name || `${message.type === 'crm_activity' ? 'tasks/task' : message.type}`}/${itemId}`;
@@ -79,7 +96,12 @@ export const getLinkEntity = (message: INotificationMessage): string | undefined
 
 export const getDrawersInfo = (message: INotificationMessage) => {
 	if (message.data.service === 'u-approval') return undefined;
-	if (message.topic === 'custom' && (message.data.service === 'custom' || !(message?.data?.entity?.id || message?.data?.entity?.entity_id)))
+	if (
+		message.topic === 'custom' &&
+		(message.data.service === 'custom' ||
+			isInAppPath(message?.data?.entity?.link || message.data.service) ||
+			!(message?.data?.entity?.id || message?.data?.entity?.entity_id))
+	)
 		return undefined;
 	if (message.data.action === NotificationAction.DELETE && message?.type !== 'comment') return undefined;
 	const service = getServiceName(message.data.service);
@@ -185,7 +207,7 @@ export const getNotificationTitle = (message: INotificationMessage, profileId: n
 	const automationTitle = parseAutomationKey(message, message?.data?.entity?.title);
 	if (automationTitle) return automationTitle.key;
 	if (message.topic === 'custom') {
-		return message?.data?.entity?.title;
+		return parseCustomText(message?.data?.entity?.title)?.key || message?.data?.entity?.title;
 	}
 	const crmBaseTypes = ['leads', 'contacts', 'companies', 'deals'];
 	const service = getServiceName(message.data.service);
@@ -221,7 +243,7 @@ export const getNotificationSubTitle = (message: INotificationMessage): string |
 	const automationSource = parseAutomationKey(message, message?.data?.entity?.description);
 	if (automationSource) return automationSource.key;
 	if (message.topic === 'custom') {
-		return message?.data?.entity?.description;
+		return parseCustomText(message?.data?.entity?.description)?.key || message?.data?.entity?.description;
 	}
 	const service = getServiceName(message.data.service);
 	switch (service) {
@@ -238,6 +260,8 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 	const timestamp = new Date(message.data.timestamp).getTime();
 	const mentioned = !!message.data.entity?.mentioned?.users?.includes(profileId);
 	const commentEntityTitle = message.data?.root_parent?.data?.title;
+	const customTitle = message.topic === 'custom' ? parseCustomText(message?.data?.entity?.title) : undefined;
+	const customSubTitle = message.topic === 'custom' ? parseCustomText(message?.data?.entity?.description) : undefined;
 	const automationTitle = parseAutomationKey(message, message.data?.entity?.title);
 	const automationSource = parseAutomationKey(message, message.data?.entity?.description);
 	return {
@@ -253,6 +277,8 @@ export const transformNotificationMessage = (message: INotificationMessage, user
 		read: message.read || false,
 		createdAt: message.createdAt,
 		metadata: message?.metadata ?? [],
+		...(customTitle?.params && { titleParams: customTitle.params }),
+		...(customSubTitle?.params && { subTitleParams: customSubTitle.params }),
 		...(automationTitle && { titleParams: { title: automationTitle.value } }),
 		...(automationSource && { subTitleParams: { user: user ? `${user.firstName} ${user.lastName}` : `#${message.data.user_id}` } }),
 	};
