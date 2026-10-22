@@ -205,9 +205,15 @@ export const getNotificationTitle = (message: INotificationMessage, profileId: n
 	return `notifications.${isSmartObject ? entityType : service}.${baseType}.${message.data.action}`;
 };
 
+// Same token as the "all members" mention in chat markdown, so consumers translate it in one way
+const MENTION_ALL_TOKEN = '{@(all)[mentionAllMembers]}';
+
 export const deleteHtmlFromComment = (text: string) => {
 	const div = document.createElement('div');
 	div.innerHTML = text;
+	div.querySelectorAll('[data-mention-type="all"]').forEach((element) => {
+		element.textContent = MENTION_ALL_TOKEN;
+	});
 	return div.textContent || div.innerText || '';
 };
 

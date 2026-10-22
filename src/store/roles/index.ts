@@ -17,6 +17,16 @@ import { idsForDisableDeleting } from './disableDeleting.enum';
 import { PermissionsControllerViewEnums } from './role.enums';
 import { IState } from './types';
 
+const MATRIX_PERMISSION_GROUPS = ['create', 'edit', 'view', 'delete'];
+
+// groups the matrix does not render (export, etc.) must survive a role save
+const getExtraPermissionGroups = (permissions: IPermissions) =>
+	Object.fromEntries(
+		Object.entries(permissions || {})
+			.filter(([key, value]) => !MATRIX_PERMISSION_GROUPS.includes(key) && Array.isArray(value))
+			.map(([key, value]) => [key, [...value]]),
+	);
+
 const initialState = {
 	roles: [],
 	loadingRoles: false,
@@ -160,14 +170,14 @@ const rolesReducer = createSlice({
 		allowAllPermissions(state, action: PayloadAction<{ currPermission; type }>) {
 			const permissionsType = action.payload.type;
 			const permissions = {
+				...getExtraPermissionGroups(state.permissions),
 				create: [],
 				edit: [],
 				view: [],
 				delete: [],
 			};
-			const keys = Object.keys(state.permissions);
-			keys.forEach((key) => {
-				permissions[key] = [...permissions[key], state.permissions[key].filter((value) => value.split('.').pop() === 'disabled-any')];
+			MATRIX_PERMISSION_GROUPS.forEach((key) => {
+				permissions[key] = [...permissions[key], (state.permissions[key] || []).filter((value) => value.split('.').pop() === 'disabled-any')];
 			});
 			permissions.create = [...permissions.create, action.payload.currPermission.create].flat();
 			permissions.view = [...permissions.view, action.payload.currPermission.view].flat();
@@ -184,6 +194,7 @@ const rolesReducer = createSlice({
 			const permissionState = permissionsType === 'create' ? state.createPermissions : state.permissions;
 
 			const newPermissions = {
+				...getExtraPermissionGroups(permissionState),
 				create: [...permissionState.create],
 				edit: [...permissionState.edit],
 				view: [...permissionState.view],
@@ -280,6 +291,7 @@ const rolesReducer = createSlice({
 		},
 		mergeCreatePermissions(state, action) {
 			const merged = {
+				...getExtraPermissionGroups(state[action.payload.key]),
 				create: [...state[action.payload.key].create, ...action.payload.universal.create],
 				edit: [...state[action.payload.key].edit, ...action.payload.universal.edit],
 				view: [...state[action.payload.key].view, ...action.payload.universal.view],
@@ -416,6 +428,7 @@ const rolesReducer = createSlice({
 			};
 			state.loadingRoles = false;
 			state.permissions = {
+				...getExtraPermissionGroups(action.payload.permissions),
 				create: [...disabledPermissions.create, ...permCheck(action.payload.permissions.create)],
 				edit: [...disabledPermissions.edit, ...permCheck(action.payload.permissions.edit)],
 				view: [...disabledPermissions.view, ...permCheck(action.payload.permissions.view)],
