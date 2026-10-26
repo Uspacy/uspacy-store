@@ -10,17 +10,14 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.x]
+    environment: stage
 
     steps:
       - uses: actions/checkout@main
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@main
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ vars.CORE_TAG }}
       - name: Check and Publish to GitHub Package Registry
         run: |
           yarn install

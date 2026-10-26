@@ -1,1 +1,1 @@
-{ "*.{ts,tsx,js}": "npm run eslint" }
+{ "*.{ts,tsx,js}": "eslint --max-warnings=0" }
