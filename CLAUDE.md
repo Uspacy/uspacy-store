@@ -34,16 +34,17 @@ Then restart the app's dev server. TODO: verified command to restore the app's o
 Run before every commit; all must exit 0:
 
 ```sh
-yarn eslint src      # NOT `yarn eslint .` — after a build it lints lib/*.d.ts and reports ~13900 false errors
+yarn eslint          # eslint src --max-warnings=0
 yarn typecheck       # tsc --noEmit
 yarn build           # catches webpack/ts-loader failures
 ```
 
 - `yarn eslint:fix` autofixes `src` (formatting, import order).
-- `yarn eslint` runs with `--max-warnings=0`: warnings (unsorted imports, unused vars, `console`) fail it.
-- The husky pre-commit hook runs the same eslint on staged `*.{ts,tsx,js}` via lint-staged.
-- CI on PRs to `main` runs `yarn build` and `yarn eslint src`, and checks the `package.json` version is unpublished.
-  A bare `yarn eslint` (no path) lints nothing and always passes — never use it as a check.
+- `--max-warnings=0`: warnings (unsorted imports, unused vars, `console`) fail it. `lib/` and `docs/` are ignored
+  in `.eslintrc.js`, so editors and `eslint .` do not report the build output.
+- The husky pre-commit hook runs the same rules only on staged `*.{ts,tsx,js}` via lint-staged.
+- CI on PRs to `main` runs `yarn build` and `yarn eslint`, and checks the `package.json` version is unpublished.
+  CI does not run at all while the PR has a merge conflict with `main` — merge `main` in first.
 - There is no test suite. Do not add test tooling unless the developer asks for it.
 
 ## Conventions
@@ -82,8 +83,9 @@ yarn build           # catches webpack/ts-loader failures
     `users` / `departments` / `entities`.
   - Build/publish config: `package.json` `main` / `types` / `files`, `tsconfig.json`, `webpack.config.js` (every
     `src/**/*.{ts,tsx}` is its own entry — that is what makes deep imports work), `.npmrc`, `.github/workflows/*`.
-- **Versioning.** Every PR to `main` bumps the patch `version` in `package.json` (0.0.376 -> 0.0.377); the
-  `check-version` workflow fails otherwise, and merging to `main` auto-publishes.
+- **Versioning.** Every PR to `main` bumps the patch `version` in `package.json` (0.0.377 -> 0.0.378); the
+  `check-version` workflow fails otherwise, and merging to `main` auto-publishes. If `main` has meanwhile
+  released your number, merge `main` in and bump again.
 - **`stage` branch** publishes with the `alpha` dist-tag. Merge into `stage` only when the developer says so.
   Alpha versions use the format `0.0.999-alpha.N` and go up by one: `0.0.999-alpha.373` -> `0.0.999-alpha.374`.
 - Traps:
