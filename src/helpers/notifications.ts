@@ -211,12 +211,13 @@ const MENTION_ALL_TOKEN_REGEX = /{@\(all\)\[[^\]]+\]}/g;
 const HTML_TAG_REGEX = /<[^<>]*>/g;
 const HTML_ENTITY_REGEX = /&(#\d+|#x[\da-f]+|[a-z]+);/gi;
 const NAMED_HTML_ENTITY_CODES: Record<string, number> = { amp: 38, lt: 60, gt: 62, quot: 34, apos: 39, nbsp: 32 };
+const MAX_CODE_POINT = 0x10ffff;
 
 const decodeHtmlEntities = (text: string) =>
 	text.replace(HTML_ENTITY_REGEX, (entity, code: string) => {
 		if (code.startsWith('#')) {
 			const codePoint = code[1].toLowerCase() === 'x' ? parseInt(code.slice(2), 16) : Number(code.slice(1));
-			return Number.isNaN(codePoint) ? entity : String.fromCodePoint(codePoint);
+			return Number.isNaN(codePoint) || codePoint < 0 || codePoint > MAX_CODE_POINT ? entity : String.fromCodePoint(codePoint);
 		}
 		const namedCodePoint = NAMED_HTML_ENTITY_CODES[code.toLowerCase()];
 		return namedCodePoint ? String.fromCodePoint(namedCodePoint) : entity;
@@ -225,7 +226,7 @@ const decodeHtmlEntities = (text: string) =>
 export const deleteHtmlFromComment = (text: string) =>
 	decodeHtmlEntities((text || '').replace(MENTION_ALL_HTML_REGEX, MENTION_ALL_TOKEN).replace(HTML_TAG_REGEX, ''));
 
-const translateMentionAllToken = (text: string, label?: string) => (label ? (text || '').replace(MENTION_ALL_TOKEN_REGEX, label) : text);
+const translateMentionAllToken = (text: string, label?: string) => (label ? text.replace(MENTION_ALL_TOKEN_REGEX, label) : text);
 
 export const getNotificationSubTitle = (message: INotificationMessage): string | undefined => {
 	const automationSource = parseAutomationKey(message, message?.data?.entity?.description);
@@ -252,9 +253,9 @@ export interface INotificationViewOptions {
 }
 
 export interface INotificationView {
-	titleKey: string;
+	titleKey?: string;
 	titleParams?: Record<string, string>;
-	subTitleKey: string;
+	subTitleKey?: string;
 	subTitleParams?: Record<string, string>;
 	title: string;
 	body: string;
@@ -284,7 +285,8 @@ export const getNotificationView = (
 		subTitleKey,
 		subTitleParams,
 		title: titleKey ? translateKey(titleKey, titleParams) : '',
-		body: subTitleParams ? translateKey(subTitleKey, subTitleParams) : translateMentionAllToken(subTitleKey, mentionAllLabel),
+		body:
+			subTitleParams && subTitleKey ? translateKey(subTitleKey, subTitleParams) : translateMentionAllToken(subTitleKey || '', mentionAllLabel),
 		url: getLinkEntity(message),
 		drawer: getDrawersInfo(message),
 		author: user,
