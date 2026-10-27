@@ -14,8 +14,7 @@ yarn build                              # webpack -> lib/ (one .js + .d.ts per s
 
 - Node: the version in the GitHub Actions variable `CORE_TAG` (22.23.4 as of 2026-10); no `.nvmrc` on purpose.
 - `yarn dev` — wipes `lib/`, then webpack dev server on `http://localhost:4001` writing a dev build to `lib/` on every change.
-- `yarn build:docs` — TypeDoc into `docs/` (deployed to GitHub Pages from `main` by CI).
-- `lib/`, `docs/`, `.env` are gitignored — never commit build output.
+- `yarn build:docs` — TypeDoc into `docs/` (GitHub Pages from `main` via CI). `lib/`, `docs/`, `.env` are gitignored.
 
 Trying a change inside a consumer app (`crm-frontend`, `tasks-frontend`, ...) before publishing — copy the build in,
 do not `yarn link` (a symlink makes the app resolve `@uspacy/sdk` / `react-redux` from this repo's node_modules):
@@ -27,7 +26,8 @@ rsync -a --delete lib/ ../<app>/node_modules/@uspacy/store/lib/
 rm -rf ../<app>/node_modules/.cache   # webpack's cache keys node_modules by package version and won't see the copy
 ```
 
-Then restart the app's dev server. TODO: verified command to restore the app's original package afterwards.
+Then restart the app's dev server. Restore the original packages afterwards (~30s; also clears the stale cache):
+`cd ../<app> && rm -rf node_modules/@uspacy/store node_modules/@uspacy/common/node_modules/@uspacy/store node_modules/.cache && yarn install --check-files --frozen-lockfile`.
 
 ## Verification
 
