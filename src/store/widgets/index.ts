@@ -47,6 +47,11 @@ const initialState: IState = {
 				},
 			],
 		},
+		accessSettings: {
+			allUsers: true,
+			distributionMethod: 'all',
+			members: [],
+		},
 	},
 	fields: [],
 	widgetsList: [],
