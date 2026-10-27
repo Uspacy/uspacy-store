@@ -6,13 +6,14 @@ microfrontend. No backend, database or Docker here: it is a webpack-built librar
 ## Setup
 
 ```sh
-nvm use                                 # Node 22.23.4 (.nvmrc)
 export NPM_AUTH_TOKEN=<github token>    # REQUIRED: .npmrc interpolates it; yarn install fails without it
                                         # ("Failed to replace env in config"). A real token is needed for @uspacy/* packages.
 yarn install --frozen-lockfile          # Yarn 1 (yarn.lock); `prepare` installs the husky pre-commit hook
 yarn build                              # webpack -> lib/ (one .js + .d.ts per src file)
 ```
 
+- Node: the version in the GitHub Actions variable `CORE_TAG` (22.23.4 as of 2026-10). CI reads it; there is
+  no `.nvmrc` on purpose, so match it locally by hand.
 - `yarn dev` — wipes `lib/`, then webpack dev server on `http://localhost:4001` writing a dev build to `lib/` on every change.
 - `yarn build:docs` — TypeDoc into `docs/` (deployed to GitHub Pages from `main` by CI).
 - `lib/`, `docs/`, `.env` are gitignored — never commit build output.
