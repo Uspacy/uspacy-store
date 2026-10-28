@@ -7,6 +7,7 @@ import isNumber from 'lodash/isNumber';
 import isString from 'lodash/isString';
 
 import { FieldType } from './../const';
+import { withFieldAccessTableFields } from './fieldAccess';
 
 export const getDefaultFastFields = (entityType: string) => {
 	switch (entityType) {
@@ -194,6 +195,9 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			if (findField?.type === 'customLink') {
 				const checkCompany = key === 'company' ? 'companies' : key;
 				return { ...acc, [`${checkCompany}[title]`]: value };
+			}
+			if (key === 'table_fields') {
+				return { ...acc, [key]: withFieldAccessTableFields({ tableFields: value as string[], fields }) };
 			}
 			if (['kanban_status', 'kanban_reason_id'].includes(key)) {
 				return { ...acc, [key]: isArray(value) ? value : [value] };
