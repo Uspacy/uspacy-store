@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IErrorsAxiosResponse } from '@uspacy/sdk/lib/models/errors';
 import { IField } from '@uspacy/sdk/lib/models/field';
-import { IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
+import { IMeta, IResponseWithMeta } from '@uspacy/sdk/lib/models/response';
 import { ITask, ITasksParams, taskType } from '@uspacy/sdk/lib/models/tasks';
 import { IMassActions } from '@uspacy/sdk/lib/services/TasksService/dto/mass-actions.dto';
 import cloneDeep from 'lodash/cloneDeep';
@@ -95,6 +95,13 @@ const initialState = {
 	aiTaskData: null,
 } as IState;
 
+// A list response without meta used to wipe state.meta, and every reducer writing meta.total
+// threw from then on — task creation, deletion and the table counter included.
+const ensureMeta = (state: IState): IMeta => {
+	if (!state.meta) state.meta = { ...initialState.meta };
+	return state.meta;
+};
+
 const tasksReducer = createSlice({
 	name: 'tasksReducer',
 	initialState,
@@ -148,7 +155,7 @@ const tasksReducer = createSlice({
 			state.tasks.data = state.tasks.data.concat(action.payload.data);
 		},
 		removeTaskFromEndTable: (state) => {
-			if (state.isTable) {
+			if (state.isTable && state.meta) {
 				if (state.meta.total >= state.meta.perPage || state.meta.currentPage !== state.meta.lastPage) {
 					state.tasks.data.splice(-1);
 				}
@@ -157,7 +164,8 @@ const tasksReducer = createSlice({
 		removeTaskFromNPositionTable: (state, action: PayloadAction<string>) => {
 			if (state.isTable) {
 				state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload));
-				state.meta.total = state.meta.total - 1;
+				const meta = ensureMeta(state);
+				meta.total = (meta.total ?? 0) - 1;
 			}
 		},
 		clearTasks: (state) => {
@@ -183,7 +191,7 @@ const tasksReducer = createSlice({
 			state.isRegularSection = action.payload;
 		},
 		setTotalTasks: (state, action: PayloadAction<number>) => {
-			state.meta.total = action.payload;
+			ensureMeta(state).total = action.payload;
 		},
 		setAnEditMode: (state, action: PayloadAction<boolean>) => {
 			state.isEditMode = action.payload;
@@ -230,7 +238,8 @@ const tasksReducer = createSlice({
 				const before = state.tasks.data.length;
 				state.tasks.data = state.tasks.data.filter((task) => task?.id !== String(action?.payload?.id));
 				if (state.tasks.data.length < before) {
-					state.meta.total = Math.max(0, state.meta.total - 1);
+					const meta = ensureMeta(state);
+					meta.total = Math.max(0, (meta.total ?? 0) - 1);
 					if (state.tasks?.meta?.total != null) {
 						state.tasks.meta.total = Math.max(0, state.tasks.meta.total - 1);
 					}
@@ -314,14 +323,17 @@ const tasksReducer = createSlice({
 
 			movedItem = { ...movedItem, kanbanStageId: String(stageId) };
 
+			if (!Array.isArray(destinationStage.data)) destinationStage.data = [];
+
 			const overIndex = destinationStage.data.findIndex((item) => +item?.id === +prevTaskId);
 
 			if (overIndex >= 0) destinationStage.data.splice(overIndex + 1, 0, movedItem);
 			else destinationStage.data.unshift(movedItem);
 
 			if (sourceStage && sourceStage !== destinationStage) {
-				sourceStage.meta.total = Math.max(0, (sourceStage.meta.total ?? 0) - 1);
-				destinationStage.meta.total = (destinationStage.meta.total ?? 0) + 1;
+				// A stage still loading its first page has no meta yet, so its counter is left alone
+				if (sourceStage.meta) sourceStage.meta.total = Math.max(0, (sourceStage.meta.total ?? 0) - 1);
+				if (destinationStage.meta) destinationStage.meta.total = (destinationStage.meta.total ?? 0) + 1;
 			}
 		},
 	},
@@ -331,7 +343,7 @@ const tasksReducer = createSlice({
 			state.errorLoadingTasks = null;
 			if (state.isTable) {
 				state.tasks = action.payload.aborted ? state.tasks : action.payload;
-				state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+				state.meta = action.payload.aborted ? state.meta : action.payload.meta ?? state.meta;
 				if (!action.payload.aborted) state.pendingNewItems['task'] = [];
 			}
 		},
@@ -347,7 +359,7 @@ const tasksReducer = createSlice({
 			state.loadingTasks = action.payload.aborted;
 			state.errorLoadingTasks = null;
 			state.tasks = action.payload.aborted ? state.tasks : action.payload;
-			state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+			state.meta = action.payload.aborted ? state.meta : action.payload.meta ?? state.meta;
 			if (!action.payload.aborted) state.pendingNewItems['recurring'] = [];
 		},
 		[getRecurringTemplates.pending.type]: (state) => {
@@ -362,7 +374,7 @@ const tasksReducer = createSlice({
 			state.loadingTasks = action.payload.aborted;
 			state.errorLoadingTasks = null;
 			state.tasks = action.payload.aborted ? state.tasks : action.payload;
-			state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+			state.meta = action.payload.aborted ? state.meta : action.payload.meta ?? state.meta;
 			if (!action.payload.aborted) state.pendingNewItems['one_time'] = [];
 		},
 		[getOneTimeTemplates.pending.type]: (state) => {
@@ -378,7 +390,7 @@ const tasksReducer = createSlice({
 			state.errorLoadingTasks = null;
 			if (state.isHierarchy) {
 				state.tasks = action.payload.aborted ? state.tasks : action.payload;
-				state.meta = action.payload.aborted ? state.meta : action.payload.meta;
+				state.meta = action.payload.aborted ? state.meta : action.payload.meta ?? state.meta;
 			}
 		},
 		[getHierarchies.pending.type]: (state) => {
@@ -436,7 +448,8 @@ const tasksReducer = createSlice({
 			state.errorLoadingCreatingTask = null;
 			if (action.payload.abilityToAddTask) {
 				if (state.isTable) {
-					state.meta.total = state.meta.total + 1;
+					const meta = ensureMeta(state);
+					meta.total = (meta.total ?? 0) + 1;
 				}
 				if (state.isTable && !state.isHierarchy) {
 					state.tasks.data.unshift(action.payload.task);
@@ -489,7 +502,8 @@ const tasksReducer = createSlice({
 			state.errorLoadingCreatingTask = null;
 			if (action.payload.abilityToAddTask) {
 				if (state.isTable) {
-					state.meta.total = state.meta.total + 1;
+					const meta = ensureMeta(state);
+					meta.total = (meta.total ?? 0) + 1;
 				}
 				if (state.isTable) {
 					state.tasks.data.unshift(action.payload.task);
@@ -668,7 +682,8 @@ const tasksReducer = createSlice({
 				state.deleteTaskId = +action?.payload?.id;
 			}
 			if (state.isTable) {
-				state.meta.total = state.meta.total - 1;
+				const meta = ensureMeta(state);
+				meta.total = Math.max(0, (meta.total ?? 0) - 1);
 			}
 			if (state.isTable) {
 				if (state.tasksServiceType === action.payload.type) {
@@ -695,17 +710,18 @@ const tasksReducer = createSlice({
 			const admin = action.payload.admin;
 
 			if (state.isTable) {
+				const meta = ensureMeta(state);
 				state.tasks.data = state.tasks.data.filter((task) => {
 					const setterTaskUser = task?.setterId === String(action.payload.profile.id);
 
 					const checkPermissionsForEdit = admin || setterTaskUser;
 
 					if (action.payload.all && checkPermissionsForEdit) {
-						state.meta.total = 0;
+						meta.total = 0;
 					} else if (action.payload.all && checkPermissionsForEdit && action.payload.exceptIds.length) {
-						state.meta.total = action.payload.exceptIds.length;
+						meta.total = action.payload.exceptIds.length;
 					} else {
-						state.meta.total = state.meta.total - action.payload.taskIds.length;
+						meta.total = Math.max(0, (meta.total ?? 0) - action.payload.taskIds.length);
 					}
 
 					return checkPermissionsForEdit && !action.payload.taskIds.includes(task?.id);
@@ -932,8 +948,8 @@ const tasksReducer = createSlice({
 			else destinationStage?.data?.unshift(movedItem);
 
 			if (sourceStage && sourceStage !== destinationStage) {
-				sourceStage.meta.total = Math.max(0, (sourceStage.meta.total ?? 0) - 1);
-				destinationStage.meta.total = (destinationStage.meta.total ?? 0) + 1;
+				if (sourceStage.meta) sourceStage.meta.total = Math.max(0, (sourceStage.meta.total ?? 0) - 1);
+				if (destinationStage.meta) destinationStage.meta.total = (destinationStage.meta.total ?? 0) + 1;
 			}
 		},
 	},

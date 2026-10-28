@@ -17,6 +17,16 @@ import { idsForDisableDeleting } from './disableDeleting.enum';
 import { PermissionsControllerViewEnums } from './role.enums';
 import { IState } from './types';
 
+const MATRIX_PERMISSION_GROUPS = ['create', 'edit', 'view', 'delete'];
+
+// groups the matrix does not render (export, etc.) must survive a role save
+const getExtraPermissionGroups = (permissions: IPermissions) =>
+	Object.fromEntries(
+		Object.entries(permissions || {})
+			.filter(([key, value]) => !MATRIX_PERMISSION_GROUPS.includes(key) && Array.isArray(value))
+			.map(([key, value]) => [key, [...value]]),
+	);
+
 const initialState = {
 	roles: [],
 	loadingRoles: false,
@@ -52,38 +62,48 @@ const rolesReducer = createSlice({
 	initialState,
 	reducers: {
 		getNextVal(state, action) {
-			const { tabName, categoryName, colName, targetVal, storeKey, currPickPermission } = action.payload;
+			const { tabName, categoryName, colName, targetVal, storeKey, currPickPermission, funnelKey } = action.payload;
 
+			const FUNNEL_ROLES = ['setter', 'responsible', 'accomplice', 'auditor'];
 			const filteredCurrColName = colName === 'view' ? 'edit' : 'delete';
 			const currStoreData = current(state[storeKey][filteredCurrColName]);
+			const prefix = `${tabName}.${categoryName}.${filteredCurrColName}`;
 
-			const findNextVal = currStoreData
-				.find(
-					(item) =>
-						item.split('.').splice(0, 3).join('.') === `${tabName}.${categoryName}.${filteredCurrColName}` && !item.includes('disabled'),
-				)
-				?.split('.')
-				?.splice(-1)[0];
+			if (!['view', 'edit'].includes(colName)) return;
 
-			const filterArr = currStoreData.filter(
-				(item) => item.split('.').splice(0, 3).join('.') !== `${tabName}.${categoryName}.${filteredCurrColName}`,
-			);
+			const validNextVal = {
+				mine: ['allowed', 'department'],
+				disabled: ['allowed', 'mine', 'department'],
+				department: ['allowed'],
+			};
 
-			if (['view', 'edit'].includes(colName)) {
-				const validNextVal = {
-					mine: ['allowed', 'department'],
-					disabled: ['allowed', 'mine', 'department'],
-					department: ['allowed'],
-				};
+			const groups = new Map<string, string>();
+			currStoreData.forEach((item) => {
+				if (item.split('.').splice(0, 3).join('.') !== prefix) return;
+				if (item.includes('disabled-any')) return;
 
-				if (validNextVal[targetVal]?.includes(findNextVal)) {
-					state[storeKey][filteredCurrColName] = [
-						...filterArr,
-						`${tabName}.${categoryName}.${filteredCurrColName}.${targetVal}`,
-						...(colName === 'view' && currPickPermission ? [currPickPermission] : []),
-					];
+				const parts = item.split('.');
+				const last = parts[parts.length - 1];
+				const roleKey = tabName === 'tasks' && FUNNEL_ROLES.includes(last) ? last : 'plain';
+
+				if (funnelKey && roleKey !== funnelKey) return;
+
+				groups.set(roleKey, item);
+			});
+
+			let result = [...currStoreData];
+			groups.forEach((item, roleKey) => {
+				const currVal = item.split('.')[3];
+				if (validNextVal[targetVal]?.includes(currVal)) {
+					const newItem = roleKey === 'plain' ? `${prefix}.${targetVal}` : `${prefix}.${targetVal}.${roleKey}`;
+					result = result.filter((it) => it !== item);
+					result.push(newItem);
 				}
-			}
+			});
+
+			if (colName === 'view' && currPickPermission) result.push(currPickPermission);
+
+			state[storeKey][filteredCurrColName] = result;
 		},
 		selectedRole(state, action) {
 			state.roleData = action.payload;
@@ -124,20 +144,25 @@ const rolesReducer = createSlice({
 		},
 		updatePermission(state, action) {
 			const currPoint = state[action.payload.permissionsType][action.payload.key];
-			const keyForClean = action.payload.value.split('.').slice(0, -1).join('.');
-			const typeOfCleanItem = action.payload.value.split('.').pop();
+			const newValue = action.payload.value;
 
-			const filterArr = currPoint.filter((item) => {
-				const prettierItem = item.split('.').slice(0, -1).join('.');
-				if (prettierItem !== keyForClean) {
-					return item;
-				}
-			});
+			const getValueType = (item: string) => {
+				const p = item.split('.');
+				return p.length === 5 ? p[3] : p[p.length - 1];
+			};
+			const getDedupeKey = (item: string) => {
+				const p = item.split('.');
+				return p.length === 5 ? [p[0], p[1], p[2], p[4]].join('.') : p.slice(0, -1).join('.');
+			};
 
-			state[action.payload.permissionsType][action.payload.key] = [
-				...filterArr,
-				typeOfCleanItem === 'disabled' ? '' : action.payload.value,
-			].filter((item) => item !== '');
+			const newKey = getDedupeKey(newValue);
+			const newValueType = getValueType(newValue);
+
+			const filterArr = currPoint.filter((item) => getDedupeKey(item) !== newKey);
+
+			state[action.payload.permissionsType][action.payload.key] = [...filterArr, newValueType === 'disabled' ? '' : newValue].filter(
+				(item) => item !== '',
+			);
 		},
 		setActiveModalType(state, action) {
 			state.modalActiveType = action.payload;
@@ -145,14 +170,14 @@ const rolesReducer = createSlice({
 		allowAllPermissions(state, action: PayloadAction<{ currPermission; type }>) {
 			const permissionsType = action.payload.type;
 			const permissions = {
+				...getExtraPermissionGroups(state.permissions),
 				create: [],
 				edit: [],
 				view: [],
 				delete: [],
 			};
-			const keys = Object.keys(state.permissions);
-			keys.forEach((key) => {
-				permissions[key] = [...permissions[key], state.permissions[key].filter((value) => value.split('.').pop() === 'disabled-any')];
+			MATRIX_PERMISSION_GROUPS.forEach((key) => {
+				permissions[key] = [...permissions[key], (state.permissions[key] || []).filter((value) => value.split('.').pop() === 'disabled-any')];
 			});
 			permissions.create = [...permissions.create, action.payload.currPermission.create].flat();
 			permissions.view = [...permissions.view, action.payload.currPermission.view].flat();
@@ -169,6 +194,7 @@ const rolesReducer = createSlice({
 			const permissionState = permissionsType === 'create' ? state.createPermissions : state.permissions;
 
 			const newPermissions = {
+				...getExtraPermissionGroups(permissionState),
 				create: [...permissionState.create],
 				edit: [...permissionState.edit],
 				view: [...permissionState.view],
@@ -265,12 +291,41 @@ const rolesReducer = createSlice({
 		},
 		mergeCreatePermissions(state, action) {
 			const merged = {
+				...getExtraPermissionGroups(state[action.payload.key]),
 				create: [...state[action.payload.key].create, ...action.payload.universal.create],
 				edit: [...state[action.payload.key].edit, ...action.payload.universal.edit],
 				view: [...state[action.payload.key].view, ...action.payload.universal.view],
 				delete: [...state[action.payload.key].delete, ...action.payload.universal.delete],
 			};
 			state[action.payload.key] = merged;
+		},
+		resetTasksPermissionsToDefault(state, action: PayloadAction<{ permissionsType: 'permissions' | 'createPermissions'; roleCode: string }>) {
+			const { permissionsType, roleCode } = action.payload;
+			const isHeadRole = roleCode === 'Head';
+			const isHeadOfTheSalesDepartment = roleCode === 'Head of the sales department';
+
+			const TASKS_PREFIX = 'tasks.task.';
+
+			const view = (() => {
+				if (isHeadRole) return ['tasks.task.view.allowed'];
+				if (isHeadOfTheSalesDepartment) return ['tasks.task.view.department'];
+				return ['tasks.task.view.mine'];
+			})();
+
+			const defaultTasksPermissions: Record<'create' | 'view' | 'edit' | 'delete', string[]> = {
+				create: ['tasks.task.create.allowed'],
+				view,
+				edit: ['tasks.task.edit.mine', 'tasks.task.edit.mine.setter'],
+				delete: ['tasks.task.delete.mine', 'tasks.task.delete.mine.setter'],
+			};
+
+			(Object.keys(defaultTasksPermissions || {}) as Array<keyof typeof defaultTasksPermissions>).forEach((key) => {
+				const currentList = state[permissionsType][key] || [];
+
+				const withoutTasksOnly = currentList.filter((item: string) => !item.startsWith(TASKS_PREFIX));
+
+				state[permissionsType][key] = [...withoutTasksOnly, ...defaultTasksPermissions[key]];
+			});
 		},
 		clearPermissionsFunnels(state) {
 			state.permissionsFunnels = initialState.permissionsFunnels;
@@ -373,6 +428,7 @@ const rolesReducer = createSlice({
 			};
 			state.loadingRoles = false;
 			state.permissions = {
+				...getExtraPermissionGroups(action.payload.permissions),
 				create: [...disabledPermissions.create, ...permCheck(action.payload.permissions.create)],
 				edit: [...disabledPermissions.edit, ...permCheck(action.payload.permissions.edit)],
 				view: [...disabledPermissions.view, ...permCheck(action.payload.permissions.view)],
@@ -428,6 +484,7 @@ export const {
 	allowAllPermissions,
 	addPermissionsForColAction,
 	mergeCreatePermissions,
+	resetTasksPermissionsToDefault,
 	clearPermissionsFunnels,
 	clearCreatePermission,
 } = rolesReducer.actions;

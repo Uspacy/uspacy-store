@@ -1,11 +1,11 @@
-import { IField } from '@uspacy/sdk/lib/models/field';
+import { IField, IFieldAccess } from '@uspacy/sdk/lib/models/field';
 
 interface ITableFieldsParams {
 	tableFields: string[];
 	fields: IField[];
 }
 
-export const isFieldWithAccess = (field: IField) => field?.type === 'user_id' && !!field?.access?.enabled;
+export const isFieldWithAccess = (field: IField) => field?.type === 'user_id' && !!(field?.access as IFieldAccess)?.enabled;
 
 export const withFieldAccessTableFields = ({ tableFields, fields }: ITableFieldsParams) => {
 	const accessFieldCodes = (fields || [])?.filter(isFieldWithAccess)?.map((field) => field.code);
