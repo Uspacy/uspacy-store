@@ -4,6 +4,7 @@ import { IField, IFields } from '@uspacy/sdk/lib/models/field';
 import isArray from 'lodash/isArray';
 import isNull from 'lodash/isNull';
 import isNumber from 'lodash/isNumber';
+import isPlainObject from 'lodash/isPlainObject';
 import isString from 'lodash/isString';
 
 import { FieldType } from './../const';
@@ -170,6 +171,9 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			if (isNumber(value)) {
 				return !isNaN(value);
 			}
+			if (isPlainObject(value)) {
+				return false;
+			}
 			return true;
 		})
 		.reduce((acc: Record<string, unknown> & { expired?: Record<string, number> }, [key, value]) => {
@@ -190,7 +194,7 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 				return { ...acc, ['funnel_id']: value };
 			}
 			if (key === 'deals' && findField?.type !== 'customLink') {
-				return { ...acc, deals: value?.filter((el) => el !== 'NO_DEALS') };
+				return { ...acc, deals: isArray(value) ? value.filter((el) => el !== 'NO_DEALS') : [value] };
 			}
 			if (findField?.type === 'customLink') {
 				const checkCompany = key === 'company' ? 'companies' : key;
@@ -203,11 +207,12 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 				return { ...acc, [key]: isArray(value) ? value : [value] };
 			}
 			if (['tasks'].includes(key)) {
-				return { ...acc, [key]: value?.filter((el) => el !== 0) };
+				return { ...acc, [key]: isArray(value) ? value.filter((el) => el !== 0) : [value] };
 			}
 
 			if (['owner'].includes(key)) {
-				return { ...acc, [key]: value == 0 ? null : value?.filter((el) => el !== 0) };
+				if (value == 0) return { ...acc, [key]: null };
+				return { ...acc, [key]: isArray(value) ? value.filter((el) => el !== 0) : [value] };
 			}
 
 			if (['sortModel'].includes(key)) {
