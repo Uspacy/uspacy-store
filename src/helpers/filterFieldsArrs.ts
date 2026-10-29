@@ -171,7 +171,7 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			if (isNumber(value)) {
 				return !isNaN(value);
 			}
-			if (isPlainObject(value)) {
+			if (isPlainObject(value) && key !== 'sortModel') {
 				return false;
 			}
 			return true;
@@ -194,7 +194,7 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 				return { ...acc, ['funnel_id']: value };
 			}
 			if (key === 'deals' && findField?.type !== 'customLink') {
-				return { ...acc, deals: isArray(value) ? value.filter((el) => el !== 'NO_DEALS') : [value] };
+				return { ...acc, deals: (isArray(value) ? value : [value]).filter((el) => el !== 'NO_DEALS') };
 			}
 			if (findField?.type === 'customLink') {
 				const checkCompany = key === 'company' ? 'companies' : key;
@@ -207,12 +207,13 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 				return { ...acc, [key]: isArray(value) ? value : [value] };
 			}
 			if (['tasks'].includes(key)) {
-				return { ...acc, [key]: isArray(value) ? value.filter((el) => el !== 0) : [value] };
+				return { ...acc, [key]: (isArray(value) ? value : [value]).filter((el) => el !== 0) };
 			}
 
 			if (['owner'].includes(key)) {
-				if (value == 0) return { ...acc, [key]: null };
-				return { ...acc, [key]: isArray(value) ? value.filter((el) => el !== 0) : [value] };
+				const ownerValues = (isArray(value) ? value : [value]).filter((el) => el !== 0);
+
+				return { ...acc, [key]: ownerValues.length === 0 ? null : ownerValues };
 			}
 
 			if (['sortModel'].includes(key)) {
