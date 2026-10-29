@@ -297,14 +297,10 @@ export const getNotificationView = (
 	const titleKey = getNotificationTitle(message, recipientId);
 	const subTitleKey = getNotificationSubTitle(message);
 	const user = users.find(({ id }) => id === message.data.user_id);
-	const customTitle = message.topic === 'custom' ? parseCustomText(message?.data?.entity?.title) : undefined;
-	const customSubTitle = message.topic === 'custom' ? parseCustomText(message?.data?.entity?.description) : undefined;
 	const automationTitle = parseAutomationKey(message, message.data?.entity?.title);
 	const automationSource = parseAutomationKey(message, message.data?.entity?.description);
-	const titleParams = automationTitle ? { title: automationTitle.value } : customTitle?.params;
-	const subTitleParams = automationSource
-		? { user: user ? `${user.firstName} ${user.lastName}` : `#${message.data.user_id}` }
-		: customSubTitle?.params;
+	const titleParams = automationTitle ? { title: automationTitle.value } : undefined;
+	const subTitleParams = automationSource ? { user: user ? `${user.firstName} ${user.lastName}` : `#${message.data.user_id}` } : undefined;
 	const translateKey = translate || ((key: string) => key);
 	return {
 		titleKey,
