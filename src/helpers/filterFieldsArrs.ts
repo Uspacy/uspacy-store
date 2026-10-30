@@ -4,7 +4,6 @@ import { IField, IFields } from '@uspacy/sdk/lib/models/field';
 import isArray from 'lodash/isArray';
 import isNull from 'lodash/isNull';
 import isNumber from 'lodash/isNumber';
-import isPlainObject from 'lodash/isPlainObject';
 import isString from 'lodash/isString';
 
 import { FieldType } from './../const';
@@ -170,9 +169,6 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 			}
 			if (isNumber(value)) {
 				return !isNaN(value);
-			}
-			if (isPlainObject(value) && key !== 'sortModel') {
-				return false;
 			}
 			return true;
 		})
