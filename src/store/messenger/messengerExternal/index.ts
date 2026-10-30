@@ -269,7 +269,8 @@ export const externalChatSlice = createSlice({
 			const prevItems = state.externalChats.items[status] || [];
 			// The first page replaces the bucket, but keep the opened chat if it was added on demand
 			// (deep link, search) before this page arrived — otherwise it vanishes from the screen.
-			const currentChat = isFirstPage ? prevItems.find((chat) => chat.id === state.externalChats.currentChatId) : undefined;
+			const { currentChatId } = state.externalChats;
+			const currentChat = isFirstPage && currentChatId ? prevItems.find((chat) => chat.id === currentChatId) : undefined;
 			const items = isFirstPage ? [...tagged, ...(currentChat ? [currentChat] : [])] : [...prevItems, ...tagged];
 			state.externalChats.items[status] = getUniqueItems(items).sort(sortChats);
 			if (!state.externalChats.pagination) {
@@ -293,7 +294,7 @@ export const externalChatSlice = createSlice({
 			if (status && state.externalChats.pagination?.[status]) {
 				state.externalChats.pagination[status].loadingMore = false;
 			}
-			if (!action.meta?.arg?.cursor) {
+			if (action.meta?.arg && !action.meta.arg.cursor) {
 				state.externalChats.firstPagesPending = Math.max((state.externalChats.firstPagesPending || 0) - 1, 0);
 			}
 			state.externalChats.loading = !!state.externalChats.firstPagesPending;
