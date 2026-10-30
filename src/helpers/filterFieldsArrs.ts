@@ -7,6 +7,7 @@ import isNumber from 'lodash/isNumber';
 import isString from 'lodash/isString';
 
 import { FieldType } from './../const';
+import { withFieldAccessTableFields } from './fieldAccess';
 
 export const getDefaultFastFields = (entityType: string) => {
 	switch (entityType) {
@@ -189,21 +190,26 @@ export const getFilterParams = (filters: IFilter, fields: IField[], isKanban = f
 				return { ...acc, ['funnel_id']: value };
 			}
 			if (key === 'deals' && findField?.type !== 'customLink') {
-				return { ...acc, deals: value?.filter((el) => el !== 'NO_DEALS') };
+				return { ...acc, deals: (isArray(value) ? value : [value]).filter((el) => el !== 'NO_DEALS') };
 			}
 			if (findField?.type === 'customLink') {
 				const checkCompany = key === 'company' ? 'companies' : key;
 				return { ...acc, [`${checkCompany}[title]`]: value };
 			}
+			if (key === 'table_fields') {
+				return { ...acc, [key]: withFieldAccessTableFields({ tableFields: value as string[], fields }) };
+			}
 			if (['kanban_status', 'kanban_reason_id'].includes(key)) {
 				return { ...acc, [key]: isArray(value) ? value : [value] };
 			}
 			if (['tasks'].includes(key)) {
-				return { ...acc, [key]: value?.filter((el) => el !== 0) };
+				return { ...acc, [key]: (isArray(value) ? value : [value]).filter((el) => el !== 0) };
 			}
 
 			if (['owner'].includes(key)) {
-				return { ...acc, [key]: value == 0 ? null : value?.filter((el) => el !== 0) };
+				const ownerValues = (isArray(value) ? value : [value]).filter((el) => el !== 0);
+
+				return { ...acc, [key]: ownerValues.length === 0 ? null : ownerValues };
 			}
 
 			if (['sortModel'].includes(key)) {

@@ -1,6 +1,6 @@
 {
   "name": "@uspacy/store",
-  "version": "0.0.378",
+  "version": "0.0.382",
   "keywords": [],
   "repository": "git@github.com:Uspacy/uspacy-store.git",
   "license": "ISC",
@@ -28,7 +28,7 @@
     "@typescript-eslint/eslint-plugin": "6.3.0",
     "@typescript-eslint/parser": "6.3.0",
     "@uspacy/forms": "1.0.8",
-    "@uspacy/sdk": "0.0.288",
+    "@uspacy/sdk": "0.0.289",
     "date-fns": "2.30.0",
     "eslint": "8.46.0",
     "eslint-config-google": "0.14.0",
