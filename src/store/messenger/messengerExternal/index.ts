@@ -248,6 +248,7 @@ export const externalChatSlice = createSlice({
 			if (cursor) {
 				state.externalChats.pagination[status].loadingMore = true;
 			} else {
+				state.externalChats.firstPagesPending = (state.externalChats.firstPagesPending || 0) + 1;
 				state.externalChats.loading = true;
 			}
 		},
@@ -265,24 +266,37 @@ export const externalChatSlice = createSlice({
 			const { status, isFirstPage, pinned, data, nextCursor, hasNext } = action.payload;
 			const enumStatus = STATUS_TO_ENUM[status];
 			const tagged = [...(isFirstPage ? pinned : []), ...data].map((chat) => ({ ...chat, externalChatStatus: enumStatus }));
-			const existing = isFirstPage ? [] : state.externalChats.items[status] || [];
-			state.externalChats.items[status] = getUniqueItems([...existing, ...tagged]).sort(sortChats);
+			const prevItems = state.externalChats.items[status] || [];
+			// The first page replaces the bucket, but keep the opened chat if it was added on demand
+			// (deep link, search) before this page arrived — otherwise it vanishes from the screen.
+			const currentChat = isFirstPage ? prevItems.find((chat) => chat.id === state.externalChats.currentChatId) : undefined;
+			const items = isFirstPage ? [...tagged, ...(currentChat ? [currentChat] : [])] : [...prevItems, ...tagged];
+			state.externalChats.items[status] = getUniqueItems(items).sort(sortChats);
 			if (!state.externalChats.pagination) {
 				state.externalChats.pagination = { ...initialPagination };
 			}
 			state.externalChats.pagination[status] = { cursor: nextCursor, hasNext, loadingMore: false };
-			state.externalChats.loading = false;
+			if (isFirstPage) {
+				state.externalChats.firstPagesPending = Math.max((state.externalChats.firstPagesPending || 0) - 1, 0);
+			}
+			state.externalChats.loading = !!state.externalChats.firstPagesPending;
 			state.externalChats.externalChatsLength =
 				(state.externalChats.items.active?.length || 0) +
 				(state.externalChats.items.undistributed?.length || 0) +
 				(state.externalChats.items.inactive?.length || 0);
 		},
-		[fetchExternalChatsPage.rejected.type]: (state, action: PayloadAction<unknown, string, { arg: { status: keyof typeof STATUS_TO_ENUM } }>) => {
+		[fetchExternalChatsPage.rejected.type]: (
+			state,
+			action: PayloadAction<unknown, string, { arg: { status: keyof typeof STATUS_TO_ENUM; cursor?: string } }>,
+		) => {
 			const status = action.meta?.arg?.status;
 			if (status && state.externalChats.pagination?.[status]) {
 				state.externalChats.pagination[status].loadingMore = false;
 			}
-			state.externalChats.loading = false;
+			if (!action.meta?.arg?.cursor) {
+				state.externalChats.firstPagesPending = Math.max((state.externalChats.firstPagesPending || 0) - 1, 0);
+			}
+			state.externalChats.loading = !!state.externalChats.firstPagesPending;
 		},
 		[fetchExternalChats.fulfilled.type]: (state, action: PayloadAction<IChat[]>) => {
 			state.externalChats.loading = false;
