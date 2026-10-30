@@ -92,6 +92,8 @@ yarn build           # catches webpack/ts-loader failures
   - `serializableCheck` is disabled, so non-serializable values in state or actions are not reported.
 - **Never commit or push without the developer's explicit confirmation** — ask every time, even after earlier approvals.
 - **Never force-push** (`--force`, `--force-with-lease`, `+refspec`). If a push is rejected, stop and ask the developer.
+- **Always commit the normal way.** Never skip or disable git hooks: no `--no-verify` / `-n` (incl. combined flags like
+  `-nm`), `HUSKY=0`, `-c core.hooksPath=...` or similar. If a hook fails, fix the cause; if you cannot, stop and ask.
 - **Git naming.** Branches: `feat/<ticket>_<short_name>` or `fix/<ticket>_<short_name>`, where `<ticket>`
   is the Uspacy task number. PR title: `[<ticket>]: <short summary of the PR>`; take the number from the
   branch name, and if it is not there, ask the developer. Commit message: a short description of what this
