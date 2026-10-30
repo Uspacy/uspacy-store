@@ -1,7 +1,6 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 const ESLintPlugin = require('eslint-webpack-plugin');
-const Dotenv = require('dotenv-webpack');
 const glob = require('glob');
 
 const getEntryPoints = () => {
@@ -45,7 +44,6 @@ module.exports = (_, argv) => {
 			},
 		},
 		plugins: [
-			new Dotenv(),
 			...(isDev
 				? [
 						new ESLintPlugin({
