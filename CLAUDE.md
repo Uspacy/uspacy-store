@@ -1,10 +1,8 @@
 # CLAUDE.md
-
 `@uspacy/store` — the shared Redux Toolkit store (slices + async thunks over `@uspacy/sdk`) used by every Uspacy
 microfrontend. No backend, database or Docker here: it is a webpack-built library published to GitHub Packages.
 
 ## Setup
-
 ```sh
 export NPM_AUTH_TOKEN=<github token>    # REQUIRED: .npmrc interpolates it; yarn install fails without it
                                         # ("Failed to replace env in config"). A real token is needed for @uspacy/* packages.
@@ -30,7 +28,6 @@ Then restart the app's dev server. Restore the original packages afterwards (~30
 `cd ../<app> && rm -rf node_modules/@uspacy/store node_modules/@uspacy/common/node_modules/@uspacy/store node_modules/.cache && yarn install --check-files --frozen-lockfile`.
 
 ## Verification
-
 Run before every commit; all must exit 0:
 
 ```sh
@@ -47,7 +44,6 @@ yarn build           # catches webpack/ts-loader failures
 - There is no test suite. Do not add test tooling unless the developer asks for it.
 
 ## Conventions
-
 - **One store for all microfrontends.** `src/store/provider.tsx` creates the `store` singleton at import time, and
   hosts share `@uspacy/store` as a Module Federation `singleton` (see `config/const.js` in `container-frontend`).
   `@uspacy/sdk`, `@reduxjs/toolkit`, `react-redux`, `react` are devDependencies here — the host provides them.
@@ -90,6 +86,8 @@ yarn build           # catches webpack/ts-loader failures
 - Traps:
   - `strictNullChecks` and `noImplicitAny` are off, so tsc will not catch null/undefined bugs.
   - `serializableCheck` is disabled, so non-serializable values in state or actions are not reported.
+- **`main` changes only through a PR** — never merge or push into `main` locally. Rollback = a PR that reverts the
+  original one (GitHub "Revert" button); it bumps the version like any other PR.
 - **Never commit or push without the developer's explicit confirmation** — ask every time, even after earlier approvals.
 - **Never force-push** (`--force`, `--force-with-lease`, `+refspec`). If a push is rejected, stop and ask the developer.
 - **Always commit the normal way.** Never skip or disable git hooks: no `--no-verify` / `-n` (incl. combined flags like
