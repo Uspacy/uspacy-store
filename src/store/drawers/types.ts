@@ -3,7 +3,7 @@ export interface IDrawerNavItem {
 	title?: string;
 	entityCode?: string;
 	entityId?: string | number;
-	service?: 'task' | 'crm' | 'messenger';
+	service?: 'task' | 'crm' | 'messenger' | 'u-prro';
 	mode?: 'view' | 'create' | 'edit';
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	initialValue?: any;
