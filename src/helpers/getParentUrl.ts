@@ -17,6 +17,7 @@ const CRM_ENTITY_CREATE_EDIT_RE = /^crm\/[^/]+\/(?:create|edit)(?:\/[^/]+)?$/;
 const CRM_ENTITY_WITH_ID_RE = /^crm\/[^/]+\/[^/]+$/;
 const TASKS_WITH_ID_RE = /^tasks\/[^/]+$/;
 const EMAIL_LETTER_RE = /^(?:.*\/)?email\/letter\/[^/]+$/;
+const RUBICON_PRRO_DRAWER_RE = /^u-prro\/\w+-(?:\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\/create)?$/i;
 
 type Options = { keepOrigin?: boolean; keepQuery?: boolean };
 
@@ -68,6 +69,10 @@ export const getParentUrl = (rawUrl: string, { keepOrigin = true, keepQuery = fa
 
 	if (EMAIL_LETTER_RE.test(clean)) {
 		return base('/');
+	}
+
+	if (RUBICON_PRRO_DRAWER_RE.test(clean)) {
+		return base('/u-prro');
 	}
 
 	return base('/' + clean);

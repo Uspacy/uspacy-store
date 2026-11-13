@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { getParentUrl } from '../../helpers/getParentUrl';
+import { buildRubiconPrroLink } from '../../helpers/rubiconPrroPath';
 import { buildTasksCardLink, getTasksBasePath } from '../../helpers/tasksPath';
 import { IDrawerNavItem, IState } from './types';
 
@@ -57,6 +58,16 @@ export const multiDrawersSlice = createSlice({
 					return;
 				}
 
+				case 'u-prro': {
+					history.pushState(null, '', buildRubiconPrroLink(action.payload.entityCode, action.payload.entityId, action.payload.mode));
+					// matched by id only: the CRM card of the same entityCode/entityId is usually open next to it
+					const findItem = state.drawers?.find((it) => it.id === action.payload.id);
+					state.drawers = findItem
+						? state.drawers?.map((it) => (it.id === findItem.id ? { ...it, ...action.payload } : it))
+						: [action.payload, ...(state.drawers || [])];
+					return;
+				}
+
 				default:
 					break;
 			}
@@ -98,6 +109,13 @@ export const multiDrawersSlice = createSlice({
 				}
 				if (state.drawers?.[0]?.service === 'messenger') {
 					history.pushState(null, '', getParentUrl(state.initialLink));
+				}
+				if (state.drawers?.[0]?.service === 'u-prro') {
+					history.pushState(
+						null,
+						'',
+						buildRubiconPrroLink(state.drawers?.[0]?.entityCode, state.drawers?.[0]?.entityId, state.drawers?.[0]?.mode),
+					);
 				}
 			}
 		},
