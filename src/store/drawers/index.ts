@@ -60,7 +60,6 @@ export const multiDrawersSlice = createSlice({
 
 				case 'u-prro': {
 					history.pushState(null, '', buildRubiconPrroLink(action.payload.entityCode, action.payload.entityId, action.payload.mode));
-					// matched by id only: the CRM card of the same entityCode/entityId is usually open next to it
 					const findItem = state.drawers?.find((it) => it.id === action.payload.id);
 					state.drawers = findItem
 						? state.drawers?.map((it) => (it.id === findItem.id ? { ...it, ...action.payload } : it))
@@ -74,8 +73,11 @@ export const multiDrawersSlice = createSlice({
 
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { commentId, ...res } = action.payload?.initialValue ?? {};
-			if (state.drawers?.some((it) => it.entityCode === action.payload.entityCode && it.entityId === action.payload.entityId)) {
-				const findItem = state.drawers?.find((it) => it.entityCode === action.payload.entityCode && it.entityId === action.payload.entityId);
+			const findItem = state.drawers?.find(
+				(it) =>
+					it.service === action.payload.service && it.entityCode === action.payload.entityCode && it.entityId === action.payload.entityId,
+			);
+			if (findItem) {
 				if (findItem?.mode !== action?.payload?.mode) {
 					state.drawers = state?.drawers?.map((it) => (it?.id === findItem?.id ? { ...it, ...action.payload, initialValue: res } : it));
 				}

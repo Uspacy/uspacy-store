@@ -1,7 +1,3 @@
-// Cards of the Rubicon PRRO app open in the multi drawers and are addressable by url:
-//   /u-prro/<entityCode>-<entityId>/create — create (e.g. fiscalize leads #2999: /u-prro/leads-2999/create)
-//   /u-prro/<entityCode>-<entityId>        — view (e.g. receipt #555: /u-prro/receipts-555)
-// entityId is a number or a uuid.
 export const RUBICON_PRRO_SERVICE = 'u-prro';
 export const RUBICON_PRRO_BASE_PATH = '/u-prro';
 
