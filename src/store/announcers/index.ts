@@ -59,13 +59,13 @@ export const announcersSlice = createSlice({
 		},
 		[fetchAnnounces.fulfilled.type]: (state, action: PayloadAction<ResponseApiList>) => {
 			state.loadingAnnouncers = false;
-			state.errorLoading = null;
+			state.errorLoading = false;
 			state.announces = action.payload.data;
 			state.meta = action.payload.meta;
 		},
 		[fetchAnnounces.pending.type]: (state) => {
 			state.loadingAnnouncers = true;
-			state.errorLoading = null;
+			state.errorLoading = false;
 		},
 		[fetchAnnounces.rejected.type]: (state) => {
 			state.loadingAnnouncers = false;
