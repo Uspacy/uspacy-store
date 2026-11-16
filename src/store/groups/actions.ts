@@ -1,6 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
 import { IGroupSettings, IThemeSettings } from '@uspacy/sdk/lib/models/groups';
+import { EMentionType } from '@uspacy/sdk/lib/models/mentions';
+
+import { setEntityMention } from '../mentions/actions';
 
 export const fetchGroup = createAsyncThunk('groups/fetchGroup', async (id: string, thunkAPI) => {
 	try {
@@ -149,6 +152,8 @@ export const editGroup = createAsyncThunk(
 export const deleteGroup = createAsyncThunk('groups/deleteGroup', async (id: number, thunkAPI) => {
 	try {
 		await uspacySdk.groupsService.deleteGroup(id);
+		// messenger-backend is not notified about deleted groups, so the group mention is removed here.
+		thunkAPI.dispatch(setEntityMention({ type: EMentionType.GROUP, entityId: +id, name: null }));
 		return id;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
