@@ -208,6 +208,8 @@ export const getNotificationTitle = (message: INotificationMessage, profileId: n
 const MENTION_ALL_TOKEN = '{@(all)[mentionAllMembers]}';
 const MENTION_ALL_HTML_REGEX = /<[^<>]*data-mention-type="all"[^<>]*>[^<]*<\/[^<>]+>/g;
 const MENTION_ALL_TOKEN_REGEX = /{@\(all\)\[[^\]]+\]}/g;
+/** chat markdown token of a multiple mention: {@(g:<id>)[name]} */
+const MENTION_GROUP_TOKEN_REGEX = /{@\(g:[a-f\d]{24}\)\[([^\]]+)\]}/g;
 const HTML_TAG_REGEX = /<[^<>]*>/g;
 const HTML_ENTITY_REGEX = /&(#\d+|#x[\da-f]+|[a-z]+);/gi;
 const NAMED_HTML_ENTITY_CODES: Record<string, number> = { amp: 38, lt: 60, gt: 62, quot: 34, apos: 39, nbsp: 32 };
@@ -226,7 +228,10 @@ const decodeHtmlEntities = (text: string) =>
 export const deleteHtmlFromComment = (text: string) =>
 	decodeHtmlEntities((text || '').replace(MENTION_ALL_HTML_REGEX, MENTION_ALL_TOKEN).replace(HTML_TAG_REGEX, ''));
 
-const translateMentionAllToken = (text: string, label?: string) => (label ? text.replace(MENTION_ALL_TOKEN_REGEX, label) : text);
+const translateMentionGroupToken = (text: string) => text.replace(MENTION_GROUP_TOKEN_REGEX, '@$1');
+
+const translateMentionAllToken = (text: string, label?: string) =>
+	translateMentionGroupToken(label ? text.replace(MENTION_ALL_TOKEN_REGEX, label) : text);
 
 export const getNotificationSubTitle = (message: INotificationMessage): string | undefined => {
 	const automationSource = parseAutomationKey(message, message?.data?.entity?.description);

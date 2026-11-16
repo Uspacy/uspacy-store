@@ -34,6 +34,7 @@ import forms from './forms';
 import groups from './groups';
 import history from './history';
 import marketing from './marketing';
+import mentions from './mentions';
 import messengerReducer from './messenger';
 import migrationsReducer from './migrations';
 import newsfeed from './newsfeed';
@@ -111,6 +112,7 @@ const rootReducer = combineReducers({
 	widgets,
 	pageTitle,
 	reindex,
+	mentions,
 });
 
 export const setupStore = () => {
