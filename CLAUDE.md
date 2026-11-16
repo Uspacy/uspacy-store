@@ -1,21 +1,18 @@
 # CLAUDE.md
-
 `@uspacy/store` — the shared Redux Toolkit store (slices + async thunks over `@uspacy/sdk`) used by every Uspacy
 microfrontend. No backend, database or Docker here: it is a webpack-built library published to GitHub Packages.
 
 ## Setup
-
 ```sh
-nvm use                                 # Node 22.23.4 (.nvmrc)
 export NPM_AUTH_TOKEN=<github token>    # REQUIRED: .npmrc interpolates it; yarn install fails without it
                                         # ("Failed to replace env in config"). A real token is needed for @uspacy/* packages.
 yarn install --frozen-lockfile          # Yarn 1 (yarn.lock); `prepare` installs the husky pre-commit hook
 yarn build                              # webpack -> lib/ (one .js + .d.ts per src file)
 ```
 
+- Node: the version in the GitHub Actions variable `CORE_TAG` (22.23.4 as of 2026-10); no `.nvmrc` on purpose.
 - `yarn dev` — wipes `lib/`, then webpack dev server on `http://localhost:4001` writing a dev build to `lib/` on every change.
-- `yarn build:docs` — TypeDoc into `docs/` (deployed to GitHub Pages from `main` by CI).
-- `lib/`, `docs/`, `.env` are gitignored — never commit build output.
+- `yarn build:docs` — TypeDoc into `docs/` (GitHub Pages from `main` via CI). `lib/`, `docs/`, `.env` are gitignored.
 
 Trying a change inside a consumer app (`crm-frontend`, `tasks-frontend`, ...) before publishing — copy the build in,
 do not `yarn link` (a symlink makes the app resolve `@uspacy/sdk` / `react-redux` from this repo's node_modules):
@@ -27,10 +24,10 @@ rsync -a --delete lib/ ../<app>/node_modules/@uspacy/store/lib/
 rm -rf ../<app>/node_modules/.cache   # webpack's cache keys node_modules by package version and won't see the copy
 ```
 
-Then restart the app's dev server. TODO: verified command to restore the app's original package afterwards.
+Then restart the app's dev server. Restore the original packages afterwards (~30s; also clears the stale cache):
+`cd ../<app> && rm -rf node_modules/@uspacy/store node_modules/@uspacy/common/node_modules/@uspacy/store node_modules/.cache && yarn install --check-files --frozen-lockfile`.
 
 ## Verification
-
 Run before every commit; all must exit 0:
 
 ```sh
@@ -39,16 +36,14 @@ yarn typecheck       # tsc --noEmit
 yarn build           # catches webpack/ts-loader failures
 ```
 
-- `yarn eslint:fix` autofixes `src` (formatting, import order).
-- `--max-warnings=0`: warnings (unsorted imports, unused vars, `console`) fail it. `lib/` and `docs/` are ignored
-  in `.eslintrc.js`, so editors and `eslint .` do not report the build output.
+- `yarn eslint:fix` autofixes `src`. `--max-warnings=0`: warnings (unsorted imports, unused vars, `console`) fail it.
+  `lib/` and `docs/` are ignored in `.eslintrc.js`, so editors and `eslint .` do not report the build output.
 - The husky pre-commit hook runs the same rules only on staged `*.{ts,tsx,js}` via lint-staged.
 - CI on PRs to `main` runs `yarn build` and `yarn eslint`, and checks the `package.json` version is unpublished.
   CI does not run at all while the PR has a merge conflict with `main` — merge `main` in first.
 - There is no test suite. Do not add test tooling unless the developer asks for it.
 
 ## Conventions
-
 - **One store for all microfrontends.** `src/store/provider.tsx` creates the `store` singleton at import time, and
   hosts share `@uspacy/store` as a Module Federation `singleton` (see `config/const.js` in `container-frontend`).
   `@uspacy/sdk`, `@reduxjs/toolkit`, `react-redux`, `react` are devDependencies here — the host provides them.
@@ -91,7 +86,12 @@ yarn build           # catches webpack/ts-loader failures
 - Traps:
   - `strictNullChecks` and `noImplicitAny` are off, so tsc will not catch null/undefined bugs.
   - `serializableCheck` is disabled, so non-serializable values in state or actions are not reported.
+- **`main` changes only through a PR** — never merge or push into `main` locally. Rollback = a PR that reverts the
+  original one (GitHub "Revert" button); it bumps the version like any other PR.
 - **Never commit or push without the developer's explicit confirmation** — ask every time, even after earlier approvals.
+- **Never force-push** (`--force`, `--force-with-lease`, `+refspec`). If a push is rejected, stop and ask the developer.
+- **Always commit the normal way.** Never skip or disable git hooks: no `--no-verify` / `-n` (incl. combined flags like
+  `-nm`), `HUSKY=0`, `-c core.hooksPath=...` or similar. If a hook fails, fix the cause; if you cannot, stop and ask.
 - **Git naming.** Branches: `feat/<ticket>_<short_name>` or `fix/<ticket>_<short_name>`, where `<ticket>`
   is the Uspacy task number. PR title: `[<ticket>]: <short summary of the PR>`; take the number from the
   branch name, and if it is not there, ask the developer. Commit message: a short description of what this
