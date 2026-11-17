@@ -13,3 +13,15 @@ export const fetchAnnouncers = createAsyncThunk(
 		}
 	},
 );
+
+export const fetchAnnounces = createAsyncThunk(
+	'announcers/fetchAnnounces',
+	async ({ populateParams, locale, apiPoint }: IAdminUrlParams, thunkAPI) => {
+		try {
+			const res = await uspacySdk.announcersService.getAnnounces(populateParams, locale, apiPoint);
+			return res.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue('Failure');
+		}
+	},
+);
