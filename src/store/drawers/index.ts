@@ -68,6 +68,14 @@ export const multiDrawersSlice = createSlice({
 					return;
 				}
 
+				// The Disk's file picker. It is a tool over whatever is open rather than a card with an
+				// address, so it leaves the url alone, and there is one of it at a time: opening it
+				// again replaces the last one, with the new caller's `initialValue.onSelect`.
+				case 'disk': {
+					state.drawers = [action.payload, ...(state.drawers || []).filter((it) => it?.service !== 'disk')];
+					return;
+				}
+
 				default:
 					break;
 			}
@@ -88,13 +96,18 @@ export const multiDrawersSlice = createSlice({
 		},
 		removeItem(state, action: PayloadAction<IDrawerNavItem>) {
 			if (!state?.drawers?.length) return;
+			// The picker never changed the url, so closing it has none to restore: the card it was
+			// opened over, or the page underneath, is still what the address names.
+			const isUrlUntouched = state.drawers?.find((it) => it.id === action?.payload?.id)?.service === 'disk';
 			state.drawers = state.drawers?.filter((it) => it.id !== action?.payload?.id);
 			state.activeId = !!state.drawers?.[0]?.entityCode ? state.drawers?.[0]?.id : null;
 			if (!state?.drawers?.length) {
 				state.open = false;
-				history.pushState(null, '', getParentUrl(state.initialLink));
+				if (!isUrlUntouched) {
+					history.pushState(null, '', getParentUrl(state.initialLink));
+				}
 				state.initialLink = '';
-			} else {
+			} else if (!isUrlUntouched) {
 				if (state.drawers?.[0]?.service === 'crm') {
 					const entityCodeCheckActivity = state.drawers?.[0]?.entityCode === 'activities' ? 'tasks' : state.drawers?.[0]?.entityCode;
 					const cardLink = `/crm/${entityCodeCheckActivity}/${state.drawers?.[0]?.entityId}`;
@@ -110,7 +123,7 @@ export const multiDrawersSlice = createSlice({
 					const url = new URL(cardLink, location.origin + location.pathname + '/');
 					history.pushState(null, '', url);
 				}
-				if (state.drawers?.[0]?.service === 'messenger') {
+				if (state.drawers?.[0]?.service === 'messenger' || state.drawers?.[0]?.service === 'disk') {
 					history.pushState(null, '', getParentUrl(state.initialLink));
 				}
 				if (state.drawers?.[0]?.service === 'u-prro') {
