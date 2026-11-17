@@ -108,18 +108,36 @@ export const profileSlice = createSlice({
 		[fetchProfileFields.rejected.type]: (state) => {
 			state.loadingFields.get = false;
 		},
-		[updateProfileField.pending.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
-			const updateField = action.meta.arg;
+		[updateProfileField.pending.type]: (state) => {
+			state.loadingFields.update = true;
+		},
+		[updateProfileField.fulfilled.type]: (state, action: PayloadAction<IField>) => {
+			const updatedField = action.payload;
+			state.loadingFields.update = false;
+			if (!updatedField?.code) return;
+
 			state.fields = state.fields.map((field) => {
-				if (field.code === updateField.code) {
-					return { ...updateField, values: updateField?.values || field?.values };
+				if (field.code === updatedField.code) {
+					return { ...field, ...updatedField, values: updatedField?.values || field?.values };
 				}
 				return field;
 			});
 		},
-		[createProfileField.pending.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
-			const newField = action.meta.arg;
-			state.fields.push(newField);
+		[updateProfileField.rejected.type]: (state) => {
+			state.loadingFields.update = false;
+		},
+		[createProfileField.pending.type]: (state) => {
+			state.loadingFields.create = true;
+		},
+		[createProfileField.fulfilled.type]: (state, action: PayloadAction<IField>) => {
+			const createdField = action.payload;
+			state.loadingFields.create = false;
+			if (!createdField?.code) return;
+
+			state.fields.push(createdField);
+		},
+		[createProfileField.rejected.type]: (state) => {
+			state.loadingFields.create = false;
 		},
 		[updateProfileListValues.pending.type]: (state, action: PayloadAction<IField, string, { arg: IField }>) => {
 			const updateField = action.meta.arg;

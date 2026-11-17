@@ -1,12 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ResponseApi } from '@uspacy/sdk/lib/services/AnnouncersService/dto/announcers-dto';
+import { ResponseApi, ResponseApiList } from '@uspacy/sdk/lib/services/AnnouncersService/dto/announcers-dto';
 
-import { fetchAnnouncers } from './actions';
+import { fetchAnnouncers, fetchAnnounces } from './actions';
 import { IState } from './types';
 
 const initialState: IState = {
 	loadingAnnouncers: false,
 	errorLoading: false,
+	announces: [],
 	isBannerExists: false,
 	isShowBanner: false,
 	isShowTariffBanner: false,
@@ -53,6 +54,20 @@ export const announcersSlice = createSlice({
 			state.errorLoading = null;
 		},
 		[fetchAnnouncers.rejected.type]: (state) => {
+			state.loadingAnnouncers = false;
+			state.errorLoading = true;
+		},
+		[fetchAnnounces.fulfilled.type]: (state, action: PayloadAction<ResponseApiList>) => {
+			state.loadingAnnouncers = false;
+			state.errorLoading = false;
+			state.announces = action.payload.data;
+			state.meta = action.payload.meta;
+		},
+		[fetchAnnounces.pending.type]: (state) => {
+			state.loadingAnnouncers = true;
+			state.errorLoading = false;
+		},
+		[fetchAnnounces.rejected.type]: (state) => {
 			state.loadingAnnouncers = false;
 			state.errorLoading = true;
 		},

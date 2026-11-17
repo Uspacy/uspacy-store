@@ -205,21 +205,33 @@ export const getNotificationTitle = (message: INotificationMessage, profileId: n
 	return `notifications.${isSmartObject ? entityType : service}.${baseType}.${message.data.action}`;
 };
 
-// Same token as the "all members" mention in chat markdown, so consumers translate it in one way
 const MENTION_ALL_TOKEN = '{@(all)[mentionAllMembers]}';
+const MENTION_ALL_HTML_REGEX = /<[^<>]*data-mention-type="all"[^<>]*>[^<]*<\/[^<>]+>/g;
+const MENTION_ALL_TOKEN_REGEX = /{@\(all\)\[[^\]]+\]}/g;
+const HTML_TAG_REGEX = /<[^<>]*>/g;
+const HTML_ENTITY_REGEX = /&(#\d+|#x[\da-f]+|[a-z]+);/gi;
+const NAMED_HTML_ENTITY_CODES: Record<string, number> = { amp: 38, lt: 60, gt: 62, quot: 34, apos: 39, nbsp: 32 };
+const MAX_CODE_POINT = 0x10ffff;
 
-export const deleteHtmlFromComment = (text: string) => {
-	const div = document.createElement('div');
-	div.innerHTML = text;
-	div.querySelectorAll('[data-mention-type="all"]').forEach((element) => {
-		element.textContent = MENTION_ALL_TOKEN;
+const decodeHtmlEntities = (text: string) =>
+	text.replace(HTML_ENTITY_REGEX, (entity, code: string) => {
+		if (code.startsWith('#')) {
+			const codePoint = code[1].toLowerCase() === 'x' ? parseInt(code.slice(2), 16) : Number(code.slice(1));
+			return Number.isNaN(codePoint) || codePoint < 0 || codePoint > MAX_CODE_POINT ? entity : String.fromCodePoint(codePoint);
+		}
+		const namedCodePoint = NAMED_HTML_ENTITY_CODES[code.toLowerCase()];
+		return namedCodePoint ? String.fromCodePoint(namedCodePoint) : entity;
 	});
-	return div.textContent || div.innerText || '';
-};
+
+export const deleteHtmlFromComment = (text: string) =>
+	decodeHtmlEntities((text || '').replace(MENTION_ALL_HTML_REGEX, MENTION_ALL_TOKEN).replace(HTML_TAG_REGEX, ''));
+
+const translateMentionAllToken = (text: string, label?: string) => (label ? text.replace(MENTION_ALL_TOKEN_REGEX, label) : text);
 
 export const getNotificationSubTitle = (message: INotificationMessage): string | undefined => {
 	const automationSource = parseAutomationKey(message, message?.data?.entity?.description);
 	if (automationSource) return automationSource.key;
+	if (isAutomationMessage(message)) return '';
 	if (message.topic === 'custom') {
 		return message?.data?.entity?.description;
 	}
@@ -233,27 +245,73 @@ export const getNotificationSubTitle = (message: INotificationMessage): string |
 	}
 };
 
-export const transformNotificationMessage = (message: INotificationMessage, users: IUser[], profileId: number): INotification => {
+export interface INotificationViewOptions {
+	recipientId: number;
+	users?: IUser[];
+	translate?: (key: string, params?: Record<string, string>) => string;
+	mentionAllLabel?: string;
+}
+
+export interface INotificationView {
+	titleKey?: string;
+	titleParams?: Record<string, string>;
+	subTitleKey?: string;
+	subTitleParams?: Record<string, string>;
+	title: string;
+	body: string;
+	url?: string;
+	drawer: ReturnType<typeof getDrawersInfo>;
+	author?: IUser;
+	mentioned: boolean;
+	date: number;
+	commentEntityTitle?: string;
+}
+
+export const getNotificationView = (
+	message: INotificationMessage,
+	{ recipientId, users = [], translate, mentionAllLabel }: INotificationViewOptions,
+): INotificationView => {
+	const titleKey = getNotificationTitle(message, recipientId);
+	const subTitleKey = getNotificationSubTitle(message);
 	const user = users.find(({ id }) => id === message.data.user_id);
-	const timestamp = new Date(message.data.timestamp).getTime();
-	const mentioned = !!message.data.entity?.mentioned?.users?.includes(profileId);
-	const commentEntityTitle = message.data?.root_parent?.data?.title;
 	const automationTitle = parseAutomationKey(message, message.data?.entity?.title);
 	const automationSource = parseAutomationKey(message, message.data?.entity?.description);
+	const titleParams = automationTitle ? { title: automationTitle.value } : undefined;
+	const subTitleParams = automationSource ? { user: user ? `${user.firstName} ${user.lastName}` : `#${message.data.user_id}` } : undefined;
+	const translateKey = translate || ((key: string) => key);
+	return {
+		titleKey,
+		titleParams,
+		subTitleKey,
+		subTitleParams,
+		title: titleKey ? translateKey(titleKey, titleParams) : '',
+		body:
+			subTitleParams && subTitleKey ? translateKey(subTitleKey, subTitleParams) : translateMentionAllToken(subTitleKey || '', mentionAllLabel),
+		url: getLinkEntity(message),
+		drawer: getDrawersInfo(message),
+		author: user,
+		mentioned: !!message.data.entity?.mentioned?.users?.includes(recipientId),
+		date: new Date(message.data.timestamp).getTime(),
+		commentEntityTitle: message.data?.root_parent?.data?.title,
+	};
+};
+
+export const transformNotificationMessage = (message: INotificationMessage, users: IUser[], profileId: number): INotification => {
+	const view = getNotificationView(message, { recipientId: profileId, users });
 	return {
 		id: message.id,
-		title: getNotificationTitle(message, profileId),
-		subTitle: getNotificationSubTitle(message),
-		date: timestamp,
-		link: getLinkEntity(message),
-		author: user,
-		drawerInfo: getDrawersInfo(message),
-		mentioned,
-		commentEntityTitle,
+		title: view.titleKey,
+		subTitle: view.subTitleKey,
+		date: view.date,
+		link: view.url,
+		author: view.author,
+		drawerInfo: view.drawer,
+		mentioned: view.mentioned,
+		commentEntityTitle: view.commentEntityTitle,
 		read: message.read || false,
 		createdAt: message.createdAt,
 		metadata: message?.metadata ?? [],
-		...(automationTitle && { titleParams: { title: automationTitle.value } }),
-		...(automationSource && { subTitleParams: { user: user ? `${user.firstName} ${user.lastName}` : `#${message.data.user_id}` } }),
+		...(view.titleParams && { titleParams: view.titleParams }),
+		...(view.subTitleParams && { subTitleParams: view.subTitleParams }),
 	};
 };
