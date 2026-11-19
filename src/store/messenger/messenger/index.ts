@@ -193,8 +193,13 @@ export const chatSlice = createSlice({
 		},
 		unshiftMessage(state, action: PayloadAction<{ chatId: string; item: IMessage; profile: IUser }>) {
 			const { chatId, item, profile } = action.payload;
+			const lastMessageId = state.chats.items.find((chat) => chat.id === chatId)?.lastMessage?.id;
 			state.messages = state.messages.map((group) => {
 				if (group.chatId === chatId) {
+					// the group holds an older slice of the history (e.g. after going to a message), so the new message
+					// is not glued to it: it is loaded in the right order by the next page or by refetching the latest messages
+					const hasLatestMessages = !lastMessageId || !group.items.length || group.items.some((message) => message.id === lastMessageId);
+					if (!hasLatestMessages) return group;
 					const items = prepareMessages([item, ...group.items], profile);
 					return {
 						...group,

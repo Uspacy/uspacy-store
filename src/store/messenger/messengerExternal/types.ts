@@ -15,6 +15,8 @@ export interface IState {
 		pagination: IExternalChatsPagination;
 		externalChatsLength: number;
 		loading: boolean;
+		// number of first-page requests still in flight; `loading` stays true until all of them settle
+		firstPagesPending?: number;
 		currentChatId?: string;
 		crmConnectEntities: {
 			leads: ICrmConnectEntity[];
