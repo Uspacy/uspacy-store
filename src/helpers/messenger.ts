@@ -164,6 +164,16 @@ const updateChatById = (chats: IChat[], newChat: IChat) =>
 		return chat;
 	});
 
+export const removeChatFromOtherBuckets = (
+	chats: IExternalChatsItems,
+	chatId: IChat['id'],
+	bucket: keyof IExternalChatsItems,
+): IExternalChatsItems => ({
+	active: bucket === 'active' ? chats.active : chats.active.filter((chat) => chat.id !== chatId),
+	undistributed: bucket === 'undistributed' ? chats.undistributed : chats.undistributed.filter((chat) => chat.id !== chatId),
+	inactive: bucket === 'inactive' ? chats.inactive : chats.inactive.filter((chat) => chat.id !== chatId),
+});
+
 export const updateExternalChat = (chats: IExternalChatsItems, chat: IChat) => ({
 	active: chat.externalChatStatus === EActiveEntity.ACTIVE_EXTERNAL ? updateChatById(chats.active, chat) : chats.active,
 	undistributed: chat.externalChatStatus === EActiveEntity.UNDISTRIBUTED_EXTERNAL ? updateChatById(chats.undistributed, chat) : chats.undistributed,

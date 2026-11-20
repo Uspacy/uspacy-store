@@ -40,7 +40,6 @@ import newsfeed from './newsfeed';
 import notifications from './notifications';
 import oauthClients from './oauthClients';
 import pageTitle from './pageTitle';
-import payments from './payments';
 import profile from './profile';
 import reindex from './reindex';
 import roles from './roles';
@@ -68,7 +67,6 @@ const rootReducer = combineReducers({
 	files,
 	groups,
 	notifications,
-	payments,
 	profile,
 	roles,
 	tasks,
