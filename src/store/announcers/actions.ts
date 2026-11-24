@@ -16,9 +16,9 @@ export const fetchAnnouncers = createAsyncThunk(
 
 export const fetchAnnounces = createAsyncThunk(
 	'announcers/fetchAnnounces',
-	async ({ populateParams, locale, apiPoint }: IAdminUrlParams, thunkAPI) => {
+	async ({ populateParams, locale, apiPoint, domain }: IAdminUrlParams, thunkAPI) => {
 		try {
-			const res = await uspacySdk.announcersService.getAnnounces(populateParams, locale, apiPoint);
+			const res = await uspacySdk.announcersService.getAnnounces(populateParams, locale, apiPoint, domain);
 			return res.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue('Failure');
