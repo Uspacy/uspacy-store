@@ -46,7 +46,7 @@ const mentionsReducer = createSlice({
 			})
 			.addCase(createMention.fulfilled, (state, action) => {
 				upsert(state, action.payload);
-				if (typeof state.quota?.custom.left === 'number') {
+				if (typeof state.quota?.custom?.left === 'number') {
 					state.quota.custom.left = Math.max(0, state.quota.custom.left - 1);
 				}
 			})
@@ -56,7 +56,7 @@ const mentionsReducer = createSlice({
 			.addCase(deleteMention.fulfilled, (state, action) => {
 				const removed = state.data.find(({ id }) => id === action.payload);
 				state.data = state.data.filter(({ id }) => id !== action.payload);
-				if (removed?.type === 'custom' && typeof state.quota?.custom.left === 'number') {
+				if (removed?.type === 'custom' && typeof state.quota?.custom?.left === 'number') {
 					state.quota.custom.left += 1;
 				}
 			})
