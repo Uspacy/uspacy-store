@@ -60,5 +60,5 @@ module.exports = {
 			node: {},
 		},
 	},
-	ignorePatterns: ['lib/**/*.js'],
+	ignorePatterns: ['lib', 'docs'],
 };
