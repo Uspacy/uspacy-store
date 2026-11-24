@@ -4,12 +4,20 @@ import { IPortalSettings } from '@uspacy/sdk/lib/models/settings';
 
 export const setPortalSettings = createAction<IPortalSettings>('settingsReducer/setPortalSettings');
 
+// settings whose personal value may be explicitly false, so only null/undefined falls back to the portal value
+const NULLABLE_PERSONAL_SETTINGS: (keyof IPortalSettings)[] = ['click2callEnabled'];
+
 export const selectTotalSettings = (personalSettings: IPortalSettings, portalSettings: IPortalSettings): IPortalSettings => {
 	const totalSettings = {};
 
 	Object.keys({ ...portalSettings, ...personalSettings }).forEach((key) => {
-		const personalValue = personalSettings[key];
-		const portalValue = portalSettings[key];
+		const personalValue = personalSettings?.[key];
+		const portalValue = portalSettings?.[key];
+
+		if (NULLABLE_PERSONAL_SETTINGS.includes(key as keyof IPortalSettings)) {
+			return (totalSettings[key] = personalValue ?? portalValue);
+		}
+
 		if (personalValue && Boolean(personalValue)) {
 			return (totalSettings[key] = personalValue);
 		} else {
