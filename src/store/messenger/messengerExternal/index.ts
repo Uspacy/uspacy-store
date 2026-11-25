@@ -10,6 +10,7 @@ import {
 	onlyUnique,
 	readLastMessageInChat,
 	readLastMessagesInChat,
+	removeChatFromOtherBuckets,
 	separateExternalChats,
 	sortChats,
 	updateChatById,
@@ -75,6 +76,8 @@ export const externalChatSlice = createSlice({
 			state.externalChats.journalList.data = updateChatById(state.externalChats.journalList.data, action.payload);
 		},
 		addChatToActive(state, action: PayloadAction<IChat>) {
+			// a chat lives in one status bucket only, otherwise lists combining them show it several times
+			state.externalChats.items = removeChatFromOtherBuckets(state.externalChats.items, action.payload.id, 'active');
 			if (state.externalChats.items.active.findIndex((chat) => chat.id === action.payload.id) !== -1) {
 				return;
 			}
@@ -90,6 +93,7 @@ export const externalChatSlice = createSlice({
 			state.externalChats.items.inactive = state.externalChats.items.inactive.filter((chat) => chat.id !== action.payload.id);
 		},
 		addChatToInactive(state, action: PayloadAction<IChat>) {
+			state.externalChats.items = removeChatFromOtherBuckets(state.externalChats.items, action.payload.id, 'inactive');
 			if (state.externalChats.items.inactive.findIndex((chat) => chat.id === action.payload.id) !== -1) {
 				return;
 			}
@@ -97,6 +101,7 @@ export const externalChatSlice = createSlice({
 			state.externalChats.journalList.data = updateChatById(state.externalChats.journalList.data, action.payload);
 		},
 		addChatToUndistributed(state, action: PayloadAction<IChat>) {
+			state.externalChats.items = removeChatFromOtherBuckets(state.externalChats.items, action.payload.id, 'undistributed');
 			if (state.externalChats.items.undistributed.findIndex((chat) => chat.id === action.payload.id) !== -1) {
 				return;
 			}
