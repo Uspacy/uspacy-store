@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, current, isDraft, PayloadAction } from '@reduxjs/toolkit';
 import { IEntityAmount, IEntityData } from '@uspacy/sdk/lib/models/crm-entities';
 import { IErrors } from '@uspacy/sdk/lib/models/crm-errors';
 import { IEntityFilters } from '@uspacy/sdk/lib/models/crm-filters';
@@ -22,7 +22,10 @@ import {
 	updateEntityItem,
 	uploadEntityItemAvatar,
 } from './actions';
-import { EntityItems, IMoveCardsData, IState } from './types';
+import { findItemInStages, insertIntoStage, isStale, moveCardBetweenStages, patchItemInList, removeFromStage } from './stageHelpers';
+import { EntityItems, IMoveCardsData, IMoveRollback, IState } from './types';
+
+const snapshot = <T extends object>(value: T): T => (isDraft(value) ? (current(value) as T) : { ...value });
 
 const initialState: IState = {};
 
@@ -89,130 +92,78 @@ const itemsReducer = createSlice({
 			state[entityCode].completeModalOpen = value;
 		},
 		updateEntityItemLocal: (state, action: PayloadAction<{ data: IEntityData; entityCode: string; stageId?: number }>) => {
-			const { entityCode } = action.payload;
-			const stageId = action.payload?.stageId;
-			const payloadData = action.payload.data;
-			if (Array.isArray(state[entityCode]?.data)) {
-				state[entityCode].errorMessage = null;
-				state[entityCode].data = state[entityCode].data.map((item) => {
-					if (item.id === payloadData.id) {
-						if (payloadData?.updated_at && item?.updated_at && payloadData?.updated_at < item?.updated_at) return item;
-						return {
-							...item,
-							...payloadData,
-						};
+			const { entityCode, stageId, data } = action.payload;
+			const entity = state[entityCode];
+			if (!entity || !data?.id) return;
+
+			if (patchItemInList(entity.data, data)) entity.errorMessage = null;
+
+			if (entity.stages) {
+				const location = findItemInStages(entity, data.id, stageId ?? data.kanban_stage_id);
+				if (location) {
+					const stage = entity.stages[location.key];
+					const currentItem = stage.data[location.index];
+					if (!isStale(data, currentItem)) {
+						const targetKey = data.kanban_stage_id ? String(data.kanban_stage_id) : location.key;
+						if (targetKey !== location.key) {
+							// safety net: the entity is in another stage on the server than on the board
+							moveCardBetweenStages(entity, {
+								id: data.id,
+								targetStageId: targetKey,
+								sourceStageId: location.key,
+								data,
+								removeOnly: !entity.stages[targetKey],
+							});
+						} else {
+							stage.data[location.index] = { ...currentItem, ...data };
+							stage.loading = false;
+							stage.errorMessage = null;
+						}
 					}
-					return item;
-				});
+				}
 			}
-			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
-				state[entityCode].stages[stageId].loading = false;
-				state[entityCode].stages[stageId].errorMessage = null;
-				state[entityCode].stages[stageId].data = state[entityCode].stages[stageId].data.map((item) => {
-					if (item.id === payloadData.id) {
-						if (payloadData?.updated_at && item?.updated_at && payloadData?.updated_at < item?.updated_at) return item;
-						return {
-							...item,
-							...payloadData,
-						};
-					}
-					return item;
-				});
-			}
-			if (state[entityCode]?.pendingNewItems?.length) {
-				state[entityCode].pendingNewItems = state[entityCode].pendingNewItems.map((item) => {
-					if (item.id !== payloadData.id) return item;
-					if (payloadData?.updated_at && item?.updated_at && payloadData?.updated_at < item?.updated_at) return item;
-					return { ...item, ...payloadData };
-				});
-			}
+
+			patchItemInList(entity.pendingNewItems, data);
 		},
 		moveItemFromStageToStageLocal: (state, action: PayloadAction<IMoveCardsData>) => {
-			const { entityCode, entityId, stageId, reason_id: reasonId, funnelHasChanged, sourceStageId, item: payloadItem } = action.payload;
+			const {
+				entityCode,
+				entityId,
+				stageId,
+				reason_id: reasonId,
+				funnelHasChanged,
+				sourceStageId,
+				item: payloadItem,
+				partial,
+			} = action.payload;
+			const entity = state[entityCode];
+			if (!entity) return;
 
-			if (!state[entityCode]) return;
+			const patch = {
+				...(payloadItem || {}),
+				id: entityId,
+				kanban_stage_id: stageId,
+				kanban_reason_id: reasonId ?? payloadItem?.kanban_reason_id ?? null,
+				updated_at: payloadItem?.updated_at || Math.floor(new Date().valueOf() / 1000),
+			} as IEntityData;
 
-			if (Array.isArray(state[entityCode]?.data)) {
-				state[entityCode].data = state[entityCode].data.map((item) => {
-					if (item.id === entityId) {
-						if (payloadItem?.updated_at && item.updated_at && payloadItem.updated_at < item.updated_at) return item;
-						return {
-							...item,
-							kanban_stage_id: stageId,
-							updated_at: payloadItem?.updated_at || Math.floor(new Date().valueOf() / 1000),
-							kanban_reason_id: reasonId ?? null,
-							changed_by: payloadItem?.changed_by || item?.changed_by,
-						};
-					}
-					return item;
-				});
-			}
+			patchItemInList(entity.data, patch);
+			patchItemInList(entity.pendingNewItems, patch);
 
-			if (!state[entityCode]?.stages) return;
+			if (!entity.stages) return;
 
-			let foundEntityItem: IEntityData | undefined;
-			let foundInStageKey: string | undefined;
-			for (const [key, stage] of Object.entries(state[entityCode].stages)) {
-				foundEntityItem = stage.data?.find((item) => item.id === entityId);
-				if (foundEntityItem) {
-					foundInStageKey = key;
-					break;
-				}
-			}
+			const location = findItemInStages(entity, entityId, sourceStageId);
+			if (location && isStale(patch, entity.stages[location.key].data[location.index])) return;
 
-			if (!foundEntityItem) {
-				foundEntityItem = state[entityCode].data.find((item) => item.id === entityId) ?? payloadItem;
-			}
-
-			if (payloadItem?.updated_at && foundEntityItem?.updated_at && payloadItem?.updated_at < foundEntityItem?.updated_at) return;
-
-			if (funnelHasChanged) {
-				if (foundInStageKey !== undefined) {
-					const stage = state[entityCode].stages[foundInStageKey];
-					state[entityCode].stages[foundInStageKey] = {
-						...stage,
-						data: stage.data.filter((item) => item.id !== entityId),
-						meta: { ...stage.meta, total: Math.max((stage.meta?.total || 1) - 1, 0) },
-					};
-				} else if (sourceStageId && state[entityCode].stages[sourceStageId]) {
-					const stage = state[entityCode].stages[sourceStageId];
-					state[entityCode].stages[sourceStageId] = {
-						...stage,
-						meta: { ...stage.meta, total: Math.max((stage.meta?.total || 1) - 1, 0) },
-					};
-				}
-				return;
-			}
-
-			state[entityCode].stages = Object.fromEntries(
-				Object.entries(state[entityCode].stages).map(([key, value]) => {
-					if (+key === stageId) {
-						const alreadyInStage = value.data.some((item) => item.id === entityId);
-						if (!alreadyInStage && foundEntityItem) {
-							const data = [
-								{
-									...foundEntityItem,
-									kanban_stage_id: stageId,
-									kanban_reason_id: reasonId ?? null,
-									updated_at: payloadItem?.updated_at || foundEntityItem?.updated_at,
-									changed_by: payloadItem?.changed_by || foundEntityItem?.changed_by,
-								},
-								...value.data,
-							];
-							return [key, { ...value, data, meta: { ...value.meta, total: (value?.meta?.total || 0) + 1 } }];
-						}
-						return [key, value];
-					}
-					const filteredData = value.data.filter((item) => item.id !== entityId);
-					if (filteredData.length === value.data.length) {
-						if (sourceStageId && +key === sourceStageId) {
-							return [key, { ...value, meta: { ...value.meta, total: Math.max((value.meta?.total || 1) - 1, 0) } }];
-						}
-						return [key, value];
-					}
-					return [key, { ...value, data: filteredData, meta: { ...value.meta, total: (value.meta?.total || 1) - 1 } }];
-				}),
-			);
+			const listItem = Array.isArray(entity.data) ? entity.data.find((it) => it.id === entityId) : undefined;
+			moveCardBetweenStages(entity, {
+				id: entityId,
+				targetStageId: stageId,
+				sourceStageId: location?.key ?? sourceStageId,
+				data: patch,
+				removeOnly: !!funnelHasChanged || !entity.stages[String(stageId)],
+				fallbackItem: listItem ? { ...listItem, ...patch } : payloadItem && !partial ? patch : undefined,
+			});
 		},
 		deleteEntityItemLocal: (state, action: PayloadAction<{ id: number; entityCode: string; stageId?: number }>) => {
 			const { entityCode, stageId, id } = action.payload;
@@ -415,46 +366,44 @@ const itemsReducer = createSlice({
 			action: PayloadAction<IEntityData, string, { arg: { data: IEntityData; entityCode: string; stageId?: number; timePeriod?: string } }>,
 		) => {
 			const { entityCode, timePeriod } = action.meta.arg;
-			const stageId = action.meta.arg.stageId || String(action.meta.arg.data.kanban_stage_id);
-			if (Array.isArray(state[entityCode]?.data)) {
-				state[entityCode].errorMessage = null;
-				state[entityCode].data = state[entityCode].data.map((item) => {
-					if (item.id === action.payload.id) {
-						return {
-							...item,
-							...action.payload,
-						};
+			const entity = state[entityCode];
+			const server = action.payload;
+			const stageId = action.meta.arg.stageId || action.meta.arg.data?.kanban_stage_id;
+			if (!entity) return;
+
+			if (Array.isArray(entity.data)) entity.errorMessage = null;
+			if (stageId && entity.stages?.[stageId]) {
+				entity.stages[stageId].loading = false;
+				entity.stages[stageId].errorMessage = null;
+			}
+			if (!server?.id) return;
+
+			patchItemInList(entity.data, server, false);
+			patchItemInList(entity.pendingNewItems, server, false);
+
+			if (entity.stages) {
+				const location = findItemInStages(entity, server.id, stageId);
+				if (location) {
+					const targetKey = server.kanban_stage_id ? String(server.kanban_stage_id) : location.key;
+					if (targetKey !== location.key) {
+						moveCardBetweenStages(entity, {
+							id: server.id,
+							targetStageId: targetKey,
+							sourceStageId: location.key,
+							data: server,
+							removeOnly: !entity.stages[targetKey],
+						});
+					} else {
+						const stage = entity.stages[location.key];
+						stage.data[location.index] = { ...stage.data[location.index], ...server };
 					}
-					return item;
-				});
+				}
 			}
 
-			if (Array.isArray(state[entityCode]?.stages?.[stageId]?.data)) {
-				state[entityCode].stages[stageId].loading = false;
-				state[entityCode].stages[stageId].errorMessage = null;
-				state[entityCode].stages[stageId].data = state[entityCode].stages[stageId].data.map((item) => {
-					if (item.id === action.payload.id) {
-						return {
-							...item,
-							...action.payload,
-						};
-					}
-					return item;
-				});
-			}
-
-			if (Array.isArray(state[entityCode]?.timePeriods?.[timePeriod]?.data)) {
-				state[entityCode].timePeriods[timePeriod].loading = false;
-				state[entityCode].timePeriods[timePeriod].errorMessage = null;
-				state[entityCode].timePeriods[timePeriod].data = state[entityCode].timePeriods[timePeriod].data.map((item) => {
-					if (item.id === action.payload.id) {
-						return {
-							...item,
-							...action.payload,
-						};
-					}
-					return item;
-				});
+			if (Array.isArray(entity.timePeriods?.[timePeriod]?.data)) {
+				entity.timePeriods[timePeriod].loading = false;
+				entity.timePeriods[timePeriod].errorMessage = null;
+				patchItemInList(entity.timePeriods[timePeriod].data, server, false);
 			}
 		},
 		[updateEntityItem.pending.type]: (
@@ -570,84 +519,137 @@ const itemsReducer = createSlice({
 			}
 		},
 
-		[moveItemFromStageToStage.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: IMoveCardsData }>) => {
-			const { entityCode } = action.meta.arg;
-			state[entityCode].movingCard = false;
-			state[entityCode].errorMessage = null;
-		},
-		[moveItemFromStageToStage.pending.type]: (state, action: PayloadAction<unknown, string, { arg: IMoveCardsData }>) => {
-			const { entityCode, stageId, destinationIndex, entityId } = action.meta.arg;
-			if (!state[entityCode]) {
-				state[entityCode] = { loading: true } as EntityItems;
-			}
-			state[entityCode].movingCard = true;
-			state[entityCode].errorMessage = null;
-			if (state[entityCode]?.stages) {
-				// TODO move to fulfilled after backend optimization
-				state[entityCode].data = state[entityCode].data.map((item) => {
-					if (item.id === action.meta.arg.entityId) {
-						return {
-							...item,
-							kanban_stage_id: stageId,
-							updated_at: Math.floor(new Date().valueOf() / 1000),
-							kanban_reason_id: action.meta.arg.reason_id,
-							changed_by: action.meta.arg.profileId,
-							...(action.meta.arg.isFinishedStage && {
-								first_closed_at: item?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
-								closed_at: Math.floor(new Date().valueOf() / 1000),
-								first_closed_by: item?.first_closed_by || action.meta.arg.profileId,
-								closed_by: action.meta.arg.profileId,
-							}),
-						};
-					}
-					return item;
+		[moveItemFromStageToStage.fulfilled.type]: (
+			state,
+			action: PayloadAction<IEntityData, string, { arg: IMoveCardsData; requestId: string }>,
+		) => {
+			const { entityCode, stageId } = action.meta.arg;
+			const entity = state[entityCode];
+			if (!entity) return;
+			entity.movingCard = false;
+			entity.errorMessage = null;
+			if (entity.moveRollbacks) delete entity.moveRollbacks[action.meta.requestId];
+
+			const server = action.payload;
+			if (!server?.id) return;
+
+			// server response is the source of truth (closed_at, closed_by, kanban_status, required fields, ...)
+			patchItemInList(entity.data, server, false);
+			patchItemInList(entity.pendingNewItems, server, false);
+
+			if (!entity.stages) return;
+			const serverStageKey = String(server.kanban_stage_id ?? stageId);
+			const location = findItemInStages(entity, server.id, serverStageKey);
+			if (!location) return;
+			if (location.key !== serverStageKey) {
+				moveCardBetweenStages(entity, {
+					id: server.id,
+					targetStageId: serverStageKey,
+					sourceStageId: location.key,
+					data: server,
+					removeOnly: !entity.stages[serverStageKey],
 				});
-				let foundEntityItem;
-				for (const stage of Object.values(state[entityCode].stages)) {
-					foundEntityItem = stage.data.find((item) => item.id === action.meta.arg.entityId);
-					if (foundEntityItem) {
-						break;
+				return;
+			}
+			const stage = entity.stages[location.key];
+			stage.data[location.index] = { ...stage.data[location.index], ...server };
+		},
+		[moveItemFromStageToStage.pending.type]: (state, action: PayloadAction<unknown, string, { arg: IMoveCardsData; requestId: string }>) => {
+			const {
+				entityCode,
+				stageId,
+				destinationIndex,
+				entityId,
+				reason_id: reasonId,
+				profileId,
+				isFinishedStage,
+				funnelHasChanged,
+				sourceStageId,
+			} = action.meta.arg;
+			if (!state[entityCode]) {
+				state[entityCode] = { loading: true } as EntityItems;
+			}
+			const entity = state[entityCode];
+			entity.movingCard = true;
+			entity.errorMessage = null;
+
+			const now = Math.floor(new Date().valueOf() / 1000);
+			const withMove = (item: IEntityData): IEntityData => ({
+				...item,
+				kanban_stage_id: stageId,
+				kanban_reason_id: reasonId ?? null,
+				updated_at: now,
+				changed_by: profileId,
+				...(isFinishedStage && {
+					first_closed_at: item?.first_closed_at || now,
+					closed_at: now,
+					first_closed_by: item?.first_closed_by || profileId,
+					closed_by: profileId,
+				}),
+			});
+
+			const rollback: IMoveRollback = { entityId, targetStageKey: String(stageId), insertedIntoTarget: false };
+
+			const listIndex = Array.isArray(entity.data) ? entity.data.findIndex((item) => item.id === entityId) : -1;
+			if (listIndex !== -1) {
+				rollback.listItem = snapshot(entity.data[listIndex]);
+				entity.data[listIndex] = withMove(entity.data[listIndex]);
+			}
+
+			const location = findItemInStages(entity, entityId, sourceStageId);
+			if (location) {
+				const source = entity.stages[location.key];
+				rollback.sourceStageKey = location.key;
+				rollback.sourceIndex = location.index;
+				rollback.stageItem = snapshot(source.data[location.index]);
+
+				if (location.key === rollback.targetStageKey) {
+					source.data[location.index] = withMove(source.data[location.index]);
+				} else {
+					const removed = removeFromStage(source, location.index);
+					const target = entity.stages[rollback.targetStageKey];
+					if (!funnelHasChanged && Array.isArray(target?.data)) {
+						rollback.insertedIntoTarget = insertIntoStage(target, withMove(removed), destinationIndex || 0);
 					}
 				}
-				if (!foundEntityItem) {
-					return;
-				}
-				state[entityCode].stages = Object.fromEntries(
-					Object.entries(state[entityCode].stages).map(([key, value]) => {
-						if (+key === stageId) {
-							const data = value.data;
-							data.splice(destinationIndex || 0, 0, {
-								...foundEntityItem,
-								...(action.meta.arg.isFinishedStage && {
-									first_closed_at: foundEntityItem?.first_closed_at || Math.floor(new Date().valueOf() / 1000),
-									closed_at: Math.floor(new Date().valueOf() / 1000),
-									first_closed_by: foundEntityItem?.first_closed_by || action.meta.arg.profileId,
-									closed_by: action.meta.arg.profileId,
-								}),
-							});
-							return [
-								key,
-								{
-									...value,
-									data,
-									meta: { ...value.meta, total: (value?.meta?.total || 0) + 1 },
-								},
-							];
-						}
-						const filteredData = value.data.filter((item) => item.id !== entityId);
-						const total = filteredData.length === value.data.length ? value.meta?.total : value.meta?.total - 1;
-						return [key, { ...value, data: filteredData, meta: { ...value.meta, total: total || 0 } }];
-					}),
-				);
 			}
+
+			if (!entity.moveRollbacks) entity.moveRollbacks = {};
+			entity.moveRollbacks[action.meta.requestId] = rollback;
 		},
-		[moveItemFromStageToStage.rejected.type]: (state, action: PayloadAction<IErrors, string, { arg: IMoveCardsData }>) => {
+		[moveItemFromStageToStage.rejected.type]: (state, action: PayloadAction<IErrors, string, { arg: IMoveCardsData; requestId: string }>) => {
 			const { entityCode } = action.meta.arg;
 			if (!state[entityCode]) {
 				state[entityCode] = { loading: true } as EntityItems;
 			}
-			state[entityCode].movingCard = false;
-			state[entityCode].errorMessage = action.payload;
+			const entity = state[entityCode];
+			entity.movingCard = false;
+			entity.errorMessage = action.payload;
+
+			const rollback = entity.moveRollbacks?.[action.meta.requestId];
+			if (!rollback) return;
+			delete entity.moveRollbacks[action.meta.requestId];
+
+			if (rollback.listItem && Array.isArray(entity.data)) {
+				const listIndex = entity.data.findIndex((item) => item.id === rollback.entityId);
+				if (listIndex !== -1) entity.data[listIndex] = rollback.listItem;
+			}
+
+			if (!entity.stages || !rollback.sourceStageKey || !rollback.stageItem) return;
+			const source = entity.stages[rollback.sourceStageKey];
+
+			if (rollback.sourceStageKey === rollback.targetStageKey) {
+				const index = source?.data?.findIndex((item) => item.id === rollback.entityId) ?? -1;
+				if (index !== -1) source.data[index] = rollback.stageItem;
+				return;
+			}
+
+			if (rollback.insertedIntoTarget) {
+				const target = entity.stages[rollback.targetStageKey];
+				const index = target?.data?.findIndex((item) => item.id === rollback.entityId) ?? -1;
+				if (index !== -1) removeFromStage(target, index);
+			}
+			if (Array.isArray(source?.data)) insertIntoStage(source, rollback.stageItem, rollback.sourceIndex);
 		},
 
 		[massItemsEditing.fulfilled.type]: (state, action: PayloadAction<unknown, string, { arg: IMassActions & { entityCode: string } }>) => {

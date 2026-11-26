@@ -6,10 +6,10 @@ import { ICallFilters, IEntityFilters, IFilter, IFilterCurrenciesAmount } from '
 import { IMassActions } from '@uspacy/sdk/lib/models/crm-mass-actions';
 import { IProduct } from '@uspacy/sdk/lib/models/crm-products';
 import { IField } from '@uspacy/sdk/lib/models/field';
-import { IMoveCardsData } from 'src/store/crmEntities/types';
 
 import { getActivitiesParams, getFilterParams } from '../../../helpers/filterFieldsArrs';
 import { normalizeCategories, normalizeProduct, normalizeProductForView } from '../../../helpers/normalizeProduct';
+import { IMoveCardsData } from './types';
 
 export const fetchEntityItems = createAsyncThunk(
 	'crm/items/fetchEntityItems',
@@ -101,9 +101,24 @@ export const fetchEntityItems = createAsyncThunk(
 
 export const moveItemFromStageToStage = createAsyncThunk(
 	'crm/items/moveItemFromStageToStage',
-	async ({ entityId, stageId, reason_id: reasonId, entityCode }: IMoveCardsData, thunkAPI) => {
+	async ({ entityId, stageId, reason_id: reasonId, reason_comment: reasonComment, entityCode, fields }: IMoveCardsData, thunkAPI) => {
 		try {
-			return await uspacySdk.crmEntitiesService.moveEntityItemFromStageToStage(entityCode, entityId, stageId, reasonId);
+			// stage / reason are controlled only by the thunk args
+			const rest = { ...(fields || {}) };
+			['id', 'kanban_reason_id', 'kanban_stage_id', 'move_stage'].forEach((key) => delete rest[key]);
+			const comment = reasonComment?.trim();
+			const hasMoveStage = !!reasonId || !!comment;
+			const res = await uspacySdk.crmEntitiesService.updateEntityItem(entityCode, entityId, {
+				...rest,
+				kanban_stage_id: stageId,
+				...(hasMoveStage && {
+					move_stage: {
+						...(!!reasonId && { reason_id: reasonId }),
+						...(!!comment && { reason_comment: comment }),
+					},
+				}),
+			});
+			return res?.data;
 		} catch (e) {
 			return thunkAPI.rejectWithValue(e);
 		}
