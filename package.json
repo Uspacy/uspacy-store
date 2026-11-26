@@ -27,7 +27,7 @@
     "@reduxjs/toolkit": "1.9.5",
     "@typescript-eslint/eslint-plugin": "6.3.0",
     "@typescript-eslint/parser": "6.3.0",
-    "@uspacy/sdk": "0.0.999-alpha.263",
+    "@uspacy/sdk": "0.0.999-alpha.266",
     "date-fns": "2.30.0",
     "eslint": "8.46.0",
     "eslint-config-google": "0.14.0",
