@@ -10,6 +10,8 @@ export interface EntityItems extends IResponseWithMeta<IEntityData> {
 	createModalOpen?: boolean;
 	completeModalOpen?: boolean;
 	pendingNewItems?: IEntityData[];
+	/** snapshots of optimistic stage moves, keyed by thunk requestId, used to roll back on reject */
+	moveRollbacks?: Record<string, IMoveRollback>;
 	stages?: {
 		[key: string]: {
 			loading: boolean;
@@ -42,4 +44,22 @@ export interface IMoveCardsData {
 	sourceStageId?: number;
 	destinationIndex?: number;
 	item?: IEntityData;
+	/** other fields sent in the same PATCH as the stage change (e.g. required fields of the stage) */
+	fields?: Partial<IEntityData>;
+	reason_comment?: string;
+	/** item holds only kanban fields (live event without fetched entity): update/move existing cards, never insert it */
+	partial?: boolean;
+}
+
+export interface IMoveRollback {
+	entityId: number;
+	targetStageKey: string;
+	/** stage where the card was before the optimistic move (undefined if it was not loaded on the board) */
+	sourceStageKey?: string;
+	sourceIndex?: number;
+	/** item as it was in the kanban column */
+	stageItem?: IEntityData;
+	/** item as it was in the list (table) data */
+	listItem?: IEntityData;
+	insertedIntoTarget: boolean;
 }
