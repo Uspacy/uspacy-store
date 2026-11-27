@@ -105,18 +105,13 @@ export const moveItemFromStageToStage = createAsyncThunk(
 		try {
 			// stage / reason are controlled only by the thunk args
 			const rest = { ...(fields || {}) };
-			['id', 'kanban_reason_id', 'kanban_stage_id', 'move_stage'].forEach((key) => delete rest[key]);
+			['id', 'kanban_reason_id', 'kanban_reason_comment', 'kanban_stage_id'].forEach((key) => delete rest[key]);
 			const comment = reasonComment?.trim();
-			const hasMoveStage = !!reasonId || !!comment;
 			const res = await uspacySdk.crmEntitiesService.updateEntityItem(entityCode, entityId, {
 				...rest,
 				kanban_stage_id: stageId,
-				...(hasMoveStage && {
-					move_stage: {
-						...(!!reasonId && { reason_id: reasonId }),
-						...(!!comment && { reason_comment: comment }),
-					},
-				}),
+				...(!!reasonId && { kanban_reason_id: reasonId }),
+				...(!!comment && { kanban_reason_comment: comment }),
 			});
 			return res?.data;
 		} catch (e) {
