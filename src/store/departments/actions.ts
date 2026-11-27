@@ -1,6 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { uspacySdk } from '@uspacy/sdk';
+import { EMentionType } from '@uspacy/sdk/lib/models/mentions';
 import { MainRoles } from '@uspacy/sdk/lib/models/user';
+
+import { setEntityMention } from '../mentions/actions';
 
 export const fetchDepartments = createAsyncThunk('departments/fetchDepartments', async (_, thunkAPI) => {
 	try {
@@ -86,7 +89,10 @@ export const editDepartment = createAsyncThunk(
 export const deleteDepartment = createAsyncThunk('departments/deleteDepartment', async (id: string, thunkAPI) => {
 	// TODO change the error handling once API is ready
 	try {
-		return uspacySdk.departmentsService.deleteDepartment(id);
+		const request = uspacySdk.departmentsService.deleteDepartment(id);
+		// messenger-backend is not notified about deleted departments, so the department mention is removed here.
+		request.then(() => thunkAPI.dispatch(setEntityMention({ type: EMentionType.DEPARTMENT, entityId: +id, name: null }))).catch(() => undefined);
+		return request;
 	} catch (e) {
 		return thunkAPI.rejectWithValue('Failure');
 	} finally {
